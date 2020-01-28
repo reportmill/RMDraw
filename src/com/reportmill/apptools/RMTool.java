@@ -858,9 +858,6 @@ private Point dropFile(RMShape aShape, ClipboardData aFile, Point aPoint)
     else if(RMPDFData.canRead(ext))
         runLater(() -> dropPDFFile(aShape, aFile, aPoint));
 
-    // If reportmill file, addReportFile
-    else if(ext.equals("rpt")) dropReportFile(aShape, aFile, aPoint);
-    
     // Return point offset by 10
     aPoint.offset(10, 10); return aPoint;
 }
@@ -962,42 +959,6 @@ private void dropPDFFile(RMShape aShape, ClipboardData aFile, Point aPoint)
     
     // Select imageShape and SelectTool
     editor.setSelectedShape(pdfShape);
-    editor.setCurrentToolToSelectTool();
-}
-
-/**
- * Called to handle a report file drop on the editor.
- */
-private void dropReportFile(RMShape aShape, ClipboardData aFile, Point aPoint)
-{
-    // Get Editor
-    RMEditor editor = getEditor();
-    
-    // Get doc for dropped file
-    RMDocument doc = RMDocument.getDoc(aFile.getBytes());
-    
-    // If TeaVM, replace report file instead
-    if(SnapUtils.isTeaVM) {
-	    editor.setDoc(doc); editor.requestFocus(); return; }
-    
-    // Find a parent shape that accepts children
-    RMParentShape parent = aShape instanceof RMParentShape? (RMParentShape)aShape : aShape.getParent();
-    while(!getTool(parent).getAcceptsChildren(parent))
-        parent = parent.getParent();
-    
-    // Get embedded doc shape for doc
-    RMNestedDoc ndoc = new RMNestedDoc(); ndoc.setNestedDoc(doc);
-    
-    // Center embedded doc around drop point
-    Point point = editor.convertToShape(aPoint.x, aPoint.y, parent);
-    ndoc.setXY(point);
-
-    // Add edoc to document
-    editor.undoerSetUndoTitle("Add Embedded Document");
-    parent.addChild(ndoc);
-
-    // Select edoc and selectTool
-    editor.setSelectedShape(ndoc);
     editor.setCurrentToolToSelectTool();
 }
 
