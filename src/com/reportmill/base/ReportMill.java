@@ -57,6 +57,14 @@ public static Object convertFromAppServerType(Object anObj)
 }
 
 /**
+ * Returns the preferences class.
+ */
+public static Prefs getPrefs()
+{
+    return Prefs.getPrefs(com.reportmill.base.ReportMill.class);
+}
+
+/**
  * Returns the ReportMill license string for the current user.
  */
 public static String getLicense()
@@ -67,7 +75,7 @@ public static String getLicense()
     // Get preferences for com.reportmill.Shell and prefs key (HostProperties1 for app, HostProperties2  for engine)
     try {
         String prefsKey = isApp? "HostProperties1" : "HostProperties2";
-        Prefs prefs = Prefs.getPrefs(com.reportmill.Shell.class); //Preferences.userNodeForPackage(Shell.class);
+        Prefs prefs = getPrefs(); //Preferences.userNodeForPackage(Shell.class);
         _license = prefs.get(prefsKey, null);
     }
     
@@ -90,7 +98,7 @@ public static void setLicense(String aLicense, boolean isPersistent, boolean isA
     if(isPersistent) try {
         
         // Get preferences for com.reportmill.Shell and prefs key (HostProperties1 for app, HostProperties2  for engine)
-        Prefs prefs = Prefs.getPrefs(com.reportmill.Shell.class); //Preferences.userNodeForPackage(Shell.class);
+        Prefs prefs = getPrefs();
         String prefsKey = isApp? "HostProperties1" : "HostProperties2";
 
         // Put license for prefs key (or remove if null) and flush preferences
