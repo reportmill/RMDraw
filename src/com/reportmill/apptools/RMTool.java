@@ -830,9 +830,9 @@ public void dropColor(RMShape aShape, ViewEvent anEvent)
  */
 public void dropFiles(RMShape aShape, ViewEvent anEvent)
 {
-    List <ClipboardData> filesList = anEvent.getClipboard().getFiles(); Point point = anEvent.getPoint();
+    List <ClipboardData> filesList = anEvent.getClipboard().getFiles();
     for(ClipboardData file : filesList)
-        point = dropFile(aShape, file, anEvent.getPoint());
+        dropFile(aShape, file, anEvent.getPoint());
 }
 
 /**
@@ -1062,38 +1062,13 @@ public static RMTool createTool(Class aClass)
     if(aClass==RMShape.class) return new RMTool();
     if(aClass==RMSpringShape.class) return new RMSpringShapeTool();
     if(aClass==RMSwitchShape.class) return new RMSwitchShapeTool();
-    if(aClass==RMSubreport.class) return new RMSubreportTool();
     if(aClass==RMTable.class) return new RMTableTool();
     if(aClass==RMTableGroup.class) return new RMTableGroupTool();
     if(aClass==RMTableRow.class) return new RMTableRowTool();
     if(aClass==RMTextShape.class) return new RMTextTool();
     if(aClass==RMViewerShape.class) return new RMTool();
-    if(aClass==ViewShape.class) return new ViewShapeTool();
     System.out.println("RMTool.createTool: " + aClass.getName());
     return new RMTool();
-    
-    // If class name starts with RM, check tool package for built-in RMShape tools
-    /*Class cls = null; String pname = aClass.getName(), cname = aClass.getSimpleName();
-    if(pname.startsWith("com.reportmill.shape.")) {
-        cls = ClassUtils.getClass("com.reportmill.apptools." + cname + "Tool");
-        if(cls==null && cname.endsWith("Shape"))
-            cls = ClassUtils.getClass("com.reportmill.apptools." + cname.replace("Shape", "Tool")); }*/
-    // If not found, try looking in same package for shape class plus "Tool"
-    //if(cls==null) cls = ClassUtils.getClass(aClass.getName() + "Tool", aClass);
-    // If not found and class ends in "Shape", try looking in same package for class that ends with "Tool" instead
-    //if(cls==null && cname.endsWith("Shape"))
-    //    cls = ClassUtils.getClass(StringUtils.replace(aClass.getName(), "Shape", "Tool"), aClass);
-    // If not found and class is some external shapes package, look in external tools package
-    /*if(cls==null && aClass.getName().indexOf(".shape.")>0) {
-        String classPath = StringUtils.replace(aClass.getName(), ".shape.", ".tool.");
-        String classPath2 = StringUtils.delete(classPath, "Shape") + "Tool";
-        cls = ClassUtils.getClass(classPath2, aClass); }*/
-    // If not found, try looking for inner class named "Tool"
-    //if(cls==null) cls = ClassUtils.getClass(aClass.getName() + "$" + "Tool", aClass);
-    // If tool class found, instantiate tool class
-    //if(cls!=null) try { return (RMTool)cls.newInstance(); } catch(Exception e) { throw new RuntimeException(e); }
-    // Otherwise, get tool for super class
-    //return createTool(aClass.getSuperclass());
 }
 
 }

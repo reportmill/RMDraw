@@ -866,51 +866,6 @@ public static void addImagePlaceholder(RMEditor anEditor)
 }
 
 /**
- * Adds a subreport to the given editor.
- */
-public static void addSubreport(RMEditor anEditor)
-{
-    // Create image shape
-    RMSubreport subreport = new RMSubreport();
-    
-    // Get parent and move shape to center
-    RMParentShape parent = anEditor.firstSuperSelectedShapeThatAcceptsChildren();
-    subreport.setFrame((int)(parent.getWidth()/2 - 200), (int)(parent.getHeight()/2 - 60), 400, 120);
-
-    // Add shape to parent
-    anEditor.undoerSetUndoTitle("Add Subreport");
-    parent.addChild(subreport);
-
-    // Select shape, set selectTool and repaint
-    anEditor.setSelectedShape(subreport);
-    anEditor.setCurrentToolToSelectTool();
-    anEditor.repaint();
-}
-
-/**
- * Adds a widget to the given editor.
- */
-public static void addWidget(RMEditor anEditor)
-{
-    // Create image shape
-    ViewShape viewShape = new ViewShape();
-    
-    // Get parent and move shape to center
-    RMParentShape parent = anEditor.firstSuperSelectedShapeThatAcceptsChildren();
-    viewShape.setXY((int)(parent.getWidth()/2 - viewShape.getWidth()/2),
-        (int)(parent.getHeight()/2 - viewShape.getHeight()/2));
-
-    // Add shape to parent
-    anEditor.undoerSetUndoTitle("Add Widget");
-    parent.addChild(viewShape);
-
-    // Select shape, set selectTool and repaint
-    anEditor.setSelectedShape(viewShape);
-    anEditor.setCurrentToolToSelectTool();
-    anEditor.repaint();
-}
-
-/**
  * Runs the dataset key panel to add a table, graph, crosstab or labels to given editor.
  */
 public static void runDatasetKeyPanel(RMEditor anEditor, String aKeyPath)

@@ -270,12 +270,10 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("AddLabelsButton")) RMLabelsTool.addLabels(getEditor(), null);
     if(anEvent.equals("AddCrossTabFrameButton")) RMCrossTabTool.addCrossTab(getEditor(), null);
     
-    // Handle AddCrossTabButton, AddImagePlaceHolderMenuItem, AddSubreportMenuItem
+    // Handle AddCrossTabButton, AddImagePlaceHolderMenuItem
     if(anEvent.equals("AddCrossTabButton")) RMCrossTabTool.addCrossTab(getEditor());
     if(anEvent.equals("AddImagePlaceHolderMenuItem")) RMEditorUtils.addImagePlaceholder(getEditor());
-    if(anEvent.equals("AddSubreportMenuItem")) RMEditorUtils.addSubreport(getEditor());
-    if(anEvent.equals("AddWidgetMenuItem")) RMEditorUtils.addWidget(getEditor());
-    
+
     // Handle ConnectToDataSourceMenuItem
     if(anEvent.equals("ConnectToDataSourceMenuItem") || anEvent.equals("ConnectToDataSourceButton"))
         RMEditorPaneUtils.connectToDataSource(getEditorPane());

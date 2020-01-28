@@ -78,7 +78,6 @@ protected Map <String, Class> createClassMap()
     classMap.put("rect", RMRectShape.class);
     classMap.put("shape", RMParentShape.class);
     classMap.put("spring-shape", RMSpringShape.class);
-    classMap.put("subreport", RMSubreport.class);
     classMap.put("switchshape", RMSwitchShape.class);
     classMap.put("table", RMTable.class);
     classMap.put("table-group", RMTableGroup.class);
@@ -86,8 +85,7 @@ protected Map <String, Class> createClassMap()
     classMap.put("text", RMTextShape.class);
     classMap.put("linked-text", RMLinkedText.class);
     classMap.put("scene3d", RMScene3D.class);
-    classMap.put("ViewShape", ViewShape.class);
-    
+
     // Graphics
     classMap.put("color", RMColor.class);
     classMap.put("font", RMFont.class);

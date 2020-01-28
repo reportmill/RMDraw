@@ -231,93 +231,9 @@ public static class RMScene3DPdfr <T extends RMScene3D> extends RMShapePdfr <T> 
 }
 
 /**
- * This class generates PDF for an ViewShape.
- */
-public static class ViewShapePdfr <T extends ViewShape> extends RMShapePdfr <T> {
-
-    /** Writes a given RMShape hierarchy to a PDF file (recursively). */
-    protected void writeShape(T aViewShape, RMPDFWriter aWriter)
-    {
-        // Do normal version
-        super.writeShape(aViewShape, aWriter);
-        
-        // Get ViewShape info
-        String name = aViewShape.getName(); if(name==null) name = "Text Box " + aWriter.getAcroFormFieldCount();
-        String pdfName = name!=null && name.length()>0? '(' + name + ')' : null;
-        String type = aViewShape.getViewType(), fieldType = getFieldType(type);
-        boolean isText = type==ViewShape.TextField_Type, isTextMultiline = isText && aViewShape.isMultiline();
-        String text = aViewShape.getText(), pdfText = text!=null && text.length()>0? '(' + text + ')' : null;
-        boolean isButton = fieldType=="/Btn", isRadio = type==ViewShape.RadioButton_Type;
-        boolean isCheckBox = type==ViewShape.CheckBox_Type;
-        
-        // Get flags field
-        int flags = 0; if(isTextMultiline) flags |= 1<<12;
-        if(isRadio) flags |= 1<<15; else if(isButton && !isCheckBox) flags |= 1<<16;
-        
-        // Get ViewShape frame in PDF page coords (minus text insets)
-        Rect frame = aViewShape.localToParent(aViewShape.getBoundsInside(), null).getBounds();
-        frame.setY(aViewShape.getPageShape().getHeight() - frame.getMaxY());
-        if(isText) { Insets ins = new Insets(2); frame.x += ins.left; frame.y += ins.bottom;
-            frame.width -= ins.getWidth(); frame.height -= ins.getHeight(); }
-        
-        // Create and add annotation to page
-        PDFAnnotation widget = new PDFAnnotation.Widget(frame, "");
-        PDFPageWriter pwriter = aWriter.getPageWriter();
-        pwriter.addAnnotation(widget);
-        
-        // Set Annotation Flags, Field-Type
-        Map map = widget.getAnnotationMap(); //map.put("P", xrefs.getRefString(pwriter));
-        map.put("F", 4); map.put("FT", fieldType); // Makes widget printable and field type
-        if(flags!=0) map.put("Ff", flags);
-        
-        // Get font name and set in Default Appearance
-        Font font = aViewShape.getFont();
-        PDFFontEntry fontEntry = aWriter.getFontEntry(font, 0);
-        String fontName = '/' + fontEntry.getPDFName(); int fontSize = (int)font.getSize();
-        map.put("DA", "(0 0 0 rg " + fontName + ' ' + fontSize + " Tf)");
-        
-        // Set Widget Name, alt name, value, default value and fonts dict
-        if(pdfName!=null) map.put("T", pdfName); // Name
-        if(pdfName!=null) map.put("TU", pdfName); // Alternate name (ToolTip)
-        if(pdfText!=null) { map.put("V", pdfText); map.put("DV", pdfText); } // Value/Default value
-        
-        // Set Widget Default Resources dict
-        Object fonts = aWriter.getFonts(), fontsXRef = aWriter.getXRefTable().getRefString(fonts);
-        Map drDict = Collections.singletonMap("Font", fontsXRef);
-        map.put("DR", drDict);
-        
-        // Write Appearance Dictionary
-        /*Map apnDict = new HashMap(8); apnDict.put("Type", "/XObject"); apnDict.put("Subtype", "/Form");
-        apnDict.put("BBox", "[0 0 " + frame.width + " " + frame.height + "]");
-        apnDict.put("Resources", xrefs.addObject(pwriter.getResourcesDict()));
-        String str = fieldType + " BMC\nEMC"; byte strBytes[] = str.getBytes();
-        PDFStream formStream = new PDFStream(strBytes, apnDict); Object formStreamXRef = xrefs.addObject(formStream);
-        Map apDict = Collections.singletonMap("N", formStreamXRef); Object apDictXRef = xrefs.addObject(apDict);
-        map.put("AP", apDict);*/
-    }
-    
-    /** Returns the Field Type of Widget annotation. */
-    String getFieldType(String aViewType)
-    {
-        switch(aViewType) {
-            case ViewShape.TextField_Type: return "/Tx";
-            case ViewShape.Button_Type: case ViewShape.RadioButton_Type: case ViewShape.CheckBox_Type: return "/Btn";
-            case ViewShape.ListView_Type: case ViewShape.ComboBox_Type: return "/Ch";
-            default: System.err.println("RMShapePdfrs.ViewShapePdfr: Unknown view type"); return "/Tx";
-        }
-    }
-}
-
-/**
  * Returns a shared RMPDFShapePdfr.
  */
 public static RMPDFShapePdfr getPDFShapePdfr()  { return _pspdfr!=null? _pspdfr : (_pspdfr=new RMPDFShapePdfr()); }
 private static RMPDFShapePdfr _pspdfr;
-
-/**
- * Returns a shared ViewShapePdfr.
- */
-public static ViewShapePdfr getViewShapePdfr()  { return _vspdfr!=null? _vspdfr : (_vspdfr=new ViewShapePdfr()); }
-private static ViewShapePdfr _vspdfr;
 
 }
