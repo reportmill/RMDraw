@@ -9,20 +9,20 @@ import snap.view.*;
 /**
  * UI controls for RMViewerPane bottom.
  */
-public class RMViewerBottomToolBar extends ViewOwner {
+public class ViewerBottomToolBar extends ViewOwner {
 
     // The viewer associated with this tool bar
-    RMViewerPane    _viewerPane;
+    ViewerPane _viewerPane;
 
 /**
  * Creates a new bottom ui.
  */
-public RMViewerBottomToolBar(RMViewerPane aViewerPane)  { _viewerPane = aViewerPane; }
+public ViewerBottomToolBar(ViewerPane aViewerPane)  { _viewerPane = aViewerPane; }
 
 /**
  * Returns the viewer pane.
  */
-public RMViewerPane getViewerPane()  { return _viewerPane; }
+public ViewerPane getViewerPane()  { return _viewerPane; }
 
 /**
  * Override to swap top level RowView for subclass to manually centers PageNavBox under viewer.
@@ -64,8 +64,8 @@ protected void initUI()
 protected void resetUI()
 {
     // Get viewer pane
-    RMViewerPane viewerPane = getViewerPane();
-    RMViewer viewer = viewerPane.getViewer();
+    ViewerPane viewerPane = getViewerPane();
+    Viewer viewer = viewerPane.getViewer();
     
     // Reset ZoomText
     setViewValue("ZoomText", Math.round(viewer.getZoomFactor()*100) + "%");
@@ -90,8 +90,8 @@ protected void resetUI()
 protected void respondUI(ViewEvent anEvent)
 {
     // Get viewer pane and viewer
-    RMViewerPane viewerPane = getViewerPane();
-    RMViewer viewer = viewerPane.getViewer();
+    ViewerPane viewerPane = getViewerPane();
+    Viewer viewer = viewerPane.getViewer();
     
     // Handle ZoomComboBox
     if(anEvent.equals("ZoomText"))
@@ -107,11 +107,11 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle ZoomToFitMenuItem
     if(anEvent.equals("ZoomToFitMenuItem"))
-        viewer.setZoomMode(RMViewer.ZoomMode.ZoomToFit);
+        viewer.setZoomMode(Viewer.ZoomMode.ZoomToFit);
     
     // Handle ZoomAsNeededMenuItem
     if(anEvent.equals("ZoomAsNeededMenuItem"))
-        viewer.setZoomMode(RMViewer.ZoomMode.ZoomAsNeeded);
+        viewer.setZoomMode(Viewer.ZoomMode.ZoomAsNeeded);
     
     // Handle PageText
     if(anEvent.equals("PageText"))
@@ -161,7 +161,7 @@ public class RMVRowView extends RowView {
     {
         View pageNavBox = getView("PageNavBox");
         if(pageNavBox.isVisible()) {
-            RMViewer viewer = getViewerPane().getViewer();
+            Viewer viewer = getViewerPane().getViewer();
             View spacerLabel = getView("SpacerLabel"); if(spacerLabel.getX()==0) super.layoutImpl();
             double w0 = viewer.getParent().getWidth(), w1 = pageNavBox.getPrefWidth();
             double x0 = spacerLabel.getX(), x1 = Math.round((w0 - w1)/2); spacerLabel.setPrefWidth(x1 - x0);

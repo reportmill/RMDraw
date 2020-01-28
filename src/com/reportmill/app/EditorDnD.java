@@ -9,10 +9,10 @@ import snap.view.*;
 /**
  * Handles editor methods specific to drag and drop operations.
  */
-class RMEditorDnD {
+class EditorDnD {
     
     // The editor that this class is working for
-    RMEditor        _editor;
+    Editor _editor;
     
     // The last shape that a drag and drop action was over
     RMShape         _lastOverShape;
@@ -20,7 +20,7 @@ class RMEditorDnD {
 /**
  * Creates a new editor drop target listener.
  */
-public RMEditorDnD(RMEditor anEditor)  { _editor = anEditor; }
+public EditorDnD(Editor anEditor)  { _editor = anEditor; }
 
 /**
  * Handle events.
@@ -32,7 +32,7 @@ protected void processEvent(ViewEvent anEvent)
         case DragOver: dragOver(anEvent); break;
         case DragExit: dragExit(anEvent); break;
         case DragDrop: dragDrop(anEvent); break;
-        default: throw new RuntimeException("RMEditorDnD: Unknown event type: " + anEvent.getType());
+        default: throw new RuntimeException("EditorDnD: Unknown event type: " + anEvent.getType());
         //case DragActionChanged: anEvent.acceptDrag(DnDConstants.ACTION_COPY);
     }
 }
@@ -95,7 +95,7 @@ public void dragOver(ViewEvent anEvent)
 public void dragExit(ViewEvent anEvent)
 {
     _editor._dragShape = null; _editor.repaint();        // Clear DragShape
-    RMEditorProxGuide.clearGuidelines(_editor);          // Reset proximity guide
+    EditorProxGuide.clearGuidelines(_editor);          // Reset proximity guide
 }
 
 /**

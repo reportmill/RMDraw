@@ -14,7 +14,7 @@ import snap.web.WebURL;
 public class SamplesPane extends ViewOwner {
     
     // The editor pane
-    RMEditorPane       _epane;
+    EditorPane _epane;
     
     // The shared document names
     private static String     _docNames[];
@@ -36,7 +36,7 @@ public class SamplesPane extends ViewOwner {
 /**
  * Shows the samples pane.
  */
-public void showSamples(RMEditorPane anEP)
+public void showSamples(EditorPane anEP)
 {
     anEP.setEditing(true);
     _epane = anEP;
@@ -240,7 +240,7 @@ private void itemBoxWasPressed(ColView anItemBox, ViewEvent anEvent)
  */
 private void datasetButtonClicked()
 {
-    RMEditorPaneUtils.connectToDataSource(_epane);
+    EditorPaneUtils.connectToDataSource(_epane);
     _dbox.cancel();
 }
 

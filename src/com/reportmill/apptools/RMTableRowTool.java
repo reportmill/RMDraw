@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.shape.*;
 import java.util.*;
 import snap.gfx.Point;
@@ -170,7 +170,7 @@ public Menu getPopupMenu(RMTableRow aTableRow)
 public void setVersionFromMenu(String aVersion)
 {
     // Get editor and selected TableRow
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTableRow tableRow = (RMTableRow)editor.getSelectedOrSuperSelectedShape();
     
     // Set version
@@ -187,7 +187,7 @@ public void setVersionFromMenu(String aVersion)
 public void addVersionFromMenu(String aVersion)
 {
     // Get main editor and selected TableRow
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTableRow tableRow = (RMTableRow)editor.getSelectedOrSuperSelectedShape();
 
     // Get name of Custom Version if requested
@@ -217,7 +217,7 @@ public void addVersionFromMenu(String aVersion)
 public void removeVersionCurrent()
 {
     // Get main editor and selected TableRow
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTableRow tableRow = (RMTableRow)editor.getSelectedOrSuperSelectedShape();
     
     // Register table row for repaint (thus undo)
@@ -243,7 +243,7 @@ public void removeVersionCurrent()
 /**
  * Adds a column to the currently selected table row.
  */
-public static void addColumn(RMEditor anEditor)
+public static void addColumn(Editor anEditor)
 {
     // Get currently selected editor and selected shape
     RMShape shape = anEditor.getSelectedOrSuperSelectedShape();
@@ -308,7 +308,7 @@ public void mouseMoved(T aTableRow, ViewEvent anEvent)
 public void mousePressed(T aTableRow, ViewEvent anEvent)
 {
     // If selected and structured, select child
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(aTableRow.isStructured() && aTableRow!=editor.getSuperSelectedShape().getParent()) {
         
         // Get the point and child at point

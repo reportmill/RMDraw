@@ -12,7 +12,7 @@ import snap.view.*;
 /**
  * Handles editor methods specific to event operations.
  */
-public class RMEditorEvents extends RMViewerEvents {
+public class EditorEvents extends ViewerEvents {
     
     // The cached current event for any mouse loop handled by this editor events
     ViewEvent    _currentEvent;
@@ -30,12 +30,12 @@ public class RMEditorEvents extends RMViewerEvents {
 /**
  * Creates a new editor events object.
  */
-public RMEditorEvents(RMViewer aViewer)  { super(aViewer); }
+public EditorEvents(Viewer aViewer)  { super(aViewer); }
 
 /**
  * Returns the viewer as an editor.
  */
-public RMEditor getEditor()  { return (RMEditor)getViewer(); }
+public Editor getEditor()  { return (Editor)getViewer(); }
 
 /**
  * Handles key press events.
@@ -43,7 +43,7 @@ public RMEditor getEditor()  { return (RMEditor)getViewer(); }
 public void processEvent(ViewEvent anEvent)
 {
     // If editing, send event to tool: Get super selected shape and its tool and send event
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     boolean isKey = anEvent.isKeyEvent() && !anEvent.isConsumed();
     if(isKey && (!editor.isPreview() || getOverridePreview())) {
         RMShape superSelectedShape = editor.getSuperSelectedShape();
@@ -62,7 +62,7 @@ public void processEvent(ViewEvent anEvent)
 public void mousePressed(ViewEvent anEvent)
 {
     // Get the editor
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     
     // If in preview mode, call normal version
     if(editor.isPreview() && !getOverridePreview()) { super.mousePressed(anEvent); return; }
@@ -90,7 +90,7 @@ public void mousePressed(ViewEvent anEvent)
 public void mouseDragged(ViewEvent anEvent)
 {
     // Get the editor
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     
     // If in preview mode, call normal version
     if(editor.isPreview() && !getOverridePreview()) { super.mouseDragged(anEvent); return; }
@@ -105,7 +105,7 @@ public void mouseDragged(ViewEvent anEvent)
     editor.scrollToVisible(new Rect(anEvent.getX(), anEvent.getY(), 1, 1));
         
     // Update rulers
-    RMEditorPane epane = editor.getEditorPane();
+    EditorPane epane = editor.getEditorPane();
     if(epane.isShowRulers())
         epane.getRulerBox().setMousePoint(anEvent.getPoint());
 }
@@ -116,7 +116,7 @@ public void mouseDragged(ViewEvent anEvent)
 public void mouseReleased(ViewEvent anEvent)
 {
     // Get the editor
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     
     // If in preview mode, call normal version
     if(editor.isPreview() && !getOverridePreview()) { super.mouseReleased(anEvent); return; }
@@ -132,14 +132,14 @@ public void mouseReleased(ViewEvent anEvent)
 public void mouseMoved(ViewEvent anEvent)
 {
     // If in preview mode, call normal version
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(editor.isPreview() && !getOverridePreview()) { super.mouseMoved(anEvent); return; }
     
     // Otherwise, call tool mouseMoved to do stuff like set cursors
     else editor.getCurrentTool().mouseMoved(anEvent);
         
     // Update rulers
-    RMEditorPane epane = editor.getEditorPane();
+    EditorPane epane = editor.getEditorPane();
     if(epane.isShowRulers())
         epane.getRulerBox().setMousePoint(anEvent.getPoint());
 }
@@ -159,7 +159,7 @@ public void keyReleased(ViewEvent anEvent)
 public void keyPressed(ViewEvent anEvent)
 {
     // If in preview mode, call normal version
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(editor.isPreview() && !getOverridePreview()) {
         
         // Do normal version
@@ -190,10 +190,10 @@ public void keyPressed(ViewEvent anEvent)
         editor.delete();
     
     // Handle left, right, up, down arrows
-    else if(keyCode==KeyCode.LEFT) RMEditorUtils.moveLeftOnePoint(editor);
-    else if(keyCode==KeyCode.RIGHT) RMEditorUtils.moveRightOnePoint(editor);
-    else if(keyCode==KeyCode.UP) RMEditorUtils.moveUpOnePoint(editor);
-    else if(keyCode==KeyCode.DOWN) RMEditorUtils.moveDownOnePoint(editor);
+    else if(keyCode==KeyCode.LEFT) EditorUtils.moveLeftOnePoint(editor);
+    else if(keyCode==KeyCode.RIGHT) EditorUtils.moveRightOnePoint(editor);
+    else if(keyCode==KeyCode.UP) EditorUtils.moveUpOnePoint(editor);
+    else if(keyCode==KeyCode.DOWN) EditorUtils.moveDownOnePoint(editor);
 
     // If 6 key, show Undo inspector (for undo debugging)
     else if(keyChar=='6')
@@ -239,7 +239,7 @@ public Point getEventPointInDoc()  { return getEventPointInDoc(false); }
 public Point getEventPointInDoc(boolean snapToGrid)
 {
     // Get the editor
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     
     // Get current event point in doc coords, rounded to integers
     Point point = editor.convertToShape(_currentEvent.getX(), _currentEvent.getY(), null);
@@ -301,7 +301,7 @@ public Point getEventPointInShape(boolean snapToGrid, boolean snapEdges)
 private Point pointSnapped(Point aPoint, boolean snapEdges)
 {
     // Get the editor and editor shape
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMDocument doc = editor.getDoc(); if(doc==null) return aPoint;
     
     // Get local copy of point
@@ -318,7 +318,7 @@ private Point pointSnapped(Point aPoint, boolean snapEdges)
     
     // If points haven't changed, adjust for proximity guides
     if(x==point.getX() && y==point.getY())
-        point = RMEditorProxGuide.pointSnappedToProximityGuides(editor, point);
+        point = EditorProxGuide.pointSnappedToProximityGuides(editor, point);
     
     // Return point
     return point;
@@ -330,7 +330,7 @@ private Point pointSnapped(Point aPoint, boolean snapEdges)
 private Point pointSnappedToGrid(Point aPoint, boolean snapEdges)
 {
     // Get the editor and editor shape
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMDocument doc = editor.getDoc(); if(doc==null) return aPoint;
     
     // Get document frame
@@ -407,7 +407,7 @@ private Point pointSnappedToGrid(Point aPoint, boolean snapEdges)
 private Point pointSnappedToGuides(Point aPoint, boolean snapEdges)
 {
     // Get the editor, document and document frame
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMDocument doc = editor.getDoc(); if(doc==null) return aPoint;
     RMShape spage = editor.getSelPage();
     Rect docFrame = editor.convertFromShape(spage.getBoundsInside(), spage).getBounds();

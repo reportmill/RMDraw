@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.shape.*;
 import java.util.*;
 import snap.gfx.*;
@@ -254,7 +254,7 @@ public void processKeyEvent(T aCTab, ViewEvent anEvent)
     aCTab.repaint();
     
     // Get key code
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     int keyCode = anEvent.getKeyCode();
     
     // If backspace or delete key is pressed, remove selected divider
@@ -374,7 +374,7 @@ public void paintHandles(T aShape, Painter aPntr, boolean isSuperSelected)
     if(!isSuperSelected) { super.paintHandles(aShape, aPntr, isSuperSelected); return; }
     
     // Get the table and declare rect to highlight
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMCrossTab table = getTable();
     Shape drawShape = null;
     
@@ -421,7 +421,7 @@ public void paintHandles(T aShape, Painter aPntr, boolean isSuperSelected)
 public RMCrossTab getTable()
 {
     // Get editor and selected shape
-    RMEditor editor = getEditor(); if(editor==null) return null;
+    Editor editor = getEditor(); if(editor==null) return null;
     RMShape shape = editor.getSelectedOrSuperSelectedShape();
     
     // Iterate up chain until table is found and return
@@ -533,7 +533,7 @@ private int getBaseHandle(int aHandle)
 /**
  * Adds a crosstab to the given editor with the given list key.
  */
-public static void addCrossTab(RMEditor anEditor, String aKeyPath)
+public static void addCrossTab(Editor anEditor, String aKeyPath)
 {
     // Create CrossTab frame and set DatasetKey
     RMCrossTabFrame ctab = new RMCrossTabFrame();
@@ -553,7 +553,7 @@ public static void addCrossTab(RMEditor anEditor, String aKeyPath)
 /**
  * Adds a crosstab to the given editor with the given list key.
  */
-public static void addCrossTab(RMEditor anEditor)
+public static void addCrossTab(Editor anEditor)
 {
     // Create and configure default table
     RMCrossTab ctab = new RMCrossTab();

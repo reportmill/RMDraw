@@ -9,7 +9,7 @@ import snap.view.*;
 /**
  * UI editing for undos.
  */
-public class UndoInspector extends RMEditorPane.SupportPane {
+public class UndoInspector extends EditorPane.SupportPane {
     
     // A list of sources we've seen, so we can generate small ids
     List         _sources = new ArrayList();
@@ -17,7 +17,7 @@ public class UndoInspector extends RMEditorPane.SupportPane {
 /**
  * Creates a new UndoInspector.
  */
-public UndoInspector(RMEditorPane anEP)  { super(anEP); }
+public UndoInspector(EditorPane anEP)  { super(anEP); }
 
 /**
  * Updates the UI controls from the current undoer.

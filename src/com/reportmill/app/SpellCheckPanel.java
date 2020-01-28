@@ -12,7 +12,7 @@ import snap.view.*;
 public class SpellCheckPanel extends ViewOwner {
     
     // The editor
-    RMEditor                _editor;
+    Editor _editor;
     
     // The current text being checked
     RMTextShape             _workingText;
@@ -31,7 +31,7 @@ public static SpellCheckPanel getShared()  { return _shared!=null? _shared : (_s
 /**
  * Runs the spell check panel.
  */
-public void show(RMEditor anEditor)
+public void show(Editor anEditor)
 {
     // Make window visible and find next misspelling
     _editor = anEditor;
@@ -43,7 +43,7 @@ public void show(RMEditor anEditor)
 /**
  * Returns the currently active editor.
  */
-public RMEditor getEditor()  { return _editor; }
+public Editor getEditor()  { return _editor; }
 
 /**
  * Initialize UI.
@@ -96,7 +96,7 @@ public void respondUI(ViewEvent anEvent)
 public void findNextMisspelling()
 {
     // Get main editor and text editor and text
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTextEditor textEditor = editor.getTextEditor();
     RMTextShape text = getText(); if(text==null) return;
     
@@ -123,7 +123,7 @@ public void findNextMisspelling()
 public void doCorrection()
 {
     // Get main editor and text editor and text
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTextEditor textEditor = editor.getTextEditor();
     
     // Get suggested word from list
@@ -145,7 +145,7 @@ public void doCorrection()
 private RMTextShape getText()
 {
     // Get main editor and selected shape
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMShape shape = editor.getSelectedOrSuperSelectedShape();
 
     // If shape has changed do the right thing

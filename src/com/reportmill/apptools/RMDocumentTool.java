@@ -2,8 +2,8 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
-import com.reportmill.app.RMEditorProxGuide;
+import com.reportmill.app.Editor;
+import com.reportmill.app.EditorProxGuide;
 import com.reportmill.shape.*;
 import snap.gfx.*;
 import snap.util.*;
@@ -87,7 +87,7 @@ public void resetUI()
     getView("PageSizeView", PageSizeView.class).repaint();
     
     // Update ProximityGuideCheckBox, PaginateCheckBox, CompressCheckBox
-    setViewValue("ProximityGuideCheckBox", RMEditorProxGuide.isEnabled());
+    setViewValue("ProximityGuideCheckBox", EditorProxGuide.isEnabled());
     setViewValue("PaginateCheckBox", doc.isPaginate());
     setViewValue("CompressCheckBox", doc.getCompress());
 }
@@ -166,7 +166,7 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("NullStringText")) doc.setNullString(anEvent.getStringValue());
     
     // Handle ProximityGuideCheckBox, PaginateCheckBox, CompressCheckBox
-    if(anEvent.equals("ProximityGuideCheckBox")) RMEditorProxGuide.setEnabled(anEvent.getBoolValue());
+    if(anEvent.equals("ProximityGuideCheckBox")) EditorProxGuide.setEnabled(anEvent.getBoolValue());
     if(anEvent.equals("PaginateCheckBox")) doc.setPaginate(anEvent.getBooleanValue());
     if(anEvent.equals("CompressCheckBox")) doc.setCompress(anEvent.getBoolValue());
     
@@ -207,7 +207,7 @@ static {
 public static class PageSizeView extends View {
     public void paintFront(Painter aPntr) {
         RMDocumentTool docTool = getOwner(RMDocumentTool.class);
-        RMEditor editor = docTool.getEditor();
+        Editor editor = docTool.getEditor();
         Size pageSize = editor.getDoc().getPageSize();
         double maxHeight = Math.max(17*72, pageSize.height);
         double scale = (getHeight()-10)/maxHeight;

@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditorClipboard;
+import com.reportmill.app.EditorClipboard;
 import com.reportmill.shape.*;
 import snap.view.*;
 
@@ -28,7 +28,7 @@ public void dropString(T aShape, ViewEvent anEvent)
 {
     Clipboard cb = anEvent.getClipboard(); //Transferable transferable = anEvent.getTransferable();
     getEditor().undoerSetUndoTitle("Drag and Drop Key");
-    RMEditorClipboard.paste(getEditor(), cb, aShape, anEvent.getPoint());    
+    EditorClipboard.paste(getEditor(), cb, aShape, anEvent.getPoint());
 }
 
 }

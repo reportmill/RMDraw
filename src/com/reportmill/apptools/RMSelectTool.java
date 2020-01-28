@@ -2,8 +2,8 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
-import com.reportmill.app.RMEditorProxGuide;
+import com.reportmill.app.Editor;
+import com.reportmill.app.EditorProxGuide;
 import com.reportmill.shape.*;
 import java.util.*;
 import snap.gfx.*;
@@ -50,7 +50,7 @@ public class RMSelectTool extends RMTool {
 public void mousePressed(ViewEvent anEvent)
 {
     // Get current editor
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
 
     // Call setNeedsRepaint on superSelectedShapes to wipe out handles
     for(RMShape shp : editor.getSuperSelectedShapes()) shp.repaint();
@@ -162,7 +162,7 @@ public void mousePressed(ViewEvent anEvent)
 public void mouseDragged(ViewEvent anEvent)
 {
     // Get current editor
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     
     // Holding ctrl down at any point during a drag prevents snapping 
     boolean shouldSnap = !anEvent.isControlDown();
@@ -266,7 +266,7 @@ public void mouseDragged(ViewEvent anEvent)
     }
     
     // Create guidelines
-    RMEditorProxGuide.createGuidelines(editor);
+    EditorProxGuide.createGuidelines(editor);
 }
 
 /**
@@ -274,7 +274,7 @@ public void mouseDragged(ViewEvent anEvent)
  */
 public void mouseReleased(ViewEvent anEvent)
 {
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     
     // Handle DragModes
     switch(_dragMode) {
@@ -311,7 +311,7 @@ public void mouseReleased(ViewEvent anEvent)
     }
     
     // Clear proximity guidelines
-    RMEditorProxGuide.clearGuidelines(editor);
+    EditorProxGuide.clearGuidelines(editor);
 
     // Repaint editor
     editor.repaint();
@@ -326,7 +326,7 @@ public void mouseReleased(ViewEvent anEvent)
 public void mouseMoved(ViewEvent anEvent)
 {
     // Iterate over super selected shapes and forward mouseMoved for each shape
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     for(int i=1, iMax=editor.getSuperSelectedShapeCount(); i<iMax && !anEvent.isConsumed(); i++) {
         RMShape shape = editor.getSuperSelectedShape(i);
         getTool(shape).mouseMoved(shape, anEvent);
@@ -352,7 +352,7 @@ private void moveShapes(Point fromPoint, Point toPoint)
 private List <RMShape> getHitShapes()
 {
     // Get selection path from rect around currentPoint and _downPoint
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMParentShape superShape = editor.getSuperSelectedParentShape(); if(superShape==null)return Collections.emptyList();
     Point curPoint = getEditorEvents().getEventPointInDoc();
     Rect selRect = Rect.get(curPoint, _downPoint);
@@ -402,7 +402,7 @@ public void paintTool(Painter aPntr)
     super.paintTool(aPntr);
     
     // If not mouseDown (select/move/resize), just return
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(!editor.isMouseDown())
         return;
         

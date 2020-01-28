@@ -24,10 +24,10 @@ import snap.web.WebURL;
  *   myFrame.setContentPane(viewer);
  * </pre></blockquote>
  */
-public class RMViewer extends ParentView {
+public class Viewer extends ParentView {
 
     // The shape viewer uses to manage real root of shapes
-    RMViewerShape            _vshape = new RMViewerShape(this);
+    ViewerShape _vshape = new ViewerShape(this);
     
     // The Zoom mode
     ZoomMode                 _zoomMode = ZoomMode.ZoomAsNeeded;
@@ -39,7 +39,7 @@ public class RMViewer extends ParentView {
     double                   _lastZoomFactor = 1;
 
     // The helper class that handles events for viewer
-    RMViewerEvents           _events = createEvents();
+    ViewerEvents _events = createEvents();
 
     // Zoom modes
     public enum ZoomMode { ZoomToFit, ZoomAsNeeded, ZoomToFactor };
@@ -50,7 +50,7 @@ public class RMViewer extends ParentView {
 /**
  * Creates a new RMViewer with an empty document in it.
  */
-public RMViewer()
+public Viewer()
 {
     enableEvents(MouseEvents); enableEvents(KeyEvents);
     setFocusable(true); setFocusWhenPressed(true);
@@ -60,7 +60,7 @@ public RMViewer()
 /**
  * Returns the viewer shape.
  */
-public RMViewerShape getViewerShape()  { return _vshape; }
+public ViewerShape getViewerShape()  { return _vshape; }
 
 /**
  * Returns the document associated with this viewer.
@@ -346,12 +346,12 @@ public void paintFront(Painter aPntr)
 /**
  * Returns the event helper for the viewer (handles mouse and keyboard input).
  */
-public RMViewerEvents getEvents()  { return _events; }
+public ViewerEvents getEvents()  { return _events; }
 
 /**
  * Creates a default event helper.
  */
-protected RMViewerEvents createEvents()  { return new RMViewerEvents(this); }
+protected ViewerEvents createEvents()  { return new ViewerEvents(this); }
 
 /**
  * Handle mouse events.
@@ -482,7 +482,7 @@ public void print(String aPrinterName, boolean showPanel)
 private class RMVPrintable implements Printer.Printable {
     
     /** Returns a print page count for given printer. */
-    public int getPageCount(Printer aPrinter)  { return RMViewer.this.getPageCount(); }
+    public int getPageCount(Printer aPrinter)  { return Viewer.this.getPageCount(); }
     
     /** Returns the page size for given page index. */
     public Size getPageSize(Printer aPrinter, int anIndex)

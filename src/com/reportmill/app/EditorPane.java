@@ -12,15 +12,15 @@ import snap.web.*;
 import snap.util.*;
 
 /**
- * This class is a container for an RMEditor in an enclosing ScrollView with tool bars for editing.
+ * This class is a container for an Editor in an enclosing ScrollView with tool bars for editing.
  */
-public class RMEditorPane extends RMViewerPane {
+public class EditorPane extends ViewerPane {
 
     // The menu bar owner
-    RMEditorPaneMenuBar    _menuBar;
+    EditorPaneMenuBar _menuBar;
 
     // The original editor, if in preview mode
-    RMEditor               _realEditor;
+    Editor _realEditor;
     
     // The shared editor inspector
     InspectorPanel         _inspPanel = createInspectorPanel();
@@ -34,37 +34,37 @@ public class RMEditorPane extends RMViewerPane {
 /**
  * Creates a new EditorPane.
  */
-public RMEditorPane()  { }
+public EditorPane()  { }
 
 /**
  * Returns the viewer as an editor.
  */
-public RMEditor getEditor()  { return (RMEditor)getViewer(); }
+public Editor getEditor()  { return (Editor)getViewer(); }
 
 /**
- * Overridden to return an RMEditor.
+ * Overridden to return an Editor.
  */
-protected RMViewer createViewer()  { return new RMEditor(); }
+protected Viewer createViewer()  { return new Editor(); }
 
 /**
- * Override to return as RMEditorPaneToolBar.
+ * Override to return as EditorPaneToolBar.
  */
-public RMEditorPaneToolBar getTopToolBar()  { return (RMEditorPaneToolBar)super.getTopToolBar(); }
+public EditorPaneToolBar getTopToolBar()  { return (EditorPaneToolBar)super.getTopToolBar(); }
 
 /**
  * Creates the top tool bar.
  */
-protected ViewOwner createTopToolBar()  { return new RMEditorPaneToolBar(this); }
+protected ViewOwner createTopToolBar()  { return new EditorPaneToolBar(this); }
 
 /**
  * Returns the SwingOwner for the menu bar.
  */
-public RMEditorPaneMenuBar getMenuBar()  { return _menuBar!=null? _menuBar : (_menuBar = createMenuBar()); }
+public EditorPaneMenuBar getMenuBar()  { return _menuBar!=null? _menuBar : (_menuBar = createMenuBar()); }
 
 /**
- * Creates the RMEditorPaneMenuBar for the menu bar.
+ * Creates the EditorPaneMenuBar for the menu bar.
  */
-protected RMEditorPaneMenuBar createMenuBar()  { return new RMEditorPaneMenuBar(this); }
+protected EditorPaneMenuBar createMenuBar()  { return new EditorPaneMenuBar(this); }
 
 /**
  * Returns the datasource associated with the editor's document.
@@ -144,7 +144,7 @@ public void setEditing(boolean aFlag)
         RMDocument report = getDoc().generateReport(getEditor().getDataSourceDataset());
         
         // Create new editor, set editing to false and set report document
-        RMEditor editor = new RMEditor();
+        Editor editor = new Editor();
         editor.setEditing(false);
         editor.setDoc(report);
         
@@ -341,12 +341,12 @@ public String getWindowTitle()
 /**
  * Creates a new default editor pane.
  */
-public RMEditorPane newDocument()  { return open(new RMDocument(612, 792)); }
+public EditorPane newDocument()  { return open(new RMDocument(612, 792)); }
 
 /**
  * Creates a new editor window from an open panel.
  */
-public RMEditorPane open(View aView)
+public EditorPane open(View aView)
 {
     // Get path from open panel for supported file extensions
     String path = FilePanel.showOpenPanel(aView, getFileDescription(), getFileExtensions());
@@ -356,7 +356,7 @@ public RMEditorPane open(View aView)
 /**
  * Creates a new editor window by opening the document from the given source.
  */
-public RMEditorPane open(Object aSource)
+public EditorPane open(Object aSource)
 {
     // If document source is null, just return null
     if(aSource==null) return null;
@@ -366,8 +366,8 @@ public RMEditorPane open(Object aSource)
     
     // If source is already opened, return editor pane
     if(!SnapUtils.equals(url, getSourceURL())) {
-        RMEditorPane epanes[] = WindowView.getOpenWindowOwners(RMEditorPane.class);
-        for(RMEditorPane epane : epanes)
+        EditorPane epanes[] = WindowView.getOpenWindowOwners(EditorPane.class);
+        for(EditorPane epane : epanes)
             if(SnapUtils.equals(url, epane.getSourceURL()))
                 return epane;
     }
@@ -519,7 +519,7 @@ protected void closeQuick()
     getWindow().hide();
 
     // If another open editor is available focus on it, otherwise run WelcomePanel
-    RMEditorPane epane = WindowView.getOpenWindowOwner(RMEditorPane.class);
+    EditorPane epane = WindowView.getOpenWindowOwner(EditorPane.class);
     if(epane!=null)
         epane.getEditor().requestFocus();
     else if(Welcome.getShared().isEnabled())
@@ -574,8 +574,8 @@ private void editorDidPropChange(PropChange aPC)
 {
     String pname = aPC.getPropName();
     switch(pname) {
-        case RMEditor.SelShapes_Prop: resetLater(); break;
-        case RMEditor.SuperSelShape_Prop: resetLater(); break;
+        case Editor.SelShapes_Prop: resetLater(); break;
+        case Editor.SuperSelShape_Prop: resetLater(); break;
     }
 }
 
@@ -584,7 +584,7 @@ private void editorDidPropChange(PropChange aPC)
  */
 private static Image getFrameIcon()
 {
-    return _frameImg!=null? _frameImg : (_frameImg=Image.get(RMEditorPane.class, "ReportMill16x16.png"));
+    return _frameImg!=null? _frameImg : (_frameImg=Image.get(EditorPane.class, "ReportMill16x16.png"));
 }
 
 /**
@@ -593,19 +593,19 @@ private static Image getFrameIcon()
 public static class SupportPane extends ViewOwner {
     
     // The editor pane
-    RMEditorPane         _editorPane;
+    EditorPane _editorPane;
     
     /** Creates a new SupportPane with given editor pane. */
-    public SupportPane(RMEditorPane anEP)  { _editorPane = anEP; }
+    public SupportPane(EditorPane anEP)  { _editorPane = anEP; }
     
     /** Returns the EditorPane. */
-    public RMEditorPane getEditorPane()  { return _editorPane; }
+    public EditorPane getEditorPane()  { return _editorPane; }
     
     /** Sets the EditorPane. */
-    public void setEditorPane(RMEditorPane anEP)  { _editorPane = anEP; }
+    public void setEditorPane(EditorPane anEP)  { _editorPane = anEP; }
     
     /** Returns the editor. */
-    public RMEditor getEditor()  { return _editorPane.getEditor(); }
+    public Editor getEditor()  { return _editorPane.getEditor(); }
     
     /** Returns the title. */
     public String getWindowTitle()  { return "Inspector"; }

@@ -12,7 +12,7 @@ import snap.view.*;
 /**
  * This class provides UI editing for the currently selected shapes location and size.
  */
-public class ShapePlacement extends RMEditorPane.SupportPane {
+public class ShapePlacement extends EditorPane.SupportPane {
     
     // The Autosizing Panel
     AutosizingPanel     _autosizingPanel;
@@ -23,7 +23,7 @@ public class ShapePlacement extends RMEditorPane.SupportPane {
 /**
  * Creates a new ShapePlacement pane.
  */
-public ShapePlacement(RMEditorPane anEP)  { super(anEP); }
+public ShapePlacement(EditorPane anEP)  { super(anEP); }
 
 /**
  * Initialize UI.
@@ -102,7 +102,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected editor, document and shapes
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMShape shape = editor.getSelectedOrSuperSelectedShape();
     List <? extends RMShape> shapes = editor.getSelectedOrSuperSelectedShapes();
 
@@ -222,7 +222,7 @@ public void respondUI(ViewEvent anEvent)
  */
 public double getUnitsFromPoints(double aValue)
 {
-    RMEditor editor = getEditor(); RMDocument doc = editor.getDoc();
+    Editor editor = getEditor(); RMDocument doc = editor.getDoc();
     return doc!=null? doc.getUnitsFromPoints(aValue) : aValue;
 }
 
@@ -236,7 +236,7 @@ public String getUnitsFromPointsStr(double aValue)  { return _fmt.format(getUnit
  */
 public double getPointsFromUnits(double aValue)
 {
-    RMEditor editor = getEditor(); RMDocument doc = editor.getDoc();
+    Editor editor = getEditor(); RMDocument doc = editor.getDoc();
     return doc!=null? doc.getPointsFromUnits(aValue) : aValue;
 }
 

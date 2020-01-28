@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.base.Entity;
 import com.reportmill.shape.*;
 import snap.gfx.Point;
@@ -55,7 +55,7 @@ public void respondUI(ViewEvent anEvent)
 public void mousePressed(T aCTabFrame, ViewEvent anEvent)
 {
     // Get event point in TableFrame coords
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     Point point = editor.convertToShape(anEvent.getX(), anEvent.getY(), aCTabFrame);
     
     // Handle mouse press in crosstab when not superselected

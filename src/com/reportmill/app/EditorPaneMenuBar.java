@@ -9,14 +9,14 @@ import snap.view.*;
 import snap.viewx.RecentFiles;
 
 /**
- * Menu bar for RMEditor pane.
+ * Menu bar for Editor pane.
  */
-public class RMEditorPaneMenuBar extends RMEditorPane.SupportPane {
+public class EditorPaneMenuBar extends EditorPane.SupportPane {
 
 /**
  * Creates a new editor pane menu bar.
  */
-public RMEditorPaneMenuBar(RMEditorPane anEP)  { super(anEP); }
+public EditorPaneMenuBar(EditorPane anEP)  { super(anEP); }
 
 /**
  * Override to return node as MenuBar.
@@ -61,18 +61,18 @@ protected void resetUI()
 protected void respondUI(ViewEvent anEvent)
 {
     // Get editor pane
-    RMEditorPane epane = getEditorPane();
-    RMEditor editor = getEditor();
+    EditorPane epane = getEditorPane();
+    Editor editor = getEditor();
     
     // Handle NewMenuItem, NewButton: Get new editor pane and make visible
     if(anEvent.equals("NewMenuItem") || anEvent.equals("NewButton")) {
-        RMEditorPane editorPane = ClassUtils.newInstance(epane).newDocument();
+        EditorPane editorPane = ClassUtils.newInstance(epane).newDocument();
         editorPane.setWindowVisible(true);
     }
     
     // Handle OpenMenuItem, OpenButton: Get new editor pane from open panel and make visible (if created)
     if(anEvent.equals("OpenMenuItem") || anEvent.equals("OpenButton")) {
-        RMEditorPane editorPane = ClassUtils.newInstance(epane).open(epane.getUI());
+        EditorPane editorPane = ClassUtils.newInstance(epane).open(epane.getUI());
         if(editorPane!=null)
             editorPane.setWindowVisible(true);
     }
@@ -89,7 +89,7 @@ protected void respondUI(ViewEvent anEvent)
     // Handle SaveMenuItem, SaveButton, SaveAsMenuItem, SaveAsPDFMenuItem, RevertMenuItem
     if(anEvent.equals("SaveMenuItem") || anEvent.equals("SaveButton")) epane.save();
     if(anEvent.equals("SaveAsMenuItem")) epane.saveAs();
-    if(anEvent.equals("SaveAsPDFMenuItem")) RMEditorPaneUtils.saveAsPDF(epane);
+    if(anEvent.equals("SaveAsPDFMenuItem")) EditorPaneUtils.saveAsPDF(epane);
     if(anEvent.equals("RevertMenuItem")) epane.revert();
     
     // Handle PrintMenuItem, QuitMenuItem
@@ -97,21 +97,21 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("QuitMenuItem")) epane.quit();
         
     // Handle File -> Preview Reports menu items
-    if(anEvent.equals("PreviewPDFMenuItem") || anEvent.equals("PreviewPDFButton")) RMEditorPaneUtils.previewPDF(epane);
+    if(anEvent.equals("PreviewPDFMenuItem") || anEvent.equals("PreviewPDFButton")) EditorPaneUtils.previewPDF(epane);
     if(anEvent.equals("PreviewHTMLMenuItem") || anEvent.equals("PreviewHTMLButton"))
-        RMEditorPaneUtils.previewHTML(epane);
-    if(anEvent.equals("PreviewCSVMenuItem")) RMEditorPaneUtils.previewCSV(epane);
-    if(anEvent.equals("PreviewExcelMenuItem")) RMEditorPaneUtils.previewXLS(epane);
-    if(anEvent.equals("PreviewRTFMenuItem")) RMEditorPaneUtils.previewRTF(epane);
-    if(anEvent.equals("PreviewJPEGMenuItem")) RMEditorPaneUtils.previewJPG(epane);
-    if(anEvent.equals("PreviewPNGMenuItem")) RMEditorPaneUtils.previewPNG(epane);
+        EditorPaneUtils.previewHTML(epane);
+    if(anEvent.equals("PreviewCSVMenuItem")) EditorPaneUtils.previewCSV(epane);
+    if(anEvent.equals("PreviewExcelMenuItem")) EditorPaneUtils.previewXLS(epane);
+    if(anEvent.equals("PreviewRTFMenuItem")) EditorPaneUtils.previewRTF(epane);
+    if(anEvent.equals("PreviewJPEGMenuItem")) EditorPaneUtils.previewJPG(epane);
+    if(anEvent.equals("PreviewPNGMenuItem")) EditorPaneUtils.previewPNG(epane);
         
     // Handle File -> Samples menu items
-    if(anEvent.equals("MoviesMenuItem")) RMEditorPaneUtils.openSample("Movies");
-    if(anEvent.equals("MoviesGraphMenuItem")) RMEditorPaneUtils.openSample("MoviesGraph");
-    if(anEvent.equals("MoviesLabelsMenuItem")) RMEditorPaneUtils.openSample("MoviesLabels");
-    if(anEvent.equals("HollywoodMenuItem"))RMEditorPaneUtils.openSample("Jar:/com/reportmill/examples/HollywoodDB.xml");
-    if(anEvent.equals("SalesMenuItem")) RMEditorPaneUtils.openSample("Jar:/com/reportmill/examples/Sales.xml");
+    if(anEvent.equals("MoviesMenuItem")) EditorPaneUtils.openSample("Movies");
+    if(anEvent.equals("MoviesGraphMenuItem")) EditorPaneUtils.openSample("MoviesGraph");
+    if(anEvent.equals("MoviesLabelsMenuItem")) EditorPaneUtils.openSample("MoviesLabels");
+    if(anEvent.equals("HollywoodMenuItem")) EditorPaneUtils.openSample("Jar:/com/reportmill/examples/HollywoodDB.xml");
+    if(anEvent.equals("SalesMenuItem")) EditorPaneUtils.openSample("Jar:/com/reportmill/examples/Sales.xml");
         
     // Handle Edit menu items
     if(anEvent.equals("UndoMenuItem") || anEvent.equals("UndoButton")) editor.undo();
@@ -138,22 +138,22 @@ protected void respondUI(ViewEvent anEvent)
     // Handle Format menu items (use name because anObj may come from popup menu)
     if(anEvent.equals("FontPanelMenuItem")) epane.getAttributesPanel().setVisibleName(AttributesPanel.FONT);
     if(anEvent.equals("BoldMenuItem") || anEvent.equals("BoldButton"))
-        RMEditorUtils.setFontBold(editor, !RMEditorUtils.getFont(editor).isBold());
+        EditorUtils.setFontBold(editor, !EditorUtils.getFont(editor).isBold());
     if(anEvent.equals("ItalicMenuItem") || anEvent.equals("ItalicButton"))
-        RMEditorUtils.setFontItalic(editor, !RMEditorUtils.getFont(editor).isItalic());
+        EditorUtils.setFontItalic(editor, !EditorUtils.getFont(editor).isItalic());
     if(anEvent.equals("UnderlineMenuItem") || anEvent.equals("UnderlineButton"))
-        RMEditorUtils.setUnderlined(editor);
-    if(anEvent.equals("OutlineMenuItem")) RMEditorUtils.setTextBorder(editor);
+        EditorUtils.setUnderlined(editor);
+    if(anEvent.equals("OutlineMenuItem")) EditorUtils.setTextBorder(editor);
     if(anEvent.equals("AlignLeftMenuItem") || anEvent.equals("AlignLeftButton"))
-        RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
+        EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
     if(anEvent.equals("AlignCenterMenuItem") || anEvent.equals("AlignCenterButton"))
-        RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
+        EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
     if(anEvent.equals("AlignRightMenuItem") || anEvent.equals("AlignRightButton"))
-        RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
+        EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
     if(anEvent.equals("AlignFullMenuItem") || anEvent.equals("AlignFullButton"))
-        RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
-    if(anEvent.equals("SuperscriptMenuItem")) RMEditorUtils.setSuperscript(editor);
-    if(anEvent.equals("SubscriptMenuItem")) RMEditorUtils.setSubscript(editor);
+        EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
+    if(anEvent.equals("SuperscriptMenuItem")) EditorUtils.setSuperscript(editor);
+    if(anEvent.equals("SubscriptMenuItem")) EditorUtils.setSubscript(editor);
         
     // Handle Pages menu items
     if(anEvent.equals("AddPageMenuItem")) editor.addPage();
@@ -168,28 +168,28 @@ protected void respondUI(ViewEvent anEvent)
         
     // Handle Shapes menu items (use name because anObj may come from popup menu)
     String name = anEvent.getName();
-    if(name.equals("GroupMenuItem")) RMEditorUtils.groupShapes(editor, null, null);
-    if(name.equals("UngroupMenuItem")) RMEditorUtils.ungroupShapes(editor);
-    if(name.equals("BringToFrontMenuItem")) RMEditorUtils.bringToFront(editor);
-    if(name.equals("SendToBackMenuItem")) RMEditorUtils.sendToBack(editor);
-    if(name.equals("MakeRowTopMenuItem")) RMEditorUtils.makeRowTop(editor);
-    if(name.equals("MakeRowCenterMenuItem")) RMEditorUtils.makeRowCenter(editor);
-    if(name.equals("MakeRowBottomMenuItem")) RMEditorUtils.makeRowBottom(editor);
-    if(name.equals("MakeColumnLeftMenuItem")) RMEditorUtils.makeColumnLeft(editor);
-    if(name.equals("MakeColumnCenterMenuItem")) RMEditorUtils.makeColumnCenter(editor);
-    if(name.equals("MakeColumnRightMenuItem")) RMEditorUtils.makeColumnRight(editor);
-    if(name.equals("MakeSameSizeMenuItem")) RMEditorUtils.makeSameSize(editor);
-    if(name.equals("MakeSameWidthMenuItem")) RMEditorUtils.makeSameWidth(editor);
-    if(name.equals("MakeSameHeightMenuItem")) RMEditorUtils.makeSameHeight(editor);
-    if(name.equals("SizeToFitMenuItem")) RMEditorUtils.setSizeToFit(editor);
-    if(name.equals("EquallySpaceRowMenuItem")) RMEditorUtils.equallySpaceRow(editor);
-    if(name.equals("EquallySpaceColumnMenuItem")) RMEditorUtils.equallySpaceColumn(editor);
-    if(name.equals("GroupInSwitchShapeMenuItem")) RMEditorUtils.groupInSwitchShape(editor);
-    if(name.equals("GroupInScene3DMenuItem")) RMEditorUtils.groupInScene3D(editor);
-    if(name.equals("MoveToNewLayerMenuItem")) RMEditorUtils.moveToNewLayer(editor);
-    if(name.equals("CombinePathsMenuItem")) RMEditorUtils.combinePaths(editor);
-    if(name.equals("SubtractPathsMenuItem")) RMEditorUtils.subtractPaths(editor);
-    if(name.equals("ConvertToImageMenuItem")) RMEditorUtils.convertToImage(editor);
+    if(name.equals("GroupMenuItem")) EditorUtils.groupShapes(editor, null, null);
+    if(name.equals("UngroupMenuItem")) EditorUtils.ungroupShapes(editor);
+    if(name.equals("BringToFrontMenuItem")) EditorUtils.bringToFront(editor);
+    if(name.equals("SendToBackMenuItem")) EditorUtils.sendToBack(editor);
+    if(name.equals("MakeRowTopMenuItem")) EditorUtils.makeRowTop(editor);
+    if(name.equals("MakeRowCenterMenuItem")) EditorUtils.makeRowCenter(editor);
+    if(name.equals("MakeRowBottomMenuItem")) EditorUtils.makeRowBottom(editor);
+    if(name.equals("MakeColumnLeftMenuItem")) EditorUtils.makeColumnLeft(editor);
+    if(name.equals("MakeColumnCenterMenuItem")) EditorUtils.makeColumnCenter(editor);
+    if(name.equals("MakeColumnRightMenuItem")) EditorUtils.makeColumnRight(editor);
+    if(name.equals("MakeSameSizeMenuItem")) EditorUtils.makeSameSize(editor);
+    if(name.equals("MakeSameWidthMenuItem")) EditorUtils.makeSameWidth(editor);
+    if(name.equals("MakeSameHeightMenuItem")) EditorUtils.makeSameHeight(editor);
+    if(name.equals("SizeToFitMenuItem")) EditorUtils.setSizeToFit(editor);
+    if(name.equals("EquallySpaceRowMenuItem")) EditorUtils.equallySpaceRow(editor);
+    if(name.equals("EquallySpaceColumnMenuItem")) EditorUtils.equallySpaceColumn(editor);
+    if(name.equals("GroupInSwitchShapeMenuItem")) EditorUtils.groupInSwitchShape(editor);
+    if(name.equals("GroupInScene3DMenuItem")) EditorUtils.groupInScene3D(editor);
+    if(name.equals("MoveToNewLayerMenuItem")) EditorUtils.moveToNewLayer(editor);
+    if(name.equals("CombinePathsMenuItem")) EditorUtils.combinePaths(editor);
+    if(name.equals("SubtractPathsMenuItem")) EditorUtils.subtractPaths(editor);
+    if(name.equals("ConvertToImageMenuItem")) EditorUtils.convertToImage(editor);
     
     // Handle Tools menu items
     if(anEvent.equals("InspectorMenuItem")) epane.getInspectorPanel().setVisible(-1);
@@ -210,7 +210,7 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle AddColumnMenuItem, SplitColumnMenuItem (from right mouse pop-up)
     if(anEvent.equals("AddColumnMenuItem")) RMTableRowTool.addColumn(editor);
-    if(anEvent.equals("SplitColumnMenuItem")) RMEditorUtils.splitHorizontal(editor);
+    if(anEvent.equals("SplitColumnMenuItem")) EditorUtils.splitHorizontal(editor);
     
     // Handle Theme menus: StandardThemeMenuItem, LightThemeMenuItem, DarkThemeMenuItem, BlackAndWhiteThemeMenuItem
     if(anEvent.equals("StandardThemeMenuItem")) ViewTheme.setThemeForName("Standard");

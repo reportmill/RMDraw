@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.base.RMGrouper;
 import com.reportmill.base.RMGrouping;
 import com.reportmill.shape.*;
@@ -293,7 +293,7 @@ public void addGroupingKey(String aKey)
 /**
  * Adds a new table to the given editor with the given dataset key.
  */
-public static void addTable(RMEditor anEditor, String aKeyPath)
+public static void addTable(Editor anEditor, String aKeyPath)
 {
     // Create new default table for key path
     RMTable table = new RMTable(aKeyPath==null? "Objects" : aKeyPath);
@@ -317,7 +317,7 @@ public static void addTable(RMEditor anEditor, String aKeyPath)
 public void mouseMoved(T aTable, ViewEvent anEvent)
 {
     // Get event point in table coords and resize bar for point
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     Point point = editor.convertToShape(anEvent.getX(), anEvent.getY(), aTable);
     int resizeBarIndex = aTable.getResizeBarAtPoint(point);
 
@@ -346,7 +346,7 @@ public void mousePressed(T aTable, ViewEvent anEvent)
     _resizeBarIndex = -1;
     
     // Get event point in table coords
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     Point point = editor.convertToShape(anEvent.getX(), anEvent.getY(), aTable);
     
     // If table isn't super selected, forward to TableRow and return
@@ -455,7 +455,7 @@ public void mouseReleased(T aTable, ViewEvent anEvent)
  */
 public void runMenuForShape(RMShape aShape, double x, double y)
 {
-    RMEditor editor = getEditor(); // Get editor
+    Editor editor = getEditor(); // Get editor
     RMTableRow tableRow = (RMTableRow)editor.getSuperSelectedShape(); // Get table row
     RMTableRowTool tableRowTool = (RMTableRowTool)getTool(tableRow); // Get table row tool
     Menu pmenu = tableRowTool.getPopupMenu(tableRow); // Fill menu

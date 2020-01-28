@@ -12,7 +12,7 @@ import snap.view.*;
 /**
  * This class provides UI for editing the currently selected shapes stroke, fill, effect, transparency.
  */
-public class ShapeFills extends RMEditorPane.SupportPane {
+public class ShapeFills extends EditorPane.SupportPane {
     
     // The RMFillTool
     RMFillTool      _fillTool = new RMFillTool();
@@ -23,7 +23,7 @@ public class ShapeFills extends RMEditorPane.SupportPane {
 /**
  * Creates a new ShapeFills pane.
  */
-public ShapeFills(RMEditorPane anEP)
+public ShapeFills(EditorPane anEP)
 {
     super(anEP);
     _fillTool.setEditorPane(anEP);
@@ -107,7 +107,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get the current editor and currently selected shapes list (just return if null)
-    RMEditor editor = getEditor(); if(editor==null) return;
+    Editor editor = getEditor(); if(editor==null) return;
     RMShape shape = editor.getSelectedOrSuperSelectedShape(); if(shape==null) return;
     List <RMShape> shapes = editor.getSelectedOrSuperSelectedShapes();
     

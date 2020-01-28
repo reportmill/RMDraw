@@ -14,7 +14,7 @@ import snap.view.ViewUtils;
 /**
  * Handles useful methods to help editor.
  */
-public class RMEditorUtils {
+public class EditorUtils {
 
     // The last color set by or returned to the color panel
     static Color    _lastColor = Color.BLACK;
@@ -24,7 +24,7 @@ public class RMEditorUtils {
  * If given shapes list is null, use editor selected shapes.
  * If given group shape is null, create new generic group shape.
  */
-public static void groupShapes(RMEditor anEditor, List <RMShape> theShapes, RMParentShape aGroupShape)
+public static void groupShapes(Editor anEditor, List <RMShape> theShapes, RMParentShape aGroupShape)
 {
     // If shapes not provided, use editor selected shapes
     if(theShapes==null)
@@ -87,7 +87,7 @@ private static void groupShape(RMShape child, RMParentShape gshape)
 /**
  * Ungroups any currently selected group shapes.
  */
-public static void ungroupShapes(RMEditor anEditor)
+public static void ungroupShapes(Editor anEditor)
 {
     // Get currently super selected shape and create list to hold ungrouped shapes
     List <RMShape> ungroupedShapes = new Vector();
@@ -148,7 +148,7 @@ private static void ungroupShape(RMShape child)
 /**
  * Orders all currently selected shapes to the front.
  */
-public static void bringToFront(RMEditor anEditor)
+public static void bringToFront(Editor anEditor)
 {
     RMParentShape parent = anEditor.getSuperSelectedParentShape();
     if(parent==null || anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -159,7 +159,7 @@ public static void bringToFront(RMEditor anEditor)
 /**
  * Orders all currently selected shapes to the back.
  */
-public static void sendToBack(RMEditor anEditor)
+public static void sendToBack(Editor anEditor)
 {
     RMParentShape parent = anEditor.getSuperSelectedParentShape();
     if(parent==null || anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -170,7 +170,7 @@ public static void sendToBack(RMEditor anEditor)
 /**
  * Arranges currently selected shapes in a row relative to their top.
  */
-public static void makeRowTop(RMEditor anEditor)
+public static void makeRowTop(Editor anEditor)
 {
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Make Row Top");
@@ -182,7 +182,7 @@ public static void makeRowTop(RMEditor anEditor)
 /**
  * Arranges currently selected shapes in a row relative to their center.
  */
-public static void makeRowCenter(RMEditor anEditor)
+public static void makeRowCenter(Editor anEditor)
 {
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Make Row Center");
@@ -194,7 +194,7 @@ public static void makeRowCenter(RMEditor anEditor)
 /**
  * Arranges currently selected shapes in a row relative to their bottom.
  */
-public static void makeRowBottom(RMEditor anEditor)
+public static void makeRowBottom(Editor anEditor)
 {
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Make Row Bottom");
@@ -206,7 +206,7 @@ public static void makeRowBottom(RMEditor anEditor)
 /**
  * Arranges currently selected shapes in a column relative to their left border.
  */
-public static void makeColumnLeft(RMEditor anEditor)
+public static void makeColumnLeft(Editor anEditor)
 {
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Make Column Left");
@@ -218,7 +218,7 @@ public static void makeColumnLeft(RMEditor anEditor)
 /**
  * Arranges currently selected shapes in a column relative to their center.
  */
-public static void makeColumnCenter(RMEditor anEditor)
+public static void makeColumnCenter(Editor anEditor)
 {
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Make Column Center");
@@ -230,7 +230,7 @@ public static void makeColumnCenter(RMEditor anEditor)
 /**
  * Arranges currently selected shapes in a column relative to their right border.
  */
-public static void makeColumnRight(RMEditor anEditor)
+public static void makeColumnRight(Editor anEditor)
 {
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Make Column Right");
@@ -242,7 +242,7 @@ public static void makeColumnRight(RMEditor anEditor)
 /**
  * Makes currently selected shapes all have the same width and height as the first selected shape.
  */
-public static void makeSameSize(RMEditor anEditor)
+public static void makeSameSize(Editor anEditor)
 {
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Make Same Size");
@@ -254,7 +254,7 @@ public static void makeSameSize(RMEditor anEditor)
 /**
  * Makes currently selected shapes all have the same width as the first selected shape.
  */
-public static void makeSameWidth(RMEditor anEditor)
+public static void makeSameWidth(Editor anEditor)
 {
     // If no shapes, beep and return
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -273,7 +273,7 @@ public static void makeSameWidth(RMEditor anEditor)
 /**
  * Makes currently selected shapes all have the same height as the first selected shape.
  */
-public static void makeSameHeight(RMEditor anEditor)
+public static void makeSameHeight(Editor anEditor)
 {
     // If no shapes, beep and return
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -292,7 +292,7 @@ public static void makeSameHeight(RMEditor anEditor)
 /**
  * Makes currently selected shapes size to fit content.
  */
-public static void setSizeToFit(RMEditor anEditor)
+public static void setSizeToFit(Editor anEditor)
 {
     // If no shapes, beep and return
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -308,7 +308,7 @@ public static void setSizeToFit(RMEditor anEditor)
 /**
  * Arranges currently selected shapes such that they have the same horizontal distance between them.
  */
-public static void equallySpaceRow(RMEditor anEditor)
+public static void equallySpaceRow(Editor anEditor)
 {
     // If no selected shapes, beep and return
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -336,7 +336,7 @@ public static void equallySpaceRow(RMEditor anEditor)
 /**
  * Arranges currently selected shapes such that they have the same vertical distance between them.
  */
-public static void equallySpaceColumn(RMEditor anEditor)
+public static void equallySpaceColumn(Editor anEditor)
 {
     // If no selected shapes, beep and return
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -364,7 +364,7 @@ public static void equallySpaceColumn(RMEditor anEditor)
 /**
  * Adds the selected shapes to a Switch Shape.
  */
-public static void groupInSwitchShape(RMEditor anEditor)
+public static void groupInSwitchShape(Editor anEditor)
 {
     // Get selected shapes and parent (just return if no shapes)
     List <RMShape> shapes = anEditor.getSelectedShapes(); if(shapes.size()==0) { anEditor.beep(); return; }
@@ -382,7 +382,7 @@ public static void groupInSwitchShape(RMEditor anEditor)
 /**
  * Adds the selected shapes to a Scene3D Shape.
  */
-public static void groupInScene3D(RMEditor anEditor)
+public static void groupInScene3D(Editor anEditor)
 {
     // If no shapes, beep and return
     if(anEditor.getSelectedShapeCount()==0) { anEditor.beep(); return; }
@@ -420,7 +420,7 @@ public static void groupInScene3D(RMEditor anEditor)
 /**
  * Create new shape by coalescing the outer perimeters of the currently selected shapes.
  */
-public static void combinePaths(RMEditor anEditor)
+public static void combinePaths(Editor anEditor)
 {
     // If shapes less than 2, just beep and return
     if(anEditor.getSelectedShapeCount()<2) { anEditor.beep(); return; }
@@ -442,7 +442,7 @@ public static void combinePaths(RMEditor anEditor)
 /**
  * Create new shape by coalescing the outer perimeters of the currently selected shapes.
  */
-public static void subtractPaths(RMEditor anEditor)
+public static void subtractPaths(Editor anEditor)
 {
     // If shapes less than 2, just beep and return
     if(anEditor.getSelectedShapeCount()<2) { anEditor.beep(); return; }
@@ -464,7 +464,7 @@ public static void subtractPaths(RMEditor anEditor)
 /**
  * Converts currently selected shape to image.
  */
-public static void convertToImage(RMEditor anEditor)
+public static void convertToImage(Editor anEditor)
 {
     // Get currently selected shape (if shape is null, just return)
     RMShape shape = anEditor.getSelectedShape(); if(shape==null) return;
@@ -486,7 +486,7 @@ public static void convertToImage(RMEditor anEditor)
 /**
  * Moves all the currently selected shapes one point to the right.
  */
-public static void moveRightOnePoint(RMEditor anEditor)
+public static void moveRightOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Right One Point");
     RMDocument doc = anEditor.getDoc();
@@ -498,7 +498,7 @@ public static void moveRightOnePoint(RMEditor anEditor)
 /**
  * Moves all the currently selected shapes one point to the left.
  */
-public static void moveLeftOnePoint(RMEditor anEditor)
+public static void moveLeftOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Left One Point");
     RMDocument doc = anEditor.getDoc();
@@ -510,7 +510,7 @@ public static void moveLeftOnePoint(RMEditor anEditor)
 /**
  * Moves all the currently selected shapes one point up.
  */
-public static void moveUpOnePoint(RMEditor anEditor)
+public static void moveUpOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Up One Point");
     RMDocument doc = anEditor.getDoc();
@@ -522,7 +522,7 @@ public static void moveUpOnePoint(RMEditor anEditor)
 /**
  * Moves all the currently selected shapes one point down.
  */
-public static void moveDownOnePoint(RMEditor anEditor)
+public static void moveDownOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Down One Point");
     RMDocument doc = anEditor.getDoc();
@@ -534,7 +534,7 @@ public static void moveDownOnePoint(RMEditor anEditor)
 /**
  * Moves all the currently selected shapes to a new page layer.
  */
-public static void moveToNewLayer(RMEditor anEditor)
+public static void moveToNewLayer(Editor anEditor)
 {
     RMDocument doc = anEditor.getDoc();
     if(anEditor.getSelectedShapeCount()==0 || doc==null) { anEditor.beep(); return; }
@@ -544,7 +544,7 @@ public static void moveToNewLayer(RMEditor anEditor)
 /**
  * Returns the specified type of color (text, stroke or fill) of editor's selected shape.
  */
-public static Color getSelectedColor(RMEditor anEditor)
+public static Color getSelectedColor(Editor anEditor)
 {
     // Get selected or super selected shape
     RMShape shape = anEditor.getSelectedOrSuperSelectedShape();
@@ -565,7 +565,7 @@ public static Color getSelectedColor(RMEditor anEditor)
 /**
  * Sets the specified type of color (text, stroke or fill) of editor's selected shape.
  */
-public static void setSelectedColor(RMEditor anEditor, Color aColor)
+public static void setSelectedColor(Editor anEditor, Color aColor)
 {
     // Get selected or super selected shape
     RMColor color = RMColor.get(aColor);
@@ -608,7 +608,7 @@ public static void setSelectedColor(RMEditor anEditor, Color aColor)
 /**
  * Sets the fill color of the editor's selected shapes.
  */
-public static void setColor(RMEditor anEditor, RMColor aColor)
+public static void setColor(Editor anEditor, RMColor aColor)
 {
     // Iterate over editor selected shapes or super selected shape
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -618,7 +618,7 @@ public static void setColor(RMEditor anEditor, RMColor aColor)
 /**
  * Sets the stroke color of the editor's selected shapes.
  */
-public static void setStrokeColor(RMEditor anEditor, RMColor aColor)
+public static void setStrokeColor(Editor anEditor, RMColor aColor)
 {
     // Iterate over editor selected shapes or super selected shape
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -628,7 +628,7 @@ public static void setStrokeColor(RMEditor anEditor, RMColor aColor)
 /**
  * Sets the text color of the editor's selected shapes.
  */
-public static void setTextColor(RMEditor anEditor, RMColor aColor)
+public static void setTextColor(Editor anEditor, RMColor aColor)
 {
     // If text editing, forward on to text editor
     if(anEditor.getTextEditor()!=null)
@@ -642,7 +642,7 @@ public static void setTextColor(RMEditor anEditor, RMColor aColor)
 /**
  * Returns the font of editor's selected shape.
  */
-public static RMFont getFont(RMEditor anEditor)
+public static RMFont getFont(Editor anEditor)
 {
     RMFont font = null;
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax && font==null; i++) {
@@ -661,7 +661,7 @@ public static RMFont getFont(RMEditor anEditor)
 /**
  * Sets the font family of editor's selected shape(s).
  */
-public static void setFontFamily(RMEditor anEditor, Font aFont)
+public static void setFontFamily(Editor anEditor, Font aFont)
 {
     RMFont font = RMFont.get(aFont);
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
@@ -674,7 +674,7 @@ public static void setFontFamily(RMEditor anEditor, Font aFont)
 /**
  * Sets the font name of editor's selected shape(s).
  */
-public static void setFontName(RMEditor anEditor, Font aFont)
+public static void setFontName(Editor anEditor, Font aFont)
 {
     RMFont font = RMFont.get(aFont);
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
@@ -687,7 +687,7 @@ public static void setFontName(RMEditor anEditor, Font aFont)
 /**
  * Sets the font size of editor's selected shape(s).
  */
-public static void setFontSize(RMEditor anEditor, float aSize, boolean isRelative)
+public static void setFontSize(Editor anEditor, float aSize, boolean isRelative)
 {
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = anEditor.getSelectedOrSuperSelectedShape(i);
@@ -700,7 +700,7 @@ public static void setFontSize(RMEditor anEditor, float aSize, boolean isRelativ
 /**
  * Sets the "boldness" of text in the currently selected shapes.
  */
-public static void setFontBold(RMEditor anEditor, boolean aFlag)
+public static void setFontBold(Editor anEditor, boolean aFlag)
 {
     anEditor.undoerSetUndoTitle("Make Bold");
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
@@ -713,7 +713,7 @@ public static void setFontBold(RMEditor anEditor, boolean aFlag)
 /**
  * Sets the italic state of text in the currently selected shapes.
  */
-public static void setFontItalic(RMEditor anEditor, boolean aFlag)
+public static void setFontItalic(Editor anEditor, boolean aFlag)
 {
     anEditor.undoerSetUndoTitle("Make Italic");
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
@@ -726,12 +726,12 @@ public static void setFontItalic(RMEditor anEditor, boolean aFlag)
 /**
  * Returns whether the currently selected shape is underlined.
  */
-public static boolean isUnderlined(RMEditor anEdtr)  { return anEdtr.getSelectedOrSuperSelectedShape().isUnderlined(); }
+public static boolean isUnderlined(Editor anEdtr)  { return anEdtr.getSelectedOrSuperSelectedShape().isUnderlined(); }
 
 /**
  * Sets the currently selected shapes to be underlined.
  */
-public static void setUnderlined(RMEditor anEditor)
+public static void setUnderlined(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Make Underlined");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -741,7 +741,7 @@ public static void setUnderlined(RMEditor anEditor)
 /**
  * Returns the outline state of the currently selected shape (null if none).
  */
-public static Border getTextBorder(RMEditor anEditor)
+public static Border getTextBorder(Editor anEditor)
 {
     RMShape shp = anEditor.getSelectedOrSuperSelectedShape();
     RMTextShape tshp = shp instanceof RMTextShape? (RMTextShape)shp : null; if(tshp==null) return null;
@@ -751,7 +751,7 @@ public static Border getTextBorder(RMEditor anEditor)
 /**
  * Sets the currently selected shapes to be outlined.
  */
-public static void setTextBorder(RMEditor anEditor)
+public static void setTextBorder(Editor anEditor)
 {
     if(getTextBorder(anEditor)==null) {
         setTextBorder(anEditor, Border.createLineBorder(Color.BLACK,1));
@@ -766,7 +766,7 @@ public static void setTextBorder(RMEditor anEditor)
 /**
  * Sets the outline state of the currently selected shapes.
  */
-public static void setTextBorder(RMEditor anEditor, Border aBorder)
+public static void setTextBorder(Editor anEditor, Border aBorder)
 {
     anEditor.undoerSetUndoTitle("Make Outlined");
     for(RMShape shp : anEditor.getSelectedOrSuperSelectedShapes()) {
@@ -778,7 +778,7 @@ public static void setTextBorder(RMEditor anEditor, Border aBorder)
 /**
  * Returns the horizontal alignment of the text of the currently selected shapes.
  */
-public static RMTypes.AlignX getAlignmentX(RMEditor anEditor)
+public static RMTypes.AlignX getAlignmentX(Editor anEditor)
 {
     return anEditor.getSelectedOrSuperSelectedShape().getAlignmentX();
 }
@@ -786,7 +786,7 @@ public static RMTypes.AlignX getAlignmentX(RMEditor anEditor)
 /**
  * Sets the horizontal alignment of the text of the currently selected shapes.
  */
-public static void setAlignmentX(RMEditor anEditor, RMTypes.AlignX anAlign)
+public static void setAlignmentX(Editor anEditor, RMTypes.AlignX anAlign)
 {
     anEditor.undoerSetUndoTitle("Alignment Change");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -796,7 +796,7 @@ public static void setAlignmentX(RMEditor anEditor, RMTypes.AlignX anAlign)
 /**
  * Sets the currently selected shapes to show text as superscript.
  */
-public static void setSuperscript(RMEditor anEditor)
+public static void setSuperscript(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Make Superscript");
     RMTextEditor ted = anEditor.getTextEditor();
@@ -807,7 +807,7 @@ public static void setSuperscript(RMEditor anEditor)
 /**
  * Sets the currently selected shapes to show text as subscript.
  */
-public static void setSubscript(RMEditor anEditor)
+public static void setSubscript(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Make Subscript");
     RMTextEditor ted = anEditor.getTextEditor();
@@ -818,12 +818,12 @@ public static void setSubscript(RMEditor anEditor)
 /**
  * Returns the format of the editor's selected shape.
  */
-public static RMFormat getFormat(RMEditor anEditor)  { return anEditor.getSelectedOrSuperSelectedShape().getFormat(); }
+public static RMFormat getFormat(Editor anEditor)  { return anEditor.getSelectedOrSuperSelectedShape().getFormat(); }
 
 /**
  * Sets the format of editor's selected shape(s).
  */
-public static void setFormat(RMEditor anEditor, RMFormat aFormat)
+public static void setFormat(Editor anEditor, RMFormat aFormat)
 {
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
         shape.setFormat(aFormat);
@@ -832,7 +832,7 @@ public static void setFormat(RMEditor anEditor, RMFormat aFormat)
 /**
  * Splits the selected shape in half on the horizontal axis.
  */
-public static void splitHorizontal(RMEditor editor)
+public static void splitHorizontal(Editor editor)
 {
     editor.undoerSetUndoTitle("Split Column");
     RMShape shape = editor.getSuperSelectedShape();
@@ -846,7 +846,7 @@ public static void splitHorizontal(RMEditor editor)
 /**
  * Adds an image placeholder to the given editor.
  */
-public static void addImagePlaceholder(RMEditor anEditor)
+public static void addImagePlaceholder(Editor anEditor)
 {
     // Create image shape
     RMImageShape imageShape = new RMImageShape(null);
@@ -868,10 +868,10 @@ public static void addImagePlaceholder(RMEditor anEditor)
 /**
  * Runs the dataset key panel to add a table, graph, crosstab or labels to given editor.
  */
-public static void runDatasetKeyPanel(RMEditor anEditor, String aKeyPath)
+public static void runDatasetKeyPanel(Editor anEditor, String aKeyPath)
 {
     // Hide AttributesPanel Drawer
-    RMEditorPane editorPane = anEditor.getEditorPane();
+    EditorPane editorPane = anEditor.getEditorPane();
     editorPane.hideAttributesDrawer();
     
     // Run dataset key panel to get dataset element type

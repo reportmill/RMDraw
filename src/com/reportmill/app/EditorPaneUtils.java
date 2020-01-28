@@ -10,14 +10,14 @@ import snap.view.*;
 import snap.viewx.*;
 
 /**
- * Some utility methods for RMEditorPane.
+ * Some utility methods for EditorPane.
  */
-public class RMEditorPaneUtils {
+public class EditorPaneUtils {
 
 /**
  * Installs a sample data source.
  */
-public static void connectToDataSource(RMEditorPane anEP)
+public static void connectToDataSource(EditorPane anEP)
 {
     RMDataSource ds = new RMDataSource(RMExtras.getHollywoodURL());
     if(ds!=null) anEP.setDataSource(ds, 350, 0);
@@ -26,7 +26,7 @@ public static void connectToDataSource(RMEditorPane anEP)
 /**
  * Opens the named sample file from the examples package.
  */
-public static RMEditorPane openSample(String aTitle)
+public static EditorPane openSample(String aTitle)
 {
     // If file is xml resource, get temp file, get XML bytes, write to file, open file and return null
     if(aTitle.endsWith(".xml")) {
@@ -41,7 +41,7 @@ public static RMEditorPane openSample(String aTitle)
     if(!aTitle.startsWith("http:")) aTitle = "Jar:/com/reportmill/examples/" + aTitle + ".rpt";
         
     // Create new editor pane, open document and window, and return editor pane
-    RMEditorPane editorPane = new RMEditorPane();
+    EditorPane editorPane = new EditorPane();
     editorPane.open(aTitle);
     editorPane.setWindowVisible(true);
     return editorPane;
@@ -50,7 +50,7 @@ public static RMEditorPane openSample(String aTitle)
 /**
  * Preview PDF.
  */
-public static void previewPDF(RMEditorPane anEP)
+public static void previewPDF(EditorPane anEP)
 {
     // Get filename (if alt key is pressed, change to current doc plus .pdf)
     String filename = SnapUtils.getTempDir() + "RMPDFFile.pdf";
@@ -66,10 +66,10 @@ public static void previewPDF(RMEditorPane anEP)
 /**
  * Generates report from editor.
  */
-public static RMDocument generateReport(RMEditorPane anEP, boolean doPaginate)
+public static RMDocument generateReport(EditorPane anEP, boolean doPaginate)
 {
     // Get editor - if editing, flush changes, otherwise, set Editing
-    RMEditor editor = anEP.getEditor();
+    Editor editor = anEP.getEditor();
     if(anEP.isEditing())
         editor.flushEditingChanges();
     else anEP.setEditing(true);
@@ -82,7 +82,7 @@ public static RMDocument generateReport(RMEditorPane anEP, boolean doPaginate)
 /**
  * Generate report, save as HTML in temp file and open.
  */
-public static void previewHTML(RMEditorPane anEP)
+public static void previewHTML(EditorPane anEP)
 {
     RMDocument report = generateReport(anEP, !ViewUtils.isAltDown());
     report.write(SnapUtils.getTempDir() + "RMHTMLFile.html");
@@ -92,7 +92,7 @@ public static void previewHTML(RMEditorPane anEP)
 /**
  * Generate report, save as CSV in temp file and open.
  */
-public static void previewCSV(RMEditorPane anEP)
+public static void previewCSV(EditorPane anEP)
 {
     RMDocument report = generateReport(anEP, false);
     report.write(SnapUtils.getTempDir() + "RMCSVFile.csv");
@@ -102,7 +102,7 @@ public static void previewCSV(RMEditorPane anEP)
 /**
  * Generate report, save as JPG in temp file and open.
  */
-public static void previewJPG(RMEditorPane anEP)
+public static void previewJPG(EditorPane anEP)
 {
     RMDocument report = generateReport(anEP, false);
     report.write(SnapUtils.getTempDir() + "RMJPGFile.jpg");
@@ -112,7 +112,7 @@ public static void previewJPG(RMEditorPane anEP)
 /**
  * Generate report, save as PNG in temp file and open.
  */
-public static void previewPNG(RMEditorPane anEP)
+public static void previewPNG(EditorPane anEP)
 {
     RMDocument report = generateReport(anEP, false);
     report.write(SnapUtils.getTempDir() + "RMPNGFile.png");
@@ -122,7 +122,7 @@ public static void previewPNG(RMEditorPane anEP)
 /**
  * Preview XLS.
  */
-public static void previewXLS(RMEditorPane anEP)
+public static void previewXLS(EditorPane anEP)
 {
     // Get report, write report and open file (in handler, in case POI jar is missing)
     try {
@@ -153,7 +153,7 @@ public static void previewXLS(RMEditorPane anEP)
 /**
  * Preview RTF.
  */
-public static void previewRTF(RMEditorPane anEP)
+public static void previewRTF(EditorPane anEP)
 {
     // Get report, write report and open file
     RMDocument report = generateReport(anEP, true);
@@ -164,9 +164,9 @@ public static void previewRTF(RMEditorPane anEP)
 /**
  * Preview XML.
  */
-public static void previewXML(RMEditorPane anEP)
+public static void previewXML(EditorPane anEP)
 {
-    RMEditor editor = anEP.getEditor();
+    Editor editor = anEP.getEditor();
     XMLElement xml = new RMArchiver().writeObject(editor.getDoc());
     File file = FileUtils.getTempFile("RMXMLFile.xml");
     try { FileUtils.writeBytes(file, xml.getBytes()); }
@@ -177,9 +177,9 @@ public static void previewXML(RMEditorPane anEP)
 /**
  * Save document as PDF to given path.
  */
-public static void saveAsPDF(RMEditorPane anEP)
+public static void saveAsPDF(EditorPane anEP)
 {
-    RMEditor editor = anEP.getEditor();
+    Editor editor = anEP.getEditor();
     String path = FilePanel.showOpenPanel(editor, "PDF file (.pdf)", "pdf"); if(path==null) return;
     editor.flushEditingChanges();
     editor.getDoc().writePDF(path);

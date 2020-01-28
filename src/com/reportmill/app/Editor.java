@@ -14,7 +14,7 @@ import snap.view.*;
 /**
  * This class subclasses RMViewer to support RMDocument editing.
  */
-public class RMEditor extends RMViewer implements DeepChangeListener {
+public class Editor extends Viewer implements DeepChangeListener {
 
     // Whether we're really editing
     boolean             _editing = true;
@@ -32,7 +32,7 @@ public class RMEditor extends RMViewer implements DeepChangeListener {
     RMShape             _lastPasteShape;
     
     // A helper class to handle drag and drop
-    RMEditorDnD         _dragHelper = createDragHelper();
+    EditorDnD _dragHelper = createDragHelper();
     
     // A shape to be drawn if set to drag-over shape during drag and drop
     Shape               _dragShape;
@@ -50,7 +50,7 @@ public class RMEditor extends RMViewer implements DeepChangeListener {
     long                _dropTime;
 
     // Icon for XML image
-    static Image        _xmlImage = Image.get(RMEditor.class, "DS_XML.png");
+    static Image        _xmlImage = Image.get(Editor.class, "DS_XML.png");
     
     // XML Image offset for animation
     static double       _xmlDX, _xmlDY;
@@ -63,7 +63,7 @@ public class RMEditor extends RMViewer implements DeepChangeListener {
 /**
  * Creates a new editor.
  */
-public RMEditor()
+public Editor()
 {
     // SuperSelect ViewerShape
     setSuperSelectedShape(getViewerShape());
@@ -79,8 +79,8 @@ public RMEditor()
 /**
  * Returns the editor pane for this editor, if there is one.
  */
-public RMEditorPane getEditorPane()  { return _ep!=null? _ep : (_ep=getOwner(RMEditorPane.class)); }
-private RMEditorPane _ep;
+public EditorPane getEditorPane()  { return _ep!=null? _ep : (_ep=getOwner(EditorPane.class)); }
+private EditorPane _ep;
 
 /**
  * Returns whether viewer is really doing editing.
@@ -109,7 +109,7 @@ public RMTextEditor getTextEditor()
 /**
  * Creates the shapes helper.
  */
-protected RMEditorDnD createDragHelper()  { return new RMEditorDnD(this); }
+protected EditorDnD createDragHelper()  { return new EditorDnD(this); }
 
 /**
  * Returns the first selected shape.
@@ -522,17 +522,17 @@ public RMShape firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
 /**
  * Standard clipboard cut functionality.
  */
-public void cut()  { RMEditorClipboard.cut(this); }
+public void cut()  { EditorClipboard.cut(this); }
 
 /**
  * Standard clipboard copy functionality.
  */
-public void copy()  { RMEditorClipboard.copy(this); }
+public void copy()  { EditorClipboard.copy(this); }
 
 /**
  * Standard clipbard paste functionality.
  */
-public void paste()  { RMEditorClipboard.paste(this); }
+public void paste()  { EditorClipboard.paste(this); }
 
 /**
  * Causes all the children of the current super selected shape to become selected.
@@ -821,7 +821,7 @@ public void paintFront(Painter aPntr)
     tool.paintTool(aPntr);
    
     // Paint proximity guides
-    RMEditorProxGuide.paintProximityGuides(this, aPntr);
+    EditorProxGuide.paintProximityGuides(this, aPntr);
     
     // If datasource is present and editing, draw XMLImage in lower right corner of doc
     if(getDataSource()!=null && isEditing()) {
@@ -843,14 +843,14 @@ public void paintFront(Painter aPntr)
 }
 
 /**
- * Override to return as RMEditorEvents.
+ * Override to return as EditorEvents.
  */
-public RMEditorEvents getEvents()  { return (RMEditorEvents)super.getEvents(); }
+public EditorEvents getEvents()  { return (EditorEvents)super.getEvents(); }
 
 /**
- * Override to return RMEditorEvents.
+ * Override to return EditorEvents.
  */
-public RMViewerEvents createEvents()  { return new RMEditorEvents(this); }
+public ViewerEvents createEvents()  { return new EditorEvents(this); }
 
 /**
  * Override to revalidate when ideal size changes.
@@ -941,7 +941,7 @@ public Object getDataSourceDataset()  { RMDataSource ds = getDataSource(); retur
  */
 public void resetEditorPaneLater()
 {
-    RMEditorPane ep = getEditorPane();
+    EditorPane ep = getEditorPane();
     ep.resetLater();
 }
 
@@ -950,7 +950,7 @@ public void resetEditorPaneLater()
  */
 public void resetEditorPaneOnMouseUp()
 {
-    RMEditorPane ep = getEditorPane();
+    EditorPane ep = getEditorPane();
     ViewUtils.runOnMouseUp(() -> ep.resetLater());
 }
 
@@ -1085,16 +1085,16 @@ private Runnable _saveChangesRun, _scrShared = () -> { saveUndoerChanges(); _sav
 private class EditorShapePainterProps extends RMShapePaintProps {
 
     /** Returns whether painting is for editor. */
-    public boolean isEditing()  { return RMEditor.this.isEditing(); }
+    public boolean isEditing()  { return Editor.this.isEditing(); }
     
     /** Returns whether given shape is selected. */
-    public boolean isSelected(RMShape aShape)  { return RMEditor.this.isSelected(aShape); }
+    public boolean isSelected(RMShape aShape)  { return Editor.this.isSelected(aShape); }
     
     /** Returns whether given shape is super selected. */
-    public boolean isSuperSelected(RMShape aShape)  { return RMEditor.this.isSuperSelected(aShape); }
+    public boolean isSuperSelected(RMShape aShape)  { return Editor.this.isSuperSelected(aShape); }
     
     /** Returns whether given shape is THE super selected shape. */
-    public boolean isSuperSelectedShape(RMShape aShape)  { return RMEditor.this.getSuperSelectedShape()==aShape; }
+    public boolean isSuperSelectedShape(RMShape aShape)  { return Editor.this.getSuperSelectedShape()==aShape; }
 }
 
 /** Play beep. */

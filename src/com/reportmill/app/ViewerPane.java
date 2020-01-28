@@ -19,10 +19,10 @@ import snap.web.WebURL;
  *   myFrame.setContentPane(viewer);
  * </pre></blockquote>
  */
-public class RMViewerPane extends ViewOwner {
+public class ViewerPane extends ViewOwner {
 
     // The real viewer
-    RMViewer          _viewer;
+    Viewer _viewer;
     
     // The ScrollView for this viewer
     ScrollView        _scrollView;
@@ -39,12 +39,12 @@ public class RMViewerPane extends ViewOwner {
 /**
  * Returns the viewer for this viewer pane.
  */
-public RMViewer getViewer()  { if(_viewer==null) getUI(); return _viewer; }
+public Viewer getViewer()  { if(_viewer==null) getUI(); return _viewer; }
 
 /**
  * Sets the viewer for this viewer pane.
  */
-protected void setViewer(RMViewer aViewer)
+protected void setViewer(Viewer aViewer)
 {
     _viewer = aViewer;
     getScrollView().setContent(_viewer);
@@ -53,7 +53,7 @@ protected void setViewer(RMViewer aViewer)
 /**
  * Creates the real viewer for this viewer pane.
  */
-protected RMViewer createViewer()  { return new RMViewer(); }
+protected Viewer createViewer()  { return new Viewer(); }
 
 /**
  * Returns the scroll view for this viewer pane.
@@ -83,7 +83,7 @@ public ViewOwner getTopToolBar()  { return _topToolBar!=null? _topToolBar : (_to
 /**
  * Creates the top tool bar.
  */
-protected ViewOwner createTopToolBar()  { return new RMViewerTopToolBar(this); }
+protected ViewOwner createTopToolBar()  { return new ViewerTopToolBar(this); }
 
 /**
  * Returns the bottom controls.
@@ -93,7 +93,7 @@ public ViewOwner getBottomToolBar()  { return _btmToolBar!=null? _btmToolBar : (
 /**
  * Creates bottom tool bar.
  */
-protected ViewOwner createBottomToolBar()  { return new RMViewerBottomToolBar(this); }
+protected ViewOwner createBottomToolBar()  { return new ViewerBottomToolBar(this); }
 
 /**
  * Saves the current viewer document.

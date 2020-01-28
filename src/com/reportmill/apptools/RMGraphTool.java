@@ -3,7 +3,7 @@
  */
 package com.reportmill.apptools;
 import com.reportmill.app.AttributesPanel;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.base.RMGrouping;
 import com.reportmill.graphics.RMColor;
 import com.reportmill.graphics.RMStroke;
@@ -14,7 +14,7 @@ import snap.view.*;
 import snap.viewx.ColorDock;
 
 /**
- * This class provides RMEditor inspector support for RMGraph.
+ * This class provides Editor inspector support for RMGraph.
  */
 public class RMGraphTool <T extends RMGraph> extends RMTool <T> implements RMSortPanel.Owner {
     
@@ -48,7 +48,7 @@ public class RMGraphTool <T extends RMGraph> extends RMTool <T> implements RMSor
 /**
  * Override to forward to proxy tools.
  */
-public void setEditor(RMEditor anEditor)
+public void setEditor(Editor anEditor)
 {
     super.setEditor(anEditor);
     _barTool.setEditor(anEditor);
@@ -399,7 +399,7 @@ public boolean isUngroupable(RMShape aShape)  { return false; }
  * Override to suppress setting font on sample graph.
  */
 @Override
-public void setFontKeyDeep(RMEditor anEditor, RMShape aShape, String aKey, Object aVal)
+public void setFontKeyDeep(Editor anEditor, RMShape aShape, String aKey, Object aVal)
 {
     setFontKey(anEditor, aShape, aKey, aVal);
 }
@@ -407,7 +407,7 @@ public void setFontKeyDeep(RMEditor anEditor, RMShape aShape, String aKey, Objec
 /**
  * Adds a new graph instance to the given editor with the given dataset key.
  */
-public static void addGraph(RMEditor anEditor, String aKeyPath)
+public static void addGraph(Editor anEditor, String aKeyPath)
 {
     // Get graph instance and set it's name and datasource
     RMGraph graph = createSampleGraph();

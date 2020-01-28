@@ -12,10 +12,10 @@ import snap.view.*;
  * This class handles functionality related to mouse and keyboard input on a viewer, so that different behavior
  * can easily be swapped in beyond the standard interactive behavior, like text selection or area-selection.
  */
-public class RMViewerEvents {
+public class ViewerEvents {
 
     // The viewer
-    RMViewer            _viewer;
+    Viewer _viewer;
     
     // The mode
     int                 _mode = 1;
@@ -62,12 +62,12 @@ public class RMViewerEvents {
 /**
  * Creates a new RMViewerEvents.
  */
-public RMViewerEvents(RMViewer aViewer)  { _viewer = aViewer; }
+public ViewerEvents(Viewer aViewer)  { _viewer = aViewer; }
 
 /**
  * Returns the viewer we work for.
  */
-public RMViewer getViewer()  { return _viewer; }
+public Viewer getViewer()  { return _viewer; }
 
 /**
  * Returns the mode.
@@ -302,7 +302,7 @@ public void mouseDraggedSelText(ViewEvent anEvent)
     _dragPoint = new Point(anEvent.getX(), anEvent.getY());
     
     // Repaint paint area
-    RMViewer viewer = getViewer(); viewer.repaint(_paintArea.getBounds());
+    Viewer viewer = getViewer(); viewer.repaint(_paintArea.getBounds());
     
     // Get rectangle for down point and current event point - in SelPage coords
     double x = Math.min(_downPoint.getX(), anEvent.getX());

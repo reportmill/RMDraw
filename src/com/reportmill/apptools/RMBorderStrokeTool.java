@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.graphics.*;
 import com.reportmill.shape.RMShape;
 import java.util.List;
@@ -39,7 +39,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get editor selected shapes and selected shape
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     List <RMShape> shapes = editor.getSelectedOrSuperSelectedShapes();
     RMShape shape = editor.getSelectedOrSuperSelectedShape();
     

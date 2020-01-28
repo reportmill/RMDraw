@@ -90,7 +90,7 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle PasteTableMenuItem
     if(anEvent.equals("PasteTableMenuItem")) {
-        Object pasteShape = RMEditorClipboard.getShapeFromClipboard(getEditor());
+        Object pasteShape = EditorClipboard.getShapeFromClipboard(getEditor());
         if(pasteShape instanceof RMTable) {
             tableGroup.undoerSetUndoTitle("Paste Table");
             tableGroup.addPeerTable((RMTable)pasteShape);
@@ -239,7 +239,7 @@ public RMTable getMainTable()
 public void mousePressed(T aTableGroup, ViewEvent anEvent)
 {
     // If selected, forward on to main table, to potentially super select structured table row
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(editor.getSelectedOrSuperSelectedShape()==aTableGroup) {
         RMTable mainTable = aTableGroup.getMainTable();                // Get main table
         getTool(mainTable).processEvent(mainTable, anEvent);    // Forward on

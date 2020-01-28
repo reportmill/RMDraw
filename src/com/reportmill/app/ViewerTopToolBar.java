@@ -7,25 +7,25 @@ import snap.view.*;
 /**
  * UI controls for RMViewerPlus top.
  */
-public class RMViewerTopToolBar extends ViewOwner {
+public class ViewerTopToolBar extends ViewOwner {
 
     // The viewer associated with this tool bar
-    RMViewerPane    _viewerPane;
+    ViewerPane _viewerPane;
     
 /**
  * Creates a new top ui.
  */
-public RMViewerTopToolBar(RMViewerPane aViewerPane)  { _viewerPane = aViewerPane; }
+public ViewerTopToolBar(ViewerPane aViewerPane)  { _viewerPane = aViewerPane; }
 
 /**
  * Returns the viewer pane.
  */
-public RMViewerPane getViewerPane()  { return _viewerPane; }
+public ViewerPane getViewerPane()  { return _viewerPane; }
 
 /**
  * Returns the viewer.
  */
-public RMViewer getViewer()  { return getViewerPane().getViewer(); }
+public Viewer getViewer()  { return getViewerPane().getViewer(); }
 
 /**
  * Resets to UI.
@@ -55,15 +55,15 @@ public void respondUI(ViewEvent anEvent)
         
     // Handle MoveButton
     if(anEvent.equals("MoveButton"))
-        getViewer().getEvents().setMode(RMViewerEvents.DEFAULT);
+        getViewer().getEvents().setMode(ViewerEvents.DEFAULT);
     
     // Handle TextButton
     if(anEvent.equals("TextButton"))
-        getViewer().getEvents().setMode(RMViewerEvents.SELECT_TEXT);
+        getViewer().getEvents().setMode(ViewerEvents.SELECT_TEXT);
 
     // Handle SelectButton
     if(anEvent.equals("SelectButton"))
-        getViewer().getEvents().setMode(RMViewerEvents.SELECT_IMAGE);
+        getViewer().getEvents().setMode(ViewerEvents.SELECT_IMAGE);
 }
 
 }

@@ -14,9 +14,9 @@ import snap.view.*;
 import snap.viewx.*;
 
 /**
- * Tool bar for RMEditorPane.
+ * Tool bar for EditorPane.
  */
-public class RMEditorPaneToolBar extends RMEditorPane.SupportPane {
+public class EditorPaneToolBar extends EditorPane.SupportPane {
 
     // The font face ComboBox
     ComboBox          _fontFaceComboBox;
@@ -33,7 +33,7 @@ public class RMEditorPaneToolBar extends RMEditorPane.SupportPane {
 /**
  * Creates a new editor pane tool bar.
  */
-public RMEditorPaneToolBar(RMEditorPane anEP)
+public EditorPaneToolBar(EditorPane anEP)
 {
     super(anEP);
     _toolBarTools = createToolBarTools();
@@ -77,8 +77,8 @@ protected void initUI()
 protected void resetUI()
 {
     // Get the editor
-    RMEditor editor = getEditor();
-    Font font = RMEditorUtils.getFont(editor);
+    Editor editor = getEditor();
+    Font font = EditorUtils.getFont(editor);
     
     // Update UndoButton, RedoButton
     Undoer undoer = editor.getUndoer();
@@ -86,7 +86,7 @@ protected void resetUI()
     setViewEnabled("RedoButton", undoer!=null && undoer.getRedoSetLast()!=null);
     
     // Update MoneyButton, PercentButton, CommaButton
-    RMFormat fmt = RMEditorUtils.getFormat(editor);
+    RMFormat fmt = EditorUtils.getFormat(editor);
     RMNumberFormat nfmt = fmt instanceof RMNumberFormat? (RMNumberFormat)fmt : null;
     setViewValue("MoneyButton", nfmt!=null && nfmt.isLocalCurrencySymbolUsed());
     setViewValue("PercentButton", nfmt!=null && nfmt.isPercentSymbolUsed());
@@ -110,19 +110,9 @@ protected void resetUI()
     // Reset BoldButton, ItalicButton, UnderlineButton
     setViewValue("BoldButton", font.isBold());
     setViewEnabled("BoldButton", font.getBold()!=null);
-    //setViewValue("ItalicButton", font.isItalic());
-    //setViewEnabled("ItalicButton", font.getItalic()!=null);
-    //setViewValue("UnderlineButton", RMEditorUtils.isUnderlined(editor));
-    
-    // Update AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton, AlignTopButton, AlignMiddleButton
-    //RMTypes.AlignX alignX = RMEditorUtils.getAlignmentX(editor);
-    //setViewValue("AlignLeftButton", alignX==RMTypes.AlignX.Left);
-    //setViewValue("AlignCenterButton", alignX==RMTypes.AlignX.Center);
-    //setViewValue("AlignRightButton", alignX==RMTypes.AlignX.Right);
-    //setViewValue("AlignFullButton", alignX==RMTypes.AlignX.Full);
-    
+
     // Update ColorWell
-    Color color = RMEditorUtils.getSelectedColor(editor);
+    Color color = EditorUtils.getSelectedColor(editor);
     _colorWell.setColor(color);
 }
 
@@ -132,8 +122,8 @@ protected void resetUI()
 protected void respondUI(ViewEvent anEvent)
 {
     // Get the editor
-    RMEditorPane epane = getEditorPane();
-    RMEditor editor = getEditor();
+    EditorPane epane = getEditorPane();
+    Editor editor = getEditor();
     
     // Handle File NewButton, OpenButton, SaveButton, PreviewPDFButton, PreviewHTMLButton, PrintButton
     if(anEvent.equals("NewButton")) epane.respondUI(anEvent);
@@ -155,36 +145,36 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle FillColorButton, StrokeColorButton, TextColorButton
     if(anEvent.equals("FillColorButton"))
-        RMEditorUtils.setColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
+        EditorUtils.setColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
     if(anEvent.equals("StrokeColorButton"))
-        RMEditorUtils.setStrokeColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
+        EditorUtils.setStrokeColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
     if(anEvent.equals("TextColorButton"))
-        RMEditorUtils.setTextColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
+        EditorUtils.setTextColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
 
     // Handle MoneyButton: If currently selected format is number format, add or remove dollars
-    RMFormat fmt = RMEditorUtils.getFormat(editor);
+    RMFormat fmt = EditorUtils.getFormat(editor);
     RMNumberFormat nfmt = fmt instanceof RMNumberFormat? (RMNumberFormat)fmt : null;
     if(anEvent.equals("MoneyButton")) {
-        if(nfmt==null) RMEditorUtils.setFormat(editor, RMNumberFormat.CURRENCY);
+        if(nfmt==null) EditorUtils.setFormat(editor, RMNumberFormat.CURRENCY);
         else { nfmt = nfmt.clone(); // Clone it
             nfmt.setLocalCurrencySymbolUsed(!nfmt.isLocalCurrencySymbolUsed()); // Toggle whether $ is used
-            RMEditorUtils.setFormat(editor, nfmt); }
+            EditorUtils.setFormat(editor, nfmt); }
     }
     
     // Handle PercentButton: If currently selected format is number format, add or remove percent symbol
     if(anEvent.equals("PercentButton")) {
-        if(nfmt==null) RMEditorUtils.setFormat(editor, new RMNumberFormat("#,##0.00 %"));
+        if(nfmt==null) EditorUtils.setFormat(editor, new RMNumberFormat("#,##0.00 %"));
         else { nfmt = nfmt.clone(); // Clone it
             nfmt.setPercentSymbolUsed(!nfmt.isPercentSymbolUsed()); // Toggle whether percent symbol is used
-            RMEditorUtils.setFormat(editor, nfmt); }
+            EditorUtils.setFormat(editor, nfmt); }
     }
     
     // Handle CommaButton: If currently selected format is number format, add or remove grouping
     if(anEvent.equals("CommaButton")) {
-        if(nfmt==null) RMEditorUtils.setFormat(editor, new RMNumberFormat("#,##0.00"));
+        if(nfmt==null) EditorUtils.setFormat(editor, new RMNumberFormat("#,##0.00"));
         else { nfmt = nfmt.clone();
             nfmt.setGroupingUsed(!nfmt.isGroupingUsed()); // Toggle whether grouping is used
-            RMEditorUtils.setFormat(editor, nfmt); }
+            EditorUtils.setFormat(editor, nfmt); }
     }
     
     // Handle DecimalAddButton: If currently selected format is number format, add decimal
@@ -192,7 +182,7 @@ protected void respondUI(ViewEvent anEvent)
         nfmt = nfmt.clone();
         nfmt.setMinimumFractionDigits(nfmt.getMinimumFractionDigits()+1);
         nfmt.setMaximumFractionDigits(nfmt.getMinimumFractionDigits());
-        RMEditorUtils.setFormat(editor, nfmt);
+        EditorUtils.setFormat(editor, nfmt);
     }
     
     // Handle DecimalRemoveButton: If currently selected format is number format, remove decimal digits
@@ -200,7 +190,7 @@ protected void respondUI(ViewEvent anEvent)
         nfmt = nfmt.clone();
         nfmt.setMinimumFractionDigits(nfmt.getMinimumFractionDigits()-1);
         nfmt.setMaximumFractionDigits(nfmt.getMinimumFractionDigits());
-        RMEditorUtils.setFormat(editor, nfmt);
+        EditorUtils.setFormat(editor, nfmt);
     }
     
     // Handle SamplesButton
@@ -222,7 +212,7 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle PreviewXMLMenuItem
     if(anEvent.equals("PreviewXMLMenuItem"))
-        RMEditorPaneUtils.previewXML(getEditorPane());
+        EditorPaneUtils.previewXML(getEditorPane());
 
     // Handle ToolButton(s)
     if(anEvent.getName().endsWith("ToolButton")) {
@@ -237,32 +227,32 @@ protected void respondUI(ViewEvent anEvent)
         String fontNames[] = Font.getFontNames(familyName); if(fontNames==null || fontNames.length==0) return;
         String fontName = fontNames[0];
         Font font = Font.get(fontName, 12);
-        RMEditorUtils.setFontFamily(editor, font);
+        EditorUtils.setFontFamily(editor, font);
         editor.requestFocus();
     }
     
     // Handle FontSizeComboBox
     if(anEvent.equals("FontSizeComboBox")) {
-        RMEditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
+        EditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
         editor.requestFocus();
     }
     
     // Handle FontSizeUpButton, FontSizeDownButton
-    if(anEvent.equals("FontSizeUpButton")) { Font font = RMEditorUtils.getFont(editor);
-        RMEditorUtils.setFontSize(editor, font.getSize()<16? 1 : 2, true); }
-    if(anEvent.equals("FontSizeDownButton")) { Font font = RMEditorUtils.getFont(editor);
-        RMEditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
+    if(anEvent.equals("FontSizeUpButton")) { Font font = EditorUtils.getFont(editor);
+        EditorUtils.setFontSize(editor, font.getSize()<16? 1 : 2, true); }
+    if(anEvent.equals("FontSizeDownButton")) { Font font = EditorUtils.getFont(editor);
+        EditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
     
     // Handle BoldButton, ItalicButton, UnderlineButton
-    if(anEvent.equals("BoldButton")) RMEditorUtils.setFontBold(editor, anEvent.getBoolValue());
-    if(anEvent.equals("ItalicButton")) RMEditorUtils.setFontItalic(editor, anEvent.getBoolValue());
-    if(anEvent.equals("UnderlineButton")) RMEditorUtils.setUnderlined(editor);
+    if(anEvent.equals("BoldButton")) EditorUtils.setFontBold(editor, anEvent.getBoolValue());
+    if(anEvent.equals("ItalicButton")) EditorUtils.setFontItalic(editor, anEvent.getBoolValue());
+    if(anEvent.equals("UnderlineButton")) EditorUtils.setUnderlined(editor);
         
     // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton
-    if(anEvent.equals("AlignLeftButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
-    if(anEvent.equals("AlignCenterButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
-    if(anEvent.equals("AlignRightButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
-    if(anEvent.equals("AlignFullButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
+    if(anEvent.equals("AlignLeftButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
+    if(anEvent.equals("AlignCenterButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
+    if(anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
+    if(anEvent.equals("AlignFullButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
     
     // Handle AddTableButton, AddGraphButton, AddLabelsButton, AddCrossTabFrameButton
     if(anEvent.equals("AddTableButton")) RMTableTool.addTable(getEditor(), null);
@@ -272,15 +262,15 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle AddCrossTabButton, AddImagePlaceHolderMenuItem
     if(anEvent.equals("AddCrossTabButton")) RMCrossTabTool.addCrossTab(getEditor());
-    if(anEvent.equals("AddImagePlaceHolderMenuItem")) RMEditorUtils.addImagePlaceholder(getEditor());
+    if(anEvent.equals("AddImagePlaceHolderMenuItem")) EditorUtils.addImagePlaceholder(getEditor());
 
     // Handle ConnectToDataSourceMenuItem
     if(anEvent.equals("ConnectToDataSourceMenuItem") || anEvent.equals("ConnectToDataSourceButton"))
-        RMEditorPaneUtils.connectToDataSource(getEditorPane());
+        EditorPaneUtils.connectToDataSource(getEditorPane());
         
     // Handle ColorWell
     if(anEvent.equals("ColorWell"))
-        RMEditorUtils.setSelectedColor(editor, _colorWell.getColor());
+        EditorUtils.setSelectedColor(editor, _colorWell.getColor());
 }
 
 /**
@@ -330,7 +320,7 @@ public void stopSamplesButtonAnim()
 protected RMTool[] createToolBarTools()
 {
     List <RMTool> tools = new ArrayList();
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     tools.add(editor.getSelectTool());
     tools.add(editor.getTool(RMLineShape.class));
     tools.add(editor.getTool(RMRectShape.class));

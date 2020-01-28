@@ -6,7 +6,7 @@ import com.reportmill.shape.*;
 
 /**
  * A View subclass to add rulers to a given content view.
- * Currently assumes that view is RMEditor is ScrollView.
+ * Currently assumes that view is Editor is ScrollView.
  */
 public class RulerBox extends ParentView {
     
@@ -117,7 +117,7 @@ protected void layoutImpl()
 private static class RulerView extends View {
 
     // The ruler editor and document
-    RMEditor                  _editor;
+    Editor _editor;
     RMDocument                _doc;
 
     // Zoom Factor
@@ -137,7 +137,7 @@ private static class RulerView extends View {
     public RulerView(View aView)
     {
         // Set views
-        _editor = (RMEditor)aView;
+        _editor = (Editor)aView;
         _doc = _editor.getDoc();
         _zoomFactor = _editor.getZoomFactor();
         

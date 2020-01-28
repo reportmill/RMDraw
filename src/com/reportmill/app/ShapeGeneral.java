@@ -9,7 +9,7 @@ import snap.view.*;
 /**
  * An inspector for general shape attributes, like property keys, name, text wrap around, etc.
  */
-public class ShapeGeneral extends RMEditorPane.SupportPane {
+public class ShapeGeneral extends EditorPane.SupportPane {
     
     // The bindings table
     TableView <String>  _bindingsTable;
@@ -17,7 +17,7 @@ public class ShapeGeneral extends RMEditorPane.SupportPane {
 /**
  * Creates a new ShapeGeneral pane.
  */
-public ShapeGeneral(RMEditorPane anEP)  { super(anEP); }
+public ShapeGeneral(EditorPane anEP)  { super(anEP); }
 
 /**
  * Initialize UI panel for this inspector.
@@ -109,7 +109,7 @@ public void respondUI(ViewEvent anEvent)
  */
 public RMShape getSelectedShape()
 {
-    RMEditor e = getEditor(); if(e==null) return null;
+    Editor e = getEditor(); if(e==null) return null;
     return e.getSelectedOrSuperSelectedShape();
 }
 
@@ -118,7 +118,7 @@ public RMShape getSelectedShape()
  */
 public List <? extends RMShape> getSelectedShapes()
 {
-    RMEditor e = getEditor(); if(e==null) return Collections.EMPTY_LIST;
+    Editor e = getEditor(); if(e==null) return Collections.EMPTY_LIST;
     return e.getSelectedOrSuperSelectedShapes();
 }
 

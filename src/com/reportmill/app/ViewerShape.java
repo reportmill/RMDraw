@@ -10,10 +10,10 @@ import snap.util.Undoer;
 /**
  * A shape to act as root of shape to be viewed.
  */
-public class RMViewerShape extends RMParentShape {
+public class ViewerShape extends RMParentShape {
 
     // The viewer
-    RMViewer           _viewer;
+    Viewer _viewer;
 
     // The document being viewed
     RMDocument         _doc;
@@ -27,14 +27,14 @@ public class RMViewerShape extends RMParentShape {
 /**
  * Creates a ViewerShape for given viewer.
  */
-public RMViewerShape(RMViewer aViewer)
+public ViewerShape(Viewer aViewer)
 {
     // Set Viewer
     _viewer = aViewer;
     
     // If Viewer is really editor, do more
-    if(_viewer instanceof RMEditor) {
-        RMEditor editor = (RMEditor)_viewer;
+    if(_viewer instanceof Editor) {
+        Editor editor = (Editor)_viewer;
         addDeepChangeListener(editor);
     }
 }
@@ -42,7 +42,7 @@ public RMViewerShape(RMViewer aViewer)
 /**
  * Returns the viewer.
  */
-public RMViewer getViewer()  { return _viewer; }
+public Viewer getViewer()  { return _viewer; }
 
 /**
  * Returns the document.
@@ -69,7 +69,7 @@ public void setDoc(RMDocument aDoc)
     _doc.addPropChangeListener(_viewerDocLsnr);
     
     // If working for editor, do more
-    if(_viewer instanceof RMEditor) { RMEditor editor = (RMEditor)_viewer;
+    if(_viewer instanceof Editor) { Editor editor = (Editor)_viewer;
 
         // Make sure current document page is super-selected
         if(editor._selShapes!=null) {

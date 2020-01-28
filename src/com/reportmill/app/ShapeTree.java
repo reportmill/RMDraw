@@ -6,7 +6,7 @@ import snap.view.*;
 /**
  * An inspector to show ShapeTree.
  */
-public class ShapeTree extends RMEditorPane.SupportPane {
+public class ShapeTree extends EditorPane.SupportPane {
     
     // The ShapeTree
     TreeView       _shapeTree;
@@ -14,7 +14,7 @@ public class ShapeTree extends RMEditorPane.SupportPane {
 /**
  * Creates a new ShapeFills pane.
  */
-public ShapeTree(RMEditorPane anEP)  { super(anEP); }
+public ShapeTree(EditorPane anEP)  { super(anEP); }
 
 /**
  * Returns the ViewTree.

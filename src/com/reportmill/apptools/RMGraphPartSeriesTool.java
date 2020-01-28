@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.shape.*;
 import com.reportmill.shape.RMGraphPartSeries.LabelPos;
 import snap.util.StringUtils;
@@ -147,7 +147,7 @@ public RMGraphPartSeries getSelSeries()
  */
 public RMGraph getSelGraph()
 {
-    RMEditor e = getEditor(); if(e==null) return null;
+    Editor e = getEditor(); if(e==null) return null;
     RMShape selShape = e.getSelectedOrSuperSelectedShape();
     return selShape instanceof RMGraph? (RMGraph)selShape : null;
 }

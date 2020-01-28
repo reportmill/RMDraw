@@ -18,7 +18,7 @@ import snap.view.*;
 public class FontPanel extends ViewOwner {
     
     // The EditorPane
-    RMEditorPane    _editorPane;
+    EditorPane _editorPane;
     
     // Whether to show all fonts (or PDF only)
     boolean         _showAll = true;
@@ -32,17 +32,17 @@ public class FontPanel extends ViewOwner {
 /**
  * Creates a new FontPanel for EditorPane.
  */
-public FontPanel(RMEditorPane anEP)  { _editorPane = anEP; }
+public FontPanel(EditorPane anEP)  { _editorPane = anEP; }
 
 /**
  * Returns the Editor.
  */
-public RMEditor getEditor()  { return _editorPane.getEditor(); }
+public Editor getEditor()  { return _editorPane.getEditor(); }
 
 /**
  * Returns the EditorPane.
  */
-public RMEditorPane getEditorPane()  { return _editorPane; }
+public EditorPane getEditorPane()  { return _editorPane; }
 
 /**
  * Returns the array of font family names.
@@ -91,8 +91,8 @@ protected void initUI()
 public void resetUI()
 {
     // Get current font
-    RMEditor editor = getEditor();
-    RMFont font = RMEditorUtils.getFont(editor);
+    Editor editor = getEditor();
+    RMFont font = EditorUtils.getFont(editor);
     
     // Get family name and size
     String familyName = font.getFamily();
@@ -107,8 +107,8 @@ public void resetUI()
     setViewEnabled("BoldButton", font.getBold()!=null);
     setViewValue("ItalicButton", font.isItalic());
     setViewEnabled("ItalicButton", font.getItalic()!=null);
-    setViewValue("UnderlineButton", RMEditorUtils.isUnderlined(editor));
-    setViewValue("OutlineButton", RMEditorUtils.getTextBorder(editor)!=null);
+    setViewValue("UnderlineButton", EditorUtils.isUnderlined(editor));
+    setViewValue("OutlineButton", EditorUtils.getTextBorder(editor)!=null);
     
     // Get font names in currently selected font's family
     String familyNames[] = RMFont.getFontNames(font.getFamily());
@@ -125,35 +125,35 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get current editor
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     
     // Handle FontSizeUpButton, FontSizeDownButton
-    if(anEvent.equals("FontSizeUpButton")) { Font font = RMEditorUtils.getFont(editor);
-        RMEditorUtils.setFontSize(editor, font.getSize()<16? 1 : 2, true); }
-    if(anEvent.equals("FontSizeDownButton")) { Font font = RMEditorUtils.getFont(editor);
-        RMEditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
+    if(anEvent.equals("FontSizeUpButton")) { Font font = EditorUtils.getFont(editor);
+        EditorUtils.setFontSize(editor, font.getSize()<16? 1 : 2, true); }
+    if(anEvent.equals("FontSizeDownButton")) { Font font = EditorUtils.getFont(editor);
+        EditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
     
     // Handle BoldButton, ItalicButton, UnderlineButton, OutlineButton
-    if(anEvent.equals("BoldButton")) RMEditorUtils.setFontBold(editor, anEvent.getBoolValue());
-    if(anEvent.equals("ItalicButton")) RMEditorUtils.setFontItalic(editor, anEvent.getBoolValue());
-    if(anEvent.equals("UnderlineButton")) RMEditorUtils.setUnderlined(editor);
-    if(anEvent.equals("OutlineButton")) RMEditorUtils.setTextBorder(editor);
+    if(anEvent.equals("BoldButton")) EditorUtils.setFontBold(editor, anEvent.getBoolValue());
+    if(anEvent.equals("ItalicButton")) EditorUtils.setFontItalic(editor, anEvent.getBoolValue());
+    if(anEvent.equals("UnderlineButton")) EditorUtils.setUnderlined(editor);
+    if(anEvent.equals("OutlineButton")) EditorUtils.setTextBorder(editor);
     
     // Handle FontPickerButton
     if(anEvent.equals("FontPickerButton")) {
-        RMFont ofont = RMEditorUtils.getFont(editor);
+        RMFont ofont = EditorUtils.getFont(editor);
         Font font = new FontPicker().showPicker(getEditorPane().getUI(), ofont);
         if(font!=null) { RMFont rfont = RMFont.get(font);
-            RMEditorUtils.setFontFamily(editor, rfont); }
+            EditorUtils.setFontFamily(editor, rfont); }
     }
     
     // Handle SizesList
     if(anEvent.equals("SizesList") && anEvent.getValue()!=null)
-        RMEditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
+        EditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
     
     // Handle SizeText
     if(anEvent.equals("SizeText"))
-        RMEditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
+        EditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
 
     // Handle FamilyList, FamilyComboBox
     if(anEvent.equals("FamilyList") || (anEvent.equals("FamilyComboBox") && anEvent.isActionEvent())) {
@@ -161,7 +161,7 @@ public void respondUI(ViewEvent anEvent)
         String fontNames[] = RMFont.getFontNames(familyName); if(fontNames.length==0) return;
         String fontName = fontNames[0];
         RMFont font = RMFont.getFont(fontName, 12);
-        RMEditorUtils.setFontFamily(editor, font);
+        EditorUtils.setFontFamily(editor, font);
     }
     
     // Handle AllButton, PDFButton
@@ -171,7 +171,7 @@ public void respondUI(ViewEvent anEvent)
     // Handle FontNameComboBox
     if(anEvent.equals("FontNameComboBox")) {
         RMFont font = RMFont.getFont(anEvent.getStringValue(), 12);
-        RMEditorUtils.setFontName(editor, font);
+        EditorUtils.setFontName(editor, font);
     }
 }
 

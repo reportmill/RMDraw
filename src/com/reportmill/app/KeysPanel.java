@@ -14,7 +14,7 @@ import snap.view.*;
  * This class shows the current set of keys relative to the current editor selection in a browser and lets users
  * drag and drop them to the editor.
  */
-public class KeysPanel extends RMEditorPane.SupportPane {
+public class KeysPanel extends EditorPane.SupportPane {
     
     // The KeysPanel browser
     BrowserView              _keysBrowser;
@@ -59,7 +59,7 @@ public class KeysPanel extends RMEditorPane.SupportPane {
 /**
  * Creates a new KeysPanel.
  */
-public KeysPanel(RMEditorPane anEP)
+public KeysPanel(EditorPane anEP)
 {
     super(anEP);
     _builtInKeyNodes = new ArrayList(); for(String key : _builtInKeys) _builtInKeyNodes.add(new KeyNode(key));
@@ -102,7 +102,7 @@ public List getKeyPathItems(String aKey)
     String key = kprfx!=null? (kprfx + '.' + ksfx) : ksfx;
     
     // Get Editor.Datasource dataset (just return if null)
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMDataSource dsrc = editor.getDataSource(); if(dsrc==null) return null;
     Map dset = dsrc.getDataset();
     
@@ -177,7 +177,7 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("KeysBrowser") && anEvent.isMouseClick() && anEvent.getClickCount()==2) {
 
         // If double-click on RMTable, add grouping
-        RMEditor editor = getEditor();
+        Editor editor = getEditor();
         if(getSelectedShape() instanceof RMTable) {
             RMTableTool tool = (RMTableTool)editor.getTool(getSelectedShape());
             tool.addGroupingKey(_keysBrowser.getPath());
@@ -341,12 +341,12 @@ public static String getDragKey()  { return _active!=null? _active._dragKey : nu
 public static void dropDragKey(RMShape aShape, ViewEvent anEvent)
 {
     // Get editor
-    RMEditor editor = (RMEditor)anEvent.getView();
+    Editor editor = (Editor)anEvent.getView();
     
     // Handle KeysPanel to-many drop - run dataset key panel (after delay)
     if(_active.isSelectedToMany()) {
         String datasetKey = StringUtils.delete(KeysPanel.getDragKey(), "@");
-        editor.getEnv().runLater(() -> RMEditorUtils.runDatasetKeyPanel(editor, datasetKey));
+        editor.getEnv().runLater(() -> EditorUtils.runDatasetKeyPanel(editor, datasetKey));
     }
     
     // Otherwise, just drop string as text shape
@@ -354,7 +354,7 @@ public static void dropDragKey(RMShape aShape, ViewEvent anEvent)
         aShape.repaint();
         editor.undoerSetUndoTitle("Drag and Drop Key");
         Clipboard cb = anEvent.getClipboard();
-        RMEditorClipboard.paste(editor, cb, (RMParentShape)aShape, anEvent.getPoint());
+        EditorClipboard.paste(editor, cb, (RMParentShape)aShape, anEvent.getPoint());
     }
 }
 

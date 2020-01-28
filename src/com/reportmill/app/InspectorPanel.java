@@ -11,7 +11,7 @@ import snap.view.*;
 /**
  * This class is responsible for the UI associated with the inspector window.
  */
-public class InspectorPanel extends RMEditorPane.SupportPane {
+public class InspectorPanel extends EditorPane.SupportPane {
     
     // The selection path view
     ChildView             _selPathView;
@@ -55,7 +55,7 @@ public class InspectorPanel extends RMEditorPane.SupportPane {
 /**
  * Creates a new InspectorPanel for EditorPane.
  */
-public InspectorPanel(RMEditorPane anEP)  { super(anEP); }
+public InspectorPanel(EditorPane anEP)  { super(anEP); }
 
 /**
  * Initializes UI panel for the inspector.
@@ -87,7 +87,7 @@ public void initUI()
 public void resetUI()
 {
     // Get editor (and just return if null) and tool for selected shapes
-    RMEditor editor = getEditor(); if(editor==null) return;
+    Editor editor = getEditor(); if(editor==null) return;
     RMTool tool = editor.getTool(editor.getSelectedOrSuperSelectedShapes());
     
     // If ShapeSpecificButton is selected, instal inspector for current selection
@@ -104,8 +104,8 @@ public void resetUI()
     // Get inspector title from owner and set
     String title = "Inspector";
     if(owner instanceof RMTool) title = ((RMTool)owner).getWindowTitle();
-    else if(owner instanceof RMEditorPane.SupportPane) {
-        title = ((RMEditorPane.SupportPane)owner).getWindowTitle();
+    else if(owner instanceof EditorPane.SupportPane) {
+        title = ((EditorPane.SupportPane)owner).getWindowTitle();
         String shpName = tool.getShapeClass().getSimpleName().replace("RM", "").replace("Shape", "");
         title += " (" + shpName + ')';
     }
@@ -236,7 +236,7 @@ protected void setInspector(ViewOwner anOwner)
 public void resetSelPathView() 
 {
     // Get main editor, Selected/SuperSelected shape and shape that should be selected in selection path
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMShape selectedShape = editor.getSelectedOrSuperSelectedShape();
     RMShape shape = _deepestShape!=null && _deepestShape.isAncestor(selectedShape)? _deepestShape : selectedShape;
     
@@ -279,7 +279,7 @@ public void resetSelPathView()
 public void popSelection(int selIndex) 
 {
     // Get main editor (just return if editor or deepest shape is null)
-    RMEditor editor = getEditor(); if(editor==null || _deepestShape==null) return;
+    Editor editor = getEditor(); if(editor==null || _deepestShape==null) return;
     
     // If user selected descendant of current selected shape, select on down to it
     if(selIndex > editor.getSelectedOrSuperSelectedShape().getAncestorCount()-1) {

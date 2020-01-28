@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.graphics.*;
 import com.reportmill.shape.*;
 import snap.gfx.*;
@@ -748,7 +748,7 @@ private static boolean pointOnPath(Path aPath, int pointIndex)
 public static class PencilTool extends RMPolygonShapeTool {
 
     /** Creates a new PencilTool. */
-    public PencilTool(RMEditor anEd)  { setEditor(anEd); }
+    public PencilTool(Editor anEd)  { setEditor(anEd); }
     
     /** Overrides polygon tool method to flip default smoothing. */
     public boolean getSmoothPath()  { return true; }

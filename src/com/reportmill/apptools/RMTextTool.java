@@ -51,7 +51,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get editor and currently selected text
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTextShape text = getSelectedShape(); if(text==null) return;
     
     // Get paragraph from text
@@ -111,17 +111,6 @@ public void resetUI()
     setViewValue("LineSpacingSpinner", text.getLineSpacing());
     setViewValue("LineGapSpinner", text.getLineGap());
     
-    // If line height min not set (0), update LineHeightMinSpinner with current font size
-    // If valid line height min, update LineHeightMinSpinner with line height
-    //double lineHtMin = text.getLineHeightMin();
-    //boolean lineHtMinSet = lineHtMin!=0; if(!lineHtMinSet) lineHtMin = RMEditorUtils.getFont(editor).getSize();
-    //setViewValue("LineHeightMinSpinner", lineHtMin);
-    // If line height max not set, update LineHeightMaxSpinner with current font size
-    // If line height max is set, update LineHeightMaxSpinner with line height max
-    //double lineHtMax = text.getLineHeightMax();
-    //boolean lineHtMaxSet = lineHtMax>999; if(!lineHtMaxSet) lineHtMax = RMEditorUtils.getFont(editor).getSize();
-    //setViewValue("LineHeightMaxSpinner", lineHtMax);
-    
     // Update PDF options: EditableCheckBox, MultilineCheckBox
     setViewValue("EditableCheckBox", text.isEditable());
     setViewValue("MultilineCheckBox", text.isEditable() && text.isMultiline());
@@ -134,7 +123,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get editor, currently selected text shape and text shapes (just return if null)
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTextShape text = getSelectedShape(); if(text==null) return;
     List <RMTextShape> texts = (List)getSelectedShapes();
     
@@ -142,10 +131,10 @@ public void respondUI(ViewEvent anEvent)
     for(RMShape txt : texts) txt.repaint(); //texts.forEach(i -> i.repaint());
     
     // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton, AlignTopButton, AlignMiddleButton
-    if(anEvent.equals("AlignLeftButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
-    if(anEvent.equals("AlignCenterButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
-    if(anEvent.equals("AlignRightButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
-    if(anEvent.equals("AlignFullButton")) RMEditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
+    if(anEvent.equals("AlignLeftButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
+    if(anEvent.equals("AlignCenterButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
+    if(anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
+    if(anEvent.equals("AlignFullButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
     if(anEvent.equals("AlignTopButton")) for(RMTextShape txt : texts) txt.setAlignmentY(RMTypes.AlignY.Top);
     if(anEvent.equals("AlignMiddleButton")) for(RMTextShape txt : texts) txt.setAlignmentY(RMTypes.AlignY.Middle);
     if(anEvent.equals("AlignBottomButton")) for(RMTextShape txt : texts) txt.setAlignmentY(RMTypes.AlignY.Bottom);
@@ -243,7 +232,7 @@ private void textAreaChangedSel()
     if(isSendEventDisabled()) return;
     
     // Get text, repaint and make sure it's super-selected
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMTextShape textShape = getSelectedShape(); if(textShape==null) return;
     textShape.repaint();
     if(textShape!=editor.getSuperSelectedShape())
@@ -446,7 +435,7 @@ public void processKeyEvent(T aTextShape, ViewEvent anEvent)
 private void moveTableColumn(ViewEvent anEvent)
 {
     // Get editor, editor SelectedShape and TableRow
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMShape shape = editor.getSelectedOrSuperSelectedShape();
     RMTableRow tableRow = (RMTableRow)shape.getParent(); tableRow.repaint();
     
@@ -487,7 +476,7 @@ private void moveTableColumn(ViewEvent anEvent)
 }
 
 /**
- * Editor method - installs this text in RMEditor's text editor.
+ * Editor method - installs this text in Editor's text editor.
  */
 public void didBecomeSuperSelected(T aTextShape)
 {
@@ -496,7 +485,7 @@ public void didBecomeSuperSelected(T aTextShape)
 }
 
 /**
- * Editor method - uninstalls this text from RMEditor's text editor and removes new text if empty.
+ * Editor method - uninstalls this text from Editor's text editor and removes new text if empty.
  */
 public void willLoseSuperSelected(T aTextShape)
 {
@@ -661,7 +650,7 @@ public void paintBoundsRect(RMTextShape aText, Painter aPntr)
  */
 private boolean isShowBoundsRect(RMTextShape aText)
 {
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(aText.getStroke()!=null) return false; // If text draws it's own stroke, return false
     if(!editor.isEditing()) return false; // If editor is previewing, return false
     if(aText.isStructured()) return false; // If structured text, return false
@@ -891,7 +880,7 @@ private static String getTestString()
 }
 
 /** Sets the character spacing for the currently selected shapes. */
-private static void setCharSpacing(RMEditor anEditor, float aValue)
+private static void setCharSpacing(Editor anEditor, float aValue)
 {
     anEditor.undoerSetUndoTitle("Char Spacing Change");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -900,7 +889,7 @@ private static void setCharSpacing(RMEditor anEditor, float aValue)
 }
 
 /** Sets the line spacing for all chars (or all selected chars, if editing). */
-private static void setLineSpacing(RMEditor anEditor, float aHeight)
+private static void setLineSpacing(Editor anEditor, float aHeight)
 {
     anEditor.undoerSetUndoTitle("Line Spacing Change");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -909,7 +898,7 @@ private static void setLineSpacing(RMEditor anEditor, float aHeight)
 }
 
 /** Sets the line gap for all chars (or all selected chars, if editing). */
-private static void setLineGap(RMEditor anEditor, float aHeight)
+private static void setLineGap(Editor anEditor, float aHeight)
 {
     anEditor.undoerSetUndoTitle("Line Gap Change");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -918,7 +907,7 @@ private static void setLineGap(RMEditor anEditor, float aHeight)
 }
 
 /** Sets the minimum line height for all chars (or all selected chars, if editing). */
-private static void setLineHeightMin(RMEditor anEditor, float aHeight)
+private static void setLineHeightMin(Editor anEditor, float aHeight)
 {
     anEditor.undoerSetUndoTitle("Min Line Height Change");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -927,7 +916,7 @@ private static void setLineHeightMin(RMEditor anEditor, float aHeight)
 }
 
 /** Sets the maximum line height for all chars (or all selected chars, if eiditing). */
-private static void setLineHeightMax(RMEditor anEditor, float aHeight)
+private static void setLineHeightMax(Editor anEditor, float aHeight)
 {
     anEditor.undoerSetUndoTitle("Max Line Height Change");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())

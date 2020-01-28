@@ -9,7 +9,7 @@ import snap.viewx.ColorPanel;
 /**
  * This class manages the attributes panel which holds the color panel, font panel, formatter panel and keys panel.
  */
-public class AttributesPanel extends RMEditorPane.SupportPane {
+public class AttributesPanel extends EditorPane.SupportPane {
     
     // The TabView
     TabView         _tabView;
@@ -32,7 +32,7 @@ public class AttributesPanel extends RMEditorPane.SupportPane {
 /**
  * Creates new AttributesPanel for EditorPane.
  */
-public AttributesPanel(RMEditorPane anEP)  { super(anEP); }
+public AttributesPanel(EditorPane anEP)  { super(anEP); }
 
 /**
  * Returns the inspector names.

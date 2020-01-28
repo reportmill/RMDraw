@@ -12,7 +12,7 @@ import snap.view.*;
 /**
  * Handles editor methods specific to clipboard operations (cut, copy paste).
  */
-public class RMEditorClipboard {
+public class EditorClipboard {
     
     // The MIME type for reportmill xstring
     public static final String    RM_XML_TYPE = "reportmill/xml";
@@ -20,7 +20,7 @@ public class RMEditorClipboard {
 /**
  * Handles editor cut operation.
  */
-public static void cut(RMEditor anEditor)
+public static void cut(Editor anEditor)
 {
     // If text editing, have text editor do copy instead
     if(anEditor.getTextEditor()!=null)
@@ -37,7 +37,7 @@ public static void cut(RMEditor anEditor)
 /**
  * Handles editor copy operation.
  */
-public static void copy(RMEditor anEditor)
+public static void copy(Editor anEditor)
 {
     // If text editing, have text editor do copy instead
     if(anEditor.getTextEditor()!=null)
@@ -67,7 +67,7 @@ public static void copy(RMEditor anEditor)
 /**
  * Handles editor paste operation.
  */
-public static void paste(RMEditor anEditor)
+public static void paste(Editor anEditor)
 {
     // If text editing, have text editor do paste instead
     if(anEditor.getTextEditor()!=null)
@@ -83,7 +83,7 @@ public static void paste(RMEditor anEditor)
 /**
  * Handles editor paste operation for given transferable, parent shape and location.
  */
-public static void paste(RMEditor anEditor, Clipboard aCB, RMParentShape aParent, Point aPoint)
+public static void paste(Editor anEditor, Clipboard aCB, RMParentShape aParent, Point aPoint)
 {
     // Declare variable for pasted shape
     RMShape pastedShape = null;
@@ -163,7 +163,7 @@ public static void paste(RMEditor anEditor, Clipboard aCB, RMParentShape aParent
 /**
  * Returns the first Shape read from the system clipboard.
  */
-public static RMShape getShapeFromClipboard(RMEditor anEditor)
+public static RMShape getShapeFromClipboard(Editor anEditor)
 {
     Object shapes = getShapesFromClipboard(anEditor, null);
     if(shapes instanceof List) shapes = ListUtils.get((List)shapes, 0);
@@ -173,7 +173,7 @@ public static RMShape getShapeFromClipboard(RMEditor anEditor)
 /**
  * Returns the shape or shapes read from the given transferable (uses system clipboard if null).
  */
-public static Object getShapesFromClipboard(RMEditor anEditor, Clipboard aCB)
+public static Object getShapesFromClipboard(Editor anEditor, Clipboard aCB)
 {
     // If no contents, use system clipboard
     Clipboard cboard = aCB!=null? aCB : Clipboard.get();

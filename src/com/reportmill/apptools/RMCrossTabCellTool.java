@@ -187,7 +187,7 @@ public void processEvent(T aCell, ViewEvent anEvent)
             tableTool.processEvent(table, anEvent); return; }
         
         // Get event point in cell coords
-        RMEditor editor = getEditor();
+        Editor editor = getEditor();
         Point point = editor.convertToShape(anEvent.getX(), anEvent.getY(), aCell);
         
         // If point is outside cell, start sending to table tool

@@ -13,7 +13,7 @@ import snap.web.WebURL;
 /**
  * Provides a tool for editing RMFills.
  */
-public class RMFillTool extends RMEditorPane.SupportPane {
+public class RMFillTool extends EditorPane.SupportPane {
 
     // Map of tool instances by shape class
     Map                 _tools = new Hashtable();
@@ -48,7 +48,7 @@ protected void resetUI()
 protected void respondUI(ViewEvent anEvent)
 {
     // Get the current editor and currently selected shape (just return if null)
-    RMEditor editor = getEditor(); if(editor==null) return;
+    Editor editor = getEditor(); if(editor==null) return;
     RMShape shape = editor.getSelectedOrSuperSelectedShape(); if(shape==null) return;
     
     // Handle FillColorWell
@@ -114,7 +114,7 @@ public RMStroke getSelectedStroke()
  */
 public void setSelectedStroke(RMStroke aStroke)
 {
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
         shape.setStroke(i==0? aStroke : aStroke.clone());
@@ -135,7 +135,7 @@ public RMFill getSelectedFill()
  */
 public void setSelectedFill(RMFill aFill)
 {
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
         shape.setFill(i==0? aFill : aFill.clone());

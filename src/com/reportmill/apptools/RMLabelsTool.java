@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.apptools;
-import com.reportmill.app.RMEditor;
+import com.reportmill.app.Editor;
 import com.reportmill.base.RMGrouping;
 import com.reportmill.shape.*;
 import java.util.*;
@@ -161,7 +161,7 @@ public boolean isUngroupable(RMShape aShape)  { return false; }
 /**
  * Adds a new labels shape to editor.
  */
-public static void addLabels(RMEditor anEditor, String aKeyPath)
+public static void addLabels(Editor anEditor, String aKeyPath)
 {
     anEditor.undoerSetUndoTitle("Add Labels"); // Get new RMLabels with aKeyPath and move to center of page
     RMLabels labels = new RMLabels(); // Create new labels shape

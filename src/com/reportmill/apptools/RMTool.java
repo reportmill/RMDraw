@@ -19,10 +19,10 @@ import snap.viewx.DialogBox;
 public class RMTool <T extends RMShape> extends ViewOwner {
     
     // The Editor that owns this tool
-    RMEditor                _editor;
+    Editor _editor;
     
     // The Editor pane
-    RMEditorPane            _editorPane;
+    EditorPane _editorPane;
 
     // The newly created shape instance
     RMShape                 _shape;
@@ -34,7 +34,7 @@ public class RMTool <T extends RMShape> extends ViewOwner {
     static DecimalFormat    _fmt = new DecimalFormat("0.##");
     
     // The image for a shape handle
-    static Image            _handle = Image.get(RMEditor.class, "Handle8x8.png");
+    static Image            _handle = Image.get(Editor.class, "Handle8x8.png");
     
     // Handle constants
     public static final byte HandleWidth = 8;
@@ -84,17 +84,17 @@ public Entity getDatasetEntity(RMShape aShape)  { return aShape.getDatasetEntity
 /**
  * Returns the currently active editor.
  */
-public RMEditor getEditor()  { return _editor; }
+public Editor getEditor()  { return _editor; }
 
 /**
  * Sets the currently active editor.
  */
-public void setEditor(RMEditor anEditor)  { _editor = anEditor; }
+public void setEditor(Editor anEditor)  { _editor = anEditor; }
 
 /**
  * Returns the currently active editor pane.
  */
-public RMEditorPane getEditorPane()
+public EditorPane getEditorPane()
 {
     if(_editorPane!=null) return _editorPane;
     return _editorPane = _editor.getEditorPane();
@@ -103,14 +103,14 @@ public RMEditorPane getEditorPane()
 /**
  * Returns the editor event handler.
  */
-public RMEditorEvents getEditorEvents()  { return getEditor().getEvents(); }
+public EditorEvents getEditorEvents()  { return getEditor().getEvents(); }
     
 /**
  * Returns the current selected shape for the current editor.
  */
 public T getSelectedShape()
 {
-    RMEditor e = getEditor(); if(e==null) return null;
+    Editor e = getEditor(); if(e==null) return null;
     RMShape s = e.getSelectedOrSuperSelectedShape();
     return ClassUtils.getInstance(s, getShapeClass());
 }
@@ -148,7 +148,7 @@ public void reactivateTool()  { }
 /**
  * Called when a tool is deselected to give an opportunity to finalize changes in progress.
  */
-public void flushChanges(RMEditor anEditor, RMShape aShape)  { }
+public void flushChanges(Editor anEditor, RMShape aShape)  { }
 
 /**
  * Returns whether a given shape is selected in the editor.
@@ -195,7 +195,7 @@ public Rect getBoundsSuperSelected(T aShape)  { return aShape.getBoundsMarkedDee
  */
 public double getUnitsFromPoints(double aValue)
 {
-    RMEditor editor = getEditor(); RMDocument doc = editor.getDoc();
+    Editor editor = getEditor(); RMDocument doc = editor.getDoc();
     return doc!=null? doc.getUnitsFromPoints(aValue) : aValue;
 }
 
@@ -209,24 +209,24 @@ public String getUnitsFromPointsStr(double aValue)  { return _fmt.format(getUnit
  */
 public double getPointsFromUnits(double aValue)
 {
-    RMEditor editor = getEditor(); RMDocument doc = editor.getDoc();
+    Editor editor = getEditor(); RMDocument doc = editor.getDoc();
     return doc!=null? doc.getPointsFromUnits(aValue) : aValue;
 }
 
 /**
  * Returns the font for the given shape.
  */
-public RMFont getFont(RMEditor anEditor, RMShape aShape)  { return aShape.getFont(); }
+public RMFont getFont(Editor anEditor, RMShape aShape)  { return aShape.getFont(); }
 
 /**
  * Sets the font for the given shape.
  */
-public void setFont(RMEditor anEditor, RMShape aShape, RMFont aFont)  { aShape.setFont(aFont); }
+public void setFont(Editor anEditor, RMShape aShape, RMFont aFont)  { aShape.setFont(aFont); }
 
 /**
  * Returns the font for the given shape.
  */
-public RMFont getFontDeep(RMEditor anEditor, RMShape aShape)
+public RMFont getFontDeep(Editor anEditor, RMShape aShape)
 {
     // Look for font from shape
     RMFont font = getFont(anEditor, aShape);
@@ -248,7 +248,7 @@ public RMFont getFontDeep(RMEditor anEditor, RMShape aShape)
 /**
  * Sets the font family for given shape.
  */
-public void setFontKey(RMEditor anEditor, RMShape aShape, String aKey, Object aVal)
+public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal)
 {
     // Get current font
     RMFont font = getFont(anEditor, aShape);
@@ -333,7 +333,7 @@ public void setFontKey(RMEditor anEditor, RMShape aShape, String aKey, Object aV
 /**
  * Sets the font family for given shape.
  */
-public void setFontKeyDeep(RMEditor anEditor, RMShape aShape, String aKey, Object aVal)
+public void setFontKeyDeep(Editor anEditor, RMShape aShape, String aKey, Object aVal)
 {
     // Set font key for shape
     setFontKey(anEditor, aShape, aKey, aVal);
@@ -488,7 +488,7 @@ public void paintTool(Painter aPntr)
     paintHandlesForSuperSelectedShapes(aPntr);
     
     // If Editor.MouseDown, just return
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(editor.isMouseDown())
         return;
         
@@ -502,7 +502,7 @@ public void paintTool(Painter aPntr)
 protected void paintHandlesForShapes(Painter aPntr, List <RMShape> theShapes)
 {
     // Get editor and shapes
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     List <RMShape> shapes = theShapes!=null? theShapes : editor.getSelectedShapes();
     
     // Iterate over shapes and have tool paintHandles
@@ -518,7 +518,7 @@ protected void paintHandlesForShapes(Painter aPntr, List <RMShape> theShapes)
 protected void paintHandlesForSuperSelectedShapes(Painter aPntr)
 {
     // Iterate over super selected shapes and have tool paint SuperSelected
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     for(int i=1, iMax=editor.getSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSuperSelectedShape(i);
         RMTool tool = getTool(shape);
@@ -734,7 +734,7 @@ public RMShapeHandle getShapeHandleAtPoint(Point aPoint)
 {
     // Declare variable for shape and handle and shape tool
     RMShape shape = null; int handle = -1; RMTool tool = null;
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
 
     // Check selected shapes for a selected handle index
     for(int i=0, iMax=editor.getSelectedShapeCount(); handle==-1 && i<iMax; i++) {
@@ -871,7 +871,7 @@ private void dropImageFile(RMShape aShape, ClipboardData aFile, Point aPoint)
     Object imgSrc = aFile.getSourceURL()!=null? aFile.getSourceURL() : aFile.getBytes();
     
     // If image hit a real shape, see if user wants it to be a texture
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     if(aShape!=editor.getSelPage()) {
         
         // Create drop image file options array
@@ -939,7 +939,7 @@ private void dropPDFFile(RMShape aShape, ClipboardData aFile, Point aPoint)
     Object imgSrc = aFile.getSourceURL()!=null? aFile.getSourceURL() : aFile.getBytes();
     
     // If image hit a real shape, see if user wants it to be a texture
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     RMShape shape = aShape; while(!getTool(shape).getAcceptsChildren(shape)) shape = shape.getParent();
     
     // Get parent to add image shape to and drop point in parent coords
@@ -1027,7 +1027,7 @@ public static RMTool createTool(Class aClass)
     if(aClass==RMTableGroup.class) return new RMTableGroupTool();
     if(aClass==RMTableRow.class) return new RMTableRowTool();
     if(aClass==RMTextShape.class) return new RMTextTool();
-    if(aClass==RMViewerShape.class) return new RMTool();
+    if(aClass== ViewerShape.class) return new RMTool();
     System.out.println("RMTool.createTool: " + aClass.getName());
     return new RMTool();
 }

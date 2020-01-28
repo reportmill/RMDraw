@@ -10,10 +10,10 @@ import snap.gfx.*;
 import snap.util.*;
 
 /**
- * This class offers some methods to provide "proximity guides" for RMEditor. This feature draws lines indicating when
+ * This class offers some methods to provide "proximity guides" for Editor. This feature draws lines indicating when
  * dragged shapes share alignments with some of their neighboring shapes (and also snaps to these alignments, too).
  */
-public class RMEditorProxGuide {
+public class EditorProxGuide {
 
     // Whether proximity guides are enabled.
     static boolean        _enabled = Prefs.get().getBoolean("ProximityGuide", false);
@@ -41,7 +41,7 @@ public static void setEnabled(boolean aFlag)
 /**
  * Empties the guideline list and marks the old guideline region for repaint
  */
-public static void clearGuidelines(RMEditor anEditor)
+public static void clearGuidelines(Editor anEditor)
 {
     markGuidelinesDirty(anEditor);
     _guidelineRects.clear();
@@ -50,7 +50,7 @@ public static void clearGuidelines(RMEditor anEditor)
 /**
  * Runs through the guideline list and asks the editor to repaint the enclosing rect.
  */
-public static void markGuidelinesDirty(RMEditor anEditor)
+public static void markGuidelinesDirty(Editor anEditor)
 {
     // If no GuidelineRects, just return
     if(_guidelineRects.size()==0) return;
@@ -68,7 +68,7 @@ public static void markGuidelinesDirty(RMEditor anEditor)
 /**
  * Called by the editor to paint all the guidelines in the guideline list
  */
-public static void paintProximityGuides(RMEditor anEditor, Painter aPntr)
+public static void paintProximityGuides(Editor anEditor, Painter aPntr)
 {
     // If no GuidelineRects, just return
     if(_guidelineRects.size()==0) return;
@@ -91,7 +91,7 @@ public static void setIncludesSuperselectedShape(boolean aFlag)  { _includeSuper
 /**
  * Returns the list of shapes to be included in the proximity check.
  */
-public static List <RMShape> getCandidateShapes(RMEditor anEditor)
+public static List <RMShape> getCandidateShapes(Editor anEditor)
 {
     // Get super selected shape
     RMShape parent = anEditor.getSuperSelectedShape();
@@ -119,7 +119,7 @@ public static List <RMShape> getCandidateShapes(RMEditor anEditor)
 /**
  * Calculate guidelines for the bounds of the selected shapes against all other superselected shapes.
  */
-public static void createGuidelines(RMEditor anEditor)
+public static void createGuidelines(Editor anEditor)
 {
     // If not in select tool drag move or resize, just return
     RMSelectTool.DragMode dragMode = anEditor.getSelectTool().getDragMode();
@@ -149,7 +149,7 @@ public static void createGuidelines(RMEditor anEditor)
  * Recalculates all the proximity guides and marks dirty region in editor for old & new guide regions.
  * Guides are calculated between the bounds rectangle and each of the candidateShapes, within the parent RMShape.
  */
-public static void createGuidelines(RMEditor anEditor, RMShape parent, Rect bounds, List candidateShapes)
+public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds, List candidateShapes)
 {
     // If disabled, just return
     if(!_enabled) return;
@@ -269,7 +269,7 @@ private static void addGuideline(Point p1, Point p2)  { _guidelineRects.add(Rect
 /**
  * Returns the given point snapped to relevant proximity guides.
  */
-public static Point pointSnappedToProximityGuides(RMEditor anEditor, Point aPoint)
+public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint)
 {
     return pointSnappedToProximityGuides(anEditor,aPoint, anEditor.getSelectTool().getDragMode());
 }
@@ -277,7 +277,7 @@ public static Point pointSnappedToProximityGuides(RMEditor anEditor, Point aPoin
 /**
  * Returns the given point snapped to relevant proxity guides for a given drag mode.
  */
-public static Point pointSnappedToProximityGuides(RMEditor anEditor, Point aPoint, RMSelectTool.DragMode aDragMode)
+public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint, RMSelectTool.DragMode aDragMode)
 {
     // If not enabled, just return point
     if(!_enabled)

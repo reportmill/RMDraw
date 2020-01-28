@@ -10,7 +10,7 @@ import snap.gfx.*;
 /**
  * Provides a tool for editing RMFills.
  */
-public class EffectTool extends RMEditorPane.SupportPane {
+public class EffectTool extends EditorPane.SupportPane {
 
     // Map of tool instances by shape class
     Map            _tools = new Hashtable();
@@ -48,7 +48,7 @@ public Effect getSelectedEffect()
  */
 public void setSelectedEffect(Effect anEffect)
 {
-    RMEditor editor = getEditor();
+    Editor editor = getEditor();
     for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
         shape.setEffect(anEffect);
