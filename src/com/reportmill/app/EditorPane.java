@@ -66,104 +66,17 @@ public EditorPaneMenuBar getMenuBar()  { return _menuBar!=null? _menuBar : (_men
  */
 protected EditorPaneMenuBar createMenuBar()  { return new EditorPaneMenuBar(this); }
 
-/**
- * Returns the datasource associated with the editor's document.
- */
-public RMDataSource getDataSource()  { return getEditor().getDataSource(); }
-
-/**
- * Sets the datasource associated with the editor's document.
- */
-public void setDataSource(RMDataSource aDataSource)  { setDataSource(aDataSource, -1, -1); }
-
-/**
- * Sets the datasource for the panel.
- */
-public void setDataSource(RMDataSource aDataSource, double aX, double aY)
-{
-    // Set DataSource in editor, show DataSource inspector, KeysBrowser and refocus window
-    getEditor().setDataSource(aDataSource, aX, aY);
-    if(getWindow().isVisible())
-        getWindow().toFront();
-    
-    // Show KeysPanel (after delay, so XML icon animation can finish)
-    runLaterDelayed(2000, () -> getAttributesPanel().setVisibleName(AttributesPanel.KEYS));
-}
-
-/**
- * Sets a datasource from a given URL at a given point (if dragged in).
- */
 public void setDataSource(WebURL aURL, double aX, double aY)
 {
-    // Create DataSource and load dataset
-    RMDataSource dsource = new RMDataSource(aURL);
-    try { dsource.getDataset(); }
-    
-    // If failed, get error message and run error panel
-    catch(Throwable t) {
-        while(t.getCause()!=null) t = t.getCause(); // Get root cause
-        String e1 = StringUtils.wrap(t.toString(), 40);
-        Object line = RMKey.getValue(t, "LineNumber"), column = RMKey.getValue(t, "ColumnNumber");
-        if(line!=null || column!=null) e1 += "\nLine: " + line + ", Column: " + column;
-        else t.printStackTrace();
-        String error = e1;
-        runLater(() -> {
-            DialogBox dbox = new DialogBox("Error Parsing XML"); dbox.setErrorMessage(error);
-            dbox.showMessageDialog(getUI()); });
-        return;
-    }        
-        
-    // Set DataSource in editor, show DataSource inspector, KeysBrowser and refocus window
-    setDataSource(dsource, aX, aY);
+    throw new RuntimeException("EditorPane.setDataSource: Not implemented");
 }
 
-/**
- * Returns whether editor is really doing editing.
- */
-public boolean isEditing()  { return getEditor().isEditing(); }
+public boolean isEditing()  { return false; }
 
-/**
- * Sets whether editor is really doing editing.
- */
 public void setEditing(boolean aFlag)
 {
-    // If editor already has requested editing state, just return
-    if(aFlag == isEditing()) return;
-    
-    // Hide attributes drawer
-    hideAttributesDrawer();
-    
-    // If not yet previewing, store current template then generate report and swap it in
-    if(!aFlag) {
-                
-        // Cache current editor and flush any current editing
-        _realEditor = getEditor();
-        _realEditor.flushEditingChanges();
-        
-        // Generate report and restore filename
-        RMDocument report = getDoc().generateReport(getEditor().getDataSourceDataset());
-        
-        // Create new editor, set editing to false and set report document
-        Editor editor = new Editor();
-        editor.setEditing(false);
-        editor.setDoc(report);
-        
-        // If generateReport hit any keyChain parsing errors, run message dialog
-        if(RMKeyChain.getError()!=null) { String err = RMKeyChain.getAndResetError();
-            DialogBox dbox = new DialogBox("Error Parsing KeyChain"); dbox.setErrorMessage(err);
-            dbox.showMessageDialog(getUI());
-        }
-        
-        // Set new editor
-        setViewer(editor);
-    }
-
-    // If turning preview off, restore real editor
-    else setViewer(_realEditor);
-    
-    // Focus on editor
-    requestFocus(getEditor());
-    resetLater();
+    if(aFlag) return;
+    throw new RuntimeException("EditorPane.setEditing: Not implemented");
 }
 
 /**
@@ -258,26 +171,9 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.isPopupTrigger() && !anEvent.isConsumed())
         runPopupMenu(anEvent);
     
-    // If Editor.MouseClick and DataSource is set and we're editing and DataSource icon clicked, show DS Inspector
-    else if(anEvent.isMouseClick() && getDataSource()!=null && isEditing()) {
-        Rect r = getEditor().getVisRect(); // Get visible rect
-        if(anEvent.getX()>r.getMaxX()-53 && anEvent.getY()>r.getMaxY()-53) { // If DataSource icon clicked
-            if(anEvent.isShortcutDown()) setDataSource(null); // If cmd key down, clear the DataSource
-            else getInspectorPanel().setVisible(7); // otherwise show DataSource inspector
-        }
-    
-        // If mouse isn't in lower right corner and DataSource inspector is showing, show shape specific inspector
-        else if(getInspectorPanel().isShowingDataSource())
-            getInspectorPanel().setVisible(0);
-    }
-    
     // Handle WinClosing
     else if(anEvent.isWinClose()) {
         close(); anEvent.consume(); }
-    //else if(anEvent.isWinResized()) { //Dimension wsize=getWindow().getSize(), psize=getWindow().getPreferredSize();
-        //if(Math.abs(wsize.width-psize.width)<=10) wsize.width = psize.width;
-        //if(Math.abs(wsize.height-psize.height)<=10) wsize.height = psize.height;
-        //if(getWindow().getWidth()!=wsize.width || getWindow().getHeight()!=wsize.height) getWindow().setSize(wsize);
 }
 
 /**

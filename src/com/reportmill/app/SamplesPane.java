@@ -38,7 +38,6 @@ public class SamplesPane extends ViewOwner {
  */
 public void showSamples(EditorPane anEP)
 {
-    anEP.setEditing(true);
     _epane = anEP;
     ChildView aView = (ChildView)anEP.getUI();
 
@@ -83,18 +82,10 @@ protected View createUI()
     Label selectLabel = new Label("Select a template:");
     selectLabel.setFont(Font.Arial16.deriveFont(20).getBold());
     
-    // Create silly DatasetButton to add movies dataset
-    Button dsetButton = new Button("Add Movies Dataset"); dsetButton.setName("DatasetButton");
-    dsetButton.setFont(Font.Arial12);
-    dsetButton.setPadding(4,4,4,4);
-    dsetButton.setLeanX(HPos.RIGHT);
-    dsetButton.addEventHandler(e -> datasetButtonClicked(), Action);
-    
-    // Create HeaderRow to hold SelectLabel and DatasetButton
+    // Create HeaderRow to hold SelectLabel
     RowView headerRow = new RowView();
     headerRow.addChild(selectLabel);
-    headerRow.addChild(dsetButton);
-    
+
     // Create top level col view to hold HeaderRow and ColView
     ColView boxView = new ColView();
     boxView.setSpacing(8); boxView.setFillWidth(true);
@@ -142,7 +133,7 @@ private void indexFileLoaded(WebResponse aResp)
     }
     
     // Get DocNames from list
-    _docNames = docNamesList.toArray(new String[docNamesList.size()]);
+    _docNames = docNamesList.toArray(new String[0]);
     _docImages = new Image[_docNames.length];
     
     // Rebuild UI
@@ -186,7 +177,7 @@ private void buildUI()
         
         // Create ImageViewX for sample
         ImageView iview = new ImageView(); iview.setPrefSize(getDocSize(i)); iview.setFill(Color.WHITE);
-        iview.setName("ImageView" + String.valueOf(i)); iview.setEffect(i==0? SHADOW_SEL : SHADOW);
+        iview.setName("ImageView" + i); iview.setEffect(i==0? SHADOW_SEL : SHADOW);
         
         // Create label for sample
         Label label = new Label(name); label.setFont(Font.Arial13); label.setPadding(3,4,3,4);
@@ -195,7 +186,7 @@ private void buildUI()
         // Create/add ItemBox for Sample and add ImageView + Label
         ColView ibox = new ColView(); ibox.setPrefSize(175,175); ibox.setAlign(Pos.TOP_CENTER);
         ibox.setChildren(iview, label); ibox.setPadding(0,0,8,0);
-        ibox.setName("ItemBox" + String.valueOf(i));
+        ibox.setName("ItemBox" + i);
         ibox.addEventHandler(e -> itemBoxWasPressed(ibox, e), MousePress);
         rowView.addChild(ibox);
     }
@@ -233,15 +224,6 @@ private void itemBoxWasPressed(ColView anItemBox, ViewEvent anEvent)
     
     // If double-click, confirm dialog box
     if(anEvent.getClickCount()>1) _dbox.confirm();
-}
-
-/**
- * Called when user hits DatasetButton.
- */
-private void datasetButtonClicked()
-{
-    EditorPaneUtils.connectToDataSource(_epane);
-    _dbox.cancel();
 }
 
 /**
@@ -325,7 +307,7 @@ private void loadImages()
 /** Called after an image is loaded to set in ImageView in app thread. */
 private void setImage(Image anImg, int anIndex)
 {
-    String name = "ImageView" + String.valueOf(anIndex);
+    String name = "ImageView" + anIndex;
     ImageView iview = getView(name, ImageView.class);
     iview.setImage(anImg);
 }

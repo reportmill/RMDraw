@@ -264,10 +264,6 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("AddCrossTabButton")) RMCrossTabTool.addCrossTab(getEditor());
     if(anEvent.equals("AddImagePlaceHolderMenuItem")) EditorUtils.addImagePlaceholder(getEditor());
 
-    // Handle ConnectToDataSourceMenuItem
-    if(anEvent.equals("ConnectToDataSourceMenuItem") || anEvent.equals("ConnectToDataSourceButton"))
-        EditorPaneUtils.connectToDataSource(getEditorPane());
-        
     // Handle ColorWell
     if(anEvent.equals("ColorWell"))
         EditorUtils.setSelectedColor(editor, _colorWell.getColor());
@@ -313,6 +309,11 @@ public void stopSamplesButtonAnim()
     View btn = getView("SamplesButton");
     btn.getAnim(0).finish();
 }
+
+/**
+ * Returns the ToolBar tools.
+ */
+public RMTool[] getToolBarTools()  { return _toolBarTools; }
 
 /**
  * Creates the list of tool instances for tool bar.

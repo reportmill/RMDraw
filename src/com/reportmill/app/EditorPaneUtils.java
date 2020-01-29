@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package com.reportmill.app;
-import com.reportmill.base.*;
 import com.reportmill.shape.*;
 import java.io.File;
 import snap.util.*;
@@ -13,15 +12,6 @@ import snap.viewx.*;
  * Some utility methods for EditorPane.
  */
 public class EditorPaneUtils {
-
-/**
- * Installs a sample data source.
- */
-public static void connectToDataSource(EditorPane anEP)
-{
-    RMDataSource ds = new RMDataSource(RMExtras.getHollywoodURL());
-    if(ds!=null) anEP.setDataSource(ds, 350, 0);
-}
 
 /**
  * Opens the named sample file from the examples package.
