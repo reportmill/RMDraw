@@ -188,13 +188,11 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("InspectorMenuItem")) epane.getInspectorPanel().setVisible(-1);
     if(anEvent.equals("ColorPanelMenuItem")) epane.getAttributesPanel().setVisibleName(AttributesPanel.COLOR);
     if(anEvent.equals("FormatPanelMenuItem")) epane.getAttributesPanel().setVisibleName(AttributesPanel.FORMAT);
-    if(anEvent.equals("KeysPanelMenuItem")) epane.getAttributesPanel().setVisibleName(AttributesPanel.KEYS);
-    
-    // Handle ShowRulersMenuItem, FeedbackMenuItem, PrefsMenuItem
+
+    // Handle ShowRulersMenuItem, FeedbackMenuItem
     if(anEvent.equals("ShowRulersMenuItem")) epane.setShowRulers(!epane.isShowRulers());
     if(anEvent.equals("FeedbackMenuItem")) new FeedbackPanel().showPanel(epane.getUI());
-    if(anEvent.equals("PrefsMenuItem")) new PreferencesPanel().showPanel(epane.getUI());
-    
+
     // Handle SupportPageMenuItem, TutorialMenuItem, BasicAPIMenuItem, TablesMenuItem
     if(anEvent.equals("SupportPageMenuItem")) URLUtils.openURL("http://reportmill.com/support");
     if(anEvent.equals("TutorialMenuItem")) URLUtils.openURL("http://reportmill.com/support/tutorial.pdf");
