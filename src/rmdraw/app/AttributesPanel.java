@@ -42,7 +42,7 @@ public String[] getInspectorNames()  { return _inspNames!=null? _inspNames : (_i
 /**
  * Creates the inspector names array.
  */
-public String[] createInspectorNames()  { return new String[] { KEYS, COLOR, FONT, FORMAT }; }
+public String[] createInspectorNames()  { return new String[] { COLOR, FONT, FORMAT }; }
 
 /**
  * Returns the inspectors.
@@ -54,11 +54,10 @@ public ViewOwner[] getInspectors()  { return _insprs!=null? _insprs : (_insprs=c
  */
 public ViewOwner[] createInspectors()
 {
-    KeysPanel keys = new KeysPanel(getEditorPane());
     APColorPanel color = new APColorPanel();
     FontPanel font = new FontPanel(getEditorPane());
     FormatPanel format = new FormatPanel(getEditorPane());
-    return new ViewOwner[] { keys, color, font, format };
+    return new ViewOwner[] { color, font, format };
 }
 
 /**
@@ -116,7 +115,8 @@ public void setVisibleName(String aName)  { setVisibleName(aName, false); }
 public void setVisibleName(String aName, boolean doToggle)
 {
     String names[] = getInspectorNames();
-    int vis = getVisible(), vis2 = -1; for(int i=0;i<names.length;i++) if(aName.equals(names[i])) vis2 = i;
+    int vis = getVisible();
+    int vis2 = -1; for(int i=0;i<names.length;i++) if(aName.equals(names[i])) vis2 = i;
     if(vis!=vis2)
         setVisible(vis2);
     else if(doToggle)

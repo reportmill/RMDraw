@@ -136,21 +136,17 @@ protected void dragDrop(ViewEvent anEvent)
      */
     public void dropForView(RMShape aView, ViewEvent anEvent)
     {
-        // If a binding key drop, apply binding
+        // Handle String drop
         Clipboard cb = anEvent.getClipboard();
         if(cb.hasString())
-            KeysPanel.dropDragKey(aView, anEvent);
-
-        // Handle String drop
-        else if(anEvent.getClipboard().hasString())
             dropStringForView(aView, anEvent);
 
         // Handle color panel drop
-        else if(anEvent.getClipboard().hasColor())
+        else if(cb.hasColor())
             dropColorForView(aView, anEvent);
 
         // Handle File drop - get list of dropped files and add individually
-        else if(anEvent.getClipboard().hasFiles())
+        else if(cb.hasFiles())
             dropFilesForView(aView, anEvent);
     }
 
