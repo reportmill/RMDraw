@@ -5,6 +5,7 @@ package rmdraw.shape;
 import rmdraw.base.*;
 import rmdraw.graphics.*;
 import java.util.*;
+import snap.gfx.Color;
 import snap.util.*;
 import snap.web.WebURL;
 
@@ -33,7 +34,7 @@ public RMDocument getDoc(Object aSource, RMDocument aBaseDoc)
         throw new RuntimeException("RMArchiver.getDoc: Cannot read source: " + (url!=null? url : aSource));
     
     // If PDF, return PDF Doc
-    if(bytes!=null && RMPDFData.canRead(bytes))
+    if(RMPDFData.canRead(bytes))
         return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
 
     // Create archiver, read, set source and return
@@ -87,7 +88,7 @@ protected Map <String, Class> createClassMap()
     classMap.put("scene3d", RMScene3D.class);
 
     // Graphics
-    classMap.put("color", RMColor.class);
+    classMap.put("color", Color.class);
     classMap.put("font", RMFont.class);
     classMap.put("format", RMFormatStub.class);
     classMap.put("pgraph", RMParagraph.class);

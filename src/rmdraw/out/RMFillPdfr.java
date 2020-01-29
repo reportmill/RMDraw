@@ -54,8 +54,8 @@ public static void writeGradientFill(RMShape aShape, RMGradientFill aFill, PDFWr
     String outerBounds = "", outerDomain = "", encode = "";
     for(int i=0; i<stopCount-1; ++i) {
         function = new Hashtable(5);
-        RMColor c0 = aFill.getStopColor(i);
-        RMColor c1 = aFill.getStopColor(i+1);
+        Color c0 = aFill.getStopColor(i);
+        Color c1 = aFill.getStopColor(i+1);
         double d0 = aFill.getStopOffset(i);
         double d1 = aFill.getStopOffset(i+1);
         function.put("FunctionType", "2");
@@ -112,7 +112,9 @@ public static void writeGradientFill(RMShape aShape, RMGradientFill aFill, PDFWr
     endPt.y = page.getFrameMaxY() - endPt.y;
     
     // Add the newly calculated endpoints to the shading dictionary
-    List coords = new ArrayList(4); coords.add(startPt.getX()); coords.add(startPt.getY());
+    List coords = new ArrayList(4);
+    coords.add(startPt.getX());
+    coords.add(startPt.getY());
     if(isRadial) {
         coords.add(0d); // start radius = 0
         coords.add(coords.get(0)); coords.add(coords.get(1)); // end point is same as start point
@@ -120,8 +122,8 @@ public static void writeGradientFill(RMShape aShape, RMGradientFill aFill, PDFWr
         shading.put("Extend", "[false true]"); // set radial shading to extend beyond end circle
     }
     else {
-        coords.add(new Double(endPt.getX()));
-        coords.add(new Double(endPt.getY()));
+        coords.add(endPt.getX());
+        coords.add(endPt.getY());
     }
     shading.put("Coords", coords);
 

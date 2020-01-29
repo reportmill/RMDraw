@@ -6,6 +6,7 @@ import rmdraw.app.Editor;
 import rmdraw.graphics.*;
 import rmdraw.shape.RMShape;
 import java.util.List;
+import snap.gfx.Color;
 import snap.view.ViewEvent;
 import snap.viewx.ColorWell;
 
@@ -46,7 +47,7 @@ public void respondUI(ViewEvent anEvent)
     // Handle StrokeColorWell - get color and set in selected shapes
     if(anEvent.equals("StrokeColorWell")) {
         ColorWell cwell = getView("StrokeColorWell", ColorWell.class);
-        RMColor color = RMColor.get(cwell.getColor());
+        Color color = cwell.getColor();
         for(RMShape s : shapes)
             s.setStrokeColor(color);
     }
@@ -62,19 +63,27 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("TopCheckBox")) {
         for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.deriveTop(anEvent.getBoolValue())); }}
+            shp.setStroke(bstr.deriveTop(anEvent.getBoolValue()));
+        }
+    }
     if(anEvent.equals("RightCheckBox")) {
         for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.deriveRight(anEvent.getBoolValue())); }}
+            shp.setStroke(bstr.deriveRight(anEvent.getBoolValue()));
+        }
+    }
     if(anEvent.equals("BottomCheckBox")) {
         for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.deriveBottom(anEvent.getBoolValue())); }}
+            shp.setStroke(bstr.deriveBottom(anEvent.getBoolValue()));
+        }
+    }
     if(anEvent.equals("LeftCheckBox")) {
         for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.deriveLeft(anEvent.getBoolValue())); }}
+            shp.setStroke(bstr.deriveLeft(anEvent.getBoolValue()));
+        }
+    }
 }
     
 }

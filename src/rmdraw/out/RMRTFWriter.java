@@ -16,12 +16,12 @@ public class RMRTFWriter {
 
     // Font & Color table
     List <FontFile>    _fontTable;
-    List <RMColor>       _colorTable;
+    List <Color>       _colorTable;
     
     // settings that persist across shapes
     RMParagraph          _currentParagraph;
     RMFont               _currentFont;
-    RMColor              _currentColor;
+    Color                _currentColor;
     
     // Current font style
     boolean              _isBold, _isItalic, _isUnderline;
@@ -40,10 +40,10 @@ public byte[] getBytes(RMDocument aDoc)
 
     // Allocate font & color tables
     _fontTable = new ArrayList();
-    _colorTable = new ArrayList(); _colorTable.add(RMColor.black); // Init with black
+    _colorTable = new ArrayList(); _colorTable.add(Color.BLACK); // Init with black
     
     // Set the current color & paragraph styles to the defaults
-    _currentColor = RMColor.black; _currentParagraph = getRTFParagraphDefaults();
+    _currentColor = Color.BLACK; _currentParagraph = getRTFParagraphDefaults();
     _currentFont = null; _isBold = _isItalic = _isUnderline = false;
     
     // Create print stream and write the header
@@ -132,7 +132,7 @@ public void writeColorTable(PrintStream ps)
     
     if(ncolors > 0) {
         ps.print("{\\colortbl");
-        for(int i=0; i<ncolors; ++i) { RMColor c = _colorTable.get(i);
+        for(int i=0; i<ncolors; ++i) { Color c = _colorTable.get(i);
             int r = c.getRedInt(), g = c.getGreenInt(), b = c.getBlueInt();
             
             // black is special
@@ -144,7 +144,7 @@ public void writeColorTable(PrintStream ps)
     }
 }
 
-public int getColorIndex(RMColor c)
+public int getColorIndex(Color c)
 {
     int i = _colorTable.indexOf(c);
     if(i<0) { i = _colorTable.size(); _colorTable.add(c); }
@@ -397,7 +397,7 @@ public void appendText(RMXString s, PrintStream ps)
         }
         
         // Update text color
-        RMColor color = run.getColor();
+        Color color = run.getColor();
         if(!_currentColor.equals(color)) {
             ps.print("\\cf"+getColorIndex(color)); _currentColor = color; }
         

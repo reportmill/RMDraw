@@ -4,6 +4,7 @@
 package rmdraw.shape;
 import rmdraw.graphics.*;
 import java.util.*;
+import snap.gfx.Color;
 import snap.util.*;
 
 /**
@@ -34,8 +35,8 @@ public class RMCrossTab extends RMParentShape {
     RMCrossTabCol            _leftBrdrCol = new RMCrossTabCol();
     
     // The color of the header row and column
-    static RMColor HEADER_ROW_COLOR = new RMColor(.75f);
-    static RMColor HEADER_COLUMN_COLOR = new RMColor(.867f);
+    static Color HEADER_ROW_COLOR = new Color(.75f);
+    static Color HEADER_COLUMN_COLOR = new Color(.867f);
 
 /**
  * Creates a new RMCrossTab.
@@ -452,7 +453,7 @@ public RMShape divideShapeFromTop(double anAmount)
 {
     // Get whether to ReprintHeaderRows from parent crosstab frame
     RMCrossTabFrame crossTabFrame = getParent(RMCrossTabFrame.class);
-    boolean reprintHeaderRows = crossTabFrame!=null? crossTabFrame.getReprintHeaderRows() : false;
+    boolean reprintHeaderRows = crossTabFrame != null && crossTabFrame.getReprintHeaderRows();
     
     // Disable reprint header rows if amount isn't enough to accommodate at least one non-header row
     if(reprintHeaderRows && (getRowCount()==getHeaderRowCount() || getRow(getHeaderRowCount()).getMaxY()>=anAmount))

@@ -3,8 +3,8 @@
  */
 package rmdraw.shape;
 import rmdraw.base.*;
-import rmdraw.graphics.RMColor;
 import rmdraw.shape.RMGraph.*;
+import snap.gfx.Color;
 import java.util.*;
 
 /**
@@ -28,7 +28,7 @@ abstract class RMGraphRPG {
     List <RMGraphSection>  _sections;
     
     // The list of colors
-    List <RMColor>           _colors;
+    List <Color>           _colors;
     
     // The graph shape
     RMParentShape          _graphShape;
@@ -42,7 +42,8 @@ public RMGraphRPG(RMGraph aGraph, ReportOwner anRptOwner)
     _graph = aGraph; _rptOwner = anRptOwner;
     
     // Get dataset: If parent TableRow was found, get dataset from table row group 
-    List dataset = null; String datasetKey = _graph.getDatasetKey();
+    List dataset;
+    String datasetKey = _graph.getDatasetKey();
     RMShape parentTableRow = _graph.getParent(RMTableRow.class);
     if(parentTableRow!=null) {
         
@@ -153,7 +154,7 @@ public List <RMGraphSection> getSections()  { return _sections; }
 /**
  * Returns the colors.
  */
-public List <RMColor> getColors()
+public List <Color> getColors()
 {
     // If already set, just return
     if(_colors!=null) return _colors;
@@ -161,16 +162,16 @@ public List <RMColor> getColors()
     // If no graph key, just use Graph.Colors
     String ckey = _graph.getColorKey();
     if(ckey==null)
-        return _colors = (List)_graph.getColors();
+        return _colors = _graph.getColors();
         
     // Otherwise, get colors
     RMGraphSeries series = getSeries(0);
-    List <RMColor> colors = new ArrayList();
+    List <Color> colors = new ArrayList();
     for(int i=0,iMax=series.getItemCount(); i<iMax; i++) { RMGraphSeries.Item item = series.getItem(i);
         Object obj = item.getGroup();
         Object val = RMKeyChain.getValue(obj, ckey);
         if(val instanceof String) {
-            RMColor c = RMColor.get((String)val);
+            Color c = Color.get(val);
             if(c==null) c = _graph.getColor(i);
             colors.add(c);
         }
@@ -189,7 +190,7 @@ public int getColorCount()  { return getColors().size(); }
 /**
  * Returns the individual color at given index.
  */
-public RMColor getColor(int anIndex)  { return getColors().get(anIndex%getColorCount()); }
+public Color getColor(int anIndex)  { return getColors().get(anIndex%getColorCount()); }
 
 /**
  * An interface to identify generated graph shapes.

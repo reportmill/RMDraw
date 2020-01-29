@@ -106,7 +106,8 @@ public void write(String aPath)
     
     // Write images
     File dir = new File(aPath); dir = dir.getParentFile();
-    dir = new File(dir, _imageRoot); dir.mkdirs();
+    dir = new File(dir, _imageRoot);
+    dir.mkdirs();
     for(String iname : _files.keySet()) { byte bytes[] = _files.get(iname);
         File file = new File(dir, iname);
         try { FileUtils.writeBytes(file, bytes); }
@@ -202,7 +203,7 @@ private static class RMShapeHpr <T extends RMShape> extends RMHtmlHelper<T> {
         }
         
         // Add path
-        XMLElement pathXML = null;
+        XMLElement pathXML;
         if(fill!=null || stroke!=null || effect!=null) {
             pathXML = new XMLElement("path");
             pathXML.add("d", new SVGPathMaker().append(aShape.getPath()).toString());
@@ -385,7 +386,7 @@ private static class RMTextShapeHpr <T extends RMTextShape> extends RMShapeHpr <
             tspan.add("font-style", rfont.isItalic()? "italic" : "normal");
             tspan.add("font-weight", rfont.isBold()? "bold" : "normal");
             tspan.add("font-size", (int)rfont.getSize());
-            if(!rcolor.equals(RMColor.black)) tspan.add("fill", '#' + rcolor.toHexString());
+            if(!rcolor.equals(Color.BLACK)) tspan.add("fill", '#' + rcolor.toHexString());
             tspan.setValue(str);
             text.addElement(tspan);
         }

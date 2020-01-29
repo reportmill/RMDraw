@@ -4,6 +4,7 @@
 package rmdraw.apptools;
 import rmdraw.graphics.*;
 import rmdraw.shape.*;
+import snap.gfx.Color;
 import snap.gfx.GradientPaint;
 import snap.util.ClassUtils;
 import snap.view.ViewEvent;
@@ -107,8 +108,8 @@ public RMGradientFill getDefaultFill(RMShape shape)
     
     // If missing, create one - second color defaults to black, unless that would result in a black-black gradient
     if(fill==null) {
-        RMColor c = shape.getColor();
-        RMColor c2 = c.equals(RMColor.black)? RMColor.white : RMColor.black;
+        Color c = shape.getColor();
+        Color c2 = c.equals(Color.BLACK)? Color.WHITE : Color.BLACK;
         fill = new RMGradientFill(c, c2, 0);
     }
     

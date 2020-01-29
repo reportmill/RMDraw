@@ -11,7 +11,7 @@ import snap.util.*;
 public class RMStroke implements Cloneable, XMLArchiver.Archivable {
     
     // The color
-    RMColor      _color = RMColor.black;
+    Color        _color = Color.BLACK;
     
     // The stroke width
     float        _width = 1;
@@ -30,12 +30,12 @@ public RMStroke()  { }
 /**
  * Creates a stroke with the given color and line width.
  */
-public RMStroke(Color aColor, double aStrokeWidth)  { _color = RMColor.get(aColor); _width = (float)aStrokeWidth; }
+public RMStroke(Color aColor, double aStrokeWidth)  { _color = aColor; _width = (float)aStrokeWidth; }
 
 /**
  * Returns the color associated with this fill.
  */
-public RMColor getColor()  { return _color; }
+public Color getColor()  { return _color; }
 
 /**
  * Returns the line width of this stroke.
@@ -99,7 +99,7 @@ public String getName()
 /**
  * Returns a duplicate stroke with new color.
  */
-public RMStroke deriveColor(RMColor aColor)  { RMStroke s = clone(); s._color = aColor; return s; }
+public RMStroke deriveColor(Color aColor)  { RMStroke s = clone(); s._color = aColor; return s; }
 
 /**
  * Returns a duplicate stroke with new stroke width.
@@ -156,7 +156,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     XMLElement e = new XMLElement("stroke");
     
     // Archive Color, Width, DashArray, DashPhase
-    if(!getColor().equals(RMColor.black)) e.add("color", "#" + getColor().toHexString());
+    if(!getColor().equals(Color.BLACK)) e.add("color", "#" + getColor().toHexString());
     if(_width!=1) e.add("width", _width);
     if(getDashArrayString()!=null && getDashArrayString().length()>0) e.add("dash-array", getDashArrayString());
     if(getDashPhase()!=0) e.add("dash-phase", getDashPhase());
@@ -170,7 +170,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
 {
     // Unarchive Color
     String color = anElement.getAttributeValue("color");
-    if(color!=null) _color = new RMColor(color);
+    if(color!=null) _color = new Color(color);
     
     // Unarchive Width, DashArray, DashPhase
     if(anElement.hasAttribute("width"))  _width = anElement.getAttributeFloatValue("width", 1);

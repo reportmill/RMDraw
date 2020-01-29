@@ -23,7 +23,7 @@ public RMGradientFill()  { _snap = new GradientPaint(); }
 /**
  * Creates a gradient fill from the given start color to the given end color with the given roll.
  */
-public RMGradientFill(RMColor aColor1, RMColor aColor2, float aRotation)
+public RMGradientFill(Color aColor1, Color aColor2, float aRotation)
 {
     _snap = new GradientPaint(aRotation, GradientPaint.getStops(0, aColor1, 1, aColor2));
 }
@@ -69,7 +69,7 @@ public Stop getStop(int anIndex)  { return _snap.getStop(anIndex); }
 /**
  * Returns the color of the stop at the given index.
  */
-public RMColor getStopColor(int index)  { return RMColor.get(getStop(index).getColor()); }
+public Color getStopColor(int index)  { return getStop(index).getColor(); }
 
 /**
  * Returns the position (in the range {0-1}) for the given stop index.
@@ -99,7 +99,7 @@ public double getRoll()  { return _snap.getRoll(); }
 /**
  * Returns the color associated with this fill.
  */
-public RMColor getColor()  { return getStopColor(0); }
+public Color getColor()  { return getStopColor(0); }
 
 /**
  * Returns the snap version of this fill.
@@ -136,7 +136,8 @@ public RMGradientFill copyForType(GradientPaint.Type aType)
  */
 public RMGradientFill copyForColor(Color aColor)
 {
-    RMGradientFill clone = clone(); clone._color = aColor!=null? RMColor.get(aColor) : _color;
+    RMGradientFill clone = clone();
+    clone._color = aColor!=null? aColor : _color;
     GradientPaint.Stop stops[] = Arrays.copyOf(getStops(), getStopCount());
     stops[0] = new Stop(getStopOffset(0), aColor);
     clone._snap = _snap.copyForStops(stops); return clone;

@@ -7,6 +7,8 @@ import java.util.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 import javax.swing.text.html.parser.*;
+
+import snap.gfx.Color;
 import snap.util.*;
 
 /**
@@ -165,10 +167,10 @@ private static class HTMLParser extends HTMLEditorKit.ParserCallback {
                         string = (String)colorNames().get(string.toLowerCase());
                         
                     if(string!=null) {
-                        float r = Integer.decode("0x" + string.substring(1,3)).intValue()/255f;
-                        float g = Integer.decode("0x" + string.substring(3,5)).intValue()/255f;
-                        float b = Integer.decode("0x" + string.substring(5,7)).intValue()/255f;
-                        RMColor color = new RMColor(r, g, b);
+                        float r = Integer.decode("0x" + string.substring(1,3))/255f;
+                        float g = Integer.decode("0x" + string.substring(3,5))/255f;
+                        float b = Integer.decode("0x" + string.substring(5,7))/255f;
+                        Color color = new Color(r, g, b);
                         _attrs.put(RMTextStyle.COLOR_KEY, color);
                     }
                 }

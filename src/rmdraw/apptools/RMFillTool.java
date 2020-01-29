@@ -6,6 +6,8 @@ import rmdraw.app.*;
 import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import java.util.*;
+
+import snap.gfx.Color;
 import snap.view.*;
 import snap.viewx.ColorWell;
 import snap.web.WebURL;
@@ -54,16 +56,16 @@ protected void respondUI(ViewEvent anEvent)
     // Handle FillColorWell
     if(anEvent.equals("FillColorWell")) {
         
-        // Get RMColor from color well
+        // Get Color from color well
         ColorWell cwell = getView("FillColorWell", ColorWell.class);
-        RMColor color = RMColor.get(cwell.getColor());
+        Color color = cwell.getColor();
         
         // Iterate over selected shapes and set color
         for(RMShape s : editor.getSelectedOrSuperSelectedShapes()) {
             
             // If command-click, set gradient fill
             if(ViewUtils.isMetaDown()) {
-                RMColor c1 = shape.getFill()!=null? shape.getColor() : RMColor.clearWhite;
+                Color c1 = shape.getFill()!=null? shape.getColor() : Color.CLEARWHITE;
                 RMFill f = new RMGradientFill(c1, color, 0);
                 s.setFill(f);
             }

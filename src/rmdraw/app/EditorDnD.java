@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.graphics.RMColor;
 import rmdraw.graphics.RMFill;
 import rmdraw.graphics.RMImageFill;
 import rmdraw.graphics.RMPDFData;
@@ -172,7 +171,7 @@ protected void dragDrop(ViewEvent anEvent)
     {
         Color color = anEvent.getClipboard().getColor();
         getEditor().undoerSetUndoTitle("Set Fill Color");
-        aShape.setFill(new RMFill(RMColor.get(color)));
+        aShape.setFill(new RMFill(color));
     }
 
     /**

@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.graphics.RMColor;
 import snap.gfx.*;
 
 /**
@@ -60,7 +59,7 @@ public void addBars()
         RMPolygonShape lineShape = new RMPolygonShape(path);
         
         // If area or 3D line, set fill color and stroke to black
-        RMColor color = getColor(i);
+        Color color = getColor(i);
         if(graphType==RMGraph.Type.Area || draw3D) {
             lineShape.setColor(color);
             lineShape.setStrokeColor(color.darker().darker());
@@ -97,7 +96,7 @@ public void addBars()
             linePointShape.setBounds(lineX - inset, lineY - inset, inset*2, inset*2);
             
             // Set bar color
-            RMColor col = colorItems? getColor(j) : color;
+            Color col = colorItems? getColor(j) : color;
             linePointShape.setColor(col);
             linePointShape.setStrokeColor(col.darker().darker());
             

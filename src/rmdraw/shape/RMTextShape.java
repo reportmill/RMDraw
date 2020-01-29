@@ -198,12 +198,12 @@ public void setFormat(RMFormat aFormat)
 /**
  * Returns the color of the first character of the xstring associated with this RMText.
  */
-public RMColor getTextColor()  { return getXString().getRunAt(0).getColor(); }
+public Color getTextColor()  { return getXString().getRunAt(0).getColor(); }
 
 /**
  * Sets the color of the characters in the XString associated with this RMText.
  */
-public void setTextColor(RMColor aColor)  { getXString().setAttribute(aColor); }
+public void setTextColor(Color aColor)  { getXString().setAttribute(aColor); }
 
 /**
  * Returns if char 0 is underlined.

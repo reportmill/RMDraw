@@ -18,7 +18,7 @@ import snap.view.*;
  * Here's an example of programatically adding a watermark to a document:
  * <p><blockquote><pre>
  *   RMFont font = RMFont.getFont("Arial Bold", 72);
- *   RMColor color = new RMColor(.9f, .9f, .9f);
+ *   Color color = new Color(.9f, .9f, .9f);
  *   RMXString string = new RMXString("REPORTMILL", font, color);
  *   RMText shape = new RMText(string);
  *   myDocument.getPage(0).addChild(shape);
@@ -605,12 +605,12 @@ public void setEffect(Effect anEffect)
 /**
  * Returns the color of the shape.
  */
-public RMColor getColor()  { return getFill()==null? RMColor.black : getFill().getColor(); }
+public Color getColor()  { return getFill()==null? Color.BLACK : getFill().getColor(); }
 
 /**
  * Sets the color of the shape.
  */
-public void setColor(RMColor aColor)
+public void setColor(Color aColor)
 {
     // Set color
     if(aColor==null) setFill(null);
@@ -621,12 +621,12 @@ public void setColor(RMColor aColor)
 /**
  * Returns the stroke color of the shape.
  */
-public RMColor getStrokeColor()  { return getStroke()==null? RMColor.black : getStroke().getColor(); }
+public Color getStrokeColor()  { return getStroke()==null? Color.BLACK : getStroke().getColor(); }
 
 /**
  * Sets the stroke color of the shape.
  */
-public void setStrokeColor(RMColor aColor)
+public void setStrokeColor(Color aColor)
 {
     if(aColor==null) setStroke(null);
     else if(getStroke()==null) setStroke(new RMStroke(aColor, 1));
@@ -643,7 +643,7 @@ public float getStrokeWidth()  { return getStroke()==null? 0 : getStroke().getWi
  */
 public void setStrokeWidth(float aValue)
 {
-    if(getStroke()==null) setStroke(new RMStroke(RMColor.black, aValue));
+    if(getStroke()==null) setStroke(new RMStroke(Color.BLACK, aValue));
     else setStroke(getStroke().deriveWidth(aValue));
 }
 
@@ -715,12 +715,12 @@ public boolean isHittable()  { return isVisible() && (_parent==null || _parent.i
 /**
  * Returns the text color for the shape.
  */
-public RMColor getTextColor()  { return RMColor.black; }
+public Color getTextColor()  { return Color.BLACK; }
 
 /**
  * Sets the text color for the shape.
  */
-public void setTextColor(RMColor aColor) { }
+public void setTextColor(Color aColor) { }
 
 /**
  * Returns whether font has been set.
@@ -1451,7 +1451,7 @@ public void addBinding(String aPropName, String aKey)  { addBinding(new Binding(
 public RMShape clone()
 {
     // Do normal version
-    RMShape clone = null; try { clone = (RMShape)super.clone(); }
+    RMShape clone; try { clone = (RMShape)super.clone(); }
     catch(CloneNotSupportedException e) { throw new RuntimeException(e); }
     
     // Clear Parent and PropChangeSupport
@@ -1577,11 +1577,11 @@ public void rpgBindings(ReportOwner anRptOwner, RMShape aShapeRPG)
         }
 
         // Handle FillColor, StrokeColor, TextColor
-        else if(pname.equals("FillColor")) { RMColor color = RMColor.get(value); 
+        else if(pname.equals("FillColor")) { Color color = Color.get(value);
             if(color!=null) aShapeRPG.setColor(color); }
-        else if(pname.equals("StrokeColor")) { RMColor color = RMColor.get(value); 
+        else if(pname.equals("StrokeColor")) { Color color = Color.get(value);
             if(color!=null) aShapeRPG.setStrokeColor(color); }
-        else if(pname.equals("TextColor")) { RMColor color = RMColor.get(value); 
+        else if(pname.equals("TextColor")) { Color color = Color.get(value);
             if(color!=null) aShapeRPG.setTextColor(color); }
         
         // Handle others: X, Y, Width, Height, Visible, URL

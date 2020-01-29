@@ -5,6 +5,7 @@ package rmdraw.shape;
 import rmdraw.base.*;
 import rmdraw.graphics.*;
 import java.util.*;
+import snap.gfx.Color;
 import snap.gfx.Rect;
 import snap.util.MathUtils;
 
@@ -71,7 +72,7 @@ protected void configure()
     // Get wedge prototype
     RMOvalShape prototype = new RMOvalShape();
     prototype.setHoleRatio(holeRatio);
-    prototype.setStrokeColor(RMColor.black);
+    prototype.setStrokeColor(Color.BLACK);
     
     // Iterate over each graph section and add individual pies
     for(int i=0, iMax=getSectionCount(); i<iMax; i++) { RMGraphSection section = getSection(i);
@@ -240,7 +241,7 @@ protected void configure()
                     
                     // Create wedge label line shape, set StrokeColor to LightGray and add label line
                     RMLineShape line = new RMLineShape(startX, startY, endX, endY);
-                    line.setStrokeColor(RMColor.lightGray);
+                    line.setStrokeColor(Color.LIGHTGRAY);
                     _pieShape.addWedgeLabelLine(line);
                 }
                 

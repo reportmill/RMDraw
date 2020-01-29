@@ -5,6 +5,8 @@ package rmdraw.base;
 import rmdraw.shape.*;
 import rmdraw.graphics.*;
 import java.util.*;
+
+import snap.gfx.Color;
 import snap.gfx.GFXUtils;
 import snap.util.*;
 
@@ -154,7 +156,7 @@ private static void addWatermark(RMParentShape aShape)
 {
     // Get attributed string with REPORTMILL in 72pt grey (with R & M in 100pt)
     RMFont font72 = RMFont.getFont("Arial Bold", 72), font100 = font72.deriveFont(100);
-    RMXString xstring = new RMXString("REPORTMILL", font72, new RMColor(.9));
+    RMXString xstring = new RMXString("REPORTMILL", font72, new Color(.9));
     xstring.setAttribute(font100, 0, 1); xstring.setAttribute(font100, 6, 7); // Set R & M in 100pt
 
     // Create evalShape watermark across background
@@ -204,10 +206,8 @@ public static boolean checkString(String aString, boolean isApplication)
     // If prefix doesn't start with suffix, return false
     if(!prefix.startsWith(suffix)) return false;
     
-    // Declare local variable for license processor count
-    int procCount = 0;
-        
     // Decode processor count hex digit at second to last prefix char
+    int procCount;
     try { procCount = Integer.parseInt(prefix.substring(prefix.length()-2, prefix.length()-1), Character.MAX_RADIX); }
     catch(Exception e) { return false; }
     
@@ -220,10 +220,8 @@ public static boolean checkString(String aString, boolean isApplication)
         return false;
     }
     
-    // Declare local variable for license version
-    int version = 0;
-    
     // Decode version hex digit at last prefix char
+    int version;
     try { version = Integer.parseInt(prefix.substring(prefix.length()-1), Character.MAX_RADIX); }
     catch(Exception e) { System.err.println("Warning: License key invalid format (2)"); return false; }
     

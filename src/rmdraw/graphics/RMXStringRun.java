@@ -72,7 +72,7 @@ public RMFont getFont()  { return getStyle().getFont(); }
 /**
  * Returns the color for this run.
  */
-public RMColor getColor()  { return getStyle().getColor(); }
+public Color getColor()  { return getStyle().getColor(); }
 
 /**
  * Returns the format for this run.

@@ -3,7 +3,6 @@
  */
 package rmdraw.shape;
 import rmdraw.base.*;
-import rmdraw.graphics.RMColor;
 import rmdraw.graphics.RMFont;
 import snap.gfx.*;
 import snap.util.*;
@@ -162,7 +161,7 @@ public void setFormat(RMFormat aFormat)
 /**
  * Override to allow for ProxyShape and trigger relayout.
  */
-public void setTextColor(RMColor aColor)
+public void setTextColor(Color aColor)
 {
     if(getXString().length()==0)
         getXString().addChars(" ");

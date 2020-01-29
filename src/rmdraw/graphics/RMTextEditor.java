@@ -215,12 +215,12 @@ public String getString()  { return _text.getString(); }
 /**
  * Returns the color of the current selection or cursor.
  */
-public RMColor getColor()  { return getSelStyle().getColor(); }
+public Color getColor()  { return getSelStyle().getColor(); }
 
 /**
  * Sets the color of the current selection or cursor.
  */
-public void setColor(RMColor color)  { setInputAttribute(RMTextStyle.COLOR_KEY, color); }
+public void setColor(Color color)  { setInputAttribute(RMTextStyle.COLOR_KEY, color); }
 
 /**
  * Returns the font of the current selection or cursor.
@@ -848,11 +848,11 @@ private TextSel smartFindFormatRange()
 /**
  * Returns whether layout tries to hyphenate wrapped words.
  */
-public static final boolean isHyphenating()  { return _hyphenating; }
+public static boolean isHyphenating()  { return _hyphenating; }
 
 /**
  * Sets whether layout tries to hyphenate wrapped words.
  */
-public static final void setHyphenating(boolean aValue)  { Prefs.get().set("Hyphenating", _hyphenating = aValue); }
+public static void setHyphenating(boolean aValue)  { Prefs.get().set("Hyphenating", _hyphenating = aValue); }
 
 }

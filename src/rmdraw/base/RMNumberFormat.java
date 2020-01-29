@@ -2,9 +2,9 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.base;
-import rmdraw.graphics.*;
 import java.text.*;
 import java.util.Locale;
+import snap.gfx.Color;
 import snap.gfx.TextStyle;
 import snap.util.*;
 
@@ -125,7 +125,7 @@ public boolean isLocalCurrencySymbolUsed()
 {
     // Get pattern and return whether $ or local currency symbol or international currency symbol is used
     String pattern = _fmt.toPattern();
-    return pattern.indexOf("$")>=0 || pattern.indexOf(getLocalCurrencySymbol())>=0;
+    return pattern.contains("$") || pattern.contains(getLocalCurrencySymbol());
 }
 
 /**
@@ -176,7 +176,7 @@ public boolean isCurrencySymbolUsed()
 {
     // Get pattern and return whether $ or local currency symbol or international currency symbol is used
     String pattern = _fmt.toPattern();
-    return pattern.indexOf("$")>=0 || pattern.indexOf(_fmt.getCurrency().getSymbol())>=0 || pattern.indexOf("\u00A4")>=0;
+    return pattern.contains("$") || pattern.contains(_fmt.getCurrency().getSymbol()) || pattern.contains("\u00A4");
 }
 
 /**
@@ -186,7 +186,7 @@ public boolean isPercentSymbolUsed()
 {
     // Get pattern and return whether $ or local currency symbol or international currency symbol is used
     String pattern = _fmt.toPattern();
-    return pattern.indexOf("%")>=0;
+    return pattern.contains("%");
 }
 
 /**
@@ -359,7 +359,7 @@ public TextStyle formatStyle(Object anObj)
 {
     Number num = getNumber(anObj);
     if(num!=null && num.doubleValue()<0 && _negativeInRed)
-        return TextStyle.DEFAULT.copyFor(RMColor.red);
+        return TextStyle.DEFAULT.copyFor(Color.RED);
     return null;
 }
 
@@ -439,7 +439,7 @@ public boolean equals(Object anObj)
  */
 public RMNumberFormat clone()
 {
-    RMNumberFormat clone = null; try { clone = (RMNumberFormat)super.clone(); }
+    RMNumberFormat clone; try { clone = (RMNumberFormat)super.clone(); }
     catch(CloneNotSupportedException e) { throw new RuntimeException(e); }
     clone._fmt = (DecimalFormat)_fmt.clone(); clone._fmtSyms = _fmt.getDecimalFormatSymbols();
     return clone;

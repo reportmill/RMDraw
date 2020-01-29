@@ -5,6 +5,7 @@ package rmdraw.shape;
 import rmdraw.base.RMFormat;
 import rmdraw.graphics.*;
 import java.util.*;
+import snap.gfx.Color;
 import snap.gfx.Effect;
 import snap.util.*;
 
@@ -156,10 +157,10 @@ public void setOpacity(double aValue)
 }
 
 /** Override to handle proxy. */
-public RMColor getTextColor()  { return getProxy().getTextColor(); }
+public Color getTextColor()  { return getProxy().getTextColor(); }
 
 /** Override to handle proxy. */
-public void setTextColor(RMColor aColor)
+public void setTextColor(Color aColor)
 {
     getProxy().setTextColor(aColor);
 }

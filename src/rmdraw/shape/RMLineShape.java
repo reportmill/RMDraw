@@ -75,7 +75,7 @@ public void setStroke(RMStroke aStroke)
 /**
  * Override to handle arrow heads special.
  */
-public void setStrokeColor(RMColor aColor)
+public void setStrokeColor(Color aColor)
 {
     super.setStrokeColor(aColor);
     if(getArrowHead()!=null) getArrowHead().setColor(aColor);

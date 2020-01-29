@@ -47,7 +47,7 @@ protected void initUI()
     // Get/configure FontFaceComboBox
     _fontFaceComboBox = getView("FontFaceComboBox", ComboBox.class);
     _fontFaceComboBox.getPopupList().setMaxRowCount(20);
-    _fontFaceComboBox.setItems((Object[])Font.getFamilyNames());
+    _fontFaceComboBox.setItems(Font.getFamilyNames());
     
     // Get/configure FontSizeComboBox
     _fontSizeComboBox = getView("FontSizeComboBox", ComboBox.class);
@@ -145,11 +145,11 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle FillColorButton, StrokeColorButton, TextColorButton
     if(anEvent.equals("FillColorButton"))
-        EditorUtils.setColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
+        EditorUtils.setColor(editor, anEvent.getView(ColorButton.class).getColor());
     if(anEvent.equals("StrokeColorButton"))
-        EditorUtils.setStrokeColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
+        EditorUtils.setStrokeColor(editor, anEvent.getView(ColorButton.class).getColor());
     if(anEvent.equals("TextColorButton"))
-        EditorUtils.setTextColor(editor, RMColor.get(anEvent.getView(ColorButton.class).getColor()));
+        EditorUtils.setTextColor(editor, anEvent.getView(ColorButton.class).getColor());
 
     // Handle MoneyButton: If currently selected format is number format, add or remove dollars
     RMFormat fmt = EditorUtils.getFormat(editor);

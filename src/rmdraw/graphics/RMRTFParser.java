@@ -39,7 +39,9 @@ public static RMXString parseRTF(String rtf, RMFont baseFont) throws Exception
     
     // Declare return string and loop attribute variables
     RMXString result = new RMXString();
-    RMFont font = baseFont; RMColor color = null; boolean underline = false;
+    RMFont font = baseFont;
+    Color color = null;
+    boolean underline = false;
     
     // Iterate over rtf elements
     while((elem = (AbstractDocument.AbstractElement)elemIterator.next()) != null) {
@@ -71,8 +73,7 @@ public static RMXString parseRTF(String rtf, RMFont baseFont) throws Exception
                 
                 // Handle foreground
                 if(attrName=="foreground") {
-                    Color c = (Color)elem.getAttribute(attr);
-                    color = new RMColor(c.getRGB());
+                    color = (Color)elem.getAttribute(attr);
                 }
                 
                 // Handle size

@@ -36,7 +36,7 @@ public RMFont getFont()  { return RMFont.get(_style.getFont()); }
 /**
  * Returns the color for this run.
  */
-public RMColor getColor()  { return RMColor.get(_style.getColor()); }
+public Color getColor()  { return _style.getColor(); }
 
 /**
  * Returns whether this run is underlined.

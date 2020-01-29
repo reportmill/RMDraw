@@ -148,7 +148,7 @@ private void addGrid()
                 RMLineShape line = new RMLineShape();
                 double minorLineX = isVertical()? bounds.x : lineX + (j+1)*minorTickInterval;
                 double minorLineY = isVertical()? lineY + (j+1)*minorTickInterval : bounds.y;
-                line.setStrokeColor(RMColor.lightGray);
+                line.setStrokeColor(Color.LIGHTGRAY);
                 line.setFrame(minorLineX, minorLineY, lineW, lineH);
                 _barShape.addGridLineMinor(line);
             }
@@ -209,7 +209,7 @@ public void addBars()
             
             // Set bar color and bounds
             int cindex = i; if(_stacked && (iMax==1 || !_meshed) || _graph.isColorItems()) cindex = j;
-            RMColor color = getColor(cindex);
+            Color color = getColor(cindex);
             bar.setColor(color);
             Rect barBounds = getBarBounds(i, j); bar.setBounds(barBounds);
             
@@ -533,8 +533,8 @@ public void addLabel(RMTextShape aLabel, RMGraphPartSeries.LabelPos aPosition, R
     Rect barRect = seriesItem.getBar().getFrame();
     
     // Declare variables for label position
-    double labelX = 0;
-    double labelY = 0;
+    double labelX;
+    double labelY;
 
     // Top Position
     if(aPosition==RMGraphPartSeries.LabelPos.Top) {

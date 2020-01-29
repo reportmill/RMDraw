@@ -568,7 +568,7 @@ public static Color getSelectedColor(Editor anEditor)
 public static void setSelectedColor(Editor anEditor, Color aColor)
 {
     // Get selected or super selected shape
-    RMColor color = RMColor.get(aColor);
+    Color color = aColor;
     RMShape shape = anEditor.getSelectedOrSuperSelectedShape();
         
     // If editor selected or super selected shape is document or page, set "last color" and return
@@ -596,7 +596,7 @@ public static void setSelectedColor(Editor anEditor, Color aColor)
     
         // If command-click, set gradient fill
         if(ViewUtils.isMetaDown()) {
-            RMColor c1 = shape.getFill()!=null? shape.getColor() : RMColor.clearWhite;
+            Color c1 = shape.getFill()!=null? shape.getColor() : Color.CLEARWHITE;
             shape.setFill(new RMGradientFill(c1, color, 0));
         }
         
@@ -608,7 +608,7 @@ public static void setSelectedColor(Editor anEditor, Color aColor)
 /**
  * Sets the fill color of the editor's selected shapes.
  */
-public static void setColor(Editor anEditor, RMColor aColor)
+public static void setColor(Editor anEditor, Color aColor)
 {
     // Iterate over editor selected shapes or super selected shape
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -618,7 +618,7 @@ public static void setColor(Editor anEditor, RMColor aColor)
 /**
  * Sets the stroke color of the editor's selected shapes.
  */
-public static void setStrokeColor(Editor anEditor, RMColor aColor)
+public static void setStrokeColor(Editor anEditor, Color aColor)
 {
     // Iterate over editor selected shapes or super selected shape
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
@@ -628,7 +628,7 @@ public static void setStrokeColor(Editor anEditor, RMColor aColor)
 /**
  * Sets the text color of the editor's selected shapes.
  */
-public static void setTextColor(Editor anEditor, RMColor aColor)
+public static void setTextColor(Editor anEditor, Color aColor)
 {
     // If text editing, forward on to text editor
     if(anEditor.getTextEditor()!=null)
@@ -755,11 +755,11 @@ public static void setTextBorder(Editor anEditor)
 {
     if(getTextBorder(anEditor)==null) {
         setTextBorder(anEditor, Border.createLineBorder(Color.BLACK,1));
-        setTextColor(anEditor, RMColor.white);
+        setTextColor(anEditor, Color.WHITE);
     }
     else {
         setTextBorder(anEditor, null);
-        setTextColor(anEditor, RMColor.black);
+        setTextColor(anEditor, Color.BLACK);
     }
 }
 

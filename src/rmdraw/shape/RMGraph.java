@@ -83,16 +83,16 @@ public class RMGraph extends RMParentShape {
     boolean                   _proxyDisable;
     
     // The shared default list of colors all graphs use
-    static List <RMColor>     _defaultColors;
+    static List <Color>       _defaultColors;
     
     // Constants for Graph type
-    public enum Type { Bar, BarH, Area, Line, Scatter, Pie };
+    public enum Type { Bar, BarH, Area, Line, Scatter, Pie }
     
     // Constants for section layouts
-    public enum SectionLayout { Merge, Separate };
+    public enum SectionLayout { Merge, Separate }
     
     // Constants for item layouts
-    public enum ItemLayout { Abreast, Stacked, Layered };
+    public enum ItemLayout { Abreast, Stacked, Layered }
     
     // Constants for properties
     public static final String ProxyShape_Prop = "ProxyShape";
@@ -391,8 +391,8 @@ public void setShowLegend(boolean aFlag)
     // If legend requested, but not present, create it, configure and add to parent
     if(aFlag && legend==null && getParent()!=null) {
         legend = new RMGraphLegend();
-        legend.setColor(RMColor.white);
-        legend.setStrokeColor(RMColor.black);
+        legend.setColor(Color.WHITE);
+        legend.setStrokeColor(Color.BLACK);
         legend.setEffect(new ShadowEffect(5, new Color(0,0,0,.65),5,5));
         legend.setBounds(getMaxX() + 5, getY(), 90, 40);
         getParent().addChild(legend); // Add just before area
@@ -449,12 +449,12 @@ public int getColorCount()  { return getColors().size(); }
 /**
  * Returns the specific color at the given index. Automatically wraps if index exceeds color count.
  */
-public RMColor getColor(int anIndex)  { return getColors().get(anIndex%getColorCount()); }
+public Color getColor(int anIndex)  { return getColors().get(anIndex%getColorCount()); }
 
 /**
  * Returns the list of colors to be used by this graph (or the default graph colors, if null).
  */
-public List <RMColor> getColors()  { return _colors==null? getDefaultColors() : _colors; }
+public List <Color> getColors()  { return _colors==null? getDefaultColors() : _colors; }
 
 /**
  * Sets the list of colors to be used by this graph.
@@ -464,21 +464,21 @@ public void setColors(List aColorList)  { _colors = aColorList; relayout(); }
 /**
  * Returns the default list of colors to be used by any graph without an explicit list of colors.
  */
-public static List getDefaultColors()
+public static List <Color> getDefaultColors()
 {
     // If default colors haven't been created, create them
     if(_defaultColors==null) {
         _defaultColors = Arrays.asList(
-            new RMColor("#5064CD"),
-            new RMColor("#50AF64"),
-            new RMColor("#CD5050"), //new RMColor(200/255f, 0f, 0f), // Red
-            //new RMColor(0f, 200/255f, 0f), // Green //new RMColor(0f, 0f, 200/255f), // Blue
-            new RMColor(0f, 200/255f, 200/255f), // Cyan
-            new RMColor(200/255f, 0f, 200/255f), // Magenta
-            new RMColor(200/255f, 200/255f, 0f), // Yellow
-            new RMColor(255/255f, 127/255f, 0f), // Orange
-            new RMColor(127/255f, 0/255f, 127/255f), // Purple
-            new RMColor(153/255f, 102/255f, 51/255f)); // Brown
+            new Color("#5064CD"),
+            new Color("#50AF64"),
+            new Color("#CD5050"), //new Color(200/255f, 0f, 0f), // Red
+            //new Color(0f, 200/255f, 0f), // Green //new Color(0f, 0f, 200/255f), // Blue
+            new Color(0f, 200/255f, 200/255f), // Cyan
+            new Color(200/255f, 0f, 200/255f), // Magenta
+            new Color(200/255f, 200/255f, 0f), // Yellow
+            new Color(255/255f, 127/255f, 0f), // Orange
+            new Color(127/255f, 0/255f, 127/255f), // Purple
+            new Color(153/255f, 102/255f, 51/255f)); // Brown
     }
 
     // Return default colors list
@@ -571,7 +571,7 @@ public RMParentShape rpgAll(ReportOwner anRptOwner, RMShape aParent, boolean isS
 {
     _proxyDisable = true;
     RMGraph.Type type = getType();
-    RMParentShape rpg = null;
+    RMParentShape rpg;
     if(type==RMGraph.Type.Bar || type==RMGraph.Type.BarH) rpg = new RMGraphRPGBar(this, anRptOwner).getGraphShape();
     else if(type==RMGraph.Type.Pie) rpg = new RMGraphRPGPie(this, anRptOwner).getGraphShape();
     else rpg = new RMGraphRPGLine(this, anRptOwner).getGraphShape(); // Type Area, Line, Scatter
@@ -696,12 +696,12 @@ public void setFont(RMFont aFont)
 /**
  * Override to allow for ProxyShape.
  */
-public RMColor getTextColor()  { return useProxy()? _proxyShape.getTextColor() : super.getTextColor(); }
+public Color getTextColor()  { return useProxy()? _proxyShape.getTextColor() : super.getTextColor(); }
 
 /**
  * Override to allow for ProxyShape and trigger relayout.
  */
-public void setTextColor(RMColor aColor)
+public void setTextColor(Color aColor)
 {
     if(_proxyShape!=null)
         _proxyShape.setTextColor(aColor);
@@ -900,7 +900,7 @@ protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
     if(anElement.hasAttribute("colors")) {
         String colorsString = anElement.getAttributeValue("colors");
         String cols[] = colorsString.split("\\ ");
-        List colors = new ArrayList(); for(int i=0; i<cols.length; i++) colors.add(new RMColor(cols[i]));
+        List colors = new ArrayList(); for(int i=0; i<cols.length; i++) colors.add(new Color(cols[i]));
         _colors = colors;
     }
 }

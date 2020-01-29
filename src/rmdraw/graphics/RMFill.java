@@ -12,7 +12,7 @@ import snap.util.*;
 public class RMFill implements Cloneable, XMLArchiver.Archivable {
 
     // Fill color
-    RMColor        _color = RMColor.black;
+    Color        _color = Color.BLACK;
 
 /**
  * Creates a plain, black fill.
@@ -22,12 +22,12 @@ public RMFill()  { }
 /**
  * Creates a plain fill with the given color.
  */
-public RMFill(RMColor aColor)  { _color = aColor; }
+public RMFill(Color aColor)  { _color = aColor; }
 
 /**
  * Returns the color associated with this fill.
  */
-public RMColor getColor()  { return _color; }
+public Color getColor()  { return _color; }
 
 /**
  * Returns the name of the fill.
@@ -49,7 +49,7 @@ public Paint snap()  { return getColor(); }
 public RMFill copyForColor(Color aColor)
 {
     RMFill clone = clone();
-    clone._color = aColor!=null? RMColor.get(aColor) : _color;
+    clone._color = aColor!=null? aColor : _color;
     return clone;
 }
   
@@ -93,7 +93,7 @@ public boolean equals(Object anObj)
 public XMLElement toXML(XMLArchiver anArchiver)
 {
     XMLElement e = new XMLElement("fill");
-    if(!getColor().equals(RMColor.black)) e.add("color", "#" + getColor().toHexString());
+    if(!getColor().equals(Color.BLACK)) e.add("color", "#" + getColor().toHexString());
     return e;
 }
 
@@ -103,7 +103,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
 public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
 {
     String color = anElement.getAttributeValue("color");
-    if(color!=null) _color = new RMColor(color);
+    if(color!=null) _color = new Color(color);
     return this;
 }
 

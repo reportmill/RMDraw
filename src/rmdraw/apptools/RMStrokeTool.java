@@ -6,6 +6,8 @@ import rmdraw.app.Editor;
 import rmdraw.graphics.*;
 import rmdraw.shape.RMShape;
 import java.util.*;
+
+import snap.gfx.Color;
 import snap.view.*;
 import snap.viewx.ColorWell;
 
@@ -73,7 +75,7 @@ public void respondUI(ViewEvent anEvent)
     // Handle StrokeColorWell - get color and set in selected shapes
     if(anEvent.equals("StrokeColorWell")) {
         ColorWell cwell = getView("StrokeColorWell", ColorWell.class);
-        RMColor color = RMColor.get(cwell.getColor());
+        Color color = cwell.getColor();
         for(RMShape s : shapes)
             s.setStrokeColor(color);
     }
