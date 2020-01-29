@@ -114,7 +114,8 @@ public XMLElement toXML(XMLArchiver anArchiver)
     
     // Archive SourceURL
     String surl = getURL()!=null? getURL().getString() : null;
-    if(surl!=null && surl.endsWith("HollywoodDB.xml")) surl = "Jar:/reportmill/examples/HollywoodDB.xml";
+    if(surl!=null && surl.endsWith("HollywoodDB.xml"))
+        surl = "Jar:/reportmill/examples/HollywoodDB.xml";
     if(surl!=null) e.add("source", surl);
         
     // Archive schema if customSchema
@@ -133,8 +134,12 @@ public XMLElement toXML(XMLArchiver anArchiver)
  */
 public RMDataSource fromXML(XMLArchiver anArchiver, XMLElement anElement)
 {
-    // Unarchive URL for xml file
+    // Unarchive URL string for xml file (if HollywoodDB.xml, use internal version)
     String urls = anElement.getAttributeValue("source");
+    if(urls!=null && urls.endsWith("HollywoodDB.xml"))
+        urls = "Jar:/reportmill/examples/HollywoodDB.xml";
+
+    // Get WebURL
     _url = WebURL.getURL(urls);
 
     // If custom schema element present, unarchive schema

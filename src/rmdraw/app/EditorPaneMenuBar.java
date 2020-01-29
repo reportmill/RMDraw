@@ -106,13 +106,6 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("PreviewJPEGMenuItem")) EditorPaneUtils.previewJPG(epane);
     if(anEvent.equals("PreviewPNGMenuItem")) EditorPaneUtils.previewPNG(epane);
         
-    // Handle File -> Samples menu items
-    if(anEvent.equals("MoviesMenuItem")) EditorPaneUtils.openSample("Movies");
-    if(anEvent.equals("MoviesGraphMenuItem")) EditorPaneUtils.openSample("MoviesGraph");
-    if(anEvent.equals("MoviesLabelsMenuItem")) EditorPaneUtils.openSample("MoviesLabels");
-    if(anEvent.equals("HollywoodMenuItem")) EditorPaneUtils.openSample("Jar:/reportmill/examples/HollywoodDB.xml");
-    if(anEvent.equals("SalesMenuItem")) EditorPaneUtils.openSample("Jar:/reportmill/examples/Sales.xml");
-        
     // Handle Edit menu items
     if(anEvent.equals("UndoMenuItem") || anEvent.equals("UndoButton")) editor.undo();
     if(anEvent.equals("RedoMenuItem") || anEvent.equals("RedoButton")) editor.redo();

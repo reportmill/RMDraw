@@ -14,30 +14,6 @@ import snap.viewx.*;
 public class EditorPaneUtils {
 
 /**
- * Opens the named sample file from the examples package.
- */
-public static EditorPane openSample(String aTitle)
-{
-    // If file is xml resource, get temp file, get XML bytes, write to file, open file and return null
-    if(aTitle.endsWith(".xml")) {
-        File file = FileUtils.getTempFile(FilePathUtils.getFileName(aTitle));
-        byte bytes[] = SnapUtils.getBytes(aTitle);
-        SnapUtils.writeBytes(bytes, file);
-        FileUtils.openFile(file);
-        return null;
-    }
-    
-    // If not url, append Jar:/com/reportmill prefix
-    if(!aTitle.startsWith("http:")) aTitle = "Jar:/reportmill/examples/" + aTitle + ".rpt";
-        
-    // Create new editor pane, open document and window, and return editor pane
-    EditorPane editorPane = new EditorPane();
-    editorPane.open(aTitle);
-    editorPane.setWindowVisible(true);
-    return editorPane;
-}
-
-/**
  * Preview PDF.
  */
 public static void previewPDF(EditorPane anEP)
