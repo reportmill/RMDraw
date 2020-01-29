@@ -642,9 +642,9 @@ public static void setTextColor(Editor anEditor, Color aColor)
 /**
  * Returns the font of editor's selected shape.
  */
-public static RMFont getFont(Editor anEditor)
+public static Font getFont(Editor anEditor)
 {
-    RMFont font = null;
+    Font font = null;
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax && font==null; i++) {
         RMShape shape = anEditor.getSelectedOrSuperSelectedShape(i);
         RMTool tool = anEditor.getTool(shape);
@@ -655,7 +655,7 @@ public static RMFont getFont(Editor anEditor)
         RMTool tool = anEditor.getTool(shape);
         font = tool.getFontDeep(anEditor, shape);
     }
-    return font!=null? font : RMFont.getDefaultFont();
+    return font!=null? font : Font.getDefaultFont();
 }
 
 /**
@@ -663,11 +663,10 @@ public static RMFont getFont(Editor anEditor)
  */
 public static void setFontFamily(Editor anEditor, Font aFont)
 {
-    RMFont font = RMFont.get(aFont);
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = anEditor.getSelectedOrSuperSelectedShape(i);
         RMTool tool = anEditor.getTool(shape);
-        tool.setFontKeyDeep(anEditor, shape, RMTool.FontFamily_Key, font);
+        tool.setFontKeyDeep(anEditor, shape, RMTool.FontFamily_Key, aFont);
     }
 }
 
@@ -676,11 +675,10 @@ public static void setFontFamily(Editor anEditor, Font aFont)
  */
 public static void setFontName(Editor anEditor, Font aFont)
 {
-    RMFont font = RMFont.get(aFont);
     for(int i=0, iMax=anEditor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = anEditor.getSelectedOrSuperSelectedShape(i);
         RMTool tool = anEditor.getTool(shape);
-        tool.setFontKeyDeep(anEditor, shape, RMTool.FontName_Key, font);
+        tool.setFontKeyDeep(anEditor, shape, RMTool.FontName_Key, aFont);
     }
 }
 

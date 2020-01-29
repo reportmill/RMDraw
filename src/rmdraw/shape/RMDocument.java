@@ -147,7 +147,7 @@ public String getFilename()  { return getSourceURL()!=null? getSourceURL().getPa
 /**
  * Returns the document's default font.
  */
-public RMFont getFont()  { return RMFont.getDefaultFont(); }
+public Font getFont()  { return Font.getDefaultFont(); }
 
 /**
  * Returns the version this document was loaded as.

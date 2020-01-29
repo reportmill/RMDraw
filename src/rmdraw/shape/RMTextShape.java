@@ -158,7 +158,7 @@ public boolean isAllTextVisible()  { return !getTextBox().isOutOfRoom(); }
 /**
  * Returns the font for char 0.
  */
-public RMFont getFont()
+public Font getFont()
 {
     if(isTextEditorSet())
         return getTextEditor().getFont();
@@ -168,7 +168,7 @@ public RMFont getFont()
 /**
  * Sets the font for all characters.
  */
-public void setFont(RMFont aFont)
+public void setFont(Font aFont)
 {
     if(isTextEditorSet())
         getTextEditor().setFont(aFont);

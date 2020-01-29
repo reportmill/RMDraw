@@ -5,13 +5,11 @@ package rmdraw.apptools;
 import rmdraw.app.*;
 import rmdraw.base.Entity;
 import rmdraw.shape.*;
-import rmdraw.graphics.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.*;
-import snap.viewx.DialogBox;
 
 /**
  * This is the base class for tools in RM - the objects that provide GUI editing for RM shapes.
@@ -216,20 +214,20 @@ public double getPointsFromUnits(double aValue)
 /**
  * Returns the font for the given shape.
  */
-public RMFont getFont(Editor anEditor, RMShape aShape)  { return aShape.getFont(); }
+public Font getFont(Editor anEditor, RMShape aShape)  { return aShape.getFont(); }
 
 /**
  * Sets the font for the given shape.
  */
-public void setFont(Editor anEditor, RMShape aShape, RMFont aFont)  { aShape.setFont(aFont); }
+public void setFont(Editor anEditor, RMShape aShape, Font aFont)  { aShape.setFont(aFont); }
 
 /**
  * Returns the font for the given shape.
  */
-public RMFont getFontDeep(Editor anEditor, RMShape aShape)
+public Font getFontDeep(Editor anEditor, RMShape aShape)
 {
     // Look for font from shape
-    RMFont font = getFont(anEditor, aShape);
+    Font font = getFont(anEditor, aShape);
     
     // If not found, look for font in children
     for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++)
@@ -251,7 +249,7 @@ public RMFont getFontDeep(Editor anEditor, RMShape aShape)
 public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal)
 {
     // Get current font
-    RMFont font = getFont(anEditor, aShape);
+    Font font = getFont(anEditor, aShape);
     
     // Handle given key
     switch(aKey) {
@@ -260,8 +258,8 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
         case FontName_Key: {
             
             // Get new font for name and current shape size and set
-            RMFont aFont = (RMFont)aVal;
-            RMFont font2 = font!=null? aFont.deriveFont(font.getSize()) : aFont;
+            Font aFont = (Font)aVal;
+            Font font2 = font!=null? aFont.deriveFont(font.getSize()) : aFont;
             setFont(anEditor, aShape, font2);
             break;
         }
@@ -270,8 +268,8 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
         case FontFamily_Key: {
             
             // Get new font for given font family font and current shape font size/style and set
-            RMFont aFont = (RMFont)aVal;
-            RMFont font2 = aFont;
+            Font aFont = (Font)aVal;
+            Font font2 = aFont;
             if(font!=null) {
                 if(font.isBold()!=font2.isBold() && font2.getBold()!=null)
                     font2 = font2.getBold();
@@ -288,7 +286,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             
             // Get new font for current shape font at new size and set
             double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
-            RMFont font2 = font.deriveFont(aSize);
+            Font font2 = font.deriveFont(aSize);
             setFont(anEditor, aShape, font2);
             break;
         }
@@ -298,7 +296,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             
             // Get new font for current shape font at new size and set
             double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
-            RMFont font2 = font.deriveFont(font.getSize() + aSize);
+            Font font2 = font.deriveFont(font.getSize() + aSize);
             setFont(anEditor, aShape, font2);
             break;
         }
@@ -309,7 +307,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             // Get new font
             boolean aFlag = SnapUtils.boolValue(aVal);
             if(font==null || font.isBold()==aFlag) return;
-            RMFont font2 = font.getBold(); if(font2==null) return;
+            Font font2 = font.getBold(); if(font2==null) return;
             setFont(anEditor, aShape, font2);
             break;
         }
@@ -320,7 +318,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             // Get new font
             boolean aFlag = SnapUtils.boolValue(aVal);
             if(font==null || font.isItalic()==aFlag) return;
-            RMFont font2 = font.getItalic(); if(font2==null) return;
+            Font font2 = font.getItalic(); if(font2==null) return;
             setFont(anEditor, aShape, font2);
             break;
         }

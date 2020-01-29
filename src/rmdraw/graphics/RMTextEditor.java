@@ -225,12 +225,12 @@ public void setColor(Color color)  { setInputAttribute(RMTextStyle.COLOR_KEY, co
 /**
  * Returns the font of the current selection or cursor.
  */
-public RMFont getFont()  { return getSelStyle().getFont(); }
+public Font getFont()  { return getSelStyle().getFont(); }
 
 /**
  * Sets the font of the current selection or cursor.
  */
-public void setFont(RMFont font)  { setInputAttribute(RMTextStyle.FONT_KEY, font); }
+public void setFont(Font font)  { setInputAttribute(RMTextStyle.FONT_KEY, font); }
 
 /**
  * Returns the format of the current selection or cursor.

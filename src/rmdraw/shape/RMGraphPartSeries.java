@@ -7,6 +7,7 @@ import rmdraw.graphics.*;
 import java.util.*;
 import snap.gfx.Color;
 import snap.gfx.Effect;
+import snap.gfx.Font;
 import snap.util.*;
 
 /**
@@ -166,10 +167,10 @@ public void setTextColor(Color aColor)
 }
 
 /** Override to handle proxy. */
-public RMFont getFont()  { return getProxy().getFont(); }
+public Font getFont()  { return getProxy().getFont(); }
 
 /** Override to handle proxy. */
-public void setFont(RMFont aFont)
+public void setFont(Font aFont)
 {
     getProxy().setFont(aFont);
 }

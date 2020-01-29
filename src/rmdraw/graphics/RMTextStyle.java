@@ -31,7 +31,7 @@ public RMTextStyle(TextStyle aStyle)  { _style = aStyle; }
 /**
  * Returns the font for this run.
  */
-public RMFont getFont()  { return RMFont.get(_style.getFont()); }
+public Font getFont()  { return _style.getFont(); }
 
 /**
  * Returns the color for this run.

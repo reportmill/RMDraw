@@ -7,6 +7,7 @@ import rmdraw.graphics.*;
 import java.util.*;
 
 import snap.gfx.Color;
+import snap.gfx.Font;
 import snap.gfx.GFXUtils;
 import snap.util.*;
 
@@ -155,9 +156,11 @@ public static void lc(RMDocument aDoc)
 private static void addWatermark(RMParentShape aShape)
 {
     // Get attributed string with REPORTMILL in 72pt grey (with R & M in 100pt)
-    RMFont font72 = RMFont.getFont("Arial Bold", 72), font100 = font72.deriveFont(100);
+    Font font72 = Font.getFont("Arial Bold", 72);
+    Font font100 = font72.deriveFont(100);
     RMXString xstring = new RMXString("REPORTMILL", font72, new Color(.9));
-    xstring.setAttribute(font100, 0, 1); xstring.setAttribute(font100, 6, 7); // Set R & M in 100pt
+    xstring.setAttribute(font100, 0, 1);
+    xstring.setAttribute(font100, 6, 7); // Set R & M in 100pt
 
     // Create evalShape watermark across background
     RMTextShape evalShape = new RMTextShape(xstring);
@@ -167,7 +170,7 @@ private static void addWatermark(RMParentShape aShape)
 
     // Get attributed string with bottom eval message in 12pt
     String msg = "ReportMill Evaluation - for more information go to reportmill.com.";
-    xstring = new RMXString(msg, RMFont.Helvetica12);
+    xstring = new RMXString(msg, Font.Arial12);
 
     // Create evalShape license string in lower left corner
     evalShape = new RMTextShape(xstring);

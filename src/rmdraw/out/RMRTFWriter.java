@@ -20,7 +20,7 @@ public class RMRTFWriter {
     
     // settings that persist across shapes
     RMParagraph          _currentParagraph;
-    RMFont               _currentFont;
+    Font                 _currentFont;
     Color                _currentColor;
     
     // Current font style
@@ -71,7 +71,7 @@ public byte[] getBytes(RMDocument aDoc)
  * Looks up a font in the font table and adds it if it's not there.
  * Returns the name that represents the font in the rtf ("f0", "f1", etc.)
  */
-public int getFontIndex(RMFont f)
+public int getFontIndex(Font f)
 {
     FontFile fontfile = f.getFontFile();
     int i = _fontTable.indexOf(fontfile);
@@ -252,7 +252,7 @@ public void appendTable(RMShapeTable table, PrintStream ps)
     
     // TextEdit just sets the cellx values as if all cells were the same and the row always total to 6".  Bizarre.  
     int cellx = twip(72*6)/columnCount;
-    int cellws[] = new int[columnCount]; for(int c=0;c<columnCount;c++) cellws[c] = twip(table.getColWidth(c));
+    //int cellws[] = new int[columnCount]; for(int c=0;c<columnCount;c++) cellws[c] = twip(table.getColWidth(c));
     int pads = 0, border = 0; // cell padding and border weight
     
     // Iterate over table rows
@@ -381,7 +381,7 @@ public void appendText(RMXString s, PrintStream ps)
         }
                     
         // Update current font
-        RMFont font = run.getFont();
+        Font font = run.getFont();
         if(_currentFont==null || !_currentFont.equals(font)) {
             
             // Font size units are half-points.  Who comes up with this shit?

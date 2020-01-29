@@ -67,7 +67,7 @@ public RMTextStyle getStyle()  { return new RMTextStyle(_style); }
 /**
  * Returns the font for this run.
  */
-public RMFont getFont()  { return getStyle().getFont(); }
+public Font getFont()  { return getStyle().getFont(); }
 
 /**
  * Returns the color for this run.

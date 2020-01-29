@@ -5,6 +5,8 @@ package rmdraw.shape;
 import rmdraw.base.RMGroup;
 import rmdraw.graphics.*;
 import java.util.*;
+
+import snap.gfx.Font;
 import snap.gfx.Rect;
 import snap.util.*;
 
@@ -17,7 +19,7 @@ public class RMGraphLegend extends RMParentShape {
     String          _legendText;
     
     // The font
-    RMFont          _font;
+    Font          _font;
     
 /**
  * Returns the legend text.
@@ -49,12 +51,12 @@ public boolean isFontSet()  { return _font!=null; }
 /**
  * Return current font.
  */
-public RMFont getFont()  { return _font!=null? _font : RMFont.Helvetica10; }
+public Font getFont()  { return _font!=null? _font : Font.Arial10; }
 
 /**
  * Set current font.
  */
-public void setFont(RMFont aFont)  { _font = aFont; }
+public void setFont(Font aFont)  { _font = aFont; }
 
 /**
  * Override to reset sample legend items if no children.

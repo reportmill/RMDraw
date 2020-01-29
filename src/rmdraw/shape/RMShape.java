@@ -730,12 +730,12 @@ public boolean isFontSet()  { return false; }
 /**
  * Returns the font for the shape (defaults to parent font).
  */
-public RMFont getFont()  { return getParent()!=null? getParent().getFont() : null; }
+public Font getFont()  { return getParent()!=null? getParent().getFont() : null; }
 
 /**
  * Sets the font for the shape.
  */
-public void setFont(RMFont aFont)  { }
+public void setFont(Font aFont)  { }
 
 /**
  * Returns whether the shape is underlined.
@@ -1565,11 +1565,11 @@ public void rpgBindings(ReportOwner anRptOwner, RMShape aShapeRPG)
             else size = getFont()==null? 12 : getFont().getSize();
             
             // Get root font (use default font if not found), and modified font
-            RMFont font = getFont(); if(font==null) font = RMFont.getDefaultFont();
+            Font font = getFont(); if(font==null) font = Font.getDefaultFont();
             if(fs.equalsIgnoreCase("Bold")) font = font.getBold();
             else if(fs.equalsIgnoreCase("Italic")) font = font.getItalic();
             else if(fs.length()>0) // If there is anything in string, try to parse font name
-                font = new RMFont(fs, size);
+                font = new Font(fs, size);
             
             // Get font at right size and apply it
             font = font.deriveFont(size);
@@ -2016,7 +2016,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     
     // Unarchive font
     XMLElement fontXML = anElement.getElement("font");
-    if(fontXML!=null) setFont((RMFont)anArchiver.fromXML(fontXML, this));
+    if(fontXML!=null) setFont((Font)anArchiver.fromXML(fontXML, this));
     
     // Unarchive Opacity, Visible
     setOpacity(anElement.getAttributeFloatValue("opacity", 1));

@@ -232,7 +232,7 @@ public void setAttribute(String aKey, Object aVal, int aStart, int aEnd)
 /**
  * Returns the current font at the given character index.
  */
-public RMFont getFontAt(int anIndex)  { return getRunAt(anIndex).getFont(); }
+public Font getFontAt(int anIndex)  { return getRunAt(anIndex).getFont(); }
 
 /**
  * Returns the current paragraph at the given character index.

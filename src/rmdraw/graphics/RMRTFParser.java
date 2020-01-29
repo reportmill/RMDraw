@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.graphics;
+import snap.gfx.Font;
 import java.awt.Color;
 import java.io.*;
 import java.util.Enumeration;
@@ -16,7 +17,7 @@ public class RMRTFParser {
 /**
  * Returns an xstring from the given rtf string and default font.
  */
-public static RMXString parse(String rtf, RMFont baseFont)
+public static RMXString parse(String rtf, Font baseFont)
 {
     try { return parseRTF(rtf, baseFont); }
     catch(Exception e) { e.printStackTrace(); return null; }
@@ -25,7 +26,7 @@ public static RMXString parse(String rtf, RMFont baseFont)
 /**
  * Returns an xstring from the given rtf string and default font.
  */
-public static RMXString parseRTF(String rtf, RMFont baseFont) throws Exception
+public static RMXString parseRTF(String rtf, Font baseFont) throws Exception
 {
     // Use RTFEditorKit to do the real parsing work
     EditorKit kit = new RTFEditorKit();
@@ -39,7 +40,7 @@ public static RMXString parseRTF(String rtf, RMFont baseFont) throws Exception
     
     // Declare return string and loop attribute variables
     RMXString result = new RMXString();
-    RMFont font = baseFont;
+    Font font = baseFont;
     Color color = null;
     boolean underline = false;
     
@@ -85,7 +86,7 @@ public static RMXString parseRTF(String rtf, RMFont baseFont) throws Exception
                 // Handle font family
                 if(attrName=="family") {
                     String fontName = (String)elem.getAttribute(attr);
-                    RMFont f = new RMFont(fontName, font.getSize());
+                    Font f = new Font(fontName, font.getSize());
                     if(!f.isSubstitute())
                         font = f;
                 }

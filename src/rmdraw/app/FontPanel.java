@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.graphics.*;
 import java.util.ArrayList;
 import java.util.List;
 import snap.gfx.*;
@@ -92,7 +91,7 @@ public void resetUI()
 {
     // Get current font
     Editor editor = getEditor();
-    RMFont font = EditorUtils.getFont(editor);
+    Font font = EditorUtils.getFont(editor);
     
     // Get family name and size
     String familyName = font.getFamily();
@@ -111,7 +110,7 @@ public void resetUI()
     setViewValue("OutlineButton", EditorUtils.getTextBorder(editor)!=null);
     
     // Get font names in currently selected font's family
-    String familyNames[] = RMFont.getFontNames(font.getFamily());
+    String familyNames[] = Font.getFontNames(font.getFamily());
     
     // Reset FontNameComboBox Items, SelItem and Enabled
     setViewItems("FontNameComboBox", familyNames);
@@ -141,10 +140,10 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle FontPickerButton
     if(anEvent.equals("FontPickerButton")) {
-        RMFont ofont = EditorUtils.getFont(editor);
+        Font ofont = EditorUtils.getFont(editor);
         Font font = new FontPicker().showPicker(getEditorPane().getUI(), ofont);
-        if(font!=null) { RMFont rfont = RMFont.get(font);
-            EditorUtils.setFontFamily(editor, rfont); }
+        if(font!=null)
+            EditorUtils.setFontFamily(editor, font);
     }
     
     // Handle SizesList
@@ -158,9 +157,9 @@ public void respondUI(ViewEvent anEvent)
     // Handle FamilyList, FamilyComboBox
     if(anEvent.equals("FamilyList") || (anEvent.equals("FamilyComboBox") && anEvent.isActionEvent())) {
         String familyName = getViewStringValue("FamilyList");
-        String fontNames[] = RMFont.getFontNames(familyName); if(fontNames.length==0) return;
+        String fontNames[] = Font.getFontNames(familyName); if(fontNames.length==0) return;
         String fontName = fontNames[0];
-        RMFont font = RMFont.getFont(fontName, 12);
+        Font font = Font.getFont(fontName, 12);
         EditorUtils.setFontFamily(editor, font);
     }
     
@@ -170,7 +169,7 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle FontNameComboBox
     if(anEvent.equals("FontNameComboBox")) {
-        RMFont font = RMFont.getFont(anEvent.getStringValue(), 12);
+        Font font = Font.getFont(anEvent.getStringValue(), 12);
         EditorUtils.setFontName(editor, font);
     }
 }

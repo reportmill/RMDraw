@@ -3,7 +3,6 @@
  */
 package rmdraw.shape;
 import rmdraw.base.*;
-import rmdraw.graphics.RMFont;
 import snap.gfx.*;
 import snap.util.*;
 
@@ -39,7 +38,7 @@ public class RMGraphPartValueAxis extends RMTextShape {
 public RMGraphPartValueAxis()
 {
     TextStyle dstyle = getRichText().getDefaultStyle();
-    TextStyle dstyle2 = dstyle.copyFor(RMFont.Helvetica10);
+    TextStyle dstyle2 = dstyle.copyFor(Font.Arial10);
     getRichText().setDefaultStyle(dstyle2);
 }
     
@@ -130,7 +129,7 @@ public void setAxisCount(int aValue)
 /**
  * Set current font.
  */
-public void setFont(RMFont aFont)
+public void setFont(Font aFont)
 {
     if(getXString().length()==0 && !_unarchiving)
         getXString().addChars(" ");

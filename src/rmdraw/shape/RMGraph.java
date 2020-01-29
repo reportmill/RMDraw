@@ -677,7 +677,7 @@ public void setEffect(Effect anEffect)
 /**
  * Override to allow for ProxyShape.
  */
-public RMFont getFont()
+public Font getFont()
 {
     return useProxy()? _proxyShape.getFont() : super.getFont();
 }
@@ -685,7 +685,7 @@ public RMFont getFont()
 /**
  * Override to allow for ProxyShape and trigger relayout.
  */
-public void setFont(RMFont aFont)
+public void setFont(Font aFont)
 {
     if(_proxyShape!=null)
         _proxyShape.setFont(aFont);

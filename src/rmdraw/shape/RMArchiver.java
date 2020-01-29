@@ -6,6 +6,7 @@ import rmdraw.base.*;
 import rmdraw.graphics.*;
 import java.util.*;
 import snap.gfx.Color;
+import snap.gfx.Font;
 import snap.util.*;
 import snap.web.WebURL;
 
@@ -89,7 +90,7 @@ protected Map <String, Class> createClassMap()
 
     // Graphics
     classMap.put("color", Color.class);
-    classMap.put("font", RMFont.class);
+    classMap.put("font", Font.class);
     classMap.put("format", RMFormatStub.class);
     classMap.put("pgraph", RMParagraph.class);
     classMap.put("xstring", RMXString.class);

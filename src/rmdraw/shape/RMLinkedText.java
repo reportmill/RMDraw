@@ -3,6 +3,7 @@
  */
 package rmdraw.shape;
 import rmdraw.graphics.*;
+import snap.gfx.Font;
 import snap.util.*;
 
 /**
@@ -46,7 +47,7 @@ public RMXString getXString()  { return getPreviousText().getXString(); }
 /**
  * Returns the font for char 0 of the start text.
  */
-public RMFont getFont()  { return getPreviousText().getFont(); }
+public Font getFont()  { return getPreviousText().getFont(); }
 
 /**
  * Overrides text implementation to return index where previous text left off.

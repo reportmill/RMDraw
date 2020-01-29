@@ -3,6 +3,7 @@
  */
 package rmdraw.shape;
 import rmdraw.graphics.*;
+import snap.gfx.Font;
 import snap.util.*;
 
 /**
@@ -20,7 +21,7 @@ public class RMGraphPartLabelAxis extends RMShape {
     String        _itemKey = "@Row@";
     
     // The font
-    RMFont        _font;
+    Font          _font;
     
 /**
  * Returns whether the graph shows axis labels.
@@ -72,12 +73,12 @@ public boolean isFontSet()  { return _font!=null; }
 /**
  * Return current font.
  */
-public RMFont getFont()  { return _font!=null? _font : RMFont.Helvetica10; }
+public Font getFont()  { return _font!=null? _font : Font.Arial10; }
 
 /**
  * Set current font.
  */
-public void setFont(RMFont aFont)
+public void setFont(Font aFont)
 {
     _font = aFont;
     relayoutParent();
