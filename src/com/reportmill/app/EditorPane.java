@@ -19,9 +19,6 @@ public class EditorPane extends ViewerPane {
     // The menu bar owner
     EditorPaneMenuBar _menuBar;
 
-    // The original editor, if in preview mode
-    Editor _realEditor;
-    
     // The shared editor inspector
     InspectorPanel         _inspPanel = createInspectorPanel();
     
