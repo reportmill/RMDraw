@@ -267,13 +267,14 @@ public void paintBoundsRect(RMTextShape aText, Painter aPntr) { }
 public void drop(T aCell, ViewEvent anEvent)
 {
     // If KeysPanel is dragging, add key to text
-    if(KeysPanel.getDragKey()!=null) {
+    Clipboard cb = anEvent.getClipboard();
+    if(cb.hasString()) {
     
         // Do normal text version to add drop string to text
         super.drop(aCell, anEvent);
     
         // Get the string
-        String string = anEvent.getClipboard().getString(); //ClipboardUtils.getString(anEvent.getTransferable());
+        String string = cb.getString(); //ClipboardUtils.getString(anEvent.getTransferable());
     
         // If this cell is header row or header column and there is no grouping, set grouping
         if((aCell.isColHeader() || aCell.isRowHeader()) && aCell.getGrouping()==null) {

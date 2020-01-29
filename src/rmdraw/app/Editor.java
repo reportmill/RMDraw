@@ -107,6 +107,11 @@ public RMTextEditor getTextEditor()
 }
 
 /**
+ * Returns the drag helper.
+ */
+public EditorDnD getDragHelper()  { return _dragHelper; }
+
+/**
  * Creates the shapes helper.
  */
 protected EditorDnD createDragHelper()  { return new EditorDnD(this); }

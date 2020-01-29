@@ -756,7 +756,8 @@ public Rect getHandleRect(T aTextShape, int handle, boolean isSuperSelected)
 public boolean acceptsDrag(T aShape, ViewEvent anEvent)
 {
     // If KeysPanel is dragging, return true
-    if(KeysPanel.getDragKey()!=null)
+    Clipboard cb = anEvent.getClipboard();
+    if(cb.hasString())
         return true;
     
     // Otherwise, return normal
@@ -769,7 +770,8 @@ public boolean acceptsDrag(T aShape, ViewEvent anEvent)
 public void drop(T aShape, ViewEvent anEvent)
 {
     // If a keys panel drop, add key to text
-    if(KeysPanel.getDragKey()!=null) {
+    Clipboard cb = anEvent.getClipboard();
+    if(cb.hasString()) {
         String string = anEvent.getClipboard().getString();
         RMTextShape text = aShape;
         if(text.length()==0)
