@@ -16,6 +16,11 @@ import snap.web.WebURL;
 public class RMArchiver extends XMLArchiver {
 
 /**
+ * Creates RMArchiver.
+ */
+public RMArchiver()  { }
+
+/**
  * Returns a parent shape for source.
  */
 public RMDocument getDoc(Object aSource)  { return getDoc(aSource, null); }
@@ -71,8 +76,6 @@ protected Map <String, Class> createClassMap()
     classMap.put("graph", RMGraph.class);
     classMap.put("graph-legend", RMGraphLegend.class);
     classMap.put("image-shape", RMImageShape.class);
-    classMap.put("label", RMLabel.class);
-    classMap.put("labels", RMLabels.class);
     classMap.put("line", RMLineShape.class);
     classMap.put("oval", RMOvalShape.class);
     classMap.put("page", RMPage.class);

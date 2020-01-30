@@ -827,46 +827,4 @@ protected Image getImageImpl()
     return Image.get(RMTool.class, "RMShape.png");
 }
 
-/**
- * Returns the specific tool for a given shape.
- */
-public static RMTool createTool(Class aClass)
-{
-    // Handle root
-    if(aClass==RMCrossTab.class) return new RMCrossTabTool();
-    if(aClass==RMCrossTabCell.class) return new RMCrossTabCellTool();
-    if(aClass==RMCrossTabDivider.class) return new RMCrossTabDividerTool();
-    if(aClass==RMCrossTabFrame.class) return new RMCrossTabFrameTool();
-    if(aClass==RMDocument.class) return new RMDocumentTool();
-    if(aClass==RMGraph.class) return new RMGraphTool();
-    if(aClass==RMGraphLegend.class) return new RMGraphLegendTool();
-    if(aClass==RMGraphPartBars.class) return new RMGraphPartBarsTool();
-    if(aClass==RMGraphPartLabelAxis.class) return new RMGraphPartLabelAxisTool();
-    if(aClass==RMGraphPartPie.class) return new RMGraphPartPieTool();
-    if(aClass==RMGraphPartSeries.class) return new RMGraphPartSeriesTool();
-    if(aClass==RMGraphPartValueAxis.class) return new RMGraphPartValueAxisTool();
-    if(aClass==RMImageShape.class) return new RMImageTool();
-    if(aClass==RMLabel.class) return new RMLabelTool();
-    if(aClass==RMLabels.class) return new RMLabelsTool();
-    if(aClass==RMLineShape.class) return new RMLineShapeTool();
-    if(aClass==RMLinkedText.class) return new RMTextTool();
-    if(aClass==RMOvalShape.class) return new RMOvalShapeTool();
-    if(aClass==RMPage.class) return new RMPageTool();
-    if(aClass==RMParentShape.class) return new RMParentShapeTool();
-    if(aClass==RMPDFShape.class) return new RMPDFShapeTool();
-    if(aClass==RMPolygonShape.class) return new RMPolygonShapeTool();
-    if(aClass==RMRectShape.class) return new RMRectShapeTool();
-    if(aClass==RMScene3D.class) return new RMScene3DTool();
-    if(aClass==RMShape.class) return new RMTool();
-    if(aClass==RMSpringShape.class) return new RMSpringShapeTool();
-    if(aClass==RMSwitchShape.class) return new RMSwitchShapeTool();
-    if(aClass==RMTable.class) return new RMTableTool();
-    if(aClass==RMTableGroup.class) return new RMTableGroupTool();
-    if(aClass==RMTableRow.class) return new RMTableRowTool();
-    if(aClass==RMTextShape.class) return new RMTextTool();
-    if(aClass== ViewerShape.class) return new RMTool();
-    System.out.println("RMTool.createTool: " + aClass.getName());
-    return new RMTool();
-}
-
 }

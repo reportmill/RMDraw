@@ -310,7 +310,7 @@ public void saveAs()
     if(getSourceURL()!=null && FilePathUtils.getExtension(getSourceURL().getPath())!=null) {
         List ex = new ArrayList(Arrays.asList(exts));
         ex.add(0, FilePathUtils.getExtension(getSourceURL().getPath()));
-        exts = (String[])ex.toArray(new String[ex.size()]);
+        exts = (String[])ex.toArray(new String[0]);
     }
     
     // Run save panel, set Document.Source to path and re-save (or just return if cancelled)
@@ -350,7 +350,7 @@ public void save()
 /**
  * The real save method.
  */
-protected void saveImpl() throws Exception
+protected void saveImpl()
 {
     WebURL url = getSourceURL();
     WebFile file = url.getFile();
@@ -466,7 +466,7 @@ private void editorDidPropChange(PropChange aPC)
 {
     String pname = aPC.getPropName();
     switch(pname) {
-        case Editor.SelShapes_Prop: resetLater(); break;
+        case Editor.SelShapes_Prop:
         case Editor.SuperSelShape_Prop: resetLater(); break;
     }
 }

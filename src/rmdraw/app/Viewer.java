@@ -42,7 +42,7 @@ public class Viewer extends ParentView {
     ViewerEvents _events = createEvents();
 
     // Zoom modes
-    public enum ZoomMode { ZoomToFit, ZoomAsNeeded, ZoomToFactor };
+    public enum ZoomMode { ZoomToFit, ZoomAsNeeded, ZoomToFactor }
     
     // Constants for PropertyChanges
     public static final String Content_Prop = "Content";
@@ -52,8 +52,10 @@ public class Viewer extends ParentView {
  */
 public Viewer()
 {
-    enableEvents(MouseEvents); enableEvents(KeyEvents);
-    setFocusable(true); setFocusWhenPressed(true);
+    enableEvents(MouseEvents);
+    enableEvents(KeyEvents);
+    setFocusable(true);
+    setFocusWhenPressed(true);
     setFill(Color.LIGHTGRAY);
 }
 
@@ -87,12 +89,24 @@ public void setDoc(RMDocument aDoc)
 /**
  * Sets the document from any source.
  */
-public void setDoc(Object aSource)  { setDoc(new RMArchiver().getDoc(aSource)); }
+public void setDoc(Object aSource)
+{
+    RMArchiver archiver = createArchiver();
+    setDoc(archiver.getDoc(aSource));
+}
 
 /**
  * Returns the source URL.
  */
 public WebURL getSourceURL()  { RMDocument d = getDoc(); return d!=null? d.getSourceURL() : null; }
+
+/**
+ * Creates an archiver.
+ */
+public RMArchiver createArchiver()
+{
+    return new RMArchiver();
+}
 
 /**
  * Returns whether viewer is really doing editing.

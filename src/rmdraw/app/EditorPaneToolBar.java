@@ -19,10 +19,10 @@ import snap.viewx.*;
 public class EditorPaneToolBar extends EditorPane.SupportPane {
 
     // The font face ComboBox
-    ComboBox          _fontFaceComboBox;
+    private ComboBox <String> _fontFaceComboBox;
     
     // The font size ComboBox
-    ComboBox          _fontSizeComboBox;
+    private ComboBox _fontSizeComboBox;
     
     // The editor selected color ColorWell (hidden)
     ColorWell         _colorWell;
@@ -253,12 +253,6 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("AlignCenterButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
     if(anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
     if(anEvent.equals("AlignFullButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
-    
-    // Handle AddTableButton, AddGraphButton, AddLabelsButton, AddCrossTabFrameButton
-    if(anEvent.equals("AddTableButton")) RMTableTool.addTable(getEditor(), null);
-    if(anEvent.equals("AddGraphButton")) RMGraphTool.addGraph(getEditor(), null);
-    if(anEvent.equals("AddLabelsButton")) RMLabelsTool.addLabels(getEditor(), null);
-    if(anEvent.equals("AddCrossTabFrameButton")) RMCrossTabTool.addCrossTab(getEditor(), null);
     
     // Handle AddCrossTabButton, AddImagePlaceHolderMenuItem
     if(anEvent.equals("AddCrossTabButton")) RMCrossTabTool.addCrossTab(getEditor());
