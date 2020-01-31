@@ -15,131 +15,136 @@ import snap.web.WebURL;
  */
 public class RMArchiver extends XMLArchiver {
 
-/**
- * Creates RMArchiver.
- */
-public RMArchiver()  { }
+    // The shared class map
+    private static Map <String, Class> _classMapRM;
 
-/**
- * Returns a parent shape for source.
- */
-public RMDocument getDoc(Object aSource)  { return getDoc(aSource, null); }
+    /**
+     * Creates RMArchiver.
+     */
+    public RMArchiver()  { }
 
-/**
- * Creates a document.
- */
-public RMDocument getDoc(Object aSource, RMDocument aBaseDoc)
-{
-    // If source is a document, just return it
-    if(aSource instanceof RMDocument) return (RMDocument)aSource;
-    
-    // Get URL and/or bytes (complain if not found)
-    WebURL url = WebURL.getURL(aSource);
-    byte bytes[] = url!=null? url.getBytes() : SnapUtils.getBytes(aSource);
-    if(bytes==null)
-        throw new RuntimeException("RMArchiver.getDoc: Cannot read source: " + (url!=null? url : aSource));
-    
-    // If PDF, return PDF Doc
-    //if(RMPDFData.canRead(bytes)) return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
+    /**
+     * Returns a parent shape for source.
+     */
+    public RMDocument getDoc(Object aSource)  { return getDoc(aSource, null); }
 
-    // Create archiver, read, set source and return
-    setRootObject(aBaseDoc);
-    
-    RMDocument doc = (RMDocument)readObject(url!=null? url : bytes);
-    
-    // Set Source URL and return
-    doc.setSourceURL(getSourceURL());
-    return doc;
-}
-
-/**
- * Returns the class map.
- */
-public Map <String, Class> getClassMap()  { return _rmCM!=null? _rmCM : (_rmCM=createClassMap()); }
-static Map <String, Class> _rmCM;
-
-/**
- * Creates the class map.
- */
-protected Map <String, Class> createClassMap()
-{
-    // Create class map and add classes
-    Map classMap = new HashMap();
-    
-    // Shape classes
-    classMap.put("arrow-head", RMLineShape.ArrowHead.class);
-    classMap.put("cell-table", RMCrossTab.class);
-    classMap.put("cell-table-frame", RMCrossTabFrame.class);
-    classMap.put("document", RMDocument.class);
-    classMap.put("flow-shape", RMParentShape.class);
-    classMap.put("graph", RMGraph.class);
-    classMap.put("graph-legend", RMGraphLegend.class);
-    classMap.put("image-shape", RMImageShape.class);
-    classMap.put("line", RMLineShape.class);
-    classMap.put("oval", RMOvalShape.class);
-    classMap.put("page", RMPage.class);
-    classMap.put("polygon", RMPolygonShape.class);
-    classMap.put("rect", RMRectShape.class);
-    classMap.put("shape", RMParentShape.class);
-    classMap.put("spring-shape", RMSpringShape.class);
-    classMap.put("switchshape", RMSwitchShape.class);
-    classMap.put("table", RMTable.class);
-    classMap.put("table-group", RMTableGroup.class);
-    classMap.put("tablerow", RMTableRow.class);
-    classMap.put("text", RMTextShape.class);
-    classMap.put("linked-text", RMLinkedText.class);
-    classMap.put("scene3d", RMScene3D.class);
-
-    // Graphics
-    classMap.put("color", Color.class);
-    classMap.put("font", Font.class);
-    classMap.put("format", RMFormatStub.class);
-    classMap.put("pgraph", RMParagraph.class);
-    classMap.put("xstring", RMXString.class);
-    
-    // Strokes
-    classMap.put("stroke", RMStroke.class); classMap.put("double-stroke", RMStroke.class);
-    classMap.put("border-stroke", "rmdraw.graphics.RMBorderStroke");
-    
-    // Fills
-    classMap.put("fill", RMFill.class);
-    classMap.put("gradient-fill", RMGradientFill.class);
-    classMap.put("radial-fill", RMGradientFill.class);
-    classMap.put("image-fill", RMImageFill.class);
-    classMap.put("contour-fill", "rmdraw.graphics.RMContourFill");
-    
-    // Effects
-    classMap.put("blur-effect", "snap.gfx.BlurEffect");
-    classMap.put("shadow-effect", "snap.gfx.ShadowEffect");
-    classMap.put("reflection-effect", "snap.gfx.ReflectEffect");
-    classMap.put("emboss-effect", "snap.gfx.EmbossEffect");
-
-    // Sorts, Grouping
-    classMap.put("sort", "rmdraw.base.RMSort");
-    classMap.put("top-n-sort", "rmdraw.base.RMTopNSort");
-    classMap.put("value-sort", "rmdraw.base.RMValueSort");
-    classMap.put("grouper", RMGrouper.class);
-    classMap.put("grouping", RMGrouping.class);
-    
-    // Return classmap
-    return classMap;
-}
-
-/**
- * A class to unarchive formats as proper subclass based on type attribute.
- */
-public static class RMFormatStub implements Archivable {
-
-    /** Implement fromXML to return proper format based on type attribute. */
-    public XMLElement toXML(XMLArchiver anArchive)  { return null; }
-    public Object fromXML(XMLArchiver anArchiver, XMLElement anElmnt)    
+    /**
+     * Creates a document.
+     */
+    public RMDocument getDoc(Object aSource, RMDocument aBaseDoc)
     {
-        String type = anElmnt.getAttributeValue("type","");
-        if(type.equals("number")) return anArchiver.fromXML(anElmnt, RMNumberFormat.class,null);
-        if(type.equals("date")) return anArchiver.fromXML(anElmnt, RMDateFormat.class, null);
-        if(type.length()>0) System.err.println("RMFormatStub: Unknown format type " + type);
-        return null;
-    }
-}
+        // If source is a document, just return it
+        if(aSource instanceof RMDocument) return (RMDocument)aSource;
 
+        // Get URL and/or bytes (complain if not found)
+        WebURL url = WebURL.getURL(aSource);
+        byte bytes[] = url!=null? url.getBytes() : SnapUtils.getBytes(aSource);
+        if(bytes==null)
+            throw new RuntimeException("RMArchiver.getDoc: Cannot read source: " + (url!=null? url : aSource));
+
+        // If PDF, return PDF Doc
+        //if(RMPDFData.canRead(bytes)) return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
+
+        // Create archiver, read, set source and return
+        setRootObject(aBaseDoc);
+
+        RMDocument doc = (RMDocument)readObject(url!=null? url : bytes);
+
+        // Set Source URL and return
+        doc.setSourceURL(getSourceURL());
+        return doc;
+    }
+
+    /**
+     * Creates the class map.
+     */
+    protected Map <String, Class> createClassMap()
+    {
+        return getClassMapShared();
+    }
+
+    /**
+     * Creates the class map.
+     */
+    public static Map <String, Class> getClassMapShared()
+    {
+        // If already set, just return
+        if (_classMapRM!=null) return _classMapRM;
+
+        // Create class map and add classes
+        Map cmap = new HashMap();
+
+        // Shape classes
+        cmap.put("arrow-head", RMLineShape.ArrowHead.class);
+        cmap.put("cell-table", RMCrossTab.class);
+        cmap.put("cell-table-frame", RMCrossTabFrame.class);
+        cmap.put("document", RMDocument.class);
+        cmap.put("flow-shape", RMParentShape.class);
+        cmap.put("image-shape", RMImageShape.class);
+        cmap.put("line", RMLineShape.class);
+        cmap.put("oval", RMOvalShape.class);
+        cmap.put("page", RMPage.class);
+        cmap.put("polygon", RMPolygonShape.class);
+        cmap.put("rect", RMRectShape.class);
+        cmap.put("shape", RMParentShape.class);
+        cmap.put("spring-shape", RMSpringShape.class);
+        cmap.put("switchshape", RMSwitchShape.class);
+        cmap.put("table", RMTable.class);
+        cmap.put("table-group", RMTableGroup.class);
+        cmap.put("tablerow", RMTableRow.class);
+        cmap.put("text", RMTextShape.class);
+        cmap.put("linked-text", RMLinkedText.class);
+        cmap.put("scene3d", RMScene3D.class);
+
+        // Graphics
+        cmap.put("color", Color.class);
+        cmap.put("font", Font.class);
+        cmap.put("format", RMFormatStub.class);
+        cmap.put("pgraph", RMParagraph.class);
+        cmap.put("xstring", RMXString.class);
+
+        // Strokes
+        cmap.put("stroke", RMStroke.class); cmap.put("double-stroke", RMStroke.class);
+        cmap.put("border-stroke", "rmdraw.graphics.RMBorderStroke");
+
+        // Fills
+        cmap.put("fill", RMFill.class);
+        cmap.put("gradient-fill", RMGradientFill.class);
+        cmap.put("radial-fill", RMGradientFill.class);
+        cmap.put("image-fill", RMImageFill.class);
+        cmap.put("contour-fill", "rmdraw.graphics.RMContourFill");
+
+        // Effects
+        cmap.put("blur-effect", "snap.gfx.BlurEffect");
+        cmap.put("shadow-effect", "snap.gfx.ShadowEffect");
+        cmap.put("reflection-effect", "snap.gfx.ReflectEffect");
+        cmap.put("emboss-effect", "snap.gfx.EmbossEffect");
+
+        // Sorts, Grouping
+        cmap.put("sort", "rmdraw.base.RMSort");
+        cmap.put("top-n-sort", "rmdraw.base.RMTopNSort");
+        cmap.put("value-sort", "rmdraw.base.RMValueSort");
+        cmap.put("grouper", RMGrouper.class);
+        cmap.put("grouping", RMGrouping.class);
+
+        // Return classmap
+        return _classMapRM = cmap;
+    }
+
+    /**
+     * A class to unarchive formats as proper subclass based on type attribute.
+     */
+    public static class RMFormatStub implements Archivable {
+
+        /** Implement fromXML to return proper format based on type attribute. */
+        public XMLElement toXML(XMLArchiver anArchive)  { return null; }
+        public Object fromXML(XMLArchiver anArchiver, XMLElement anElmnt)
+        {
+            String type = anElmnt.getAttributeValue("type","");
+            if(type.equals("number")) return anArchiver.fromXML(anElmnt, RMNumberFormat.class,null);
+            if(type.equals("date")) return anArchiver.fromXML(anElmnt, RMDateFormat.class, null);
+            if(type.length()>0) System.err.println("RMFormatStub: Unknown format type " + type);
+            return null;
+        }
+    }
 }

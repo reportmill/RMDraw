@@ -727,13 +727,6 @@ protected RMTool createTool(Class aClass)
     if(aClass==RMCrossTabDivider.class) return new RMCrossTabDividerTool();
     if(aClass==RMCrossTabFrame.class) return new RMCrossTabFrameTool();
     if(aClass==RMDocument.class) return new RMDocumentTool();
-    if(aClass==RMGraph.class) return new RMGraphTool();
-    if(aClass==RMGraphLegend.class) return new RMGraphLegendTool();
-    if(aClass==RMGraphPartBars.class) return new RMGraphPartBarsTool();
-    if(aClass==RMGraphPartLabelAxis.class) return new RMGraphPartLabelAxisTool();
-    if(aClass==RMGraphPartPie.class) return new RMGraphPartPieTool();
-    if(aClass==RMGraphPartSeries.class) return new RMGraphPartSeriesTool();
-    if(aClass==RMGraphPartValueAxis.class) return new RMGraphPartValueAxisTool();
     if(aClass==RMImageShape.class) return new RMImageTool();
     if(aClass==RMLineShape.class) return new RMLineShapeTool();
     if(aClass==RMLinkedText.class) return new RMTextTool();
@@ -1065,7 +1058,7 @@ protected void addUndoChange(PropChange aPC)
     
     // Handle some changes special
     String pname = aPC.getPropName();
-    if(pname==RMGraph.ProxyShape_Prop) {
+    if(pname.equals("ProxyShape")) { // For RMGraph
         resetEditorPaneOnMouseUp(); return; }
     
     // If no undos and change is RMDocument.SelectedPage or RMTableGroup.MainTable, just return
