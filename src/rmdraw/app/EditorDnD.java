@@ -4,12 +4,10 @@
 package rmdraw.app;
 import rmdraw.graphics.RMFill;
 import rmdraw.graphics.RMImageFill;
-import rmdraw.graphics.RMPDFData;
 import rmdraw.shape.*;
 import snap.gfx.*;
 import snap.view.*;
 import snap.viewx.DialogBox;
-
 import java.util.List;
 
 /**
@@ -23,112 +21,112 @@ public class EditorDnD {
     // The last shape that a drag and drop action was over
     RMShape         _lastOverShape;
 
-/**
- * Creates a new editor drop target listener.
- */
-public EditorDnD(Editor anEditor)  { _editor = anEditor; }
+    /**
+     * Creates a new editor drop target listener.
+     */
+    public EditorDnD(Editor anEditor)  { _editor = anEditor; }
 
-/**
- * Returns the editor.
- */
-public Editor getEditor()  { return _editor; }
+    /**
+     * Returns the editor.
+     */
+    public Editor getEditor()  { return _editor; }
 
-/**
- * Handle events.
- */
-protected void processEvent(ViewEvent anEvent)
-{
-    switch(anEvent.getType()) {
-        case DragEnter: dragEnter(anEvent); break;
-        case DragOver: dragOver(anEvent); break;
-        case DragExit: dragExit(anEvent); break;
-        case DragDrop: dragDrop(anEvent); break;
-        default: throw new RuntimeException("EditorDnD: Unknown event type: " + anEvent.getType());
-        //case DragActionChanged: anEvent.acceptDrag(DnDConstants.ACTION_COPY);
+    /**
+     * Handle events.
+     */
+    protected void processEvent(ViewEvent anEvent)
+    {
+        switch(anEvent.getType()) {
+            case DragEnter: dragEnter(anEvent); break;
+            case DragOver: dragOver(anEvent); break;
+            case DragExit: dragExit(anEvent); break;
+            case DragDrop: dragDrop(anEvent); break;
+            default: throw new RuntimeException("EditorDnD: Unknown event type: " + anEvent.getType());
+            //case DragActionChanged: anEvent.acceptDrag(DnDConstants.ACTION_COPY);
+        }
     }
-}
 
-/**
- * Drop target listener method.
- */
-public void dragEnter(ViewEvent anEvent)
-{
-    _lastOverShape = null;  // Reset last over shape and last drag point
-    dragOver(anEvent);                             // Do a drag over to get things started
-}
-
-/**
- * Drop target listener method.
- */
-public void dragOver(ViewEvent anEvent)
-{
-    // Windows calls this method continuously, as long as the mouse is held down
-    //if(anEvent.getPoint().equals(_lastDragPoint)) return; _lastDragPoint = anEvent.getPoint();
-
-    // Accept drag
-    anEvent.acceptDrag(); //DnDConstants.ACTION_COPY);
-    
-    // Get shape at drag point (or the page, if none there)
-    RMShape overShape = _editor.getShapeAtPoint(anEvent.getPoint(), true);
-    if(overShape==null)
-        overShape = _editor.getSelPage();
-    
-    // Go up chain until we find a shape that accepts drag
-    while(!_editor.getTool(overShape).acceptsDrag(overShape, anEvent))
-        overShape = overShape.getParent();
-    
-    // If new overShape, do drag exit/enter and reset border
-    if(overShape!=_lastOverShape) {
-        
-        // Send drag exit
-        if(_lastOverShape!=null)
-            _editor.getTool(_lastOverShape).dragExit(_lastOverShape, anEvent);
-        
-        // Send drag enter
-        _editor.getTool(overShape).dragEnter(overShape, anEvent);
-        
-        // Get bounds of over shape in editor coords
-        Rect bounds = overShape.getBoundsInside();
-        _editor._dragShape = _editor.convertFromShape(bounds, overShape);
-        _editor.repaint();
-        
-        // Update last drop shape
-        _lastOverShape = overShape;
+    /**
+     * Drop target listener method.
+     */
+    public void dragEnter(ViewEvent anEvent)
+    {
+        _lastOverShape = null;  // Reset last over shape and last drag point
+        dragOver(anEvent);                             // Do a drag over to get things started
     }
-    
-    // If over shape didn't change, send drag over
-    else _editor.getTool(overShape).dragOver(overShape, anEvent);
-}
 
-/**
- * Drop target listener method.
- */
-public void dragExit(ViewEvent anEvent)
-{
-    _editor._dragShape = null; _editor.repaint();        // Clear DragShape
-    EditorProxGuide.clearGuidelines(_editor);          // Reset proximity guide
-}
+    /**
+     * Drop target listener method.
+     */
+    public void dragOver(ViewEvent anEvent)
+    {
+        // Windows calls this method continuously, as long as the mouse is held down
+        //if(anEvent.getPoint().equals(_lastDragPoint)) return; _lastDragPoint = anEvent.getPoint();
 
-/**
- * Drop target listener method.
- */
-protected void dragDrop(ViewEvent anEvent)
-{
-    // Formally accept drop
-    anEvent.acceptDrag();//DnDConstants.ACTION_COPY);
-    
-    // Order window front (for any getMainEditor calls, but really should be true anyway)
-    _editor.getWindow().toFront();
-    
-    // Forward drop to last over shape
-    _editor.getTool(_lastOverShape).drop(_lastOverShape, anEvent);
-    
-    // Formally complete drop
-    anEvent.dropComplete();  //(true);
-    
-    // Clear DragShape (which may have been set during dragOver)
-    _editor._dragShape = null; _editor.repaint();
-}
+        // Accept drag
+        anEvent.acceptDrag(); //DnDConstants.ACTION_COPY);
+
+        // Get shape at drag point (or the page, if none there)
+        RMShape overShape = _editor.getShapeAtPoint(anEvent.getPoint(), true);
+        if(overShape==null)
+            overShape = _editor.getSelPage();
+
+        // Go up chain until we find a shape that accepts drag
+        while(!_editor.getTool(overShape).acceptsDrag(overShape, anEvent))
+            overShape = overShape.getParent();
+
+        // If new overShape, do drag exit/enter and reset border
+        if(overShape!=_lastOverShape) {
+
+            // Send drag exit
+            if(_lastOverShape!=null)
+                _editor.getTool(_lastOverShape).dragExit(_lastOverShape, anEvent);
+
+            // Send drag enter
+            _editor.getTool(overShape).dragEnter(overShape, anEvent);
+
+            // Get bounds of over shape in editor coords
+            Rect bounds = overShape.getBoundsInside();
+            _editor._dragShape = _editor.convertFromShape(bounds, overShape);
+            _editor.repaint();
+
+            // Update last drop shape
+            _lastOverShape = overShape;
+        }
+
+        // If over shape didn't change, send drag over
+        else _editor.getTool(overShape).dragOver(overShape, anEvent);
+    }
+
+    /**
+     * Drop target listener method.
+     */
+    public void dragExit(ViewEvent anEvent)
+    {
+        _editor._dragShape = null; _editor.repaint();        // Clear DragShape
+        EditorProxGuide.clearGuidelines(_editor);          // Reset proximity guide
+    }
+
+    /**
+     * Drop target listener method.
+     */
+    protected void dragDrop(ViewEvent anEvent)
+    {
+        // Formally accept drop
+        anEvent.acceptDrag();//DnDConstants.ACTION_COPY);
+
+        // Order window front (for any getMainEditor calls, but really should be true anyway)
+        _editor.getWindow().toFront();
+
+        // Forward drop to last over shape
+        _editor.getTool(_lastOverShape).drop(_lastOverShape, anEvent);
+
+        // Formally complete drop
+        anEvent.dropComplete();  //(true);
+
+        // Clear DragShape (which may have been set during dragOver)
+        _editor._dragShape = null; _editor.repaint();
+    }
 
     /**
      * Called to drop string.
@@ -193,7 +191,8 @@ protected void dragDrop(ViewEvent anEvent)
         if(!aFile.isLoaded()) { aFile.addLoadListener(f -> dropFileForView(aShape, aFile, aPoint)); return aPoint; }
 
         // Get path and extension (set to empty string if null)
-        String ext = aFile.getExtension(); if(ext==null) return aPoint; ext = ext.toLowerCase();
+        String ext = aFile.getExtension(); if(ext==null) return aPoint;
+        ext = ext.toLowerCase();
 
         // If xml file, pass it to setDataSource()
         if(ext.equals("xml")) {
@@ -202,13 +201,13 @@ protected void dragDrop(ViewEvent anEvent)
             epane.setDataSource(aFile.getSourceURL(), aPoint.getX(), aPoint.getY());
         }
 
-            // If image file, add image shape
+        // If image file, add image shape
         else if(Image.canRead(ext))
-            ViewUtils.runLater(() -> dropImageFile(aShape, aFile, aPoint));
+            dropImageFile(aShape, aFile, aPoint);
 
-            // If PDF file, add image shape
-        else if(RMPDFData.canRead(ext))
-            ViewUtils.runLater(() -> dropPDFFile(aShape, aFile, aPoint));
+        // If PDF file, add image shape
+        else if(ext.equals("pdf"))
+            dropPDFFile(aShape, aFile, aPoint);
 
         // Return point offset by 10
         aPoint.offset(10, 10); return aPoint;
@@ -288,35 +287,9 @@ protected void dragDrop(ViewEvent anEvent)
     /**
      * Called to handle an PDF file drop on the editor.
      */
-    private void dropPDFFile(RMShape aShape, ClipboardData aFile, Point aPoint)
+    protected void dropPDFFile(RMShape aShape, ClipboardData aFile, Point aPoint)
     {
-        // Get image source
-        Object imgSrc = aFile.getSourceURL()!=null? aFile.getSourceURL() : aFile.getBytes();
-
-        // If image hit a real shape, see if user wants it to be a texture
-        Editor editor = getEditor();
-        RMShape shape = aShape;
-        while(!editor.getTool(shape).getAcceptsChildren(shape))
-            shape = shape.getParent();
-
-        // Get parent to add image shape to and drop point in parent coords
-        RMParentShape parent = shape instanceof RMParentShape? (RMParentShape)shape : shape.getParent();
-        Point point = editor.convertToShape(aPoint.x, aPoint.y, parent);
-
-        // Create new PDF shape
-        RMPDFShape pdfShape = new RMPDFShape(imgSrc);
-
-        // Create new PDF shape and set bounds centered around point (or at page origin if covers 75% of page or more)
-        pdfShape.setXY(point.x - pdfShape.getWidth()/2, point.y - pdfShape.getHeight()/2);
-        if(pdfShape.getWidth()/editor.getWidth()>.75f || pdfShape.getHeight()/editor.getHeight()>.75) pdfShape.setXY(0, 0);
-
-        // Add imageShape with undo
-        editor.undoerSetUndoTitle("Add Image");
-        parent.addChild(pdfShape);
-
-        // Select imageShape and SelectTool
-        editor.setSelectedShape(pdfShape);
-        editor.setCurrentToolToSelectTool();
+        ViewUtils.beep();
     }
 
 }

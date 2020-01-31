@@ -798,10 +798,8 @@ public String getWindowTitle()  { return "Text Inspector"; }
  */
 public boolean shouldConvertToText(RMShape aShape)
 {
-    if(aShape instanceof RMImageShape) return false;
-    if(aShape instanceof RMPDFShape) return false;
     if(aShape.isLocked()) return false;
-    return aShape instanceof RMRectShape || aShape instanceof RMOvalShape ||
+    return aShape.getClass()==RMRectShape.class || aShape instanceof RMOvalShape ||
         aShape instanceof RMPolygonShape;
 }
 

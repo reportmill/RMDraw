@@ -210,11 +210,6 @@ public String toString()
 }
 
 /**
- * Returns whether PDF image reader can read files with given extension.
- */    
-public static boolean canRead(String anExt)  { return anExt!=null && anExt.toLowerCase().equals("pdf"); }
-
-/**
  * Returns whether PDF image reader can read the file provided in the byte array.
  */
 public static boolean canRead(byte data[])

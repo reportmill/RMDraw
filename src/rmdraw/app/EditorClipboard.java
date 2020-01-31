@@ -127,15 +127,14 @@ public static void paste(Editor anEditor, Clipboard aCB, RMParentShape aParent, 
         pastedShape = new RMImageShape(bytes);
     }
     
-    // paste pdf
-    else if((pastedShape=getTransferPDF(aCB)) != null) { }
-    
     // last one - plain text
     else if((pastedShape=getTransferText(aCB)) != null) { }
         
     // Might as well log unsupported paste types
-    else { //for(String type : aCB.getMIMETypes()) System.err.println("Unsupported type: " + type);
-        ViewUtils.beep(); }
+    else {
+        //for(String type : aCB.getMIMETypes()) System.err.println("Unsupported type: " + type);
+        ViewUtils.beep();
+    }
 
     // Add pastedShape
     if(pastedShape!=null) {
@@ -205,16 +204,6 @@ public static RMShape getTransferText(Clipboard aCB)
     if(!aCB.hasString()) return null;
     String str = aCB.getString();
     return str!=null? new RMTextShape(str) : null;
-}
-
-/**
- * Returns an RMImage with the contents if there's a pdf image on the clipboard.
- */
-public static RMShape getTransferPDF(Clipboard aCB) 
-{
-    if(!aCB.hasData("application/pdf")) return null;
-    byte bytes[] = aCB.getDataBytes("application/pdf");
-    return bytes!=null? new RMPDFShape(bytes) : null;
 }
 
 }

@@ -40,8 +40,7 @@ public RMDocument getDoc(Object aSource, RMDocument aBaseDoc)
         throw new RuntimeException("RMArchiver.getDoc: Cannot read source: " + (url!=null? url : aSource));
     
     // If PDF, return PDF Doc
-    if(RMPDFData.canRead(bytes))
-        return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
+    //if(RMPDFData.canRead(bytes)) return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
 
     // Create archiver, read, set source and return
     setRootObject(aBaseDoc);

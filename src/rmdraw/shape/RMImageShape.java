@@ -185,9 +185,9 @@ public RMShape rpgShape(ReportOwner aRptOwner, RMShape aParent)
         WebURL url = WebURL.getURL(value); if(url!=null) value = url;
         
         // If PDF data, return PDFShape
-        if(url!=null && url.getPath().toLowerCase().endsWith("pdf") ||
-            value instanceof byte[] && RMPDFData.canRead((byte[])value))
-                return RMPDFShape.rpgShape(aRptOwner, aParent, this, value);
+        //if(url!=null && url.getPath().toLowerCase().endsWith("pdf") ||
+        //    value instanceof byte[] && RMPDFData.canRead((byte[])value))
+        //        return RMPDFShape.rpgShape(aRptOwner, aParent, this, value);
                 
         // Otherwise set new image
         clone.setImageForSource(value);
@@ -290,7 +290,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     String rname = anElement.getAttributeValue("resource");
     if(rname!=null) {
         byte bytes[] = anArchiver.getResource(rname);
-        if(RMPDFData.canRead(bytes)) return new RMPDFShape().fromXML(anArchiver, anElement);
+        //if(RMPDFData.canRead(bytes)) return new RMPDFShape().fromXML(anArchiver, anElement);
         _imgRef = ImageRef.getImageRef(bytes);
     }
     
