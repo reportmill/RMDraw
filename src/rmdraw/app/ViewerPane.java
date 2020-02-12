@@ -153,15 +153,6 @@ public void runZoomPanel()
 }
 
 /**
- * Previews the current viewer document as pdf.
- */
-public void previewPDF()
-{
-    getDoc().writePDF(SnapUtils.getTempDir() + "RMPDFFile.pdf");
-    FileUtils.openFile(SnapUtils.getTempDir() + "RMPDFFile.pdf");
-}
-
-/**
  * Initializes the UI.
  */
 protected View createUI()

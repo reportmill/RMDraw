@@ -49,10 +49,6 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("CopyButton"))
         getViewerPane().copy();
     
-    // Handle File PreviewPDFButton
-    if(anEvent.equals("PreviewPDFButton"))
-        getViewerPane().previewPDF();
-        
     // Handle MoveButton
     if(anEvent.equals("MoveButton"))
         getViewer().getEvents().setMode(ViewerEvents.DEFAULT);

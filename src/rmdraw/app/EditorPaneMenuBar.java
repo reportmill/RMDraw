@@ -65,20 +65,20 @@ protected void respondUI(ViewEvent anEvent)
     Editor editor = getEditor();
     
     // Handle NewMenuItem, NewButton: Get new editor pane and make visible
-    if(anEvent.equals("NewMenuItem") || anEvent.equals("NewButton")) {
+    if (anEvent.equals("NewMenuItem") || anEvent.equals("NewButton")) {
         EditorPane editorPane = ClassUtils.newInstance(epane).newDocument();
         editorPane.setWindowVisible(true);
     }
     
     // Handle OpenMenuItem, OpenButton: Get new editor pane from open panel and make visible (if created)
-    if(anEvent.equals("OpenMenuItem") || anEvent.equals("OpenButton")) {
+    if (anEvent.equals("OpenMenuItem") || anEvent.equals("OpenButton")) {
         EditorPane editorPane = ClassUtils.newInstance(epane).open(epane.getUI());
         if(editorPane!=null)
             editorPane.setWindowVisible(true);
     }
     
     // Handle OpenRecentMenuItem
-    if(anEvent.equals("OpenRecentMenuItem")) {
+    if (anEvent.equals("OpenRecentMenuItem")) {
         String path = RecentFiles.showPathsPanel(epane.getUI(), "RecentDocuments"); if(path==null) return;
         rmdraw.app.Welcome.getShared().open(path); //file.getAbsolutePath());
     }
@@ -86,25 +86,29 @@ protected void respondUI(ViewEvent anEvent)
     // Handle CloseMenuItem
     if(anEvent.equals("CloseMenuItem")) epane.close();
     
-    // Handle SaveMenuItem, SaveButton, SaveAsMenuItem, SaveAsPDFMenuItem, RevertMenuItem
-    if(anEvent.equals("SaveMenuItem") || anEvent.equals("SaveButton")) epane.save();
-    if(anEvent.equals("SaveAsMenuItem")) epane.saveAs();
-    if(anEvent.equals("SaveAsPDFMenuItem")) EditorPaneUtils.saveAsPDF(epane);
-    if(anEvent.equals("RevertMenuItem")) epane.revert();
+    // Handle SaveMenuItem, SaveButton, SaveAsMenuItem, RevertMenuItem
+    if (anEvent.equals("SaveMenuItem") || anEvent.equals("SaveButton"))
+        epane.save();
+    if (anEvent.equals("SaveAsMenuItem"))
+        epane.saveAs();
+    if (anEvent.equals("RevertMenuItem"))
+        epane.revert();
     
     // Handle PrintMenuItem, QuitMenuItem
-    if(anEvent.equals("PrintMenuItem") || anEvent.equals("PrintButton")) editor.print(null, !anEvent.isAltDown());
-    if(anEvent.equals("QuitMenuItem")) epane.quit();
+    if (anEvent.equals("PrintMenuItem") || anEvent.equals("PrintButton"))
+        editor.print(null, !anEvent.isAltDown());
+    if (anEvent.equals("QuitMenuItem"))
+        epane.quit();
         
     // Handle File -> Preview Reports menu items
-    if(anEvent.equals("PreviewPDFMenuItem") || anEvent.equals("PreviewPDFButton")) EditorPaneUtils.previewPDF(epane);
-    if(anEvent.equals("PreviewHTMLMenuItem") || anEvent.equals("PreviewHTMLButton"))
+    if (anEvent.equals("PreviewHTMLMenuItem") || anEvent.equals("PreviewHTMLButton"))
         EditorPaneUtils.previewHTML(epane);
-    if(anEvent.equals("PreviewCSVMenuItem")) EditorPaneUtils.previewCSV(epane);
-    if(anEvent.equals("PreviewExcelMenuItem")) EditorPaneUtils.previewXLS(epane);
-    if(anEvent.equals("PreviewRTFMenuItem")) EditorPaneUtils.previewRTF(epane);
-    if(anEvent.equals("PreviewJPEGMenuItem")) EditorPaneUtils.previewJPG(epane);
-    if(anEvent.equals("PreviewPNGMenuItem")) EditorPaneUtils.previewPNG(epane);
+    if (anEvent.equals("PreviewRTFMenuItem"))
+        EditorPaneUtils.previewRTF(epane);
+    if (anEvent.equals("PreviewJPEGMenuItem"))
+        EditorPaneUtils.previewJPG(epane);
+    if (anEvent.equals("PreviewPNGMenuItem"))
+        EditorPaneUtils.previewPNG(epane);
         
     // Handle Edit menu items
     if(anEvent.equals("UndoMenuItem") || anEvent.equals("UndoButton")) editor.undo();
@@ -193,14 +197,11 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("ShowRulersMenuItem")) epane.setShowRulers(!epane.isShowRulers());
     if(anEvent.equals("FeedbackMenuItem")) new FeedbackPanel().showPanel(epane.getUI());
 
-    // Handle SupportPageMenuItem, TutorialMenuItem, BasicAPIMenuItem, TablesMenuItem
+    // Handle SupportPageMenuItem, TutorialMenuItem
     if(anEvent.equals("SupportPageMenuItem")) URLUtils.openURL("http://reportmill.com/support");
     if(anEvent.equals("TutorialMenuItem")) URLUtils.openURL("http://reportmill.com/support/tutorial.pdf");
-    if(anEvent.equals("BasicAPIMenuItem")) URLUtils.openURL("http://reportmill.com/support/BasicApi.pdf");
-    if(anEvent.equals("TablesMenuItem")) URLUtils.openURL("http://reportmill.com/support/tables.pdf");
-    
-    // Handle AddColumnMenuItem, SplitColumnMenuItem (from right mouse pop-up)
-    if(anEvent.equals("AddColumnMenuItem")) RMTableRowTool.addColumn(editor);
+
+    // Handle SplitColumnMenuItem (from right mouse pop-up)
     if(anEvent.equals("SplitColumnMenuItem")) EditorUtils.splitHorizontal(editor);
     
     // Handle Theme menus: StandardThemeMenuItem, LightThemeMenuItem, DarkThemeMenuItem, BlackAndWhiteThemeMenuItem

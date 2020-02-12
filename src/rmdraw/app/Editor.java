@@ -733,7 +733,6 @@ protected RMTool createTool(Class aClass)
     if(aClass==RMOvalShape.class) return new RMOvalShapeTool();
     if(aClass==RMPage.class) return new RMPageTool();
     if(aClass==RMParentShape.class) return new RMParentShapeTool();
-    if(aClass==RMPDFShape.class) return new RMPDFShapeTool();
     if(aClass==RMPolygonShape.class) return new RMPolygonShapeTool();
     if(aClass==RMRectShape.class) return new RMRectShapeTool();
     if(aClass==RMScene3D.class) return new RMScene3DTool();

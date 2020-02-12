@@ -14,22 +14,6 @@ import snap.viewx.*;
 public class EditorPaneUtils {
 
 /**
- * Preview PDF.
- */
-public static void previewPDF(EditorPane anEP)
-{
-    // Get filename (if alt key is pressed, change to current doc plus .pdf)
-    String filename = SnapUtils.getTempDir() + "RMPDFFile.pdf";
-    if(ViewUtils.isAltDown() && anEP.getDoc().getFilename()!=null)
-        filename = FilePathUtils.getSimple(anEP.getDoc().getFilename()) + ".pdf";
-    
-    // Get report, write report and open file
-    RMDocument report = generateReport(anEP, true);
-    report.writePDF(filename);
-    FileUtils.openFile(filename);
-}
-
-/**
  * Generates report from editor.
  */
 public static RMDocument generateReport(EditorPane anEP, boolean doPaginate)
@@ -50,19 +34,9 @@ public static RMDocument generateReport(EditorPane anEP, boolean doPaginate)
  */
 public static void previewHTML(EditorPane anEP)
 {
-    RMDocument report = generateReport(anEP, !ViewUtils.isAltDown());
-    report.write(SnapUtils.getTempDir() + "RMHTMLFile.html");
+    RMDocument doc = anEP.getDoc();
+    doc.write(SnapUtils.getTempDir() + "RMHTMLFile.html");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMHTMLFile.html");
-}
-
-/**
- * Generate report, save as CSV in temp file and open.
- */
-public static void previewCSV(EditorPane anEP)
-{
-    RMDocument report = generateReport(anEP, false);
-    report.write(SnapUtils.getTempDir() + "RMCSVFile.csv");
-    FileUtils.openFile(SnapUtils.getTempDir() + "RMCSVFile.csv");
 }
 
 /**
@@ -70,8 +44,8 @@ public static void previewCSV(EditorPane anEP)
  */
 public static void previewJPG(EditorPane anEP)
 {
-    RMDocument report = generateReport(anEP, false);
-    report.write(SnapUtils.getTempDir() + "RMJPGFile.jpg");
+    RMDocument doc = anEP.getDoc();
+    doc.write(SnapUtils.getTempDir() + "RMJPGFile.jpg");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMJPGFile.jpg");
 }
 
@@ -80,40 +54,9 @@ public static void previewJPG(EditorPane anEP)
  */
 public static void previewPNG(EditorPane anEP)
 {
-    RMDocument report = generateReport(anEP, false);
-    report.write(SnapUtils.getTempDir() + "RMPNGFile.png");
+    RMDocument doc = anEP.getDoc();
+    doc.write(SnapUtils.getTempDir() + "RMPNGFile.png");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMPNGFile.png");
-}
-
-/**
- * Preview XLS.
- */
-public static void previewXLS(EditorPane anEP)
-{
-    // Get report, write report and open file (in handler, in case POI jar is missing)
-    try {
-        RMDocument report = generateReport(anEP, false);
-        report.write(SnapUtils.getTempDir() + "RMXLSFile.xls");
-        FileUtils.openFile(SnapUtils.getTempDir() + "RMXLSFile.xls");
-    }
-    
-    // Catch exception - handle case where poi jar is missing    
-    catch(Throwable t) {
-        
-        // print it out (in case it's something other than a missing jar)
-        t.printStackTrace();
-        
-        // Run option dialog to ask user if they want to see Excel doc
-        String msg = "ReportMill needs the OpenSource POI jar in order to generate Excel. Click Open to see " +
-            "the support document on the subject.";
-        DialogBox dbox = new DialogBox("Excel POI Jar Missing");
-        dbox.setWarningMessage(StringUtils.wrap(msg, 50)); dbox.setOptions("Open", "Cancel");
-        int answer = dbox.showOptionDialog(anEP.getEditor(), "Open");
-        
-        // If user answered "open", open poi doc url
-        if(answer==0)
-            URLUtils.openURL("http://reportmill.com/support/Excel.html");
-    }
 }
 
 /**
@@ -121,9 +64,8 @@ public static void previewXLS(EditorPane anEP)
  */
 public static void previewRTF(EditorPane anEP)
 {
-    // Get report, write report and open file
-    RMDocument report = generateReport(anEP, true);
-    report.write(SnapUtils.getTempDir() + "RMRTFFile.rtf");
+    RMDocument doc = anEP.getDoc();
+    doc.write(SnapUtils.getTempDir() + "RMRTFFile.rtf");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMRTFFile.rtf");
 }
 
@@ -138,17 +80,6 @@ public static void previewXML(EditorPane anEP)
     try { FileUtils.writeBytes(file, xml.getBytes()); }
     catch(Exception e) { throw new RuntimeException(e); }
     FileUtils.openFile(file);
-}
-
-/**
- * Save document as PDF to given path.
- */
-public static void saveAsPDF(EditorPane anEP)
-{
-    Editor editor = anEP.getEditor();
-    String path = FilePanel.showOpenPanel(editor, "PDF file (.pdf)", "pdf"); if(path==null) return;
-    editor.flushEditingChanges();
-    editor.getDoc().writePDF(path);
 }
 
 }

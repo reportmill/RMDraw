@@ -3,7 +3,6 @@
  */
 package rmdraw.shape;
 import rmdraw.base.*;
-import rmdraw.graphics.*;
 import rmdraw.out.*;
 import java.util.*;
 import java.io.File;
@@ -531,7 +530,10 @@ public byte[] getBytes()  { return getXML().getBytes(); }
 /**
  * Returns the document as a byte array of a PDF file.
  */
-public byte[] getBytesPDF()  { return new rmdraw.out.RMPDFWriter().getBytes(this); }
+public byte[] getBytesPDF()
+{
+    return null;//new rmdraw.out.RMPDFWriter().getBytes(this);
+}
 
 /**
  * Returns the document as a byte array of an HTML file.

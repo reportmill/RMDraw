@@ -8,15 +8,10 @@
     <MenuItem Name="CloseMenuItem" text="Close" key="meta W" />
     <MenuItem Name="SaveMenuItem" text="Save" key="meta S" />
     <MenuItem Name="SaveAsMenuItem" text="Save As..." key="meta shift S" />
-    <MenuItem Name="SaveAsPDFMenuItem" text="Save as PDF..." key="meta shift D" />
     <MenuItem Name="RevertMenuItem" text="Revert to Saved" key="meta U" />
     <MenuItem />
-    <MenuItem Name="PreviewMenuItem" text="Preview Report" />
-    <Menu Name="PreviewMenu" text="Preview Reports">
-      <MenuItem Name="PreviewPDFMenuItem" text="PDF" key="meta shift P" />
+    <Menu Name="PreviewMenu" text="Export Preview">
       <MenuItem Name="PreviewHTMLMenuItem" text="HTML" />
-      <MenuItem Name="PreviewCSVMenuItem" text="CSV" />
-      <MenuItem Name="PreviewExcelMenuItem" text="Excel" />
       <MenuItem Name="PreviewRTFMenuItem" text="RTF" />
       <MenuItem Name="PreviewJPEGMenuItem" text="JPEG" />
       <MenuItem Name="PreviewPNGMenuItem" text="PNG" />
@@ -113,7 +108,5 @@
   <Menu Name="HelpMenu" text="Help">
     <MenuItem Name="SupportPageMenuItem" text="Support Page" />
     <MenuItem Name="TutorialMenuItem" text="Tutorial" />
-    <MenuItem Name="BasicAPIMenuItem" text="Basic API" />
-    <MenuItem Name="TablesMenuItem" text="Tables" />
   </Menu>
 </MenuBar>
