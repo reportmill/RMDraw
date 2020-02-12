@@ -473,7 +473,7 @@ public RMXString rpgClone(ReportOwner anRptOwner, Object userInfo, RMShape aShap
                 
                 // If string is HTML formatted text, parse into RMXString
                 if(StringUtils.startsWithIC(string, "<html"))
-                    valString = RMHTMLParser.parse(string, keyRun.getFont(), keyRun.getParagraph());
+                    valString = RMHTMLParser.parse(string, keyRun.getFont(), keyRun.getParagraph().getLineStyle());
                 
                 // If string is RTF formatted text, parse into RMXString
                 else if(string.startsWith("{\\rtf"))

@@ -3,12 +3,11 @@
  */
 package rmdraw.base;
 import rmdraw.shape.*;
-import rmdraw.graphics.*;
 import java.util.*;
-
 import snap.gfx.Color;
 import snap.gfx.Font;
 import snap.gfx.GFXUtils;
+import snap.gfx.RichText;
 import snap.util.*;
 
 /**
@@ -158,22 +157,22 @@ private static void addWatermark(RMParentShape aShape)
     // Get attributed string with REPORTMILL in 72pt grey (with R & M in 100pt)
     Font font72 = Font.getFont("Arial Bold", 72);
     Font font100 = font72.deriveFont(100);
-    RMXString xstring = new RMXString("REPORTMILL", font72, new Color(.9));
-    xstring.setAttribute(font100, 0, 1);
-    xstring.setAttribute(font100, 6, 7); // Set R & M in 100pt
+    RichText richText = new RichText("REPORTMILL", font72, new Color(.9));
+    richText.setStyleValue(font100, 0, 1);
+    richText.setStyleValue(font100, 6, 7); // Set R & M in 100pt
 
     // Create evalShape watermark across background
-    RMTextShape evalShape = new RMTextShape(xstring);
+    RMTextShape evalShape = new RMTextShape(richText);
     evalShape.setFrame((aShape.getWidth() - 570)/2, (aShape.getHeight() - 140)/2, 570, 140);
     evalShape.setRoll(45); evalShape.setOpacity(.667f);
     aShape.addChild(evalShape, 0);
 
     // Get attributed string with bottom eval message in 12pt
     String msg = "ReportMill Evaluation - for more information go to reportmill.com.";
-    xstring = new RMXString(msg, Font.Arial12);
+    richText = new RichText(msg, Font.Arial12);
 
     // Create evalShape license string in lower left corner
-    evalShape = new RMTextShape(xstring);
+    evalShape = new RMTextShape(richText);
     evalShape.setFrame(5, aShape.getHeight() - 20, 500, 18);
     evalShape.setURL("http://www.reportmill.com");
     aShape.addChild(evalShape);

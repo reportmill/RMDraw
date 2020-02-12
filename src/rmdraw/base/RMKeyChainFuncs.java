@@ -7,6 +7,8 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import snap.gfx.Font;
+import snap.gfx.RichText;
+import snap.gfx.TextLineStyle;
 import snap.util.*;
 
 /**
@@ -173,39 +175,39 @@ public static Double pow(Object arg1, Object arg2)
 }
 
 /**
- * Returns an xstring by interpreting html commands in the given string.
+ * Returns a RichText by interpreting html commands in the given string.
  */
 public static Object html(Object aValue) { return RMHTML(aValue); }
 
 /**
- * Returns an xstring by interpreting rtf commands in the given string.
+ * Returns a RichText by interpreting rtf commands in the given string.
  */
 public static Object rtf(Object aValue) { return RMRTF(aValue); }
 
 /**
- * Returns an xstring by interpreting html commands in the given string.
+ * Returns a RichText by interpreting html commands in the given string.
  */
 public static Object RMHTML(Object aValue)
 {
-    // Get default font (or if val is xstring, get its first font)
-    RMXString xstr = aValue instanceof RMXString? (RMXString)aValue : null;
-    String str = xstr!=null? xstr.getText() : aValue.toString();
-    Font font = xstr!=null? xstr.getFontAt(0) : Font.getDefaultFont();
-    RMParagraph pgraph = xstr!=null? xstr.getParagraphAt(0) : RMParagraph.DEFAULT;
+    // Get default font (or if val is RichText, get its first font)
+    RichText richText = aValue instanceof RichText ? (RichText)aValue : null;
+    String str = richText!=null? richText.getString() : aValue.toString();
+    Font font = richText!=null? richText.getFontAt(0) : Font.getDefaultFont();
+    TextLineStyle lineStyle = richText!=null ? richText.getLineStyleAt(0) : TextLineStyle.DEFAULT;
     
     // Return result of parsing html from val string
-    return RMHTMLParser.parse(str, font, pgraph);
+    return RMHTMLParser.parse(str, font, lineStyle);
 }
 
 /**
- * Returns an xstring by interpreting rtf commands in the given string.
+ * Returns a RichText by interpreting rtf commands in the given string.
  */
 public static Object RMRTF(Object aValue)
 {
-    // Get default font (or if val is xstring, get its first font)
+    // Get default font (or if val is RichText, get its first font)
     Font font = Font.getDefaultFont();
-    if(aValue instanceof RMXString)
-        font = ((RMXString)aValue).getFontAt(0);
+    if(aValue instanceof RichText)
+        font = ((RichText)aValue).getFontAt(0);
     
     // Return result of parsing rtf from val string
     return RMRTFParser.parse(aValue.toString(), font);
@@ -346,10 +348,10 @@ public static Object RMAllFontGlyphs(Object fontName)
 public static Object RMAllFonts(Object aSize)
 {
     int size = MathUtils.clamp(SnapUtils.intValue(aSize), 8, 80);
-    RMXString string = new RMXString();
+    RichText string = new RichText();
     for(String fontName : Font.getFontNames()) {
         Font font = Font.getFont(fontName, size);
-        string.addChars(fontName + "\n", font);
+        string.addCharsWithStyleValues(fontName + "\n", font);
     }
     return string;
 }

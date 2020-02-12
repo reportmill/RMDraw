@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.graphics.*;
+import rmdraw.graphics.RMStroke;
 import snap.gfx.*;
 
 /**
@@ -72,8 +72,8 @@ public static RMShape getTextCharsShape(RMTextShape aText)
             // If non-space character, create glyph shape
             if(c != ' ') {
                 Rect glyphBounds = font.getCharBounds(c);
-                RMXString gstring = aText.getXString().substring(run.getStart() + i, run.getStart() + i + 1);
-                RMTextShape glyph = new RMTextShape(gstring); glyph.setAutosizing("~-~,~-~");
+                RichText rtext = aText.getRichText().subtext(run.getStart() + i, run.getStart() + i + 1);
+                RMTextShape glyph = new RMTextShape(rtext); glyph.setAutosizing("~-~,~-~");
 
                 charsShape.addChild(glyph);
                 runBounds.width = Math.ceil(Math.max(advance, glyphBounds.getMaxX()));

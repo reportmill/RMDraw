@@ -84,7 +84,7 @@ public RMTextShape() { }
 /**
  * Creates a text instance initialized with the given RMXString.
  */
-public RMTextShape(RMXString string)  { _xstr = string; }
+public RMTextShape(RichText aRichText)  { _xstr = new RMXString(aRichText); }
 
 /**
  * Creates a text instance initialized with the given plain text String.

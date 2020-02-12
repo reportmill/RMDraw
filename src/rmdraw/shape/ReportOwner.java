@@ -4,6 +4,9 @@
 package rmdraw.shape;
 import rmdraw.base.*;
 import java.util.*;
+
+import rmdraw.graphics.RMXString;
+import snap.gfx.RichText;
 import snap.util.*;
 import snap.web.WebURL;
 
@@ -264,6 +267,16 @@ public void resolvePageReferences()
     // Clear page reference shapes list
     prshapes.clear();
 }
+
+/**
+ * Clones a RichText.
+ */
+public RichText rpgCloneRichText(RichText aRichText, Object userInfo, RMShape aShape, boolean doCopy)
+{
+    System.err.println("ReportOwner.rpgCloneRichText: Not implemented");
+    return aRichText;
+}
+
 
 /**
  * Returns a value for some silly RM defined keys.

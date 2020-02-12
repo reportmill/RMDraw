@@ -39,6 +39,11 @@ public RMParagraph() { }
 public RMParagraph(TextLineStyle aLineStyle)  { _lstyle = aLineStyle; }
 
 /**
+ * Returns the LineStyle.
+ */
+public TextLineStyle getLineStyle()  { return _lstyle; }
+
+/**
  * Returns the alignment associated with this paragraph.
  */
 public AlignX getAlignmentX()

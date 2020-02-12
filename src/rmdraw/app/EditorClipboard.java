@@ -2,10 +2,10 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.graphics.RMXString;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.Point;
+import snap.gfx.RichText;
 import snap.util.*;
 import snap.view.*;
 
@@ -103,13 +103,13 @@ public static void paste(Editor anEditor, Clipboard aCB, RMParentShape aParent, 
         }
         
         // If data is text, create text object and add it
-        else if(object instanceof RMXString) {
-            RMTextShape text = new RMTextShape((RMXString)object);
+        else if(object instanceof RichText) {
+            RMTextShape text = new RMTextShape((RichText)object);
             double width = Math.min(text.getPrefWidth(), aParent.getWidth());
             double height = Math.min(text.getPrefHeight(), aParent.getHeight());
             text.setSize(width, height);
             anEditor.undoerSetUndoTitle("Paste Text");
-            anEditor.addShapesToShape(Arrays.asList(text), aParent, true);
+            anEditor.addShapesToShape(Collections.singletonList(text), aParent, true);
             anEditor.setSelectedShape(text);
         }
         
