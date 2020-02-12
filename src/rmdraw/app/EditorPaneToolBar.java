@@ -254,10 +254,6 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
     if(anEvent.equals("AlignFullButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
     
-    // Handle AddCrossTabButton, AddImagePlaceHolderMenuItem
-    if(anEvent.equals("AddCrossTabButton")) RMCrossTabTool.addCrossTab(getEditor());
-    if(anEvent.equals("AddImagePlaceHolderMenuItem")) EditorUtils.addImagePlaceholder(getEditor());
-
     // Handle ColorWell
     if(anEvent.equals("ColorWell"))
         EditorUtils.setSelectedColor(editor, _colorWell.getColor());

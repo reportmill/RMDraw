@@ -722,10 +722,6 @@ public RMTool getTool(Object anObj)
  */
 protected RMTool createTool(Class aClass)
 {
-    if(aClass==RMCrossTab.class) return new RMCrossTabTool();
-    if(aClass==RMCrossTabCell.class) return new RMCrossTabCellTool();
-    if(aClass==RMCrossTabDivider.class) return new RMCrossTabDividerTool();
-    if(aClass==RMCrossTabFrame.class) return new RMCrossTabFrameTool();
     if(aClass==RMDocument.class) return new RMDocumentTool();
     if(aClass==RMImageShape.class) return new RMImageTool();
     if(aClass==RMLineShape.class) return new RMLineShapeTool();

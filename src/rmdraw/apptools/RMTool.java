@@ -26,7 +26,7 @@ public class RMTool <T extends RMShape> extends ViewOwner {
     RMShape                 _shape;
     
     // The mouse down point that initiated last tool mouse loop
-    Point                   _downPoint;
+    protected Point _downPoint;
     
     // A formatter for bounds fields
     static DecimalFormat    _fmt = new DecimalFormat("0.##");

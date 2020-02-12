@@ -550,7 +550,8 @@ public byte[] getBytesCSV()  { return getBytesDelimitedAscii(",", "\n", true); }
  */
 public byte[] getBytesDelimitedAscii(String fieldDelimiter, String recordDelimiter, boolean quoteFields)
 {
-    return RMStringWriter.delimitedAsciiBytes(this, fieldDelimiter, recordDelimiter, quoteFields);
+    System.err.println("RMDocument.getBytesDelimitedAscii: Not implemented");
+    return null; //RMStringWriter.delimitedAsciiBytes(this, fieldDelimiter, recordDelimiter, quoteFields);
 }
 
 /**
@@ -561,7 +562,11 @@ public byte[] getBytesExcel()  { return null; } //new RMExcelWriter().getBytes(t
 /**
  * Returns the document as byte array of an Excel file.
  */
-public byte[] getBytesRTF()  { return new RMRTFWriter().getBytes(this); }
+public byte[] getBytesRTF()
+{
+    System.err.println("RMDocument.getBytesDelimitedAscii: Not implemented");
+    return null; //new RMRTFWriter().getBytes(this);
+}
 
 /**
  * Returns the document as byte array of a JPEG file.
@@ -583,7 +588,8 @@ public String getStringCSV()  { return getStringDelimitedText(",", "\n", true); 
  */
 public String getStringDelimitedText(String fieldDelimiter, String recordDelimiter, boolean quoteFields)
 {
-    return RMStringWriter.delimitedString(this, fieldDelimiter, recordDelimiter, quoteFields);
+    System.err.println("RMDocument.getStringDelimitedText: Not implemented");
+    return null;//RMStringWriter.delimitedString(this, fieldDelimiter, recordDelimiter, quoteFields);
 }
 
 /**

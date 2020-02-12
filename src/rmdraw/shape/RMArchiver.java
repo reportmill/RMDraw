@@ -76,8 +76,6 @@ public class RMArchiver extends XMLArchiver {
 
         // Shape classes
         cmap.put("arrow-head", RMLineShape.ArrowHead.class);
-        cmap.put("cell-table", RMCrossTab.class);
-        cmap.put("cell-table-frame", RMCrossTabFrame.class);
         cmap.put("document", RMDocument.class);
         cmap.put("flow-shape", RMParentShape.class);
         cmap.put("image-shape", RMImageShape.class);
