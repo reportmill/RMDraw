@@ -776,7 +776,7 @@ public static void setTextBorder(Editor anEditor, Border aBorder)
 /**
  * Returns the horizontal alignment of the text of the currently selected shapes.
  */
-public static RMTypes.AlignX getAlignmentX(Editor anEditor)
+public static HPos getAlignmentX(Editor anEditor)
 {
     return anEditor.getSelectedOrSuperSelectedShape().getAlignmentX();
 }
@@ -784,11 +784,29 @@ public static RMTypes.AlignX getAlignmentX(Editor anEditor)
 /**
  * Sets the horizontal alignment of the text of the currently selected shapes.
  */
-public static void setAlignmentX(Editor anEditor, RMTypes.AlignX anAlign)
+public static void setAlignmentX(Editor anEditor, HPos anAlign)
 {
     anEditor.undoerSetUndoTitle("Alignment Change");
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
         shape.setAlignmentX(anAlign);
+}
+
+/**
+ * Returns returns justify of the text of the currently selected shapes.
+ */
+public static boolean isJustify(Editor anEditor)
+{
+    return false; //anEditor.getSelectedOrSuperSelectedShape().getAlignmentX();
+}
+
+/**
+ * Sets the horizontal alignment of the text of the currently selected shapes.
+ */
+public static void setJustify(Editor anEditor, boolean aValue)
+{
+    anEditor.undoerSetUndoTitle("Jusify Change");
+    //for (RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
+    //    shape.setJustify(anAlign);
 }
 
 /**
@@ -816,12 +834,15 @@ public static void setSubscript(Editor anEditor)
 /**
  * Returns the format of the editor's selected shape.
  */
-public static RMFormat getFormat(Editor anEditor)  { return anEditor.getSelectedOrSuperSelectedShape().getFormat(); }
+public static TextFormat getFormat(Editor anEditor)
+{
+    return anEditor.getSelectedOrSuperSelectedShape().getFormat();
+}
 
 /**
  * Sets the format of editor's selected shape(s).
  */
-public static void setFormat(Editor anEditor, RMFormat aFormat)
+public static void setFormat(Editor anEditor, TextFormat aFormat)
 {
     for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
         shape.setFormat(aFormat);

@@ -3,6 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.base.*;
+import snap.gfx.TextFormat;
 import snap.util.*;
 import snap.view.*;
 import snap.viewx.DialogBox;
@@ -69,7 +70,7 @@ public void resetUI()
 {
     // Get main editor and currently selected format (just return if null)
     Editor editor = getEditor(); if(editor==null) return;
-    RMFormat format = EditorUtils.getFormat(editor);
+    TextFormat format = EditorUtils.getFormat(editor);
             
     // Handle NumberFormat: Update NumberPanel
     if(format instanceof RMNumberFormat) { RMNumberFormat nformat = (RMNumberFormat)format;
@@ -121,7 +122,7 @@ public void respondUI(ViewEvent anEvent)
 {
     // Get main editor and currently selected format, number format and date format (one or the other will be null)
     Editor editor = getEditor(); if(editor==null) return;
-    RMFormat format = EditorUtils.getFormat(editor);
+    TextFormat format = EditorUtils.getFormat(editor);
     RMNumberFormat numFormat = format instanceof RMNumberFormat? (RMNumberFormat)format : null;
     RMDateFormat dateFormat = format instanceof RMDateFormat? (RMDateFormat)format : null;
     

@@ -3,9 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.base.RMFormat;
 import rmdraw.base.RMNumberFormat;
-import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.*;
@@ -86,7 +84,7 @@ protected void resetUI()
     setViewEnabled("RedoButton", undoer!=null && undoer.getRedoSetLast()!=null);
     
     // Update MoneyButton, PercentButton, CommaButton
-    RMFormat fmt = EditorUtils.getFormat(editor);
+    TextFormat fmt = EditorUtils.getFormat(editor);
     RMNumberFormat nfmt = fmt instanceof RMNumberFormat? (RMNumberFormat)fmt : null;
     setViewValue("MoneyButton", nfmt!=null && nfmt.isLocalCurrencySymbolUsed());
     setViewValue("PercentButton", nfmt!=null && nfmt.isPercentSymbolUsed());
@@ -144,17 +142,17 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("RedoButton")) epane.respondUI(anEvent);
     
     // Handle FillColorButton, StrokeColorButton, TextColorButton
-    if(anEvent.equals("FillColorButton"))
+    if (anEvent.equals("FillColorButton"))
         EditorUtils.setColor(editor, anEvent.getView(ColorButton.class).getColor());
-    if(anEvent.equals("StrokeColorButton"))
+    if (anEvent.equals("StrokeColorButton"))
         EditorUtils.setStrokeColor(editor, anEvent.getView(ColorButton.class).getColor());
-    if(anEvent.equals("TextColorButton"))
+    if (anEvent.equals("TextColorButton"))
         EditorUtils.setTextColor(editor, anEvent.getView(ColorButton.class).getColor());
 
     // Handle MoneyButton: If currently selected format is number format, add or remove dollars
-    RMFormat fmt = EditorUtils.getFormat(editor);
+    TextFormat fmt = EditorUtils.getFormat(editor);
     RMNumberFormat nfmt = fmt instanceof RMNumberFormat? (RMNumberFormat)fmt : null;
-    if(anEvent.equals("MoneyButton")) {
+    if (anEvent.equals("MoneyButton")) {
         if(nfmt==null) EditorUtils.setFormat(editor, RMNumberFormat.CURRENCY);
         else { nfmt = nfmt.clone(); // Clone it
             nfmt.setLocalCurrencySymbolUsed(!nfmt.isLocalCurrencySymbolUsed()); // Toggle whether $ is used
@@ -244,15 +242,22 @@ protected void respondUI(ViewEvent anEvent)
         EditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
     
     // Handle BoldButton, ItalicButton, UnderlineButton
-    if(anEvent.equals("BoldButton")) EditorUtils.setFontBold(editor, anEvent.getBoolValue());
-    if(anEvent.equals("ItalicButton")) EditorUtils.setFontItalic(editor, anEvent.getBoolValue());
-    if(anEvent.equals("UnderlineButton")) EditorUtils.setUnderlined(editor);
+    if (anEvent.equals("BoldButton"))
+        EditorUtils.setFontBold(editor, anEvent.getBoolValue());
+    if (anEvent.equals("ItalicButton"))
+        EditorUtils.setFontItalic(editor, anEvent.getBoolValue());
+    if (anEvent.equals("UnderlineButton"))
+        EditorUtils.setUnderlined(editor);
         
     // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton
-    if(anEvent.equals("AlignLeftButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
-    if(anEvent.equals("AlignCenterButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
-    if(anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
-    if(anEvent.equals("AlignFullButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
+    if (anEvent.equals("AlignLeftButton"))
+        EditorUtils.setAlignmentX(editor, HPos.LEFT);
+    if (anEvent.equals("AlignCenterButton"))
+        EditorUtils.setAlignmentX(editor, HPos.CENTER);
+    if (anEvent.equals("AlignRightButton"))
+        EditorUtils.setAlignmentX(editor, HPos.RIGHT);
+    if (anEvent.equals("AlignFullButton"))
+        EditorUtils.setJustify(editor, true);
     
     // Handle ColorWell
     if(anEvent.equals("ColorWell"))

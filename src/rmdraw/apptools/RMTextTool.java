@@ -56,7 +56,7 @@ public void resetUI()
     
     // Get paragraph from text
     int selStart = 0; if(_textArea.isFocused()) selStart = _textArea.getSelStart();
-    RMParagraph pgraph = text.getXString().getParagraphAt(selStart);
+    TextLineStyle pgraph = text.getRichText().getLineStyleAt(selStart);
     
     // If editor is text editing, get paragraph from text editor instead
     RMTextEditor ted = editor.getTextEditor();
@@ -64,15 +64,15 @@ public void resetUI()
         pgraph = ted.getInputParagraph();
     
     // Update AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton
-    setViewValue("AlignLeftButton", pgraph.getAlignmentX()==RMTypes.AlignX.Left);
-    setViewValue("AlignCenterButton", pgraph.getAlignmentX()==RMTypes.AlignX.Center);
-    setViewValue("AlignRightButton", pgraph.getAlignmentX()==RMTypes.AlignX.Right);
-    setViewValue("AlignFullButton", pgraph.getAlignmentX()==RMTypes.AlignX.Full);
+    setViewValue("AlignLeftButton", pgraph.getAlign()==HPos.LEFT);
+    setViewValue("AlignCenterButton", pgraph.getAlign()==HPos.CENTER);
+    setViewValue("AlignRightButton", pgraph.getAlign()==HPos.RIGHT);
+    setViewValue("AlignFullButton", pgraph.isJustify());
     
     // Update AlignTopButton, AlignMiddleButton, AlignBottomButton
-    setViewValue("AlignTopButton", text.getAlignmentY()==RMTypes.AlignY.Top);
-    setViewValue("AlignMiddleButton", text.getAlignmentY()==RMTypes.AlignY.Middle);
-    setViewValue("AlignBottomButton", text.getAlignmentY()==RMTypes.AlignY.Bottom);
+    setViewValue("AlignTopButton", text.getAlignmentY()==VPos.TOP);
+    setViewValue("AlignMiddleButton", text.getAlignmentY()==VPos.CENTER);
+    setViewValue("AlignBottomButton", text.getAlignmentY()==VPos.BOTTOM);
     
     // Set TextView RichText and selection
     _textArea.setRichText(text.getRichText());
@@ -131,16 +131,16 @@ public void respondUI(ViewEvent anEvent)
     for(RMShape txt : texts) txt.repaint(); //texts.forEach(i -> i.repaint());
     
     // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton, AlignTopButton, AlignMiddleButton
-    if(anEvent.equals("AlignLeftButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Left);
-    if(anEvent.equals("AlignCenterButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Center);
-    if(anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Right);
-    if(anEvent.equals("AlignFullButton")) EditorUtils.setAlignmentX(editor, RMTypes.AlignX.Full);
-    if(anEvent.equals("AlignTopButton")) for(RMTextShape txt : texts) txt.setAlignmentY(RMTypes.AlignY.Top);
-    if(anEvent.equals("AlignMiddleButton")) for(RMTextShape txt : texts) txt.setAlignmentY(RMTypes.AlignY.Middle);
-    if(anEvent.equals("AlignBottomButton")) for(RMTextShape txt : texts) txt.setAlignmentY(RMTypes.AlignY.Bottom);
+    if (anEvent.equals("AlignLeftButton")) EditorUtils.setAlignmentX(editor, HPos.LEFT);
+    if (anEvent.equals("AlignCenterButton")) EditorUtils.setAlignmentX(editor, HPos.CENTER);
+    if (anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, HPos.RIGHT);
+    if (anEvent.equals("AlignFullButton")) EditorUtils.setJustify(editor, true);
+    if (anEvent.equals("AlignTopButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.TOP);
+    if (anEvent.equals("AlignMiddleButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.CENTER);
+    if (anEvent.equals("AlignBottomButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.BOTTOM);
     
     // If RoundingThumb or RoundingText, make sure shapes have stroke
-    if(anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText"))
+    if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText"))
         for(RMTextShape t : texts) t.setStroke(new RMStroke());
 
     // Handle MarginText, RoundingThumb, RoundingText

@@ -27,7 +27,7 @@ import snap.view.*;
  *   shape.setOpacity(.667f);
  * </pre></blockquote>
  */
-public class RMShape implements Cloneable, RMTypes, Archivable, Key.GetSet {
+public class RMShape implements Cloneable, Archivable, Key.GetSet {
 
     // X location of shape
     double         _x = 0;
@@ -752,16 +752,7 @@ public void setUnderlined(boolean aFlag)  { }
  */
 public Pos getAlignment()
 {
-    AlignX ax = getAlignmentX(); AlignY ay = getAlignmentY();
-    if(ax==AlignX.Left && ay==AlignY.Top) return Pos.TOP_LEFT;
-    if(ax==AlignX.Center && ay==AlignY.Top) return Pos.TOP_CENTER;
-    if(ax==AlignX.Right && ay==AlignY.Top) return Pos.TOP_RIGHT;
-    if(ax==AlignX.Left && ay==AlignY.Middle) return Pos.CENTER_LEFT;
-    if(ax==AlignX.Center && ay==AlignY.Middle) return Pos.CENTER;
-    if(ax==AlignX.Right && ay==AlignY.Middle) return Pos.CENTER_RIGHT;
-    if(ax==AlignX.Left && ay==AlignY.Bottom) return Pos.BOTTOM_LEFT;
-    if(ax==AlignX.Center && ay==AlignY.Bottom) return Pos.BOTTOM_CENTER;
-    return Pos.BOTTOM_RIGHT;
+    return Pos.get(getAlignmentX(), getAlignmentY());
 }
 
 /**
@@ -769,45 +760,39 @@ public Pos getAlignment()
  */
 public void setAlignment(Pos aPos)
 {
-    switch(aPos.getHPos()) {
-        case LEFT: setAlignmentX(AlignX.Left); break; 
-        case CENTER: setAlignmentX(AlignX.Center); break;
-        case RIGHT: setAlignmentX(AlignX.Right); break; }
-    switch(aPos.getVPos()) {
-        case TOP: setAlignmentY(AlignY.Top); break; 
-        case CENTER: setAlignmentY(AlignY.Middle); break;
-        case BOTTOM: setAlignmentY(AlignY.Bottom); break; }
+    setAlignmentX(aPos.getHPos());
+    setAlignmentY(aPos.getVPos());
 }
 
 /**
  * Returns the horizontal alignment.
  */
-public AlignX getAlignmentX()  { return AlignX.Left; }
+public HPos getAlignmentX()  { return HPos.LEFT; }
 
 /**
  * Sets the horizontal alignment.
  */
-public void setAlignmentX(AlignX anAlignX)  { }
+public void setAlignmentX(HPos anAlignX)  { }
 
 /**
  * Returns the vertical alignment.
  */
-public AlignY getAlignmentY()  { return AlignY.Top; }
+public VPos getAlignmentY()  { return VPos.TOP; }
 
 /**
  * Sets the vertical alignment.
  */
-public void setAlignmentY(AlignY anAlignX)  { }
+public void setAlignmentY(VPos anAlignX)  { }
 
 /**
  * Returns the format for the shape.
  */
-public RMFormat getFormat()  { return null; } //if(getBindingCount()>0) return (RMFormat)getBinding(0).getFormat();
+public TextFormat getFormat()  { return null; } //if(getBindingCount()>0) return (RMFormat)getBinding(0).getFormat();
 
 /**
  * Sets the format for the shape.
  */
-public void setFormat(RMFormat aFormat)
+public void setFormat(TextFormat aFormat)
 {
     // Add format to first binding
     //if((aFmt==null || aFmt instanceof java.text.Format) && getBindingCount()>0) getBinding(0).setFormat(aFmt);

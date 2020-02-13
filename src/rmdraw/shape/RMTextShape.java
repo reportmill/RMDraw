@@ -29,7 +29,7 @@ public class RMTextShape extends RMRectShape {
     Insets                 _margin = getMarginDefault();
     
     // Vertical alignment of text
-    AlignY                 _alignY = AlignY.Top;
+    VPos                 _alignY = VPos.TOP;
     
     // Specifies how text should handle overflow during RPG (ignore it, shrink it or paginate it)
     byte                   _wraps;
@@ -178,7 +178,7 @@ public void setFont(Font aFont)
 /**
  * Returns the format for char 0.
  */
-public RMFormat getFormat()
+public TextFormat getFormat()
 {
     if(isTextEditorSet())
         return getTextEditor().getFormat();
@@ -248,21 +248,21 @@ public void setTextBorder(Border aBorder)
 /**
  * Returns the alignment for char 0.
  */
-public AlignX getAlignmentX()
+public HPos getAlignmentX()
 {
     if(isTextEditorSet())
         return getTextEditor().getAlignX();
-    return getXString().getAlignX();
+    return getRichText().getLineStyleAt(0).getAlign();
 }
 
 /**
  * Sets the align for all chars.
  */
-public void setAlignmentX(AlignX anAlignX)
+public void setAlignmentX(HPos anAlignX)
 {
     if(isTextEditorSet())
         getTextEditor().setAlignX(anAlignX);
-    else getXString().setAlignX(anAlignX);
+    else getRichText().setAlignX(anAlignX);
 }
 
 /**
@@ -273,14 +273,14 @@ public String getAlignString()  { return getAlignmentX().toString().toLowerCase(
 /**
  * Returns the vertical alignment.
  */
-public AlignY getAlignmentY()  { return _alignY; }
+public VPos getAlignmentY()  { return _alignY; }
 
 /**
  * Sets the vertical alignment.
  */
-public void setAlignmentY(AlignY anAlignment)
+public void setAlignmentY(VPos anAlignY)
 {
-    firePropChange("AlignmentY", _alignY, _alignY = anAlignment);
+    firePropChange("AlignmentY", _alignY, _alignY = anAlignY);
     revalidate(); repaint();
 }
 
@@ -373,7 +373,7 @@ public void setCharSpacing(float aValue)
 /**
  * Returns the line spacing at char 0.
  */
-public float getLineSpacing()
+public double getLineSpacing()
 {
     if(isTextEditorSet())
         return getTextEditor().getLineSpacing();
@@ -388,42 +388,42 @@ public void setLineSpacing(float aHeight)
     if(isTextEditorSet())
         getTextEditor().setLineSpacing(aHeight);
     else {
-        RMParagraph ps = getXString().getParagraphAt(0).deriveLineSpacing(aHeight);
-        getXString().setParagraph(ps, 0, length());
+        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
+        getRichText().setLineStyle(ps, 0, length());
     }
 }
 
 /**
  * Returns the line gap at char 0.
  */
-public float getLineGap()
+public double getLineGap()
 {
     if(isTextEditorSet())
         return getTextEditor().getLineGap();
-    return getXString().getParagraphAt(0).getLineGap();
+    return getRichText().getLineStyleAt(0).getSpacing();
 }
 
 /**
  * Sets the line gap for all chars.
  */
-public void setLineGap(float aHeight)
+public void setLineGap(double aHeight)
 {
     if(isTextEditorSet())
         getTextEditor().setLineGap(aHeight);
     else {
-        RMParagraph ps = getXString().getParagraphAt(0).deriveLineGap(aHeight);
-        getXString().setParagraph(ps, 0, length());
+        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_KEY, aHeight);
+        getRichText().setLineStyle(ps, 0, length());
     }
 }
 
 /**
  * Returns the minimum line height at char 0.
  */
-public float getLineHeightMin()
+public double getLineHeightMin()
 {
     if(isTextEditorSet())
         return getTextEditor().getLineHeightMin();
-    return getXString().getParagraphAt(0).getLineHeightMin();
+    return getRichText().getLineStyleAt(0).getMinHeight();
 }
 
 /**
@@ -434,19 +434,19 @@ public void setLineHeightMin(float aHeight)
     if(isTextEditorSet())
         getTextEditor().setLineHeightMin(aHeight);
     else {
-        RMParagraph ps = getXString().getParagraphAt(0).deriveLineHeightMin(aHeight);
-        getXString().setParagraph(ps, 0, length());
+        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
+        getRichText().setLineStyle(ps, 0, length());
     }
 }
 
 /**
  * Returns the maximum line height at char 0.
  */
-public float getLineHeightMax()
+public double getLineHeightMax()
 {
     if(isTextEditorSet())
         return getTextEditor().getLineHeightMax();
-    return getXString().getParagraphAt(0).getLineHeightMax();
+    return getRichText().getLineStyleAt(0).getMaxHeight();
 }
 
 /**
@@ -457,8 +457,8 @@ public void setLineHeightMax(float aHeight)
     if(isTextEditorSet())
         getTextEditor().setLineHeightMax(aHeight);
     else {
-        RMParagraph ps = getXString().getParagraphAt(0).deriveLineHeightMax(aHeight);
-        getXString().setParagraph(ps, 0, length());
+        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MAX_HEIGHT_KEY, aHeight);
+        getRichText().setLineStyle(ps, 0, length());
     }
 }
 
@@ -646,7 +646,7 @@ protected void updateTextBox()
     _textBox.setBounds(pl, pt, w, h);
     _textBox.setStart(getVisibleStart());
     _textBox.setLinked(getLinkedText()!=null);
-    _textBox.setAlignY(getAlignmentY().vpos());
+    _textBox.setAlignY(getAlignmentY());
     _textBox.setBoundsPath(!(getPath() instanceof Rect) || getPerformsWrap()? getPath() : null);
     _textBox.setHyphenate(RMTextEditor.isHyphenating());
     _textBox.setFontScale(1);
@@ -666,7 +666,7 @@ public RMTextEditor getTextEditor()
     if(_textEdtr!=null) return _textEdtr;
     _textEdtr = new RMTextEditor();
     _textEdtr.setTextBox(getTextBox());
-    _textEdtr.setXString(getXString());
+    _textEdtr.setRichText(getRichText());
     return _textEdtr;
 }
 
@@ -749,8 +749,8 @@ protected List <RMTextShape> paginate()
     List <RMTextShape> pages = new ArrayList(); pages.add(this);
     
     // Cache vertical alignment and set to Top
-    AlignY verticalAlignment = getAlignmentY();
-    setAlignmentY(AlignY.Top);
+    VPos alignY = getAlignmentY();
+    setAlignmentY(VPos.TOP);
     
     // Get linked texts until all text visible
     RMTextShape text = this;
@@ -760,7 +760,7 @@ protected List <RMTextShape> paginate()
     }
     
     // Restore alignment on last text and return list
-    text.setAlignmentY(verticalAlignment);
+    text.setAlignmentY(alignY);
     return pages;
 }
 
@@ -887,7 +887,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     
     // Archive Margin, AlignmentY
     if(getMargin()!=getMarginDefault()) e.add("margin", getMarginString());
-    if(_alignY!=AlignY.Top) e.add("valign", getAlignmentY().toString().toLowerCase());
+    if(_alignY!=VPos.TOP) e.add("valign", getAlignmentY().toString().toLowerCase());
     
     // Archive Wraps, PerformsWrap
     if(_wraps!=0) e.add("wrap", _wraps==WRAP_BASIC? "wrap" : "shrink");
@@ -944,7 +944,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     // Unarchive Margin, AlignmentY
     if(anElement.hasAttribute("margin")) setMarginString(anElement.getAttributeValue("margin"));
     if(anElement.hasAttribute("valign"))
-        setAlignmentY(SnapUtils.valueOfIC(AlignY.class, anElement.getAttributeValue("valign")));
+        setAlignmentY(VPos.get(anElement.getAttributeValue("valign")));
     
     // Unarchive Wraps, PerformsWrap
     String wrap = anElement.getAttributeValue("wrap", "none");

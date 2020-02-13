@@ -15,31 +15,28 @@ import snap.view.*;
 public class RMTextEditor {
     
     // The text box
-    TextBox             _tbox;
+    private TextBox _tbox;
     
     // The RichText
-    RichText            _text;
-    
-    // The XString being edited
-    RMXString           _xstr;
+    private RichText _rtext;
     
     // The text selection
-    TextSel             _sel;
+    private TextSel _sel;
     
     // The current text style for the cursor or selection
-    RMTextStyle         _selStyle;
+    private TextStyle _selStyle;
     
     // Whether the editor is word selecting (double click), paragraph selecting (triple click)
-    boolean             _wordSel, _pgraphSel;
+    private boolean _wordSel, _pgraphSel;
     
     // The mouse down point
-    double              _downX, _downY;
+    private double _downX, _downY;
 
     // Whether RM should be spell checking
     public static boolean isSpellChecking = Prefs.get().getBoolean("SpellChecking", false);
     
     // Whether hyphenating is activated
-    static boolean      _hyphenating = Prefs.get().getBoolean("Hyphenating", false);
+    static boolean _hyphenating = Prefs.get().getBoolean("Hyphenating", false);
 
     // The MIME type for reportmill xstring
     public static final String    RM_XSTRING_TYPE = "reportmill/xstring";
@@ -57,20 +54,20 @@ public void setTextBox(TextBox aTextBox)  { _tbox = aTextBox; }
 /**
  * Returns the rich text.
  */
-public RichText getText()  { return _text; }
+public RichText getText()  { return _rtext; }
 
 /**
- * Returns the xstring that is being edited.
+ * Returns the RichText that is being edited.
  */
-public RMXString getXString()  { return _xstr; }
+public RichText getRichText()  { return _rtext; }
 
 /**
- * Sets the xstring that is to be edited.
+ * Sets the RichText that is to be edited.
  */
-public void setXString(RMXString aString)
+public void setRichText(RichText aRichText)
 {
-    if(aString==_xstr) return;
-    _xstr = aString; _text = _xstr.getRichText();
+    if(aRichText==_rtext) return;
+    _rtext = aRichText;
     setSel(0);
 }
 
@@ -87,7 +84,7 @@ public void setBounds(double aX, double aY, double aW, double aH) { _tbox.setBou
 /**
  * Returns the number of characters in the text string.
  */
-public int length()  { return _text.length(); }
+public int length()  { return _rtext.length(); }
 
 /**
  * Returns whether editor is doing check-as-you-type spelling.
@@ -176,9 +173,11 @@ public TextBoxLine getSelStartLine()
 /**
  * Returns the text style applied to any input characters.
  */
-public RMTextStyle getSelStyle()
+public TextStyle getSelStyle()
 {
-    return _selStyle!=null? _selStyle : (_selStyle=getXString().getStyleAt(getSelStart()));
+    if (_selStyle!=null) return _selStyle;
+    _selStyle = getRichText().getStyleAt(getSelStart());
+    return _selStyle;
 }
 
 /**
@@ -191,26 +190,29 @@ public void setInputAttribute(String aKey, Object aValue)
         _selStyle = getSelStyle().copyFor(aKey, aValue);
 
     // If selection is multiple chars, apply attribute to xstring, reset SelStyle and flush undo changes
-    else { getXString().setAttribute(aKey, aValue, getSelStart(), getSelEnd()); _selStyle = null; }
+    else {
+        getRichText().setStyleValue(aKey, aValue, getSelStart(), getSelEnd());
+        _selStyle = null;
+    }
 }
 
 /**
  * Returns the paragraph of the current selection or cursor position.
  */
-public RMParagraph getInputParagraph()  { return getXString().getParagraphAt(getSelStart()); }
+public TextLineStyle getInputParagraph()  { return getRichText().getLineStyleAt(getSelStart()); }
 
 /**
  * Sets the paragraph of the current selection or cursor position.
  */
-public void setInputParagraph(RMParagraph ps)
+public void setInputParagraph(TextLineStyle aLS)
 {
-    getXString().setParagraph(ps, getSelStart(), getSelEnd());
+    getRichText().setLineStyle(aLS, getSelStart(), getSelEnd());
 }
 
 /**
  * Returns the plain string of the xstring being edited.
  */
-public String getString()  { return _text.getString(); }
+public String getString()  { return _rtext.getString(); }
 
 /**
  * Returns the color of the current selection or cursor.
@@ -235,7 +237,7 @@ public void setFont(Font font)  { setInputAttribute(RMTextStyle.FONT_KEY, font);
 /**
  * Returns the format of the current selection or cursor.
  */
-public RMFormat getFormat()  { return getSelStyle().getFormat(); }
+public TextFormat getFormat()  { return getSelStyle().getFormat(); }
 
 /**
  * Sets the format of the current selection or cursor, after trying to expand the selection to encompass currently
@@ -307,71 +309,71 @@ public void setCharSpacing(float aValue)  { setInputAttribute(RMTextStyle.CHAR_S
 /**
  * Returns the alignment for current selection.
  */
-public RMTypes.AlignX getAlignX()  { return getInputParagraph().getAlignmentX(); }
+public HPos getAlignX()  { return getInputParagraph().getAlign(); }
 
 /**
  * Sets the alignment for current selection.
  */
-public void setAlignX(RMTypes.AlignX anAlignX)
+public void setAlignX(HPos anAlignX)
 {
-    RMParagraph pg = getInputParagraph().deriveAligned(anAlignX);
-    setInputParagraph(pg);
+    TextLineStyle lstyle = getInputParagraph().copyFor(anAlignX);
+    setInputParagraph(lstyle);
 }
 
 /**
  * Returns the line spacing for current selection.
  */
-public float getLineSpacing()  { return getInputParagraph().getLineSpacing(); }
+public double getLineSpacing()  { return getInputParagraph().getSpacingFactor(); }
 
 /**
  * Sets the line spacing for current selection.
  */
 public void setLineSpacing(float aHeight)
 {
-    RMParagraph pg = getInputParagraph().deriveLineSpacing(aHeight);
-    setInputParagraph(pg);
+    TextLineStyle lstyle = getInputParagraph().copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
+    setInputParagraph(lstyle);
 }
 
 /**
  * Returns the line gap for current selection.
  */
-public float getLineGap()  { return getInputParagraph().getLineGap(); }
+public double getLineGap()  { return getInputParagraph().getSpacing(); }
 
 /**
  * Sets the line gap for current selection.
  */
-public void setLineGap(float aHeight)
+public void setLineGap(double aHeight)
 {
-    RMParagraph pg = getInputParagraph().deriveLineGap(aHeight);
-    setInputParagraph(pg);
+    TextLineStyle lstyle = getInputParagraph().copyFor(TextLineStyle.SPACING_KEY, aHeight);
+    setInputParagraph(lstyle);
 }
 
 /**
  * Returns the min line height for current selection.
  */
-public float getLineHeightMin()  { return getInputParagraph().getLineHeightMin(); }
+public double getLineHeightMin()  { return getInputParagraph().getMinHeight(); }
 
 /**
  * Sets the min line height for current selection.
  */
 public void setLineHeightMin(float aHeight)
 {
-    RMParagraph pg = getInputParagraph().deriveLineHeightMin(aHeight);
-    setInputParagraph(pg);
+    TextLineStyle lstyle = getInputParagraph().copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
+    setInputParagraph(lstyle);
 }
 
 /**
  * Returns the maximum line height for a line of text (even if font size would dictate higher).
  */
-public float getLineHeightMax()  { return getInputParagraph().getLineHeightMax(); }
+public double getLineHeightMax()  { return getInputParagraph().getMaxHeight(); }
 
 /**
  * Sets the maximum line height for a line of text (even if font size would dictate higher).
  */
 public void setLineHeightMax(float aHeight)
 {
-    RMParagraph pg = getInputParagraph().deriveLineHeightMax(aHeight);
-    setInputParagraph(pg);
+    TextLineStyle lstyle = getInputParagraph().copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
+    setInputParagraph(lstyle);
 }
 
 /**
@@ -382,8 +384,8 @@ public void delete()
     // Get start/end. If empty selection, set start to previous index (if at newline, make sure it's before any \r\n)
     int start = getSelStart(), end = getSelEnd();
     if(start==end) { start--; if(start<0) return; 
-        if(_text.isAfterLineEnd(start + 1))
-            start = _text.lastIndexOfNewline(start + 1); }
+        if(_rtext.isAfterLineEnd(start + 1))
+            start = _rtext.lastIndexOfNewline(start + 1); }
     
     // Do delete for range
     delete(start, end, true);
@@ -398,7 +400,7 @@ public void delete(int aStart, int anEnd, boolean doUpdateSel)
     if(anEnd<=aStart) return;
     
     // Delete chars from string
-    _text.removeChars(aStart, anEnd);
+    _rtext.removeChars(aStart, anEnd);
     
     // If update selection requested, update selection to start of deleted range
     if(doUpdateSel)
@@ -424,7 +426,7 @@ public void replace(String aString, int aStart, int anEnd, boolean doUpdateSel)
 public void replace(String aString, TextStyle aStyle, int aStart, int anEnd, boolean doUpdateSel)
 {
     // Do replace in xstring with given string and given SelStyle
-    TextStyle style = aStyle!=null? aStyle : getSelStyle()._style;
+    TextStyle style = aStyle!=null? aStyle : getSelStyle();
     getText().replaceChars(aString, style, aStart, anEnd);
     
     // Update selection to be at end of new string
@@ -469,10 +471,10 @@ public void copy()
     // If no selection, just return
     if(isSelEmpty()) return;
         
-    // Get xstring for selected characters and get as XML string and plain string
-    RMXString xStr = getXString().substring(getSelStart(), getSelEnd());
-    String xmlStr = new XMLArchiver().toXML(xStr).toString();
-    String str = xStr.getText();
+    // Get RichText for selected characters and get as XML string and plain string
+    RichText rtext = getRichText().subtext(getSelStart(), getSelEnd());
+    String xmlStr = new XMLArchiver().toXML(rtext).toString();
+    String str = rtext.getString();
     
     // Add to clipboard as rm-xstring and String (text/plain)
     Clipboard cb = Clipboard.get();
@@ -560,7 +562,7 @@ public void deleteForward()
 {
     if(isSelEmpty() && getSelEnd()<length()) {
         int end = getSelEnd() + 1;
-        if(_text.isLineEnd(end - 1)) end = _text.indexAfterNewline(end - 1);
+        if(_rtext.isLineEnd(end - 1)) end = _rtext.indexAfterNewline(end - 1);
         delete(getSelStart(), end, true);
     }
     else if(!isSelEmpty())
@@ -577,12 +579,12 @@ public void deleteToLineEnd()
         delete();
     
     // Otherwise, if at line end, delete line end
-    else if(_text.isLineEnd(getSelEnd()))
-        delete(getSelStart(), _text.indexAfterNewline(getSelStart()), true);
+    else if(_rtext.isLineEnd(getSelEnd()))
+        delete(getSelStart(), _rtext.indexAfterNewline(getSelStart()), true);
 
     // Otherwise delete up to next newline or line end
     else {
-        int index = _text.indexOfNewline(getSelStart());
+        int index = _rtext.indexOfNewline(getSelStart());
         delete(getSelStart(), index>=0? index : length(), true);
     }
 }
@@ -609,8 +611,7 @@ public void processEvent(ViewEvent anEvent)
         case KeyRelease: return;
         case MousePress: mousePressed(anEvent); return;
         case MouseDrag: mouseDragged(anEvent); return;
-        case MouseRelease: mouseReleased(anEvent); return;
-        default: return;
+        case MouseRelease: mouseReleased(anEvent);
     }
 }
 
