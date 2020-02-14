@@ -17,9 +17,9 @@ import snap.view.*;
  *
  * Here's an example of programatically adding a watermark to a document:
  * <p><blockquote><pre>
- *   RMFont font = RMFont.getFont("Arial Bold", 72);
+ *   Font font = RMFont.getFont("Arial Bold", 72);
  *   Color color = new Color(.9f, .9f, .9f);
- *   RMXString string = new RMXString("REPORTMILL", font, color);
+ *   RichText string = new RichText("REPORTMILL", font, color);
  *   RMText shape = new RMText(string);
  *   myDocument.getPage(0).addChild(shape);
  *   shape.setBounds(36, 320, 540, 140);
@@ -1521,8 +1521,9 @@ public void rpgBindings(ReportOwner anRptOwner, RMShape aShapeRPG)
 {
     // Clone URL
     if(getURL()!=null && getURL().length()>0 && getURL().indexOf('@')>=0) {
-        RMXString url = new RMXString(getURL()).rpgClone(anRptOwner, null, aShapeRPG, false);
-        aShapeRPG.setURL(url.getText());
+        RichText url = new RichText(getURL());
+        url = anRptOwner.rpgCloneRichText(url, null, aShapeRPG, false);
+        aShapeRPG.setURL(url.getString());
     }
     
     // Iterate over bindings and evaluate
@@ -1581,8 +1582,9 @@ protected void resolvePageReferences(ReportOwner aRptOwner, Object userInfo)
 {
     // If URL has @-sign, do rpg clone in case it is page reference
     if(getURL()!=null && getURL().length()>0 && getURL().indexOf('@')>=0) {
-        RMXString url = new RMXString(getURL()).rpgClone(aRptOwner, userInfo, null, false);
-        setURL(url.getText());
+        RichText rtext = new RichText(getURL());
+        RichText url = aRptOwner.rpgCloneRichText(rtext, userInfo, null, false);
+        setURL(url.getString());
     }
 }
 

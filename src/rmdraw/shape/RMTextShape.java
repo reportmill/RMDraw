@@ -13,8 +13,8 @@ import snap.util.*;
  * This class is an RMShape subclass for handling rich text. Text is probably the most common and useful element in a
  * ReportMill template. You might use this class to programmatically build or modify a template, like this:
  * <p><blockquote><pre>
- *   RMXString xstring = new RMXString("Hello world!", RMFont.getFont("Arial", 12), RMColor.red);
- *   RMText text = new RMText(xstring);
+ *   RichText rtext = new RichText("Hello world!", RMFont.getFont("Arial", 12), RMColor.red);
+ *   RMText text = new RMText(rtext);
  *   template.getPage(0).addChild(text);
  *   text.setXY(36, 36);
  *   text.setSizeToFit();
@@ -82,7 +82,7 @@ public class RMTextShape extends RMRectShape {
 public RMTextShape() { }
 
 /**
- * Creates a text instance initialized with the given RMXString.
+ * Creates a text instance initialized with given RichText.
  */
 public RMTextShape(RichText aRichText)  { setRichText(aRichText); }
 
@@ -119,11 +119,6 @@ public void setRichText(RichText aRT)
     _textBox = null; _textEdtr = null;
     revalidate(); repaint();
 }
-
-/**
- * Returns the XString associated with this RMText.
- */
-public RMXString getXString()  { return new RMXString(_rtext); }
 
 /**
  * Returns the length, in characters, of the XString associated with this RMText.
@@ -713,12 +708,11 @@ protected RMShape rpgShape(ReportOwner anRptOwner, RMShape aParent)
 
     // Do xstring RPG (if no change due to RPG, just use normal) with FirePropChangeEnabled turned off
     rtext.setPropChangeEnabled(false);
-    RMXString xstr = clone.getXString();
-    xstr.rpgClone(anRptOwner, null, clone, false);
+    anRptOwner.rpgCloneRichText(rtext, null, clone, false);
         
     // If coalesce newlines is set, coalesce newlines
     if(getCoalesceNewlines())
-        xstr.coalesceNewlines();
+        coalesceNewlines(rtext);
 
     // Trim line ends from end of string to prevent extra empty line height
     int len = rtext.length(), end = len;
@@ -743,6 +737,25 @@ protected RMShape rpgShape(ReportOwner anRptOwner, RMShape aParent)
     
     // Return clone
     return clone;
+}
+
+/**
+ * Replaces any occurrence of consecutive newlines with a single newline.
+ */
+private static void coalesceNewlines(RichText rtext)
+{
+    // Iterate over occurrences of adjacent newlines (from back to font) and remove redundant newline chars
+    String str = rtext.getString();
+    for (int start=str.lastIndexOf("\n\n"); start>=0; start=str.lastIndexOf("\n\n", start)) {
+        int end = start + 1;
+        while (start>0 && str.charAt(start-1)=='\n') start--;
+        rtext.removeChars(start, end);
+        str = rtext.getString();
+    }
+
+    // Also remove leading newline if present
+    if (rtext.length()>0 && rtext.charAt(0)=='\n')
+        rtext.removeChars(0, 1);
 }
 
 /**
@@ -778,7 +791,8 @@ protected void resolvePageReferences(ReportOwner aRptOwner, Object userInfo)
     super.resolvePageReferences(aRptOwner, userInfo);
     
     // RPG clone RichText again and set
-    RichText clone = new RMXString(_rtext).rpgClone(aRptOwner, userInfo, null, true).getRichText();
+    RichText rtext = getRichText();
+    RichText clone = aRptOwner.rpgCloneRichText(rtext, userInfo, null, true);
     setRichText(clone);
 }
 

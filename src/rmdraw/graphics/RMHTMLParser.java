@@ -46,7 +46,7 @@ public static RichText parse(String html, Font baseFont, TextLineStyle aLineStyl
 }
 
 /**
- * An inner class to turn HTML into RMXString (Uses Swing's HTMLEditorKit.Parser).
+ * An inner class to turn HTML into RichText (Uses Swing's HTMLEditorKit.Parser).
  */
 private static class HTMLParser extends HTMLEditorKit.ParserCallback {
 
@@ -124,7 +124,7 @@ private static class HTMLParser extends HTMLEditorKit.ParserCallback {
         if(aTag.equals(HTML.Tag.I) || aTag.equals(HTML.Tag.EM)) {
             Font font = (Font)_attrs.get(TextStyle.FONT_KEY);
             Font italic = font.getItalic()==null ? font : font.getItalic();
-            _attrs.put(RMTextStyle.FONT_KEY, italic);
+            _attrs.put(TextStyle.FONT_KEY, italic);
             _fontStack.add(italic);
         }
         

@@ -7,6 +7,8 @@ import rmdraw.graphics.*;
 import java.util.*;
 import snap.gfx.Color;
 import snap.gfx.Font;
+import snap.gfx.RichText;
+import snap.gfx.TextLineStyle;
 import snap.util.*;
 import snap.web.WebURL;
 
@@ -98,8 +100,8 @@ public class RMArchiver extends XMLArchiver {
         cmap.put("color", Color.class);
         cmap.put("font", Font.class);
         cmap.put("format", RMFormatStub.class);
-        cmap.put("pgraph", RMParagraph.class);
-        cmap.put("xstring", RMXString.class);
+        cmap.put("pgraph", TextLineStyle.class); // Was RMParagraph
+        cmap.put("xstring", RichText.class); // Was RMXString
 
         // Strokes
         cmap.put("stroke", RMStroke.class); cmap.put("double-stroke", RMStroke.class);
@@ -134,14 +136,19 @@ public class RMArchiver extends XMLArchiver {
      */
     public static class RMFormatStub implements Archivable {
 
-        /** Implement fromXML to return proper format based on type attribute. */
+        /** Implement toXML for interface. */
         public XMLElement toXML(XMLArchiver anArchive)  { return null; }
+
+        /** Implement fromXML to return proper format based on type attribute. */
         public Object fromXML(XMLArchiver anArchiver, XMLElement anElmnt)
         {
             String type = anElmnt.getAttributeValue("type","");
-            if(type.equals("number")) return anArchiver.fromXML(anElmnt, RMNumberFormat.class,null);
-            if(type.equals("date")) return anArchiver.fromXML(anElmnt, RMDateFormat.class, null);
-            if(type.length()>0) System.err.println("RMFormatStub: Unknown format type " + type);
+            if (type.equals("number"))
+                return anArchiver.fromXML(anElmnt, RMNumberFormat.class,null);
+            if (type.equals("date"))
+                return anArchiver.fromXML(anElmnt, RMDateFormat.class, null);
+            if (type.length()>0)
+                System.err.println("RMFormatStub: Unknown format type " + type);
             return null;
         }
     }

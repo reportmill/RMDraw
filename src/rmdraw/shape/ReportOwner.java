@@ -4,9 +4,12 @@
 package rmdraw.shape;
 import rmdraw.base.*;
 import java.util.*;
-
-import rmdraw.graphics.RMXString;
+import rmdraw.graphics.RMHTMLParser;
+import rmdraw.graphics.RMRTFParser;
 import snap.gfx.RichText;
+import snap.gfx.RichTextLine;
+import snap.gfx.RichTextRun;
+import snap.gfx.TextFormat;
 import snap.util.*;
 import snap.web.WebURL;
 
@@ -273,28 +276,250 @@ public void resolvePageReferences()
  */
 public RichText rpgCloneRichText(RichText aRichText, Object userInfo, RMShape aShape, boolean doCopy)
 {
-    System.err.println("ReportOwner.rpgCloneRichText: Not implemented");
-    return aRichText;
+    return rpgCloneRichText(aRichText, this, userInfo, aShape, doCopy);
 }
 
+/**
+ * Clones a RichText.
+ */
+public RichText rpgCloneRichText(RichText aRichText, ReportOwner anRptOwner, Object userInfo, RMShape aShape, boolean doCopy)
+{
+    // Declare local variable for resulting out-rtext and for whether something requested a recursive RPG run
+    RichText outString = aRichText;
+    boolean redo = false;
+
+    // If userInfo provided, plug it into ReportMill
+    if (userInfo!=null && anRptOwner!=null)
+        anRptOwner.pushDataStack(userInfo);
+
+    // Get range for first key found in string
+    Range totalKeyRange = nextKeyRangeAfterIndex(outString,0, new Range());
+
+    // While the inString still contains @key@ constructs, do substitution
+    while(totalKeyRange.length() > 0) {
+
+        // Get key start location (after @-sign) and length
+        int keyLoc = totalKeyRange.start + 1;
+        int keyLen = totalKeyRange.length() - 2;
+        Object valString = null;
+
+        // Get the run at the given location
+        RichTextLine keyLine = outString.getLineAt(keyLoc);
+        RichTextRun keyRun = outString.getRunAt(keyLoc);
+
+        // If there is a key between the @-signs, evaluate it for substitution string
+        if (keyLen > 0) {
+
+            // Get actual key string
+            String keyString = outString.subSequence(keyLoc, keyLoc + keyLen).toString();
+
+            // Get key string as key chain
+            RMKeyChain keyChain = RMKeyChain.getKeyChain(keyString);
+
+            // If keyChain hasPageReference, tell reportMill and skip this key
+            if (aShape!=null && keyChain.hasPageReference()) {
+                anRptOwner.addPageReferenceShape(aShape);
+                nextKeyRangeAfterIndex(outString, totalKeyRange.end, totalKeyRange);
+                continue;
+            }
+
+            // Get keyChain value
+            Object val = RMKeyChain.getValue(anRptOwner, keyChain);
+
+            // If val is list, replace with first value (or null)
+            if (val instanceof List) { List list = (List)val;
+                val = list.size()>0? list.get(0) : null; }
+
+            // If we found a String, then we'll just use it for key sub (although we to see if it's a KeyChain literal)
+            if (val instanceof String) {
+
+                // Set string value to be substitution string
+                valString = val;
+
+                // If keyChain has a string literal, check to see if val is that string literal
+                if (keyChain.hasOp(RMKeyChain.Op.Literal) && !StringUtils.startsWithIC((String)val, "<html")) {
+                    String string = val.toString();
+                    int index = keyString.indexOf(string);
+
+                    // If val is that string literal, get original RichText substring (with attributes)
+                    if (index>0 && keyString.charAt(index-1)=='"' && keyString.charAt(index+string.length())=='"') {
+                        int start = index + keyLoc;
+                        valString = outString.subtext(start, start + string.length());
+                        redo = redo || string.contains("@");
+                    }
+                }
+            }
+
+            // If we found an RichText, then we'll just use it for key substitution
+            else if (val instanceof RichText)
+                valString = val;
+
+                // If we found a keyChain, add @ signs and redo (this feature lets developers return an RMKeyChain)
+            else if (val instanceof RMKeyChain) {
+                valString = "@" + val.toString() + "@"; redo = true; }
+
+            // If val is Number, get format and change val to string (verify format type)
+            else if (val instanceof Number) {
+                TextFormat format = keyRun.getFormat();
+                if (!(format instanceof RMNumberFormat))
+                    format = RMNumberFormat.PLAIN;
+                valString = format.format(val);
+                snap.gfx.TextStyle style = format.formatStyle(val);
+                if (style!=null)
+                    valString = new RichText((String)valString, style.getColor());
+            }
+
+            // If val is Date, get format and change val to string (verify format type)
+            else if (val instanceof Date) {
+                TextFormat format = keyRun.getFormat();
+                if (!(format instanceof RMDateFormat))
+                    format = RMDateFormat.defaultFormat;
+                valString = format.format(val);
+            }
+
+            // If value is null, either use current format's or Document's NullString
+            else if (val==null) {
+                TextFormat fmt = keyRun.getFormat();
+                if (fmt != null)
+                    valString = fmt.format(val);
+            }
+
+            // If object is none of standard types (Str, Num, Date, XStr or null), see if it will provide bytes
+            else {
+
+                // Ask object for "bytes" method or attribute
+                Object bytes = RMKey.getValue(val, "bytes");
+
+                // If bytes is byte array, just set it
+                if (bytes instanceof byte[])
+                    valString = new String((byte[])bytes);
+
+                    // If value is List, reset it so we don't get potential hang in toString
+                else if (val instanceof List)
+                    valString = "<List>";
+
+                    // If value is Map, reset to "Map" so we don't get potential hang in toString
+                else if (val instanceof Map)
+                    valString = "<Map>";
+
+                    // Set substitution value to string representation of provided object
+                else valString = val.toString();
+            }
+
+            // If substitution string is still null, replace it with document null-string
+            if (valString == null)
+                valString = anRptOwner.getNullString()!=null? anRptOwner.getNullString() : "";
+        }
+
+        // If there wasn't a key between '@' signs, assume they wanted '@'
+        else valString = "@";
+
+        // If substitution string was found, perform substitution
+        if (valString != null) {
+
+            // If this is the first substitution, get a copy of outString
+            if (outString==aRichText && doCopy)
+                outString = aRichText.clone();
+
+            // If substitution string was raw string, perform replace (and possible rtf/html evaluation)
+            if (valString instanceof String) { String string = (String)valString;
+
+                // If string is HTML formatted text, parse into RichText
+                if (StringUtils.startsWithIC(string, "<html"))
+                    valString = RMHTMLParser.parse(string, keyRun.getFont(), keyLine.getLineStyle());
+
+                    // If string is RTF formatted text, parse into RichText
+                else if (string.startsWith("{\\rtf"))
+                    valString = RMRTFParser.parse(string, keyRun.getFont());
+
+                    // If string is normal string, just perform replace and update key range
+                else {
+                    outString.replaceChars(string, totalKeyRange.start, totalKeyRange.end);
+                    totalKeyRange.setLength(((String)valString).length());
+                }
+            }
+
+            // If substitution string is RichText, just do RichText replace
+            if (valString instanceof RichText) { RichText rtext = (RichText)valString;
+                outString.replaceText(rtext, totalKeyRange.start, totalKeyRange.end);
+                totalKeyRange.setLength(rtext.length());
+            }
+        }
+
+        // Get next totalKeyRange
+        nextKeyRangeAfterIndex(outString, totalKeyRange.end, totalKeyRange);
+    }
+
+    // If userInfo was provided, remove it from ReportMill
+    if (userInfo!=null)
+        anRptOwner.popDataStack();
+
+    // If something requested a recursive RPG run, do it
+    if (redo)
+        outString = rpgCloneRichText(outString, anRptOwner, userInfo, aShape, false);
+
+    // Return RPG string
+    return outString;
+}
+
+/**
+ * Returns the range of the next occurrence of @delimited@ text.
+ */
+private static Range nextKeyRangeAfterIndex(RichText rtext, int anIndex, Range aRange)
+{
+    // Get length of string (return bogus range if null)
+    int length = rtext.length();
+    if (length<2) return aRange.set(-1, -1);
+
+    // Get start of key (return if it is the last char)
+    int startIndex = rtext.indexOf("@", anIndex);
+    if (startIndex==length-1)
+        return aRange.set(startIndex, startIndex+1);
+
+    // If startRange of key was found, look for end
+    if (startIndex>=0) {
+        int nextIndex = startIndex;
+        while (++nextIndex < length) { char c = rtext.charAt(nextIndex);
+            if (c=='"')
+                while ((++nextIndex<length) && (rtext.charAt(nextIndex)!='"'));
+            else if (c=='@')
+                return aRange.set(startIndex, nextIndex+1);
+        }
+    }
+
+    // Set bogus range and return
+    return aRange.set(-1, -1);
+}
+
+/**
+ * A range class.
+ */
+private static class Range {
+    int start, end;
+    public int length()  { return end - start; }
+    public void setLength(int aLength)  { end = start + aLength; }
+    public Range set(int aStart, int anEnd)  { start = aStart; end = anEnd; return this; }
+}
 
 /**
  * Returns a value for some silly RM defined keys.
  */
 private Object getRMKey(String key)
 {
-    if(key.equals("RMRandom")) return MathUtils.randomInt();
-    if(key.equals("RMVersion"))
+    if (key.equals("RMRandom"))
+        return MathUtils.randomInt();
+    if (key.equals("RMVersion"))
         return String.format("ReportMill %f (Build Date: %s)", ReportMill.getVersion(), ReportMill.getBuildInfo());
-    if(key.equals("RMUser")) return System.getProperty("user.name");
-    if(key.equals("RMUserHome")) return System.getProperty("user.home");
-    if(key.equals("RMProps")) return System.getProperties().toString();
-    if(key.equals("RMJeff")) return "Jeffrey James Martin";
-    if(key.equals("RMLogo")) return "http://mini.reportmill.com/images/RM-Logo.gif";
-    if(key.equals("RMHTML")) return "<html><b>Howdy Doody</b></html>";
-    if(key.equals("RMJapanese"))
-        return new String("\u3053\u3093\u306b\u3061\u306f\u3001\u4e16\u754c\u306e\u4eba\u3005\uff01");
-    if(key.equals("RMFlowers")) return WebURL.getURL(getClass(), "/snap/viewx/pkg.images/tulips.jpg");
+    if (key.equals("RMUser")) return System.getProperty("user.name");
+    if (key.equals("RMUserHome")) return System.getProperty("user.home");
+    if (key.equals("RMProps")) return System.getProperties().toString();
+    if (key.equals("RMJeff")) return "Jeffrey James Martin";
+    if (key.equals("RMLogo")) return "http://mini.reportmill.com/images/RM-Logo.gif";
+    if (key.equals("RMHTML")) return "<html><b>Howdy Doody</b></html>";
+    if (key.equals("RMJapanese"))
+        return "\u3053\u3093\u306b\u3061\u306f\u3001\u4e16\u754c\u306e\u4eba\u3005\uff01";
+    if (key.equals("RMFlowers"))
+        return WebURL.getURL(getClass(), "/snap/viewx/pkg.images/tulips.jpg");
     return null;
 }
 

@@ -776,7 +776,7 @@ public void drop(T aShape, ViewEvent anEvent)
         RMTextShape text = aShape;
         if(text.length()==0)
             text.setText(string);
-        else text.getXString().addChars(" " + string);
+        else text.getRichText().addChars(" " + string);
     }
     
     // Otherwise, do normal drop

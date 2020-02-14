@@ -9,7 +9,7 @@ import snap.util.*;
 import snap.view.*;
 
 /**
- * This class provides all of the event and drawing code necessary to edit text in the form of an RMXString
+ * This class provides all of the event and drawing code necessary to edit text in the form of a RichText.
  * (separated from an actual UI Component).
  */
 public class RMTextEditor {
@@ -38,8 +38,8 @@ public class RMTextEditor {
     // Whether hyphenating is activated
     static boolean _hyphenating = Prefs.get().getBoolean("Hyphenating", false);
 
-    // The MIME type for reportmill xstring
-    public static final String    RM_XSTRING_TYPE = "reportmill/xstring";
+    // The MIME type for SnapKit RichText
+    public static final String SNAP_RICHTEXT_TYPE = "reportmill/xstring";
     
 /**
  * Returns the text box used to layout text.
@@ -478,7 +478,7 @@ public void copy()
     
     // Add to clipboard as rm-xstring and String (text/plain)
     Clipboard cb = Clipboard.get();
-    cb.addData(RM_XSTRING_TYPE, xmlStr);
+    cb.addData(SNAP_RICHTEXT_TYPE, xmlStr);
     cb.addData(str);
 }
 
@@ -487,12 +487,12 @@ public void copy()
  */
 public void paste()
 {
-    // If Clipboard has RMXString, paste it
+    // If Clipboard has RichText, paste it
     Clipboard cboard = Clipboard.get();
-    if(cboard.hasData(RM_XSTRING_TYPE)) {
-        byte bytes[] = cboard.getDataBytes(RM_XSTRING_TYPE);
-        RMXString xStr = (RMXString)new RMArchiver().readObject(bytes);
-        replace(xStr.getRichText());
+    if(cboard.hasData(SNAP_RICHTEXT_TYPE)) {
+        byte bytes[] = cboard.getDataBytes(SNAP_RICHTEXT_TYPE);
+        RichText rtext = (RichText)new RMArchiver().readObject(bytes);
+        replace(rtext);
     }
     
     // If Clipboard has String, paste it

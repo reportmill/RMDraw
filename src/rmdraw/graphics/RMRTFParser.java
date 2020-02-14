@@ -3,6 +3,8 @@
  */
 package rmdraw.graphics;
 import snap.gfx.Font;
+import snap.gfx.RichText;
+
 import java.awt.Color;
 import java.io.*;
 import java.util.Enumeration;
@@ -17,16 +19,16 @@ public class RMRTFParser {
 /**
  * Returns an xstring from the given rtf string and default font.
  */
-public static RMXString parse(String rtf, Font baseFont)
+public static RichText parse(String rtf, Font baseFont)
 {
     try { return parseRTF(rtf, baseFont); }
     catch(Exception e) { e.printStackTrace(); return null; }
 }
 
 /**
- * Returns an xstring from the given rtf string and default font.
+ * Returns an RichText from the given rtf string and default font.
  */
-public static RMXString parseRTF(String rtf, Font baseFont) throws Exception
+public static RichText parseRTF(String rtf, Font baseFont) throws Exception
 {
     // Use RTFEditorKit to do the real parsing work
     EditorKit kit = new RTFEditorKit();
@@ -38,8 +40,8 @@ public static RMXString parseRTF(String rtf, Font baseFont) throws Exception
     ElementIterator elemIterator = new ElementIterator(doc);
     AbstractDocument.AbstractElement elem;
     
-    // Declare return string and loop attribute variables
-    RMXString result = new RMXString();
+    // Declare return RichText and loop attribute variables
+    RichText result = new RichText();
     Font font = baseFont;
     Color color = null;
     boolean underline = false;
@@ -92,16 +94,17 @@ public static RMXString parseRTF(String rtf, Font baseFont) throws Exception
                 }
             }
             
-            // Create new xstring for rtf run (string, font, color, underline) and add
-            RMXString xstring = new RMXString(content, font, color); xstring.setUnderlined(underline);
-            result.addString(xstring, result.length());
+            // Create new RichText for rtf run (string, font, color, underline) and add
+            RichText rtext = new RichText(content, font, color);
+            rtext.setUnderlined(underline);
+            result.addText(rtext, result.length());
             
             // Reset font, color & underline
             font = baseFont; color = null; underline = false;
         }
     }
     
-    // Return rtf xstring
+    // Return rtf RichText
     return result;
 }
 

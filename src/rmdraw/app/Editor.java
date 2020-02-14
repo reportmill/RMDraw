@@ -1034,7 +1034,7 @@ public void deepChange(Object aShape, PropChange aPC)
 {
     // If deep change for EditorTextEditor, just return since it registers Undo itself (with better coalesce)
     //if(getTextEditor()!=null && getTextEditor().getTextShape()==aShape &&
-    //    (anEvent.getSource() instanceof RMXString || anEvent.getSource() instanceof RMXStringRun)) return;
+    //    (anEvent.getSource() instanceof RichText || anEvent.getSource() instanceof RichTextRun)) return;
     
     // Add undo change
     addUndoChange(aPC);
