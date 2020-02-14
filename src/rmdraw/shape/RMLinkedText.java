@@ -2,8 +2,8 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.graphics.*;
 import snap.gfx.Font;
+import snap.gfx.RichText;
 import snap.util.*;
 
 /**
@@ -42,7 +42,11 @@ public void setPreviousText(RMTextShape aText)  { _previousText = aText; }
 /**
  * Returns the same xstring as previoust text.
  */
-public RMXString getXString()  { return getPreviousText().getXString(); }
+@Override
+public RichText getRichText()
+{
+    return getPreviousText().getRichText();
+}
 
 /**
  * Returns the font for char 0 of the start text.

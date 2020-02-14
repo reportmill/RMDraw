@@ -222,7 +222,7 @@ public Color getColor()  { return getSelStyle().getColor(); }
 /**
  * Sets the color of the current selection or cursor.
  */
-public void setColor(Color color)  { setInputAttribute(RMTextStyle.COLOR_KEY, color); }
+public void setColor(Color color)  { setInputAttribute(TextStyle.COLOR_KEY, color); }
 
 /**
  * Returns the font of the current selection or cursor.
@@ -232,7 +232,7 @@ public Font getFont()  { return getSelStyle().getFont(); }
 /**
  * Sets the font of the current selection or cursor.
  */
-public void setFont(Font font)  { setInputAttribute(RMTextStyle.FONT_KEY, font); }
+public void setFont(Font font)  { setInputAttribute(TextStyle.FONT_KEY, font); }
 
 /**
  * Returns the format of the current selection or cursor.
@@ -255,7 +255,7 @@ public void setFormat(RMFormat aFormat)
         return;
 
     // If there is a format, add it to current attributes and set for selected text
-    setInputAttribute(RMTextStyle.FORMAT_KEY, aFormat);
+    setInputAttribute(TextStyle.FORMAT_KEY, aFormat);
 }
 
 /**
@@ -266,7 +266,7 @@ public boolean isUnderlined()  { return getSelStyle().isUnderlined(); }
 /**
  * Sets whether current selection is underlined.
  */
-public void setUnderlined(boolean aFlag)  { setInputAttribute(RMTextStyle.UNDERLINE_KEY, aFlag? 1 : null); }
+public void setUnderlined(boolean aFlag)  { setInputAttribute(TextStyle.UNDERLINE_KEY, aFlag? 1 : null); }
 
 /**
  * Returns whether current selection is outlined.
@@ -276,7 +276,7 @@ public Border getTextBorder()  { return getSelStyle().getBorder(); }
 /**
  * Sets whether current selection is outlined.
  */
-public void setTextBorder(Border aBorder)  { setInputAttribute(RMTextStyle.BORDER_KEY, aBorder); }
+public void setTextBorder(Border aBorder)  { setInputAttribute(TextStyle.BORDER_KEY, aBorder); }
 
 /**
  * Sets current selection to superscript.
@@ -284,7 +284,7 @@ public void setTextBorder(Border aBorder)  { setInputAttribute(RMTextStyle.BORDE
 public void setSuperscript()
 {
     int state = getSelStyle().getScripting();
-    setInputAttribute(RMTextStyle.SCRIPTING_KEY, state==0? 1 : 0);
+    setInputAttribute(TextStyle.SCRIPTING_KEY, state==0? 1 : 0);
 }
 
 /**
@@ -293,7 +293,7 @@ public void setSuperscript()
 public void setSubscript()
 {
     int state = getSelStyle().getScripting();
-    setInputAttribute(RMTextStyle.SCRIPTING_KEY, state==0? -1 : 0);
+    setInputAttribute(TextStyle.SCRIPTING_KEY, state==0? -1 : 0);
 }
 
 /**
@@ -304,7 +304,7 @@ public float getCharSpacing()  { return (float)getSelStyle().getCharSpacing(); }
 /**
  * Returns the character spacing of the current selection or cursor.
  */
-public void setCharSpacing(float aValue)  { setInputAttribute(RMTextStyle.CHAR_SPACING_KEY, aValue); }
+public void setCharSpacing(float aValue)  { setInputAttribute(TextStyle.CHAR_SPACING_KEY, aValue); }
 
 /**
  * Returns the alignment for current selection.

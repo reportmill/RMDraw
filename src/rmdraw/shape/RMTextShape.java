@@ -21,15 +21,15 @@ import snap.util.*;
  * </pre></blockquote>
  */
 public class RMTextShape extends RMRectShape {
-    
-    // The real backing store for text is an xstring
-    RMXString              _xstr;
-    
+
+    // The RichText to be displayed
+    private RichText _rtext;
+
     // The text margin (if different than default)
-    Insets                 _margin = getMarginDefault();
+    private Insets _margin = getMarginDefault();
     
     // Vertical alignment of text
-    VPos                 _alignY = VPos.TOP;
+    private VPos _alignY = VPos.TOP;
     
     // Specifies how text should handle overflow during RPG (ignore it, shrink it or paginate it)
     byte                   _wraps;
@@ -84,46 +84,46 @@ public RMTextShape() { }
 /**
  * Creates a text instance initialized with the given RMXString.
  */
-public RMTextShape(RichText aRichText)  { _xstr = new RMXString(aRichText); }
+public RMTextShape(RichText aRichText)  { setRichText(aRichText); }
 
 /**
  * Creates a text instance initialized with the given plain text String.
  */
-public RMTextShape(String plainText)  { getXString().addChars(plainText); }
+public RMTextShape(String plainText)  { getRichText().addChars(plainText); }
 
 /**
- * Returns the XString associated with this RMText.
+ * Returns the RichText.
  */
-public RMXString getXString()
+public RichText getRichText()
 {
-    if(_xstr!=null) return _xstr;
-    _xstr = new RMXString();
-    _xstr.getRichText().addPropChangeListener(_richTextLsnr);
-    return _xstr;
+    if(_rtext!=null) return _rtext;
+    _rtext = new RichText();
+    _rtext.addPropChangeListener(_richTextLsnr);
+    return _rtext;
 }
 
 /**
- * Sets the XString associated with this RMText.
+ * Sets the RichText associated with this RMText.
  */
-public void setXString(RMXString xString)
+public void setRichText(RichText aRT)
 {
     // If value already set, just return
-    if(xString==_xstr) return;
-    
-    // Stop listening to last XString and start listening to new XString
-    if(_xstr!=null) _xstr.getRichText().removePropChangeListener(_richTextLsnr);
-    if(xString!=null) xString.getRichText().addPropChangeListener(_richTextLsnr);
-    
+    if(aRT==_rtext) return;
+
+    // Stop listening to last RichText and start listening to new RichText
+    if(_rtext!=null) _rtext.removePropChangeListener(_richTextLsnr);
+    if(aRT!=null) aRT.addPropChangeListener(_richTextLsnr);
+
     // Set value and fire property change, and reset cached HeightToFit
-    firePropChange("XString", _xstr, _xstr = xString);
+    firePropChange("XString", _rtext, _rtext = aRT);
     _textBox = null; _textEdtr = null;
     revalidate(); repaint();
 }
 
 /**
- * Returns the RichText.
+ * Returns the XString associated with this RMText.
  */
-public RichText getRichText()  { return getXString().getRichText(); }
+public RMXString getXString()  { return new RMXString(_rtext); }
 
 /**
  * Returns the length, in characters, of the XString associated with this RMText.
@@ -133,12 +133,12 @@ public int length()  { return getRichText().length(); }
 /**
  * Returns the text associated with this RMText as a plain String.
  */
-public String getText()  { return getXString().getText(); }
+public String getText()  { return getRichText().getString(); }
 
 /**
  * Replaces the current text associated with this RMText with the given String.
  */
-public void setText(String aString)  { getXString().replaceChars(aString, 0, length()); }
+public void setText(String aString)  { getRichText().replaceChars(aString, 0, length()); }
 
 /**
  * Returns the first character index visible in this text.
@@ -162,7 +162,7 @@ public Font getFont()
 {
     if(isTextEditorSet())
         return getTextEditor().getFont();
-    return getXString().getFontAt(0);
+    return getRichText().getFontAt(0);
 }
 
 /**
@@ -172,7 +172,7 @@ public void setFont(Font aFont)
 {
     if(isTextEditorSet())
         getTextEditor().setFont(aFont);
-    else getXString().setAttribute(aFont);
+    else getRichText().setStyleValue(aFont);
 }
 
 /**
@@ -182,7 +182,7 @@ public TextFormat getFormat()
 {
     if(isTextEditorSet())
         return getTextEditor().getFormat();
-    return getXString().getRunAt(0).getFormat();
+    return getRichText().getRunAt(0).getFormat();
 }
 
 /**
@@ -192,18 +192,21 @@ public void setFormat(RMFormat aFormat)
 {
     if(isTextEditorSet())
         getTextEditor().setFormat(aFormat);
-    else getXString().setAttribute(aFormat, 0, length());
+    else getRichText().setStyleValue(aFormat, 0, length());
 }
 
 /**
  * Returns the color of the first character of the xstring associated with this RMText.
  */
-public Color getTextColor()  { return getXString().getRunAt(0).getColor(); }
+public Color getTextColor()  { return getRichText().getRunAt(0).getColor(); }
 
 /**
  * Sets the color of the characters in the XString associated with this RMText.
  */
-public void setTextColor(Color aColor)  { getXString().setAttribute(aColor); }
+public void setTextColor(Color aColor)
+{
+    getRichText().setStyleValue(aColor);
+}
 
 /**
  * Returns if char 0 is underlined.
@@ -357,7 +360,7 @@ public float getCharSpacing()
 {
     if(isTextEditorSet())
         return getTextEditor().getCharSpacing();
-    return getXString().getRun(0).getCharSpacing();
+    return getRichText().getRunAt(0).getCharSpacing();
 }
 
 /**
@@ -367,7 +370,7 @@ public void setCharSpacing(float aValue)
 {
     if(isTextEditorSet())
         getTextEditor().setCharSpacing(aValue);
-    else getXString().setAttribute(RMTextStyle.CHAR_SPACING_KEY, aValue==0? null : aValue);
+    else getRichText().setStyleValue(TextStyle.CHAR_SPACING_KEY, aValue==0? null : aValue);
 }
 
 /**
@@ -377,7 +380,7 @@ public double getLineSpacing()
 {
     if(isTextEditorSet())
         return getTextEditor().getLineSpacing();
-    return getXString().getParagraphAt(0).getLineSpacing();
+    return getRichText().getLineStyleAt(0).getSpacing();
 }
 
 /**
@@ -640,7 +643,7 @@ public TextBox getTextBox()
  */
 protected void updateTextBox()
 {
-    _textBox.setText(getXString().getRichText());
+    _textBox.setText(getRichText());
     Insets pad = getMargin(); double pl = pad.left, pr = pad.right, pt = pad.top, pb = pad.bottom;
     double w = getWidth() - pl - pr, h = getHeight() - pt - pb; if(w<0) w = 0; if(h<0) h = 0;
     _textBox.setBounds(pl, pt, w, h);
@@ -706,26 +709,28 @@ protected double getPrefHeightImpl(double aWidth)
 protected RMShape rpgShape(ReportOwner anRptOwner, RMShape aParent)
 {
     RMTextShape clone = clone();
-    RMXString string = clone.getXString();
+    RichText rtext = clone.getRichText();
 
     // Do xstring RPG (if no change due to RPG, just use normal) with FirePropChangeEnabled turned off
-    string.getRichText().setPropChangeEnabled(false);
-    string.rpgClone(anRptOwner, null, clone, false);
+    rtext.setPropChangeEnabled(false);
+    RMXString xstr = clone.getXString();
+    xstr.rpgClone(anRptOwner, null, clone, false);
         
     // If coalesce newlines is set, coalesce newlines
     if(getCoalesceNewlines())
-        string.coalesceNewlines();
+        xstr.coalesceNewlines();
 
     // Trim line ends from end of string to prevent extra empty line height
-    int len = string.length(), end = len; while(end>0 && StringUtils.isLineEndChar(string.charAt(end-1))) end--;
+    int len = rtext.length(), end = len;
+    while(end>0 && StringUtils.isLineEndChar(rtext.charAt(end-1))) end--;
     if(end!=len)
-        string.removeChars(end, len);
+        rtext.removeChars(end, len);
 
     // If WRAP_SCALE, set FitText ivar
     if(getWraps()==WRAP_SCALE) clone._fitText = true;
     
     // Enable string FirePropChangeEnabled and revalidate
-    string.getRichText().setPropChangeEnabled(true);
+    rtext.setPropChangeEnabled(true);
     clone.revalidate();
     
     // If paginating, swap in paginated parts (disable in table row)
@@ -772,9 +777,9 @@ protected void resolvePageReferences(ReportOwner aRptOwner, Object userInfo)
     // Do normal shape resolve page references
     super.resolvePageReferences(aRptOwner, userInfo);
     
-    // RPG clone xstring again and set
-    RMXString xstringCloneRPG = _xstr.rpgClone(aRptOwner, userInfo, null, true);
-    setXString(xstringCloneRPG);
+    // RPG clone RichText again and set
+    RichText clone = new RMXString(_rtext).rpgClone(aRptOwner, userInfo, null, true).getRichText();
+    setRichText(clone);
 }
 
 /**
@@ -861,9 +866,9 @@ public RMTextShape clone()
 {
     // Get normal shape clone, clone XString, clear layout and return
     RMTextShape clone = (RMTextShape)super.clone();
-    clone._xstr = null; clone._textBox = null; clone._textEdtr = null;
+    clone._rtext = null; clone._textBox = null; clone._textEdtr = null;
     clone._richTextLsnr = pc -> richTextDidPropChange(pc);
-    if(_xstr!=null) clone.setXString(_xstr.clone());
+    if(_rtext!=null) clone.setRichText(_rtext.clone());
     return clone;
 }
 
@@ -900,8 +905,8 @@ public XMLElement toXML(XMLArchiver anArchiver)
     // Archive xstring
     if(!(this instanceof RMLinkedText)) {
         
-        // Get the xml element for the xstring
-        XMLElement xse = anArchiver.toXML(getXString());
+        // Get the xml element for the RichText
+        XMLElement xse = anArchiver.toXML(getRichText());
         
         // Add individual child elements to this text's xml element
         for(int i=0, iMax=xse.size(); i<iMax; i++)
@@ -955,9 +960,9 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     setCoalesceNewlines(anElement.getAttributeBoolValue("coalesce-newlines"));
     if(anElement.getAttributeBoolValue("draw-border")) setDrawsSelectionRect(true);
     
-    // Unarchive xString
+    // Unarchive RichText
     if(!(this instanceof RMLinkedText))
-        getXString().fromXML(anArchiver, anElement);
+        getRichText().fromXML(anArchiver, anElement);
     
     // Register for finish call
     anArchiver.getReference(anElement);
@@ -1000,7 +1005,7 @@ public String toString()
 {
     String string = super.toString();
     string = string.substring(0, string.length() - 1);
-    return string + ", \"" + getXString() + "\"]";
+    return string + ", \"" + getRichText() + "\"]";
 }
 
 }

@@ -2001,7 +2001,8 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     
     // Unarchive font
     XMLElement fontXML = anElement.getElement("font");
-    if(fontXML!=null) setFont((Font)anArchiver.fromXML(fontXML, this));
+    if(fontXML!=null)
+        setFont((Font)anArchiver.fromXML(fontXML, this));
     
     // Unarchive Opacity, Visible
     setOpacity(anElement.getAttributeFloatValue("opacity", 1));
