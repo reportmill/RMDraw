@@ -220,12 +220,6 @@ public void addPages(RMDocument aDoc)
     // Add pages from given document
     for(RMShape page : aDoc.getChildArray())
         addPage((RMPage)page);
-    
-    // Add page reference shapes from given document and clear from old document
-    if(_reportOwner!=null && aDoc._reportOwner!=null) {
-        _reportOwner.getPageReferenceShapes().addAll(aDoc._reportOwner.getPageReferenceShapes());
-        aDoc._reportOwner.getPageReferenceShapes().clear();
-    }
 }
 
 /**
@@ -657,72 +651,28 @@ public void paintShape(Painter aPntr) { }
  */
 public RMDocument generateReport()
 {
-    return generateReport(getDataSource()!=null? getDataSource().getDataset() : null, null, true);
+    return null;
 }
 
 /**
  * Returns a generated report from this template evaluated against the given object.
  */
-public RMDocument generateReport(Object theObjects)  { return generateReport(theObjects, null, true); }
+public RMDocument generateReport(Object theObjects)  { return null; }
 
 /**
  * Returns a generated report from this template evaluated against the given object and userInfo.
  */
-public RMDocument generateReport(Object objects, Object userInfo)  { return generateReport(objects, userInfo, true); }
+public RMDocument generateReport(Object objects, Object userInfo)  { return null; }
 
 /**
  * Returns a generated report from this template evaluated against the given object with an option to paginate.
  */
-public RMDocument generateReport(Object objects, boolean paginate)  { return generateReport(objects, null, paginate); }
-
-/**
- * Returns generated report from this template evaluated against given object/userInfo (with option to paginate).
- */
-public RMDocument generateReport(Object theObjects, Object theUserInfo, boolean aPaginateFlag)
-{
-    // Create and configure reportmill with objects, userinfo, pagination and null-string
-    ReportOwner ro = new ReportOwner(); ro.setTemplate(this);
-    if(theObjects!=null) ro.addModelObject(theObjects);
-    if(theUserInfo!=null) ro.addModelObject(theUserInfo);
-    ro.setPaginate(aPaginateFlag && isPaginate());
-    ro.setNullString(getNullString());
-    RMDocument rpt = ro.generateReport();
-    return rpt;
-}
-
-/**
- * Override to handle ShapeLists special.
- */
-protected RMShape rpgChildren(ReportOwner anRptOwner, RMParentShape aParent)
-{
-    // Declare local variable for whether table of contents page was encountered
-    RMPage tableOfContentsPage = null; int tocPageIndex = 0;
-
-    RMDocument doc = (RMDocument)aParent;
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMPage page = getPage(i);
-    
-        // Check for table of contents table
-        if(RMTableOfContents.checkForTableOfContents(page)) {
-            tableOfContentsPage = page; tocPageIndex = aParent.getChildCount(); continue; }
-
-        // Generate report and add results
-        RMParentShape crpg = (RMParentShape)anRptOwner.rpg(page, doc);
-        if(crpg instanceof ReportOwner.ShapeList) {
-            for(RMShape pg : crpg.getChildArray()) doc.addPage((RMPage)pg); }
-        else doc.addPage((RMPage)crpg);
-    }
-    
-    // Do RPG for TableOfContentsPage
-    if(tableOfContentsPage!=null) RMTableOfContents.rpgPage(anRptOwner, doc, tableOfContentsPage, tocPageIndex);
-
-    // Report report
-    return aParent;
-}
+public RMDocument generateReport(Object objects, boolean paginate)  { return null; }
 
 /**
  * Performs page substitutions on any text fields that were identified as containing @Page@ keys.
  */
-public void resolvePageReferences()  { if(_reportOwner!=null) _reportOwner.resolvePageReferences(); }
+public void resolvePageReferences()  { }
 
 /**
  * Override to layout pages.
@@ -820,7 +770,6 @@ public RMDocument clone()
 {
     RMDocument clone = (RMDocument)super.clone();
     if(_metadata!=null) clone._metadata = new HashMap(_metadata);
-    clone._reportOwner = null;
     return clone;
 }
 

@@ -59,7 +59,7 @@ protected RMDocument createTemplate()
 /**
  * Sets the template.
  */
-protected void setTemplate(RMDocument aDoc)  { _template = aDoc; }
+public void setTemplate(RMDocument aDoc)  { _template = aDoc; }
 
 /**
  * Returns the string used to represent null values.
@@ -140,7 +140,8 @@ public RMDocument generateReport()
     if(_dataStack.size()==0) addModelObject(new Object());
 
     // Generate report and return    
-    RMDocument doc = (RMDocument)rpg(getTemplate(), null); doc._reportOwner = this;
+    RMDocument doc = (RMDocument)rpg(getTemplate(), null);
+    doc._reportOwner = this;
     return doc;
 }
 
