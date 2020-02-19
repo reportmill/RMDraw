@@ -2,11 +2,9 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.base.RMKeyChain;
 import rmdraw.graphics.*;
 import snap.gfx.*;
 import snap.util.*;
-import snap.web.WebURL;
 
 /**
  * This class is a shape representation of an image.
@@ -165,40 +163,6 @@ protected double getPrefHeightImpl(double aWidth)
     double pw = img.getWidth(), ph = img.getHeight();
     if(aWidth>0 && getPreserveRatio() && pw>aWidth) ph = aWidth*ph/pw;
     return ph;
-}
-
-/**
- * Report generation method.
- */
-public RMShape rpgShape(ReportOwner aRptOwner, RMShape aParent)
-{
-    // Do normal version
-    RMImageShape clone = (RMImageShape)super.rpgShape(aRptOwner, aParent);
-    
-    // If key: Evaluate key for image and set
-    String key = getKey();
-    if(key!=null && key.length()>0) {
-        
-        // Get key value
-        Object value = RMKeyChain.getValue(aRptOwner, getKey());
-        if(value instanceof RMKeyChain) value = ((RMKeyChain)value).getValue();
-        WebURL url = WebURL.getURL(value); if(url!=null) value = url;
-        
-        // If PDF data, return PDFShape
-        //if(url!=null && url.getPath().toLowerCase().endsWith("pdf") ||
-        //    value instanceof byte[] && RMPDFData.canRead((byte[])value))
-        //        return RMPDFShape.rpgShape(aRptOwner, aParent, this, value);
-                
-        // Otherwise set new image
-        clone.setImageForSource(value);
-    }
-
-    // This prevents RMImageShape from growing to actual image size in report
-    // Probably need a GrowShapeToFit attribute to allow RPG image shape to grow
-    clone.setPrefHeight(getHeight()*getScaleY());
-    
-    // Return clone
-    return clone;
 }
 
 /**

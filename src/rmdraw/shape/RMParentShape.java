@@ -465,58 +465,6 @@ public void sendShapesToBack(List <RMShape> shapes)
 }
 
 /**
- * Generate report with report owner.
- */
-public RMShape rpgAll(ReportOwner anRptOwner, RMShape aParent)
-{
-    RMParentShape clone = (RMParentShape)rpgShape(anRptOwner, aParent);
-    rpgBindings(anRptOwner, clone);
-    clone = (RMParentShape)rpgChildren(anRptOwner, clone);
-    return clone;
-}
-
-/**
- * Generate report with report owner.
- */
-protected RMShape rpgChildren(ReportOwner anRptOwner, RMParentShape aParent)
-{
-    RMParentShape parent = aParent;
-    ReportOwner.ShapeList slists[] = null;
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
-        RMShape crpg = anRptOwner.rpg(child, aParent);
-        if(crpg instanceof ReportOwner.ShapeList) {
-            if(slists==null) slists = new ReportOwner.ShapeList[iMax];
-            slists[i] = (ReportOwner.ShapeList)crpg;
-            aParent.addChild(crpg.getChild(0));
-        }
-        else aParent.addChild(crpg);
-    }
-    
-    // If ShapesList child was encountered, create a ShapesList for this shape
-    if(slists!=null) {
-        int iMax = 0;
-        for(ReportOwner.ShapeList slist : slists) if(slist!=null) iMax = Math.max(iMax, slist.getChildCount());
-        parent = new ReportOwner.ShapeList();
-        parent.addChild(aParent);
-        for(int i=1; i<iMax; i++) { RMParentShape page = clone(); parent.addChild(page);
-            for(int j=0; j<slists.length; j++) { ReportOwner.ShapeList slist = slists[j];
-                if(slist==null) {
-                    RMShape ch = aParent.getChild(j), clone = ch.cloneDeep();
-                    page.addChild(clone);
-                    if(ListUtils.containsId(anRptOwner.getPageReferenceShapes(),ch))
-                        anRptOwner.addPageReferenceShape(clone);
-                }
-                else if(i<slist.getChildCount())
-                    page.addChild(slist.getChild(i));
-            }
-        }
-    }
-    
-    // Return parent
-    return parent;
-}
-
-/**
  * Standard clone implementation.
  */
 public RMParentShape clone()

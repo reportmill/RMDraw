@@ -501,57 +501,6 @@ protected void paintShapeChildren(Painter aPntr)
 }
 
 /**
- * Returns a report page.
- */
-public RMShape rpgAll(ReportOwner anRptOwner, RMShape aParent)
-{
-    // Get page objects - if none, do normal version and return
-    List objects = getDatasetKey()!=null? anRptOwner.getKeyChainListValue(getDatasetKey()) : null;
-    if(objects==null)
-        return super.rpgAll(anRptOwner, aParent);
-        
-    // Create parts list
-    ReportOwner.ShapeList pagesShape = new ReportOwner.ShapeList();
-        
-    // Generate parts reports
-    for(int i=0, iMax=objects.size(); i<iMax; i++) { Object obj = objects.get(i);
-        anRptOwner.pushDataStack(obj);
-        RMParentShape prpg = (RMParentShape)super.rpgAll(anRptOwner, aParent);
-        anRptOwner.popDataStack();
-        if(prpg instanceof ReportOwner.ShapeList) for(RMShape c : prpg.getChildArray()) pagesShape.addChild(c);
-        else pagesShape.addChild(prpg);
-    }
-    
-    // Return pages
-    return pagesShape;
-}
-
-/**
- * Override to handle pagination.
- */
-protected RMShape rpgChildren(ReportOwner anRptOwner, RMParentShape aParent)
-{
-    // If paginating, just do normal version
-    if(anRptOwner.getPaginate())
-        return super.rpgChildren(anRptOwner, aParent);
-        
-    // Otherwise, generate rpg children to RMSpringShape
-    RMSpringShape springShape = new RMSpringShape(); springShape.setSize(aParent.getWidth(), aParent.getHeight());
-    RMShape page = super.rpgChildren(anRptOwner, springShape);
-    
-    // Set best height with springs and propogate to given parent
-    springShape.setBestHeight();
-    aParent.setSize(springShape.getWidth(), springShape.getHeight());
-    
-    // Add children back to given parent
-    RMShape children[] = springShape.getChildren().toArray(new RMShape[springShape.getChildCount()]);
-    for(RMShape child : children) aParent.addChild(child);
-    
-    // Return given parent
-    return aParent;
-}
-
-/**
  * Standard clone method.
  */
 public RMPage clone()
