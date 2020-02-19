@@ -669,6 +669,19 @@ public RMTextEditor getTextEditor()
 }
 
 /**
+ * Returns whether to fit text to box.
+ */
+public boolean isFitText()  { return _fitText; }
+
+/**
+ * Sets whether to fit text to box.
+ */
+public void setFitText(boolean aValue)
+{
+    _fitText = aValue;
+}
+
+/**
  * Clears the text editor.
  */
 public void clearTextEditor()  { _textEdtr = null; }
