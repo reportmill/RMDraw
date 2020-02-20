@@ -74,8 +74,7 @@ public class ShapeTreeResolver extends TreeResolver <RMShape> {
     /** Whether given object is a parent (has children). */
     public boolean isParent(RMShape anItem)
     {
-        if(!(anItem instanceof RMParentShape)) return false;
-        return ((RMParentShape)anItem).getChildCount()>0;
+        return anItem instanceof RMParentShape && anItem.getChildCount()>0;
     }
 
     /** Returns the children. */
@@ -92,8 +91,6 @@ public class ShapeTreeResolver extends TreeResolver <RMShape> {
         String name = anItem.getName(); if(name!=null) str += " - " + name;
         if(anItem instanceof RMTextShape) { RMTextShape ts = (RMTextShape)anItem;
             String text = ts.getText(); if(text!=null) str += " \"" + text + "\" "; }
-        if(anItem instanceof RMTableRow) { RMTableRow tr = (RMTableRow)anItem;
-            str += " - " + tr.getTitle(); }
         return str;
     }
 

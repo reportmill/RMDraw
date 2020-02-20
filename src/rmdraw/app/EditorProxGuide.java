@@ -132,8 +132,7 @@ public static void createGuidelines(Editor anEditor)
     
     // Get parent of selected shapes (just return if structured table row)
     RMShape parent = anEditor.getSuperSelectedShape();
-    if(parent instanceof RMTableRow && ((RMTableRow) parent).isStructured())
-        return;
+    //if(parent instanceof RMTableRow && ((RMTableRow) parent).isStructured()) return;
     
     // Get candidate shapes for editor
     List candidateShapes = getCandidateShapes(anEditor);
@@ -291,8 +290,7 @@ public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint,
     RMShape parent = anEditor.getSuperSelectedShape();
     
     // If parent is structured table row, just return point (wish this wasn't hard coded)
-    if(parent instanceof RMTableRow && ((RMTableRow)parent).isStructured())
-        return aPoint;
+    //if(parent instanceof RMTableRow && ((RMTableRow)parent).isStructured()) return aPoint;
     
     // Get list of selected shapes
     List selectedShapes = anEditor.getSelectedShapes();

@@ -379,7 +379,7 @@ public void processEvent(T aTextShape, ViewEvent anEvent)
     // If text is a structured table row column and point is outside column, start MoveTableRow
     else if(anEvent.isMouseDrag()) { RMTextShape tshp = aTextShape;
         Point pnt = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), aTextShape); double px = pnt.getX();
-        if(tshp.isStructured() && (px<-20 || px>tshp.getWidth()+10) && tshp.getParent().getChildCount()>1) {
+        if(isStructured(tshp) && (px<-20 || px>tshp.getWidth()+10) && tshp.getParent().getChildCount()>1) {
             tshp.undoerSetUndoTitle("Reorder columns");
             getEditor().setSelectedShape(tshp); _moveTableColumn = true; return; }
     }
@@ -404,7 +404,7 @@ public void processEvent(T aTextShape, ViewEvent anEvent)
 public void processKeyEvent(T aTextShape, ViewEvent anEvent)
 {
     // If tab was pressed and text is structured table row column, forward selection onto next column
-    if(aTextShape.isStructured() && anEvent.isKeyPress() &&
+    if(isStructured(aTextShape) && anEvent.isKeyPress() &&
         anEvent.getKeyCode()==KeyCode.TAB && !anEvent.isAltDown()) {
         
         // Get structured text table row, child table rows and index of child
@@ -437,17 +437,20 @@ private void moveTableColumn(ViewEvent anEvent)
     // Get editor, editor SelectedShape and TableRow
     Editor editor = getEditor();
     RMShape shape = editor.getSelectedOrSuperSelectedShape();
-    RMTableRow tableRow = (RMTableRow)shape.getParent(); tableRow.repaint();
+    RMParentShape tableRow = shape.getParent();
+    tableRow.repaint();
     
     // Get event x in TableRow coords and whether point is in TableRow
     Point point = editor.convertToShape(anEvent.getX(), anEvent.getY(), tableRow); point.y = 2;
     boolean inRow = tableRow.contains(point);
     
     // Handle MouseDragged: layout children by X (if outside row, skip drag shape)
-    if(anEvent.isMouseDrag()) {
-        List <RMShape> children = RMShapeUtils.getShapesSortedByFrameX(tableRow.getChildren()); float x = 0;
-        for(RMShape child : children) {
-            if(child==shape) { if(inRow) child.setX(point.x-child.getWidth()/2); else { child.setX(9999); continue; }}
+    if (anEvent.isMouseDrag()) {
+        List <RMShape> children = RMShapeUtils.getShapesSortedByFrameX(tableRow.getChildren());
+        float x = 0;
+        for (RMShape child : children) {
+            if (child==shape) { if(inRow) child.setX(point.x-child.getWidth()/2);
+            else { child.setX(9999); continue; }}
             else child.setX(x); x += child.getWidth(); }
     }
     
@@ -563,7 +566,7 @@ public boolean mousePressedSelection(ViewEvent anEvent)
 public void moveShapeHandle(T aShape, int aHandle, Point toPoint)
 {
     // If not structured, do normal version
-    if(!aShape.isStructured()) { super.moveShapeHandle(aShape, aHandle, toPoint); return; }
+    if(!isStructured(aShape)) { super.moveShapeHandle(aShape, aHandle, toPoint); return; }
     
     // Get handle point in shape coords and shape parent coords
     Point p1 = getHandlePoint(aShape, aHandle, false);
@@ -611,7 +614,7 @@ public void paintHandles(T aText, Painter aPntr, boolean isSuperSelected)
     paintBoundsRect(aText, aPntr);
 
     // If text is structured, draw rectangle buttons
-    if(aText.isStructured()) {
+    if(isStructured(aText)) {
         
         // Iterate over shape handles, get rect and draw
         aPntr.setAntialiasing(false);
@@ -653,7 +656,7 @@ private boolean isShowBoundsRect(RMTextShape aText)
     Editor editor = getEditor();
     if(aText.getStroke()!=null) return false; // If text draws it's own stroke, return false
     if(!editor.isEditing()) return false; // If editor is previewing, return false
-    if(aText.isStructured()) return false; // If structured text, return false
+    if(isStructured(aText)) return false; // If structured text, return false
     if(editor.isSelected(aText) || editor.isSuperSelected(aText)) return true; // If selected, return true
     if(aText.length()==0) return true; // If text is zero length, return true
     if(aText.getDrawsSelectionRect()) return true; // If text explicitly draws selection rect, return true
@@ -663,11 +666,8 @@ private boolean isShowBoundsRect(RMTextShape aText)
 /**
  * Returns whether to paint text link indicator.
  */
-public boolean isPaintingTextLinkIndicator(RMTextShape aText)
+protected boolean isPaintingTextLinkIndicator(RMTextShape aText)
 {
-    // If text is child of table row, return false
-    if(aText.getParent() instanceof RMTableRow) return false;
-    
     // If there is a linked text, return true
     if(aText.getLinkedText()!=null) return true;
     
@@ -684,7 +684,7 @@ public boolean isPaintingTextLinkIndicator(RMTextShape aText)
 /**
  * Paints the text link indicator.
  */
-public void paintTextLinkIndicator(RMTextShape aText, Painter aPntr)
+private void paintTextLinkIndicator(RMTextShape aText, Painter aPntr)
 {
     // Turn off anti-aliasing
     aPntr.setAntialiasing(false);
@@ -711,7 +711,7 @@ public void paintTextLinkIndicator(RMTextShape aText, Painter aPntr)
 /**
  * Editor method - returns handle count.
  */
-public int getHandleCount(T aText)  { return aText.isStructured()? 2 : super.getHandleCount(aText); }
+public int getHandleCount(T aText)  { return isStructured(aText)? 2 : super.getHandleCount(aText); }
 
 /**
  * Editor method - returns handle rect in editor coords.
@@ -719,7 +719,7 @@ public int getHandleCount(T aText)  { return aText.isStructured()? 2 : super.get
 public Rect getHandleRect(T aTextShape, int handle, boolean isSuperSelected)
 {
     // If structured, return special handles (tall & thin)
-    if(aTextShape.isStructured()) {
+    if(isStructured(aTextShape)) {
         
         // Get handle point in text bounds, convert to table row bounds
         Point cp = getHandlePoint(aTextShape, handle, true);
@@ -924,5 +924,10 @@ private static void setLineHeightMax(Editor anEditor, float aHeight)
         if(shape instanceof RMTextShape)
             ((RMTextShape)shape).setLineHeightMax(aHeight);
 }
+
+/**
+ * Returns whether given shape is in a Structured TableRow.
+ */
+protected boolean isStructured(RMShape aShape)  { return false; }
 
 }

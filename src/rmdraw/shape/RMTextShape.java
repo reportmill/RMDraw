@@ -720,7 +720,7 @@ protected RMShape createDivideShapeRemainder(byte anEdge)  { return anEdge==0? n
 public boolean superSelectable()  { return true; }
 
 /** Editor method. */
-public boolean isStructured()  { return _parent instanceof RMTableRow && ((RMTableRow)_parent).isStructured(); }
+public boolean isStructured()  { return false; }
 
 /**
  * Paints a text shape.

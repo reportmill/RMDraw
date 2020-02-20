@@ -442,10 +442,10 @@ public void runPopupMenu(ViewEvent anEvent)
         for(MenuItem m : formatMenuCopy.getItems()) pmenu.addItem(m);
 
         // If structured tablerow, add AddColumnMenuItem and SplitColumnMenuItem
-        if(text.isStructured()) { MenuItem mi;
-            mi = new MenuItem(); mi.setText("Add Column"); mi.setName("AddColumnMenuItem"); pmenu.addItem(mi);
-            mi = new MenuItem(); mi.setText("Split Column"); mi.setName("SplitColumnMenuItem"); pmenu.addItem(mi);
-        }
+        //if(text.isStructured()) { MenuItem mi;
+        //    mi = new MenuItem(); mi.setText("Add Column"); mi.setName("AddColumnMenuItem"); pmenu.addItem(mi);
+        //    mi = new MenuItem(); mi.setText("Split Column"); mi.setName("SplitColumnMenuItem"); pmenu.addItem(mi);
+        //}
     }
     
     // Get copy of shapes menu and add menu items to popup

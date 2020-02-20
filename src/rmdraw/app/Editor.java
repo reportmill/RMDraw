@@ -735,9 +735,6 @@ protected RMTool createTool(Class aClass)
     if(aClass==RMShape.class) return new RMTool();
     if(aClass==RMSpringShape.class) return new RMSpringShapeTool();
     if(aClass==RMSwitchShape.class) return new RMSwitchShapeTool();
-    if(aClass==RMTable.class) return new RMTableTool();
-    if(aClass==RMTableGroup.class) return new RMTableGroupTool();
-    if(aClass==RMTableRow.class) return new RMTableRowTool();
     if(aClass==RMTextShape.class) return new RMTextTool();
     if(aClass== ViewerShape.class) return new RMTool();
     System.out.println("RMTool.createTool: " + aClass.getName());
