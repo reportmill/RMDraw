@@ -3,7 +3,6 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.base.RMFormat;
 import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import java.util.*;
@@ -359,24 +358,6 @@ public static void equallySpaceColumn(Editor anEditor)
         double ty = lastShape.getFrameMaxY() + spaceBetweenShapes;
         shape.setFrameY(ty);
     }
-}
-
-/**
- * Adds the selected shapes to a Switch Shape.
- */
-public static void groupInSwitchShape(Editor anEditor)
-{
-    // Get selected shapes and parent (just return if no shapes)
-    List <RMShape> shapes = anEditor.getSelectedShapes(); if(shapes.size()==0) { anEditor.beep(); return; }
-    RMShape parent = anEditor.getSelectedShape(0).getParent();
-    
-    // Create switch shape to hold selected shapes with fram of combined bounds of children (ouset by just a little)
-    RMSwitchShape groupShape = new RMSwitchShape();
-    groupShape.setFrame(RMShapeUtils.getBoundsOfChildren(parent, shapes).getInsetRect(-2));
-
-    // Add shapes to group shape (with undo title)
-    anEditor.undoerSetUndoTitle("Group in Switch Shape");
-    groupShapes(anEditor, shapes, groupShape);
 }
 
 /**

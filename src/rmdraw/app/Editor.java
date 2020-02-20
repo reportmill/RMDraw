@@ -722,21 +722,20 @@ public RMTool getTool(Object anObj)
  */
 protected RMTool createTool(Class aClass)
 {
-    if(aClass==RMDocument.class) return new RMDocumentTool();
-    if(aClass==RMImageShape.class) return new RMImageTool();
-    if(aClass==RMLineShape.class) return new RMLineShapeTool();
-    if(aClass==RMLinkedText.class) return new RMTextTool();
-    if(aClass==RMOvalShape.class) return new RMOvalShapeTool();
-    if(aClass==RMPage.class) return new RMPageTool();
-    if(aClass==RMParentShape.class) return new RMParentShapeTool();
-    if(aClass==RMPolygonShape.class) return new RMPolygonShapeTool();
-    if(aClass==RMRectShape.class) return new RMRectShapeTool();
-    if(aClass==RMScene3D.class) return new RMScene3DTool();
-    if(aClass==RMShape.class) return new RMTool();
-    if(aClass==RMSpringShape.class) return new RMSpringShapeTool();
-    if(aClass==RMSwitchShape.class) return new RMSwitchShapeTool();
-    if(aClass==RMTextShape.class) return new RMTextTool();
-    if(aClass== ViewerShape.class) return new RMTool();
+    if (aClass==RMDocument.class) return new RMDocumentTool();
+    if (aClass==RMImageShape.class) return new RMImageTool();
+    if (aClass==RMLineShape.class) return new RMLineShapeTool();
+    if (aClass==RMLinkedText.class) return new RMTextTool();
+    if (aClass==RMOvalShape.class) return new RMOvalShapeTool();
+    if (aClass==RMPage.class) return new RMPageTool();
+    if (aClass==RMParentShape.class) return new RMParentShapeTool();
+    if (aClass==RMPolygonShape.class) return new RMPolygonShapeTool();
+    if (aClass==RMRectShape.class) return new RMRectShapeTool();
+    if (aClass==RMScene3D.class) return new RMScene3DTool();
+    if (aClass==RMShape.class) return new RMTool();
+    if (aClass==RMSpringShape.class) return new RMSpringShapeTool();
+    if (aClass==RMTextShape.class) return new RMTextTool();
+    if (aClass==ViewerShape.class) return new RMTool();
     System.out.println("RMTool.createTool: " + aClass.getName());
     return new RMTool();
 }

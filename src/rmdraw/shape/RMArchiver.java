@@ -88,7 +88,6 @@ public class RMArchiver extends XMLArchiver {
         cmap.put("rect", RMRectShape.class);
         cmap.put("shape", RMParentShape.class);
         cmap.put("spring-shape", RMSpringShape.class);
-        cmap.put("switchshape", RMSwitchShape.class);
         cmap.put("text", RMTextShape.class);
         cmap.put("linked-text", RMLinkedText.class);
         cmap.put("scene3d", RMScene3D.class);

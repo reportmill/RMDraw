@@ -233,7 +233,10 @@ public String getWindowTitle()
 /**
  * Creates a new default editor pane.
  */
-public EditorPane newDocument()  { return open(new RMDocument(612, 792)); }
+public EditorPane newDocument()
+{
+    return open(new RMDocument(612, 792));
+}
 
 /**
  * Creates a new editor window from an open panel.

@@ -65,7 +65,6 @@
     <MenuItem Name="BringToFrontMenuItem" text="Bring to Front" key="meta shift F" />
     <MenuItem Name="SendToBackMenuItem" text="Send to Back" key="meta shift B" />
     <Menu Name="GroupSpecialMenu" text="Group Special">
-      <MenuItem Name="GroupInSwitchShapeMenuItem" text="Group in Switch Shape" />
       <MenuItem Name="GroupInScene3DMenuItem" text="Group in 3D Shape" />
     </Menu>
     <Menu Name="MakeRowColumnMenu" text="Make Row/Column">
