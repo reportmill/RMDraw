@@ -81,9 +81,6 @@ public class RMDocument extends RMParentShape {
     // A map for extra document metadata (added to PDF)
     Map <String,String>  _metadata;
     
-    // The ReportOwner that created this document (if from RPG)
-    ReportOwner       _reportOwner;
-    
     // Locale
     public static Locale _locale = Locale.ENGLISH;  // Used by date/number formats    
 

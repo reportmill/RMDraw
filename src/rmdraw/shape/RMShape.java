@@ -1499,17 +1499,6 @@ public void copyShape(RMShape aShape)
         addBinding(aShape.getBinding(i).clone());
 }
 
-// Delete these!
-public RMShape rpgAll(ReportOwner anRptOwner, RMShape aParent)  { return null; }
-
-protected RMShape rpgShape(ReportOwner anRptOwner, RMShape aParent)  { return null; }
-
-public RMShape rpgChildren(ReportOwner anRptOwner, RMParentShape aParent)  { return null; }
-
-public void rpgBindings(ReportOwner anRptOwner, RMShape aShapeRPG)  { }
-
-protected void resolvePageReferences(ReportOwner aRptOwner, Object userInfo)  { }
-
 /**
  * Called to relayout.
  */
