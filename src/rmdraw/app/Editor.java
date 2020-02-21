@@ -3,7 +3,6 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.base.RMDataSource;
 import rmdraw.graphics.RMTextEditor;
 import rmdraw.shape.*;
 import java.util.*;
@@ -17,44 +16,35 @@ import snap.view.*;
 public class Editor extends Viewer implements DeepChangeListener {
 
     // Whether we're really editing
-    boolean             _editing = true;
+    private boolean _editing = true;
     
     // List of currently selected shapes
-    List <RMShape>      _selShapes = new ArrayList();
+    List<RMShape> _selShapes = new ArrayList();
     
     // List of super selected shapes (all ancestors of selected shapes)
-    List <RMShape>      _superSelShapes = new ArrayList();
+    private List<RMShape> _superSelShapes = new ArrayList();
     
     // The last shape that was copied to the clipboard (used for smart paste)
-    RMShape             _lastCopyShape;
+    RMShape _lastCopyShape;
     
     // The last shape that was pasted from the clipboard (used for smart paste)
-    RMShape             _lastPasteShape;
+    RMShape _lastPasteShape;
     
     // A helper class to handle drag and drop
-    EditorDnD _dragHelper = createDragHelper();
+    private EditorDnD _dragHelper = createDragHelper();
     
     // A shape to be drawn if set to drag-over shape during drag and drop
-    Shape               _dragShape;
+    Shape _dragShape;
     
     // The select tool
-    RMSelectTool        _selectTool;
+    private RMSelectTool _selectTool;
     
     // Map of tool instances by shape class
-    Map <Class, RMTool> _tools = new HashMap();
+    private Map <Class, RMTool> _tools = new HashMap();
     
     // The current editor tool
-    RMTool              _currentTool = getSelectTool();
+    private RMTool _currentTool = getSelectTool();
 
-    // The time of last drop of XML file
-    long                _dropTime;
-
-    // Icon for XML image
-    static Image        _xmlImage = Image.get(Editor.class, "DS_XML.png");
-    
-    // XML Image offset for animation
-    static double       _xmlDX, _xmlDY;
-    
     // Constants for PropertyChanges
     public static final String CurrentTool_Prop = "CurrentTool";
     public static final String SelShapes_Prop = "SelShapes";
@@ -836,7 +826,7 @@ public Rect getZoomFocusRect()
 }
 
 /**
- * Overrides Viewer implementation to paint tool extras, guides, datasource image.
+ * Overrides Viewer implementation to paint tool extras, guides.
  */
 public void paintFront(Painter aPntr)
 {
@@ -849,20 +839,6 @@ public void paintFront(Painter aPntr)
    
     // Paint proximity guides
     EditorProxGuide.paintProximityGuides(this, aPntr);
-    
-    // If datasource is present and editing, draw XMLImage in lower right corner of doc
-    if(getDataSource()!=null && isEditing()) {
-
-        // Get visible rect and image X & Y
-        Rect vrect = getVisRect();
-        int x = (int)vrect.getMaxX() - 53;
-        int y = (int)vrect.getMaxY() - 53;
-        
-        // Draw semi-transparent image: Cache previous composite, set semi-transparent composite, paint image, restore
-        aPntr.setOpacity(.9);
-        aPntr.drawImage(_xmlImage, x + _xmlDX, y + _xmlDY, 53, 53);
-        aPntr.setOpacity(1);
-    }
     
     // Paint DragShape, if set
     if(_dragShape!=null) {
@@ -921,47 +897,6 @@ public String getToolTip(ViewEvent anEvent)
     RMTool tool = getTool(shape);
     return tool.getToolTip(shape, anEvent);
 }
-
-/**
- * Returns the datasource associated with the editor's document.
- */
-public RMDataSource getDataSource()  { RMDocument d = getDoc(); return d!=null? d.getDataSource() : null; }
-
-/**
- * Sets the datasource associated with the editor's document.
- */
-public void setDataSource(RMDataSource aDataSource, double aX, double aY)
-{
-    // Set Doc.DataSource and repaint
-    getDoc().setDataSource(aDataSource);
-    repaint();
-
-    // If valid drop point, animate into place
-    if(aX>0) {
-        Rect vrect = getVisRect();
-        double dx = aX - (vrect.getMaxX() - 53);
-        double dy = aY - (vrect.getMaxY() - 53);
-        getAnimCleared(1800).setOnFrame(() -> setDataSourceAnimFrame(dx, dy)).play();
-    }
-}
-
-/**
- * Called when setDataSource gets frame update.
- */
-private void setDataSourceAnimFrame(double dx, double dy)
-{
-    ViewAnim anim = getAnim(0);
-    double time = anim.getTime(), maxTime = anim.getMaxTime();
-    double ratio = time/maxTime;
-    _xmlDX = SnapUtils.doubleValue(anim.interpolate(dx, 0, ratio));
-    _xmlDY = SnapUtils.doubleValue(anim.interpolate(dy, 0, ratio));
-    repaint();
-}
-
-/**
- * Returns the sample dataset from the document's datasource.
- */
-public Object getDataSourceDataset()  { RMDataSource ds = getDataSource(); return ds!=null? ds.getDataset() : null; }
 
 /**
  * Resets the editor pane later.

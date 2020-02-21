@@ -3,7 +3,6 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.base.RMNumberFormat;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.*;

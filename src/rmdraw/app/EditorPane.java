@@ -62,13 +62,14 @@ public EditorPaneMenuBar getMenuBar()  { return _menuBar!=null? _menuBar : (_men
  */
 protected EditorPaneMenuBar createMenuBar()  { return new EditorPaneMenuBar(this); }
 
-public void setDataSource(WebURL aURL, double aX, double aY)
-{
-    throw new RuntimeException("EditorPane.setDataSource: Not implemented");
-}
-
+/**
+ * Returns whether editing.
+ */
 public boolean isEditing()  { return false; }
 
+/**
+ * Sets whether editing.
+ */
 public void setEditing(boolean aFlag)
 {
     if(aFlag) return;

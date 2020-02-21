@@ -195,11 +195,8 @@ public class EditorDnD {
         ext = ext.toLowerCase();
 
         // If xml file, pass it to setDataSource()
-        if(ext.equals("xml")) {
-            Editor editor = getEditor();
-            EditorPane epane = editor.getEditorPane();
-            epane.setDataSource(aFile.getSourceURL(), aPoint.getX(), aPoint.getY());
-        }
+        if(ext.equals("xml"))
+            dropXMLFile(aFile, aPoint);
 
         // If image file, add image shape
         else if(Image.canRead(ext))
@@ -211,6 +208,14 @@ public class EditorDnD {
 
         // Return point offset by 10
         aPoint.offset(10, 10); return aPoint;
+    }
+
+    /**
+     * Called to handle drop XML file.
+     */
+    protected void dropXMLFile(ClipboardData aFile, Point aPoint)
+    {
+        System.err.println("EditorDnD.dropXMLFile: Not implemented");
     }
 
     /**
