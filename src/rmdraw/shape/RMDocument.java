@@ -12,14 +12,8 @@ import snap.web.WebURL;
 
 /**
  * The RMDocument class represents a ReportMill document and is also an RMShape subclass, so it can be a real part of
- * the document/shape hierarchy. RMDocuments are also what ReportMill refers to as templates, and is commonly used like
- * this:
- * <p><blockquote><pre>
- *   RMDocument template = new RMDocument(aSource); // Load from path String, File, byte array, etc.
- *   RMDocument report = template.generateReport(aDataset); // Any Java dataset: EJBs, custom classes, collctns, etc.
- *   report.writePDF("MyReport.pdf");
- * </pre></blockquote><p>
- * On rare occasions, you may also want to create a document dynamically. Here's an example:
+ * the document/shape hierarchy.
+ * On rare occasions, you may also want to create a document programmatically. Here's an example:
  * <p><blockquote><pre>
  *   RMDocument doc = new RMDocument(612, 792); // Standard US Letter size (8.5" x 11"), in points
  *   RMTable table = new RMTable(); // Create new table ...
@@ -77,9 +71,6 @@ public class RMDocument extends RMParentShape {
     
     // Whether output file formats should compress (PDF really)
     boolean           _compress = true;
-    
-    // A map for extra document metadata (added to PDF)
-    Map <String,String>  _metadata;
     
     // Locale
     public static Locale _locale = Locale.ENGLISH;  // Used by date/number formats    
@@ -494,70 +485,14 @@ public boolean getCompress()  { return _compress; }
 public void setCompress(boolean aValue)  { _compress = aValue; }
 
 /**
- * Returns map of metadata.
- */
-public Map <String,String> getMetadata()  { return _metadata!=null? _metadata : Collections.EMPTY_MAP; }
-
-/**
- * Returns a metadata value.
- */
-public String getMetaValue(String aKey)  { return _metadata!=null? _metadata.get(aKey) : null; }
-
-/**
- * Sets a metadata value.
- */
-public void setMetaValue(String aKey, Object aValue)
-{
-    if(_metadata==null) _metadata = new HashMap();
-    if(aValue==null) _metadata.remove(aKey);
-    else _metadata.put(aKey, aValue.toString());
-}
-
-/**
  * Returns the document as an XML byte array.
  */
 public byte[] getBytes()  { return getXML().getBytes(); }
 
 /**
- * Returns the document as a byte array of a PDF file.
- */
-public byte[] getBytesPDF()
-{
-    return null;//new rmdraw.out.RMPDFWriter().getBytes(this);
-}
-
-/**
  * Returns the document as a byte array of an HTML file.
  */
 public byte[] getBytesHTML()  { return new RMHtmlFile(this).getBytes(); }
-
-/**
- * Returns the document as a byte array of a CSV file.
- */
-public byte[] getBytesCSV()  { return getBytesDelimitedAscii(",", "\n", true); }
-
-/**
- * Returns the document as a byte array of a delimited ASCII file (using given field, record separator strings).
- */
-public byte[] getBytesDelimitedAscii(String fieldDelimiter, String recordDelimiter, boolean quoteFields)
-{
-    System.err.println("RMDocument.getBytesDelimitedAscii: Not implemented");
-    return null; //RMStringWriter.delimitedAsciiBytes(this, fieldDelimiter, recordDelimiter, quoteFields);
-}
-
-/**
- * Returns the document as byte array of an Excel file.
- */
-public byte[] getBytesExcel()  { return null; } //new RMExcelWriter().getBytes(this); }
-
-/**
- * Returns the document as byte array of an Excel file.
- */
-public byte[] getBytesRTF()
-{
-    System.err.println("RMDocument.getBytesDelimitedAscii: Not implemented");
-    return null; //new RMRTFWriter().getBytes(this);
-}
 
 /**
  * Returns the document as byte array of a JPEG file.
@@ -570,33 +505,18 @@ public byte[] getBytesJPEG()  { return RMShapeUtils.createImage(getPage(0), Colo
 public byte[] getBytesPNG()  { return RMShapeUtils.createImage(getPage(0), null).getBytesPNG(); }
 
 /**
- * Returns the document as a string of a CSV file.
- */
-public String getStringCSV()  { return getStringDelimitedText(",", "\n", true); }
-
-/**
- * Returns the document as a string of a delimited text file.
- */
-public String getStringDelimitedText(String fieldDelimiter, String recordDelimiter, boolean quoteFields)
-{
-    System.err.println("RMDocument.getStringDelimitedText: Not implemented");
-    return null;//RMStringWriter.delimitedString(this, fieldDelimiter, recordDelimiter, quoteFields);
-}
-
-/**
  * Writes the document out to the given path String (it extracts type from path extension).
  */
 public void write(String aPath)
 {
     String path = aPath.toLowerCase();
-    if(path.endsWith(".pdf")) writePDF(aPath);
-    if(path.endsWith(".html")) new RMHtmlFile(this).write(aPath);
-    if(path.endsWith(".csv")) SnapUtils.writeBytes(getBytesCSV(), aPath);
-    if(path.endsWith(".jpg")) SnapUtils.writeBytes(getBytesJPEG(), aPath);
-    if(path.endsWith(".png")) SnapUtils.writeBytes(getBytesPNG(), aPath);
-    if(path.endsWith(".xls")) SnapUtils.writeBytes(getBytesExcel(), aPath);
-    if(path.endsWith(".rtf")) SnapUtils.writeBytes(getBytesRTF(), aPath);
-    if(path.endsWith(".rpt") || path.endsWith(".xml"))
+    if (path.endsWith(".html"))
+        new RMHtmlFile(this).write(aPath);
+    else if (path.endsWith(".jpg"))
+        SnapUtils.writeBytes(getBytesJPEG(), aPath);
+    else if (path.endsWith(".png"))
+        SnapUtils.writeBytes(getBytesPNG(), aPath);
+    else if (path.endsWith(".rpt") || path.endsWith(".xml"))
         SnapUtils.writeBytes(getXML().getBytes(), aPath);
 }
 
@@ -606,65 +526,14 @@ public void write(String aPath)
 public void write(File aFile)  { write(aFile.getAbsolutePath()); }
 
 /**
- * Writes the document to the given path String as PDF.
- */
-public void writePDF(String aPath)  { SnapUtils.writeBytes(getBytesPDF(), aPath); }
-
-/**
  * Override to returns this document.
  */
 public RMDocument getDoc()  { return this; }
 
 /**
- * Returns a subreport document for given name (override to improve).
- */
-public RMDocument getSubreport(String aName)
-{
-    // If no filename, see if sister document exists
-    if(getFilename()==null) return null;
-        
-    // If name doesn't end in rpt, add it
-    if(!StringUtils.endsWithIC(aName, ".rpt")) aName += ".rpt";
-    
-    // Get directory, subreport filename and subreport document
-    String dir = FilePathUtils.getParent(getFilename());
-    String subreportFilename = FilePathUtils.getChild(dir, aName);
-    try { return RMDocument.getDoc(subreportFilename); }
-    catch(Exception e) { }
-    
-    // Otherwise, just try full name in case it's a path
-    try { return RMDocument.getDoc(aName); }
-    catch(Exception e) { }
-    return null;
-}
-
-/**
  * Overrides paint shape, because document should never really paint itself.
  */
 public void paintShape(Painter aPntr) { }
-
-/**
- * Returns a generated report from this template evaluated against the given object.
- */
-public RMDocument generateReport()
-{
-    return null;
-}
-
-/**
- * Returns a generated report from this template evaluated against the given object.
- */
-public RMDocument generateReport(Object theObjects)  { return null; }
-
-/**
- * Returns a generated report from this template evaluated against the given object and userInfo.
- */
-public RMDocument generateReport(Object objects, Object userInfo)  { return null; }
-
-/**
- * Returns a generated report from this template evaluated against the given object with an option to paginate.
- */
-public RMDocument generateReport(Object objects, boolean paginate)  { return null; }
 
 /**
  * Performs page substitutions on any text fields that were identified as containing @Page@ keys.
@@ -766,7 +635,6 @@ public XMLElement getXML()
 public RMDocument clone()
 {
     RMDocument clone = (RMDocument)super.clone();
-    if(_metadata!=null) clone._metadata = new HashMap(_metadata);
     return clone;
 }
 
@@ -873,8 +741,5 @@ public boolean childrenSuperSelectImmediately()  { return true; }
 
 /** Editor method indicates that document accepts children (should probably be false). */
 public boolean acceptsChildren()  { return true; }
-
-/** Obsolete method for old pdfBytes() method. */
-public byte[] pdfBytes()  { return getBytesPDF(); }
 
 }

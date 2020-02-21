@@ -344,13 +344,15 @@ private void copySelText()
     
     // Create new document and add clone of SelectedTexts to new document
     RMDocument doc = new RMDocument(sdoc.getPageSize().width, sdoc.getPageSize().height);
-    for(RMTextShape text : _selectedTexts) { RMTextShape clone = text.clone();
-        doc.getPage(0).addChild(clone); }
+    for (RMTextShape text : _selectedTexts) {
+        RMTextShape clone = text.clone();
+        doc.getPage(0).addChild(clone);
+    }
     
     // Add doc RTF and CSV to clipboard
-    Clipboard cb = Clipboard.getCleared();
-    cb.addData(doc.getBytesCSV());
-    cb.addData("text/rtf", doc.getBytesRTF());
+    //Clipboard cb = Clipboard.getCleared();
+    //cb.addData(doc.getBytesCSV());
+    //cb.addData("text/rtf", doc.getBytesRTF());
 }
 
 /**

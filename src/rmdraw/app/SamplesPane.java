@@ -319,7 +319,6 @@ private static void createImages()
 {
     for(int i=0,iMax=getDocCount();i<iMax;i++) {
         RMDocument doc = getDoc(i); if(doc==null) continue;
-        doc = doc.generateReport();
         doc.getPage(0).setPaintBackground(false);
         Size size = getDocSize(i); int index = i;
         Image img = createImage(doc.getPage(0), size.width, size.height);

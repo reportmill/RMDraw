@@ -5,29 +5,11 @@ package rmdraw.app;
 import rmdraw.shape.*;
 import java.io.File;
 import snap.util.*;
-import snap.view.*;
-import snap.viewx.*;
 
 /**
  * Some utility methods for EditorPane.
  */
 public class EditorPaneUtils {
-
-/**
- * Generates report from editor.
- */
-public static RMDocument generateReport(EditorPane anEP, boolean doPaginate)
-{
-    // Get editor - if editing, flush changes, otherwise, set Editing
-    Editor editor = anEP.getEditor();
-    if(anEP.isEditing())
-        editor.flushEditingChanges();
-    else anEP.setEditing(true);
-    
-    // Get document and return report
-    RMDocument document = anEP.getDoc();
-    return document.generateReport(editor.getDataSourceDataset(), doPaginate);
-}
 
 /**
  * Generate report, save as HTML in temp file and open.
