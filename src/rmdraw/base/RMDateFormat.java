@@ -5,13 +5,15 @@ package rmdraw.base;
 import rmdraw.shape.RMDocument;
 import java.util.*;
 import java.text.*;
+
+import snap.gfx.TextFormat;
 import snap.gfx.TextStyle;
 import snap.util.*;
 
 /**
  * This is just a SimpleDateFormat subclass to support RM archiving and legacy formats.
  */
-public class RMDateFormat implements RMFormat, Cloneable {
+public class RMDateFormat implements TextFormat, Cloneable {
     
     // The format
     SimpleDateFormat  _fmt = new SimpleDateFormat();
@@ -126,7 +128,7 @@ public boolean equals(Object anObj)
  */
 public RMDateFormat clone()
 {
-    RMDateFormat clone = null; try { clone = (RMDateFormat)super.clone(); }
+    RMDateFormat clone; try { clone = (RMDateFormat)super.clone(); }
     catch(CloneNotSupportedException e) { throw new RuntimeException(e); }
     clone._fmt = (SimpleDateFormat)_fmt.clone();
     return clone;

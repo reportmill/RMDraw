@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.base.RMFormat;
 import rmdraw.graphics.*;
 import java.util.*;
 import java.util.List;
@@ -183,7 +182,7 @@ public TextFormat getFormat()
 /**
  * Sets the format for all characters.
  */
-public void setFormat(RMFormat aFormat)
+public void setFormat(TextFormat aFormat)
 {
     if(isTextEditorSet())
         getTextEditor().setFormat(aFormat);

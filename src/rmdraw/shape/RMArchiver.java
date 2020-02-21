@@ -95,7 +95,7 @@ public class RMArchiver extends XMLArchiver {
         // Graphics
         cmap.put("color", Color.class);
         cmap.put("font", Font.class);
-        cmap.put("format", RMFormatStub.class);
+        cmap.put("format", TextFormatStub.class);
         cmap.put("pgraph", TextLineStyle.class); // Was RMParagraph
         cmap.put("xstring", RichText.class); // Was RMXString
 
@@ -130,7 +130,7 @@ public class RMArchiver extends XMLArchiver {
     /**
      * A class to unarchive formats as proper subclass based on type attribute.
      */
-    public static class RMFormatStub implements Archivable {
+    private static class TextFormatStub implements Archivable {
 
         /** Implement toXML for interface. */
         public XMLElement toXML(XMLArchiver anArchive)  { return null; }
@@ -144,7 +144,7 @@ public class RMArchiver extends XMLArchiver {
             if (type.equals("date"))
                 return anArchiver.fromXML(anElmnt, RMDateFormat.class, null);
             if (type.length()>0)
-                System.err.println("RMFormatStub: Unknown format type " + type);
+                System.err.println("TextFormatStub: Unknown format type " + type);
             return null;
         }
     }

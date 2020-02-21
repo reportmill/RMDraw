@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.graphics;
-import rmdraw.base.RMFormat;
 import rmdraw.shape.RMArchiver;
 import snap.gfx.*;
 import snap.util.*;
@@ -243,7 +242,7 @@ public TextFormat getFormat()  { return getSelStyle().getFormat(); }
  * Sets the format of the current selection or cursor, after trying to expand the selection to encompass currently
  * selected, @-sign delineated key.
  */
-public void setFormat(RMFormat aFormat)
+public void setFormat(TextFormat aFormat)
 {
     // Get format selection range and select it (if non-null)
     TextSel sel = smartFindFormatRange();

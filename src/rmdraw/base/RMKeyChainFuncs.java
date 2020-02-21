@@ -8,6 +8,7 @@ import java.util.*;
 
 import snap.gfx.Font;
 import snap.gfx.RichText;
+import snap.gfx.TextFormat;
 import snap.gfx.TextLineStyle;
 import snap.util.*;
 
@@ -366,13 +367,13 @@ public static String format(Object anObj, Object aStr)
     
     // If number, get number format and return formatted string
     if(anObj instanceof Number) {
-        RMFormat fmt = new RMNumberFormat(fmtStr);
+        TextFormat fmt = new RMNumberFormat(fmtStr);
         return fmt.format(anObj);
     }
 
     // If dte, get date format and return formatted string
     if(anObj instanceof Date) {
-        RMFormat fmt = new RMDateFormat(fmtStr);
+        TextFormat fmt = new RMDateFormat(fmtStr);
         return fmt.format(anObj);
     }
 

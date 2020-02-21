@@ -5,11 +5,12 @@ package rmdraw.base;
 import java.text.*;
 import java.util.Locale;
 import snap.gfx.Color;
+import snap.gfx.TextFormat;
 import snap.gfx.TextStyle;
 import snap.util.*;
 
 /**
- * This subclass extends DecimalFormat to implement ReportMill's RMFormat interface and to support the extended features
+ * This subclass extends DecimalFormat to implement SnapKit's TextFormat interface and to support the extended features
  * "Negative in Red" and "Null String". It also has a toPattern like method, getFormatString, for the purposes of 
  * archival.
  *
@@ -25,7 +26,7 @@ import snap.util.*;
  *
  * I suppose we should instead have a syntax explicitly declaring decimal and group separators: "$ #,##0.00;ds=,;gs=.".
  */
-public class RMNumberFormat implements RMFormat, Cloneable {
+public class RMNumberFormat implements TextFormat, Cloneable {
     
     // The decimal format
     DecimalFormat               _fmt = new DecimalFormat();
