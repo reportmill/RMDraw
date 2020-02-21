@@ -18,10 +18,6 @@
     <ColorButton Name="StrokeColorButton" PrefWidth="32" PrefHeight="22" ToolTip="Set Stroke Color" Title="Stroke Color" />
     <ColorButton Name="TextColorButton" PrefWidth="32" PrefHeight="22" ToolTip="Set Text Color" Title="Text Color" />
     <Separator PrefWidth="8" PrefHeight="18" Vertical="true" />
-    <ToggleButton Name="MoneyButton" PrefWidth="22" PrefHeight="22" ToolTip="Money Format" image="Format_Money.png" ShowBorder="false" />
-    <ToggleButton Name="PercentButton" PrefWidth="22" PrefHeight="22" ToolTip="Percent Format" image="Format_Percent.png" ShowBorder="false" />
-    <Button Name="DecimalAddButton" PrefWidth="22" PrefHeight="22" ToolTip="Add Decimal" image="Format_DecimalAdd.png" ShowBorder="false" />
-    <Button Name="DecimalRemoveButton" PrefWidth="22" PrefHeight="22" ToolTip="Remove Decimal" image="Format_DecimalRemove.png" ShowBorder="false" />
     <Button Name="SamplesButton" PrefWidth="60" PrefHeight="22" LeanX="CENTER" ToolTip="Show Samples" text="Samples" />
     <Button Name="PreviewHTMLButton" PrefWidth="22" PrefHeight="22" LeanX="RIGHT" ToolTip="Preview HTML" image="Preview_HTML.png" ShowBorder="false" />
   </RowView>

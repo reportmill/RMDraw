@@ -813,23 +813,6 @@ public static void setSubscript(Editor anEditor)
 }
 
 /**
- * Returns the format of the editor's selected shape.
- */
-public static TextFormat getFormat(Editor anEditor)
-{
-    return anEditor.getSelectedOrSuperSelectedShape().getFormat();
-}
-
-/**
- * Sets the format of editor's selected shape(s).
- */
-public static void setFormat(Editor anEditor, TextFormat aFormat)
-{
-    for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
-        shape.setFormat(aFormat);
-}
-
-/**
  * Splits the selected shape in half on the horizontal axis.
  */
 public static void splitHorizontal(Editor editor)

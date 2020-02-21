@@ -44,7 +44,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     UndoInspector        _undoInspector;
     
     // The inspector for XML datasource
-    DataSourcePanel      _dataSource;
+    //DataSourcePanel      _dataSource;
     
     // Used for managing selection path
     RMShape              _deepestShape;
@@ -181,10 +181,10 @@ public void setVisible(int anIndex)
     }
     
     // If index is 7, show DataSource Inspector
-    if(anIndex==7) {
-        setInspector(_dataSource!=null? _dataSource : (_dataSource = new DataSourcePanel(getEditorPane())));
-        _shapeBtn.getToggleGroup().setSelected(null); //setViewValue("OffscreenButton", true);
-    }
+    //if(anIndex==7) {
+    //    setInspector(_dataSource!=null? _dataSource : (_dataSource = new DataSourcePanel(getEditorPane())));
+    //    _shapeBtn.getToggleGroup().setSelected(null); //setViewValue("OffscreenButton", true);
+    //}
     
     // If index is 9, show ShapeTree Inspector
     if(anIndex==9) {
@@ -206,7 +206,10 @@ public boolean isResetWithEditor()
 /**
  * Returns whether the inspector is showing the datasource inspector.
  */
-public boolean isShowingDataSource()  { return isUISet() && _dataSource!=null && _dataSource.getUI().isShowing(); }
+public boolean isShowingDataSource()
+{
+    return false; //isUISet() && _dataSource!=null && _dataSource.getUI().isShowing();
+}
 
 /**
  * Returns the inspector (owner) of the inspector pane.

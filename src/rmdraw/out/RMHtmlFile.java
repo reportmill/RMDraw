@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.out;
-import rmdraw.base.ReportMill;
 import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import java.io.File;
@@ -52,9 +51,6 @@ public XMLElement getXML()
     _doc.layoutDeep();
     _doc.resolvePageReferences();
     
-    // Add watermark
-    ReportMill.lc(_doc);
-
     // Create element for HTML and body and add pages
     XMLElement html = new XMLElement("html");
     XMLElement body = new XMLElement("body"); html.addElement(body);

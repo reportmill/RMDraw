@@ -83,13 +83,6 @@ protected void resetUI()
     setViewEnabled("UndoButton", undoer!=null && undoer.getUndoSetLast()!=null);
     setViewEnabled("RedoButton", undoer!=null && undoer.getRedoSetLast()!=null);
     
-    // Update MoneyButton, PercentButton, CommaButton
-    TextFormat fmt = EditorUtils.getFormat(editor);
-    RMNumberFormat nfmt = fmt instanceof RMNumberFormat? (RMNumberFormat)fmt : null;
-    setViewValue("MoneyButton", nfmt!=null && nfmt.isLocalCurrencySymbolUsed());
-    setViewValue("PercentButton", nfmt!=null && nfmt.isPercentSymbolUsed());
-    //setViewValue("CommaButton", nfmt!=null && nfmt.isGroupingUsed());
-        
     // Reset PreviewEditButton state if out of sync
     if(getViewBoolValue("PreviewEditButton")==getEditorPane().isEditing())
         setViewValue("PreviewEditButton", !getEditorPane().isEditing());
@@ -124,22 +117,22 @@ protected void respondUI(ViewEvent anEvent)
     Editor editor = getEditor();
     
     // Handle File NewButton, OpenButton, SaveButton, PreviewPDFButton, PreviewHTMLButton, PrintButton
-    if(anEvent.equals("NewButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("OpenButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("SaveButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("PreviewPDFButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("PreviewHTMLButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("PrintButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("NewButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("OpenButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("SaveButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("PreviewPDFButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("PreviewHTMLButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("PrintButton")) epane.respondUI(anEvent);
         
     // Handle Edit CutButton, CopyButton, PasteButton, DeleteButton
-    if(anEvent.equals("CutButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("CopyButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("PasteButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("DeleteButton")) editor.delete();
+    if (anEvent.equals("CutButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("CopyButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("PasteButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("DeleteButton")) editor.delete();
         
     // Handle Edit UndoButton, RedoButton
-    if(anEvent.equals("UndoButton")) epane.respondUI(anEvent);
-    if(anEvent.equals("RedoButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("UndoButton")) epane.respondUI(anEvent);
+    if (anEvent.equals("RedoButton")) epane.respondUI(anEvent);
     
     // Handle FillColorButton, StrokeColorButton, TextColorButton
     if (anEvent.equals("FillColorButton"))
@@ -149,48 +142,6 @@ protected void respondUI(ViewEvent anEvent)
     if (anEvent.equals("TextColorButton"))
         EditorUtils.setTextColor(editor, anEvent.getView(ColorButton.class).getColor());
 
-    // Handle MoneyButton: If currently selected format is number format, add or remove dollars
-    TextFormat fmt = EditorUtils.getFormat(editor);
-    RMNumberFormat nfmt = fmt instanceof RMNumberFormat? (RMNumberFormat)fmt : null;
-    if (anEvent.equals("MoneyButton")) {
-        if(nfmt==null) EditorUtils.setFormat(editor, RMNumberFormat.CURRENCY);
-        else { nfmt = nfmt.clone(); // Clone it
-            nfmt.setLocalCurrencySymbolUsed(!nfmt.isLocalCurrencySymbolUsed()); // Toggle whether $ is used
-            EditorUtils.setFormat(editor, nfmt); }
-    }
-    
-    // Handle PercentButton: If currently selected format is number format, add or remove percent symbol
-    if(anEvent.equals("PercentButton")) {
-        if(nfmt==null) EditorUtils.setFormat(editor, new RMNumberFormat("#,##0.00 %"));
-        else { nfmt = nfmt.clone(); // Clone it
-            nfmt.setPercentSymbolUsed(!nfmt.isPercentSymbolUsed()); // Toggle whether percent symbol is used
-            EditorUtils.setFormat(editor, nfmt); }
-    }
-    
-    // Handle CommaButton: If currently selected format is number format, add or remove grouping
-    if(anEvent.equals("CommaButton")) {
-        if(nfmt==null) EditorUtils.setFormat(editor, new RMNumberFormat("#,##0.00"));
-        else { nfmt = nfmt.clone();
-            nfmt.setGroupingUsed(!nfmt.isGroupingUsed()); // Toggle whether grouping is used
-            EditorUtils.setFormat(editor, nfmt); }
-    }
-    
-    // Handle DecimalAddButton: If currently selected format is number format, add decimal
-    if(anEvent.equals("DecimalAddButton") && nfmt!=null) {
-        nfmt = nfmt.clone();
-        nfmt.setMinimumFractionDigits(nfmt.getMinimumFractionDigits()+1);
-        nfmt.setMaximumFractionDigits(nfmt.getMinimumFractionDigits());
-        EditorUtils.setFormat(editor, nfmt);
-    }
-    
-    // Handle DecimalRemoveButton: If currently selected format is number format, remove decimal digits
-    if(anEvent.equals("DecimalRemoveButton") && nfmt!=null) {
-        nfmt = nfmt.clone();
-        nfmt.setMinimumFractionDigits(nfmt.getMinimumFractionDigits()-1);
-        nfmt.setMaximumFractionDigits(nfmt.getMinimumFractionDigits());
-        EditorUtils.setFormat(editor, nfmt);
-    }
-    
     // Handle SamplesButton
     if(anEvent.equals("SamplesButton")) {
         stopSamplesButtonAnim();
@@ -209,18 +160,18 @@ protected void respondUI(ViewEvent anEvent)
     }
     
     // Handle PreviewXMLMenuItem
-    if(anEvent.equals("PreviewXMLMenuItem"))
+    if (anEvent.equals("PreviewXMLMenuItem"))
         EditorPaneUtils.previewXML(getEditorPane());
 
     // Handle ToolButton(s)
-    if(anEvent.getName().endsWith("ToolButton")) {
+    if (anEvent.getName().endsWith("ToolButton")) {
         for(RMTool tool : _toolBarTools)
             if(anEvent.getName().startsWith(tool.getClass().getSimpleName())) {
                 getEditor().setCurrentTool(tool); break; }
     }
     
     // Handle FontFaceComboBox
-    if(anEvent.equals("FontFaceComboBox")) {
+    if (anEvent.equals("FontFaceComboBox")) {
         String familyName = anEvent.getText();
         String fontNames[] = Font.getFontNames(familyName); if(fontNames==null || fontNames.length==0) return;
         String fontName = fontNames[0];
@@ -230,15 +181,15 @@ protected void respondUI(ViewEvent anEvent)
     }
     
     // Handle FontSizeComboBox
-    if(anEvent.equals("FontSizeComboBox")) {
+    if (anEvent.equals("FontSizeComboBox")) {
         EditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
         editor.requestFocus();
     }
     
     // Handle FontSizeUpButton, FontSizeDownButton
-    if(anEvent.equals("FontSizeUpButton")) { Font font = EditorUtils.getFont(editor);
+    if (anEvent.equals("FontSizeUpButton")) { Font font = EditorUtils.getFont(editor);
         EditorUtils.setFontSize(editor, font.getSize()<16? 1 : 2, true); }
-    if(anEvent.equals("FontSizeDownButton")) { Font font = EditorUtils.getFont(editor);
+    if (anEvent.equals("FontSizeDownButton")) { Font font = EditorUtils.getFont(editor);
         EditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
     
     // Handle BoldButton, ItalicButton, UnderlineButton
@@ -260,7 +211,7 @@ protected void respondUI(ViewEvent anEvent)
         EditorUtils.setJustify(editor, true);
     
     // Handle ColorWell
-    if(anEvent.equals("ColorWell"))
+    if (anEvent.equals("ColorWell"))
         EditorUtils.setSelectedColor(editor, _colorWell.getColor());
 }
 
@@ -271,7 +222,7 @@ private void openDocTextFile()
 {
     // Get filename for doc (if not set, write doc to temp file)
     String fname = getEditor().getDoc().getFilename();
-    if(fname==null) {
+    if (fname==null) {
         fname = SnapUtils.getTempDir() + "RMDocument.rpt";
         getEditor().getDoc().write(fname);
     }

@@ -92,11 +92,8 @@
     <MenuItem Name="InspectorMenuItem" text="Inspector..." />
     <MenuItem Name="ColorPanelMenuItem" text="Color Panel..." key="meta shift C" />
     <MenuItem Name="FontPanelMenuItem" text="Font Panel..." />
-    <MenuItem Name="FormatPanelMenuItem" text="Format Panel..." key="meta F" />
     <MenuItem />
     <CheckBoxMenuItem Name="ShowRulersMenuItem" text="Show Rulers" key="meta R" />
-    <MenuItem />
-    <MenuItem Name="FeedbackMenuItem" text="Send Feedback..." />
   </Menu>
   <Menu Name="ThemeMenu" text="Theme">
     <MenuItem Name="StandardThemeMenuItem" text="Standard" />

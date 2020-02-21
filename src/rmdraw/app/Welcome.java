@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.base.ReportMill;
 import snap.util.SnapUtils;
 import snap.view.*;
 import snap.viewx.*;
@@ -67,10 +66,9 @@ public void close()  { getWindow().setVisible(false); }
 protected void initUI()
 {
     // Reset BuildLabel, JavaLabel, LicenseLabel
-    String lstring = ReportMill.getLicense()==null? "Unlicensed Copy" : "License: " + ReportMill.getLicense();
-    setViewText("BuildLabel", "Build: " + ReportMill.getBuildInfo());
+    setViewText("BuildLabel", "Build: " + "Unknown");
     setViewText("JavaLabel", "Java: " + System.getProperty("java.runtime.version"));
-    setViewText("LicenseLabel", lstring);
+    setViewText("LicenseLabel", "Free License for everyone!");
     
     // 
     getView("RecentFilesButton", Button.class).setImage(ComboBox.getArrowImage());

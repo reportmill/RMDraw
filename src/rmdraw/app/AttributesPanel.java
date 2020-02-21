@@ -56,8 +56,7 @@ public ViewOwner[] createInspectors()
 {
     APColorPanel color = new APColorPanel();
     FontPanel font = new FontPanel(getEditorPane());
-    FormatPanel format = new FormatPanel(getEditorPane());
-    return new ViewOwner[] { color, font, format };
+    return new ViewOwner[] { color, font };
 }
 
 /**
