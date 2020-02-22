@@ -36,7 +36,10 @@ public RMDataSource()  { }
 /**
  * Creates a datasource from a given source with a given name (can be null).
  */
-public RMDataSource(WebURL aURL)  { _url = aURL; }
+public RMDataSource(WebURL aURL)
+{
+    _url = aURL;
+}
 
 /**
  * Returns the URL for this data source.

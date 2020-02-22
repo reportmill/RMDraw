@@ -3,7 +3,6 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.*;
-import rmdraw.base.Entity;
 import rmdraw.shape.*;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -72,12 +71,6 @@ public String getWindowTitle()  { return "Shape Inspector"; }
  * Create Node.
  */
 protected View createUI()  { return getClass()==RMTool.class? new Label() : super.createUI(); }
-
-/**
- * Returns the given shape's dataset entity.
- * Provides a level of indirection show shapes can show a different entity in the designer.
- */
-public Entity getDatasetEntity(RMShape aShape)  { return aShape.getDatasetEntity(); }
 
 /**
  * Returns the currently active editor.

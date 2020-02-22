@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.base.*;
 import rmdraw.graphics.*;
 import java.util.*;
 import snap.gfx.*;
@@ -1342,21 +1341,6 @@ public boolean intersects(Shape aPath)
 public String getDatasetKey()  { return null; }
 
 /**
- * Returns the entity this shape should show in keys browser.
- */
-public Entity getDatasetEntity()
-{
-    // Get parent and parent entity (just return null, if null)
-    RMShape parent = getParent(); if(parent==null) return null;
-    Entity parentEntity = parent.getDatasetEntity(); if(parentEntity==null) return null;
-    
-    // Get Property/RelationEntity for Shape.DatasetKey
-    Property prop = getDatasetKey()!=null? parentEntity.getKeyPathProperty(getDatasetKey()) : null;
-    Entity entity = prop!=null && prop.isRelation()? prop.getRelationEntity() : null;
-    return entity!=null? entity : parentEntity;
-}
-
-/**
  * Returns the property names for helper's instance class.
  */
 public String[] getPropNames()
@@ -1958,7 +1942,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
  */
 public String toString()
 {
-    StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append(' ');
+    StringBuilder sb = new StringBuilder(getClass().getSimpleName()).append(' ');
     if(getName()!=null) sb.append(getName()).append(' ');
     sb.append(getFrame().toString());
     return sb.toString();
