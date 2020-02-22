@@ -490,11 +490,6 @@ public void setCompress(boolean aValue)  { _compress = aValue; }
 public byte[] getBytes()  { return getXML().getBytes(); }
 
 /**
- * Returns the document as a byte array of an HTML file.
- */
-public byte[] getBytesHTML()  { return new RMHtmlFile(this).getBytes(); }
-
-/**
  * Returns the document as byte array of a JPEG file.
  */
 public byte[] getBytesJPEG()  { return RMShapeUtils.createImage(getPage(0), Color.WHITE).getBytesJPEG(); }
@@ -510,9 +505,7 @@ public byte[] getBytesPNG()  { return RMShapeUtils.createImage(getPage(0), null)
 public void write(String aPath)
 {
     String path = aPath.toLowerCase();
-    if (path.endsWith(".html"))
-        new RMHtmlFile(this).write(aPath);
-    else if (path.endsWith(".jpg"))
+    if (path.endsWith(".jpg"))
         SnapUtils.writeBytes(getBytesJPEG(), aPath);
     else if (path.endsWith(".png"))
         SnapUtils.writeBytes(getBytesPNG(), aPath);

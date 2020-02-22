@@ -11,10 +11,9 @@
     <MenuItem Name="RevertMenuItem" text="Revert to Saved" key="meta U" />
     <MenuItem />
     <Menu Name="PreviewMenu" text="Export Preview">
-      <MenuItem Name="PreviewHTMLMenuItem" text="HTML" />
-      <MenuItem Name="PreviewRTFMenuItem" text="RTF" />
       <MenuItem Name="PreviewJPEGMenuItem" text="JPEG" />
       <MenuItem Name="PreviewPNGMenuItem" text="PNG" />
+      <MenuItem Name="PreviewRTFMenuItem" text="RTF" />
     </Menu>
     <MenuItem />
     <MenuItem Name="PrintMenuItem" text="Print..." key="meta P" />

@@ -101,15 +101,13 @@ protected void respondUI(ViewEvent anEvent)
         epane.quit();
         
     // Handle File -> Preview Reports menu items
-    if (anEvent.equals("PreviewHTMLMenuItem") || anEvent.equals("PreviewHTMLButton"))
-        EditorPaneUtils.previewHTML(epane);
-    if (anEvent.equals("PreviewRTFMenuItem"))
-        EditorPaneUtils.previewRTF(epane);
     if (anEvent.equals("PreviewJPEGMenuItem"))
         EditorPaneUtils.previewJPG(epane);
     if (anEvent.equals("PreviewPNGMenuItem"))
         EditorPaneUtils.previewPNG(epane);
-        
+    if (anEvent.equals("PreviewRTFMenuItem"))
+        EditorPaneUtils.previewRTF(epane);
+
     // Handle Edit menu items
     if(anEvent.equals("UndoMenuItem") || anEvent.equals("UndoButton")) editor.undo();
     if(anEvent.equals("RedoMenuItem") || anEvent.equals("RedoButton")) editor.redo();

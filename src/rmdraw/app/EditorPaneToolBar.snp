@@ -17,9 +17,7 @@
     <ColorButton Name="FillColorButton" PrefWidth="32" PrefHeight="22" ToolTip="Set Fill Color" Title="Fill Color" />
     <ColorButton Name="StrokeColorButton" PrefWidth="32" PrefHeight="22" ToolTip="Set Stroke Color" Title="Stroke Color" />
     <ColorButton Name="TextColorButton" PrefWidth="32" PrefHeight="22" ToolTip="Set Text Color" Title="Text Color" />
-    <Separator PrefWidth="8" PrefHeight="18" Vertical="true" />
     <Button Name="SamplesButton" PrefWidth="60" PrefHeight="22" LeanX="CENTER" ToolTip="Show Samples" text="Samples" />
-    <Button Name="PreviewHTMLButton" PrefWidth="22" PrefHeight="22" LeanX="RIGHT" ToolTip="Preview HTML" image="Preview_HTML.png" ShowBorder="false" />
   </RowView>
   <RowView Padding="4,0,6,10" Spacing="1">
     <ToggleButton Name="PreviewEditButton" PrefWidth="84" PrefHeight="24" text="Preview" />

@@ -115,12 +115,10 @@ protected void respondUI(ViewEvent anEvent)
     EditorPane epane = getEditorPane();
     Editor editor = getEditor();
     
-    // Handle File NewButton, OpenButton, SaveButton, PreviewPDFButton, PreviewHTMLButton, PrintButton
+    // Handle File NewButton, OpenButton, SaveButton, PrintButton
     if (anEvent.equals("NewButton")) epane.respondUI(anEvent);
     if (anEvent.equals("OpenButton")) epane.respondUI(anEvent);
     if (anEvent.equals("SaveButton")) epane.respondUI(anEvent);
-    if (anEvent.equals("PreviewPDFButton")) epane.respondUI(anEvent);
-    if (anEvent.equals("PreviewHTMLButton")) epane.respondUI(anEvent);
     if (anEvent.equals("PrintButton")) epane.respondUI(anEvent);
         
     // Handle Edit CutButton, CopyButton, PasteButton, DeleteButton
