@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.base.*;
 import rmdraw.graphics.*;
 import java.util.*;
 import snap.gfx.Color;
@@ -114,13 +113,6 @@ public class RMArchiver extends XMLArchiver {
         cmap.put("shadow-effect", "snap.gfx.ShadowEffect");
         cmap.put("reflection-effect", "snap.gfx.ReflectEffect");
         cmap.put("emboss-effect", "snap.gfx.EmbossEffect");
-
-        // Sorts, Grouping
-        cmap.put("sort", "rmdraw.base.RMSort");
-        cmap.put("top-n-sort", "rmdraw.base.RMTopNSort");
-        cmap.put("value-sort", "rmdraw.base.RMValueSort");
-        cmap.put("grouper", RMGrouper.class);
-        cmap.put("grouping", RMGrouping.class);
 
         // Return classmap
         return _classMapRM = cmap;
