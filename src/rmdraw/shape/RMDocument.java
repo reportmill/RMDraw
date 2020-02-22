@@ -2,8 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.base.*;
-import rmdraw.out.*;
 import java.util.*;
 import java.io.File;
 import snap.gfx.*;
@@ -26,9 +24,6 @@ public class RMDocument extends RMParentShape {
 
     // The SourceURL
     WebURL            _sourceURL;
-    
-    // The ReportMill version this document was created with
-    float             _version = ReportMill.getVersion();
     
     // The currently selected page index
     int               _selIndex;
@@ -57,12 +52,6 @@ public class RMDocument extends RMParentShape {
     // The margin rect
     Rect              _margins = getMarginRectDefault();
     
-    // Datasource
-    RMDataSource      _dataSource;
-    
-    // Publish URL
-    String            _publishUrl;
-    
     // The string to be used when report encounters a null value
     String            _nullString = "<NA>";
     
@@ -83,9 +72,6 @@ public class RMDocument extends RMParentShape {
     
     // Constants for property changes
     public static final String SelPageIndex_Prop = "SelPageIndex";
-
-/** Initialize ReportMill. */
-static { ReportMill.init(); }
 
 /**
  * Creates a plain empty document. It's really only used by the archiver.
@@ -135,11 +121,6 @@ public String getFilename()  { return getSourceURL()!=null? getSourceURL().getPa
  * Returns the document's default font.
  */
 public Font getFont()  { return Font.getDefaultFont(); }
-
-/**
- * Returns the version this document was loaded as.
- */
-public float getVersion()  { return _version; }
 
 /**
  * Returns the number of pages in this document.
@@ -437,35 +418,6 @@ public Size getPageSizeDefault()  { return new Size(612,792); }
  */
 public String getAutosizingDefault()  { return "~-~,~-~"; }
 
-/**
- * Returns the RMDataSource associated with this document.
- */
-public RMDataSource getDataSource()  { return _dataSource; }
-
-/**
- * Sets the RMDataSource associated with this document.
- */
-public void setDataSource(RMDataSource aDataSource)
-{
-    firePropChange("DataSource", _dataSource, _dataSource = aDataSource);
-}
-
-/**
- * Returns the schema for the RMDataSource associated with this document (convenience).
- */
-public Schema getDataSourceSchema()  { return _dataSource==null? null : _dataSource.getSchema(); }
-
-/**
- * Returns the entity this shape should show in keys browser.
- */
-public Entity getDatasetEntity()  { return getDataSource()!=null? getDataSourceSchema().getRootEntity() : null; }
-
-/** Returns the URL this document should be uploaded to. */
-public String getPublishUrl()  { return _publishUrl; }
-
-/** Sets the URL this document should be uploaded to. */
-public void setPublishUrl(String aValue)  { _publishUrl = aValue; }
-
 /** Returns the string used to replace any occurrances of null values in a generated report. */
 public String getNullString()  { return _nullString; }
 
@@ -644,13 +596,6 @@ protected XMLElement toXMLShape(XMLArchiver anArchiver)
     e.removeAttribute("width"); e.removeAttribute("height");
     e.removeAttribute("scalex"); e.removeAttribute("scaley");
     
-    // Archive Version
-    e.add("version", ReportMill.getVersion());
-    
-    // Archive DataSource
-    XMLElement dxml = _dataSource!=null? anArchiver.toXML(_dataSource, this) : null;
-    if(dxml!=null && dxml.getAttributeCount()>0) e.add(dxml);
-    
     // Archive PageLayout, Unit
     if(getPageLayout()!=PageLayout.Single) e.add("page-layout", getPageLayout().name());
     if(getUnit()!=Unit.Point) e.add("unit", getUnit().name());
@@ -666,12 +611,11 @@ protected XMLElement toXMLShape(XMLArchiver anArchiver)
     if(_snapGrid) e.add("snap-grid", true);
     if((_showGrid || _snapGrid) && _gridSpacing!=9) e.add("grid", _gridSpacing);
         
-    // Archive NullString, Paginate, Compress, PublishURL
+    // Archive NullString, Paginate, Compress
     if(_nullString!=null && _nullString.length()>0) e.add("null-string", _nullString);
     if(!_paginate) e.add("paginate", _paginate);
     if(!_compress) e.add("compress", false);
-    if(_publishUrl!=null && _publishUrl.length()>0) e.add("publish", _publishUrl);
-        
+
     // Return element
     return e;
 }
@@ -696,22 +640,16 @@ protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
     super.fromXMLShape(anArchiver, anElement);
     setSourceURL(anArchiver.getSourceURL());
     
-    // Unarchive Version
-    _version = anElement.getAttributeFloatValue("version", 8.0f);
-    anArchiver.setVersion(_version);
-    
-    // Unarchive Datasource
-    XMLElement dxml = anElement.get("datasource");
-    if(dxml!=null) setDataSource(anArchiver.fromXML(dxml, RMDataSource.class, this));
-    
     // Unarchive PageLayout, Unit
-    if(anElement.hasAttribute("page-layout")) setPageLayout(anElement.getAttributeValue("page-layout"));
-    if(anElement.hasAttribute("unit")) setUnit(anElement.getAttributeValue("unit"));
+    if (anElement.hasAttribute("page-layout"))
+        setPageLayout(anElement.getAttributeValue("page-layout"));
+    if (anElement.hasAttribute("unit"))
+        setUnit(anElement.getAttributeValue("unit"));
     
     // Unarchive ShowMargin, SnapMargin, MarginRect
     setShowMargin(anElement.getAttributeBoolValue("show-margin"));
     setSnapMargin(anElement.getAttributeBoolValue("snap-margin"));
-    if(anElement.getAttributeValue("margin")!=null)
+    if (anElement.getAttributeValue("margin")!=null)
         setMarginRect(Rect.get(anElement.getAttributeValue("margin")));
         
     // Unarchive ShowGrid, SnapGrid, GridSpacing
@@ -719,11 +657,10 @@ protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
     setSnapGrid(anElement.getAttributeBoolValue("snap-grid"));
     setGridSpacing(anElement.getAttributeFloatValue("grid", 9));
     
-    // Unarchive NullString, Paginate, Compress, PublishURL
+    // Unarchive NullString, Paginate, Compress
     setNullString(anElement.getAttributeValue("null-string", ""));
     setPaginate(anElement.getAttributeBoolValue("paginate", true));
     setCompress(anElement.getAttributeBoolValue("compress", true));
-    setPublishUrl(anElement.getAttributeValue("publish"));
 }
 
 /** Editor method indicates that document is super selectable. */

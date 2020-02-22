@@ -130,7 +130,7 @@ public class RMArchiver extends XMLArchiver {
     /**
      * A class to unarchive formats as proper subclass based on type attribute.
      */
-    private static class TextFormatStub implements Archivable {
+    public static class TextFormatStub implements Archivable {
 
         /** Implement toXML for interface. */
         public XMLElement toXML(XMLArchiver anArchive)  { return null; }

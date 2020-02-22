@@ -283,14 +283,6 @@ public EditorPane open(Object aSource)
     // If no document, just return null
     if(doc==null) return null;
 
-    // If old version, warn user that saving document will make it unreadable by RM7
-    if(doc.getVersion()<7.0) {
-        String msg = "This document has been upgraded from an older version.\n" +
-            "If saved, it will not open in earlier versions.";
-        DialogBox dbox = new DialogBox("Warning: Document Upgrade"); dbox.setWarningMessage(msg);
-        dbox.showMessageDialog(getUI());
-    }
-    
     // Set document
     getViewer().setDoc(doc);
     
