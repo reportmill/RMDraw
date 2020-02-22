@@ -4,8 +4,7 @@
 package rmdraw.shape;
 import rmdraw.graphics.*;
 import java.util.*;
-import snap.gfx.Color;
-import snap.gfx.Font;
+import snap.gfx.*;
 import snap.text.RichText;
 import snap.text.TextLineStyle;
 import snap.util.*;
@@ -103,16 +102,15 @@ public class RMArchiver extends XMLArchiver {
 
         // Fills
         cmap.put("fill", RMFill.class);
-        cmap.put("gradient-fill", RMGradientFill.class);
-        cmap.put("radial-fill", RMGradientFill.class);
+        cmap.put("gradient-fill", GradientPaint.class);
+        cmap.put("radial-fill", GradientPaint.class);
         cmap.put("image-fill", RMImageFill.class);
-        cmap.put("contour-fill", "rmdraw.graphics.RMContourFill");
 
         // Effects
-        cmap.put("blur-effect", "snap.gfx.BlurEffect");
-        cmap.put("shadow-effect", "snap.gfx.ShadowEffect");
-        cmap.put("reflection-effect", "snap.gfx.ReflectEffect");
-        cmap.put("emboss-effect", "snap.gfx.EmbossEffect");
+        cmap.put("blur-effect", BlurEffect.class);
+        cmap.put("shadow-effect", ShadowEffect.class);
+        cmap.put("reflection-effect", ReflectEffect.class);
+        cmap.put("emboss-effect", EmbossEffect.class);
 
         // Return classmap
         return _classMapRM = cmap;

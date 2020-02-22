@@ -2,17 +2,17 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
-import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import snap.gfx.Color;
 import snap.gfx.GradientPaint;
-import snap.util.ClassUtils;
+import snap.gfx.Paint;
+import snap.gfx.Point;
 import snap.view.ViewEvent;
 
 /**
- * UI editing for RMGradientFill.
+ * UI editing for GradientPaint.
  */
-public class RMGradientFillTool extends RMFillTool {
+public class GradientPaintTool extends RMFillTool {
     
 /**
  * Initialize UI.
@@ -29,7 +29,7 @@ protected void resetUI()
 {
     // Get currently selected shape and shape gradient fill (just return if null)
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape(); if(shape==null) return;
-    RMGradientFill fill = getDefaultFill(shape);
+    GradientPaint fill = getDefaultFill(shape);
     boolean isRadial = fill.isRadial();
 
     // Update ColorStopPicker
@@ -63,7 +63,7 @@ protected void respondUI(ViewEvent anEvent)
 {
     // Get currently selected shape and its fill (just return if null)
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape(); if(shape==null) return;
-    RMGradientFill oldfill = getDefaultFill(shape), newFill = null;
+    GradientPaint oldfill = getDefaultFill(shape), newFill = null;
     
     // Handle ColorStopPicker
     if(anEvent.equals("ColorStopPicker")) {
@@ -89,8 +89,9 @@ protected void respondUI(ViewEvent anEvent)
 
     // Handle radial axis control
     else if(anEvent.equals("RadialPicker")) {
-        GradientAxisPicker p = (GradientAxisPicker)anEvent.getView();
-        newFill = oldfill.copyForPoints(p.getStartPoint(), p.getEndPoint());
+        GradientAxisPicker picker = (GradientAxisPicker)anEvent.getView();
+        Point p0 = picker.getStartPoint(), p1 = picker.getEndPoint();
+        newFill = oldfill.copyForPoints(p0.x, p0.y, p1.x, p1.y);
     }
     
     // Reset fill of all selected shapes
@@ -101,20 +102,21 @@ protected void respondUI(ViewEvent anEvent)
 /**
  * Returns the gradient for the shape.  Creates one if the shape doesn't have a gradient fill.
  */
-public RMGradientFill getDefaultFill(RMShape shape)
+public GradientPaint getDefaultFill(RMShape shape)
 {
     // Get shape gradient fill, if present
-    RMGradientFill fill = ClassUtils.getInstance(shape.getFill(), RMGradientFill.class);
+    Paint fill = shape.getFill();
+    GradientPaint def = fill instanceof GradientPaint ? (GradientPaint)fill : null;
     
     // If missing, create one - second color defaults to black, unless that would result in a black-black gradient
-    if(fill==null) {
+    if(def==null) {
         Color c = shape.getColor();
         Color c2 = c.equals(Color.BLACK)? Color.WHITE : Color.BLACK;
-        fill = new RMGradientFill(c, c2, 0);
+        def = new GradientPaint(c, c2, 0);
     }
     
     // Return fill
-    return fill;
+    return def;
 }
 
 /**

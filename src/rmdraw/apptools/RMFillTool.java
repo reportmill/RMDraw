@@ -7,10 +7,9 @@ import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import java.util.*;
 
-import snap.gfx.Color;
+import snap.gfx.*;
 import snap.view.*;
 import snap.viewx.ColorWell;
-import snap.web.WebURL;
 
 /**
  * Provides a tool for editing RMFills.
@@ -24,8 +23,8 @@ public class RMFillTool extends EditorPane.SupportPane {
     static RMStroke     _strokes[] = { new RMStroke(), new RMBorderStroke() };
     
     // List of known fills
-    static RMFill       _fill0, _fill1;
-    static RMImageFill  _imageFill;
+    static Paint       _fill0, _fill1;
+    static ImagePaint  _imageFill;
 
 /**
  * Creates a new RMFillTool panel.
@@ -66,7 +65,7 @@ protected void respondUI(ViewEvent anEvent)
             // If command-click, set gradient fill
             if(ViewUtils.isMetaDown()) {
                 Color c1 = shape.getFill()!=null? shape.getColor() : Color.CLEARWHITE;
-                RMFill f = new RMGradientFill(c1, color, 0);
+                Paint f = new GradientPaint(c1, color, 0);
                 s.setFill(f);
             }
 
@@ -94,11 +93,16 @@ public int getFillCount()  { return 3; }
 /**
  * Returns an individual fill at given index.
  */
-public RMFill getFill(int anIndex)
+public Paint getFill(int anIndex)
 {
-    if(anIndex==0) return _fill0!=null? _fill0 : (_fill0 = new RMFill());
-    if(anIndex==1) return _fill1!=null? _fill1 : (_fill1 = new RMGradientFill());
-    if(_imageFill==null) _imageFill = new RMImageFill(WebURL.getURL(getClass(), "pkg.images/Clouds.jpg"), true);
+    if (anIndex==0)
+        return _fill0!=null ? _fill0 : (_fill0 = Color.BLACK);
+    if (anIndex==1)
+        return _fill1!=null ? _fill1 : (_fill1 = new GradientPaint());
+    if (_imageFill==null) {
+        Image img = Image.get(getClass(), "pkg.images/Clouds.jpg");
+        _imageFill = new ImagePaint(img);
+    }
     return _imageFill;
 }
 
@@ -126,7 +130,7 @@ public void setSelectedStroke(RMStroke aStroke)
 /**
  * Returns the currently selected shape's fill.
  */
-public RMFill getSelectedFill()
+public Paint getSelectedFill()
 {
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
     return shape.getFill();
@@ -135,12 +139,12 @@ public RMFill getSelectedFill()
 /**
  * Iterate over editor selected shapes and set fill.
  */
-public void setSelectedFill(RMFill aFill)
+public void setSelectedFill(Paint aFill)
 {
     Editor editor = getEditor();
     for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
-        shape.setFill(i==0? aFill : aFill.clone());
+        shape.setFill(aFill);
     }
 }
 
@@ -166,26 +170,11 @@ static RMFillTool getToolImpl(Class aClass)
 {
     if(aClass==RMStroke.class) return new RMStrokeTool();
     if(aClass==RMBorderStroke.class) return new RMBorderStrokeTool();
-    if(aClass==RMFill.class) return new RMFillTool();
-    if(aClass==RMGradientFill.class) return new RMGradientFillTool();
-    if(aClass==RMImageFill.class) return new RMImageFillTool();
+    if(aClass==Color.class) return new RMFillTool();
+    if(aClass==GradientPaint.class) return new GradientPaintTool();
+    if(aClass==ImagePaint.class) return new ImagePaintTool();
     System.err.println("RMFillTool.getToolImp: No tool class for " + aClass);
     return new RMFillTool();
-    
-    // If shape class starts with RM, check panels package for built-in fill tools
-    //String cname = aClass.getSimpleName(); Class tclass = null;
-    //if(cname.startsWith("RM")) tclass = ClassUtils.getClass("com.reportmill.apptools." + cname + "Tool");
-    // If not found, try looking in same package for shape class plus "Tool"
-    //if(tclass==null) tclass = ClassUtils.getClass(aClass.getName() + "Tool", aClass);
-    // If not found and class ends in "Fill", try looking in same package for class that ends with "Tool" instead
-    //if(tclass==null && cname.endsWith("Fill"))
-    //    tclass = ClassUtils.getClass(StringUtils.replace(aClass.getName(), "Fill", "Tool"), aClass);
-    // If not found, try looking for inner class named "Tool"
-    //if(tclass==null) tclass = ClassUtils.getClass(aClass.getName() + "$" + "Tool", aClass);
-    // If tool class found, instantiate tool class
-    //if(tclass!=null) try { return (RMFillTool)tclass.newInstance(); } catch(Exception e) { e.printStackTrace(); }
-    // Otherwise, get tool for super class
-    //return getToolImpl(aClass.getSuperclass());
 }
 
 }

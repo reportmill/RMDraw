@@ -72,7 +72,8 @@ public void resetUI()
     stool.resetLater();
     
     // Get fill from shape (or default, if not available)
-    RMFill fill = shape.getFill(); if(fill==null) fill = new RMFill();
+    Paint fill = shape.getFill();
+    if(fill==null) fill = Color.BLACK;
 
     // Update FillCheckBox, FillComboBox
     setViewValue("FillCheckBox", shape.getFill()!=null);
@@ -112,56 +113,57 @@ public void respondUI(ViewEvent anEvent)
     List <RMShape> shapes = editor.getSelectedOrSuperSelectedShapes();
     
     // Handle StrokeCheckBox: Iterate over shapes and add stroke if not there or remove if there
-    if(anEvent.equals("StrokeCheckBox")) {
+    if (anEvent.equals("StrokeCheckBox")) {
         boolean selected = anEvent.getBoolValue();
-        for(RMShape s : shapes) {
-            if(selected && s.getStroke()==null) s.setStroke(new RMStroke()); // If requested and missing, add
-            if(!selected && s.getStroke()!=null) s.setStroke(null); // If turned off and present, remove
+        for (RMShape s : shapes) {
+            if (selected && s.getStroke()==null) s.setStroke(new RMStroke()); // If requested and missing, add
+            if (!selected && s.getStroke()!=null) s.setStroke(null); // If turned off and present, remove
         }
     }
     
     // Handle StrokeComboBox: Get selected stroke instance and iterate over shapes and add stroke if not there
-    if(anEvent.equals("StrokeComboBox")) {
+    if (anEvent.equals("StrokeComboBox")) {
         RMStroke newStroke = _fillTool.getStroke(anEvent.getSelIndex());
-        for(RMShape s : shapes) s.setStroke(newStroke.clone());
+        for (RMShape s : shapes) s.setStroke(newStroke.clone());
     }
 
     // Handle FillCheckBox: Iterate over shapes and add fill if not there or remove if there
-    if(anEvent.equals("FillCheckBox")) {
+    if (anEvent.equals("FillCheckBox")) {
         boolean selected = anEvent.getBoolValue();
-        for(RMShape s : shapes) {
-            if(selected && s.getFill()==null) s.setFill(new RMFill()); // If requested and missing, add
-            if(!selected && s.getFill()!=null) s.setFill(null); // If turned off and present, remove
+        for (RMShape s : shapes) {
+            if (selected && s.getFill()==null) s.setFill(Color.BLACK); // If requested and missing, add
+            if (!selected && s.getFill()!=null) s.setFill(null); // If turned off and present, remove
         }
     }
     
     // Handle FillComboBox: Get selected fill instance and iterate over shapes and add fill if not there
-    if(anEvent.equals("FillComboBox")) {
-        RMFill newFill = _fillTool.getFill(anEvent.getSelIndex());
-        for(RMShape s : shapes) s.setFill(newFill.deriveFill(s.getFill()));
+    if (anEvent.equals("FillComboBox")) {
+        Paint newFill = _fillTool.getFill(anEvent.getSelIndex());
+        for (RMShape s : shapes)
+            s.setFill(newFill);
     }
 
     // Handle EffectCheckBox: Iterate over shapes and add effect if not there or remove if there
-    if(anEvent.equals("EffectCheckBox")) {
+    if (anEvent.equals("EffectCheckBox")) {
         boolean selected = anEvent.getBoolValue();
-        for(RMShape s : shapes) {
-            if(selected && s.getEffect()==null) s.setEffect(new ShadowEffect()); // If requested and missing, add
-            if(!selected && s.getEffect()!=null) s.setEffect(null); // If turned off and present, remove
+        for (RMShape s : shapes) {
+            if (selected && s.getEffect()==null) s.setEffect(new ShadowEffect()); // If requested and missing, add
+            if (!selected && s.getEffect()!=null) s.setEffect(null); // If turned off and present, remove
         }
     }
     
     // Handle EffectComboBox: Get selected effect instance and iterate over shapes and add effect if not there
-    if(anEvent.equals("EffectComboBox")) {
+    if (anEvent.equals("EffectComboBox")) {
         Effect eff = _effectTool.getEffect(anEvent.getSelIndex());
-        for(RMShape s : shapes) s.setEffect(eff);
+        for (RMShape s : shapes) s.setEffect(eff);
     }
 
     // Handle Transparency Slider and Text
-    if(anEvent.equals("TransparencySlider") || anEvent.equals("TransparencyText")) {
+    if (anEvent.equals("TransparencySlider") || anEvent.equals("TransparencyText")) {
         shape.undoerSetUndoTitle("Transparency Change");
         double eval = anEvent.equals("TransparencySlider")? anEvent.getIntValue() : anEvent.getFloatValue();
         double val = 1 - eval/100;
-        for(RMShape s : shapes)
+        for (RMShape s : shapes)
             s.setOpacity(val);
     }
 }

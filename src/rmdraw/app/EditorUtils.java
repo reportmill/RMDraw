@@ -3,7 +3,6 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.*;
@@ -580,7 +579,7 @@ public static void setSelectedColor(Editor anEditor, Color aColor)
         // If command-click, set gradient fill
         if(ViewUtils.isMetaDown()) {
             Color c1 = shape.getFill()!=null? shape.getColor() : Color.CLEARWHITE;
-            shape.setFill(new RMGradientFill(c1, color, 0));
+            shape.setFill(new GradientPaint(c1, color, 0));
         }
         
         // If not command click, just set the color of all the selected shapes

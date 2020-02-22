@@ -48,7 +48,7 @@ public class RMShape implements Cloneable, Archivable, Key.GetSet {
     RMStroke       _stroke = null;
     
     // The fill for this shape
-    RMFill         _fill = null;
+    Paint          _fill = null;
     
     // The effect for this shape
     Effect         _effect = null;
@@ -575,13 +575,14 @@ public void setStroke(Color aColor, double aWidth)  { setStroke(new RMStroke(aCo
 /**
  * Returns the fill for this shape.
  */
-public RMFill getFill()  { return _fill; }
+public Paint getFill()  { return _fill; }
 
 /**
  * Sets the fill for this shape.
  */
-public void setFill(RMFill aFill)
+public void setFill(Paint aFill)
 {
+    aFill = aFill!=null ? aFill.snap() : null; // this can go when RMFill is gone
     if(SnapUtils.equals(getFill(), aFill)) return;
     repaint();
     firePropChange(Fill_Prop, _fill, _fill = aFill);
@@ -614,7 +615,7 @@ public void setColor(Color aColor)
 {
     // Set color
     if(aColor==null) setFill(null);
-    else if(getFill()==null) setFill(new RMFill(aColor));
+    else if(getFill()==null) setFill(aColor);
     else setFill(getFill().copyForColor(aColor));
 }
 
@@ -1630,12 +1631,15 @@ public void paintShapeAll(Painter aPntr)
 protected void paintShape(Painter aPntr)
 {
     // Get fill/stroke
-    RMFill fill = getFill(); RMStroke stroke = getStroke();
+    Paint fill = getFill();
+    RMStroke stroke = getStroke();
     
     // Paint fill
     if(fill!=null) { //getFill().paint(aPntr, this);
-        aPntr.setPaint(fill.snap().copyFor(getBoundsInside()));
-        aPntr.fill(getPath());
+        Paint fill2 = fill.copyForRect(getBoundsInside());
+        aPntr.setPaint(fill2);
+        Shape path = getPath();
+        aPntr.fill(path);
     }
     
     // Paint stroke
@@ -1785,7 +1789,7 @@ public void setKeyValue(String aPropName, Object aValue)
         case SkewX_Prop: setSkewX(SnapUtils.doubleValue(aValue)); break;
         case SkewY_Prop: setSkewY(SnapUtils.doubleValue(aValue)); break;
         case Stroke_Prop: setStroke(aValue instanceof RMStroke? (RMStroke)aValue : null); break;
-        case Fill_Prop: setFill(aValue instanceof RMFill? (RMFill)aValue : null); break;
+        case Fill_Prop: setFill(aValue instanceof Paint? (Paint)aValue : null); break;
         case Effect_Prop: setEffect(aValue instanceof Effect? (Effect)aValue : null); break;
         case Opacity_Prop: setOpacity(SnapUtils.doubleValue(aValue)); break;
         case Name_Prop: setName(SnapUtils.stringValue(aValue)); break;
@@ -1886,8 +1890,8 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     }
     
     // Unarchive Fill 
-    for(int i=anArchiver.indexOf(anElement, RMFill.class); i>=0; i=-1) {
-        RMFill fill = (RMFill)anArchiver.fromXML(anElement.get(i), this);
+    for(int i=anArchiver.indexOf(anElement, Paint.class); i>=0; i=-1) {
+        Paint fill = (Paint)anArchiver.fromXML(anElement.get(i), this);
         setFill(fill);
     }
     

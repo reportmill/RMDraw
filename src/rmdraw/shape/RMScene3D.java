@@ -281,10 +281,10 @@ public void addShapeRM(RMShape aShape)
 protected void addShapesForRMShape(RMShape aShape, double z1, double z2, boolean fixEdges)
 {
     // If aShape is text, add shape3d for background and add shape3d for char path shape
-    if(aShape instanceof RMTextShape) { RMTextShape text = (RMTextShape)aShape;
+    if (aShape instanceof RMTextShape) { RMTextShape text = (RMTextShape)aShape;
         
         // If text draws fill or stroke, add child for background
-        if(text.getFill()!=null || text.getStroke()!=null) {
+        if (text.getFill()!=null || text.getStroke()!=null) {
             RMShape background = new RMPolygonShape(aShape.getPath()); // Create background shape from text
             background.copyShape(aShape);
             addShapesForRMShape(background, z1+.1f, z2, fixEdges); // Add background shape
@@ -305,8 +305,12 @@ protected void addShapesForRMShape(RMShape aShape, double z1, double z2, boolean
     PathBox3D pathBox = new PathBox3D(shapePath, z1, z2, fixEdges);
 
     // Create 3D shape from path, set fill/stroke/opacity and add
-    RMFill fill = aShape.getFill(); if(fill!=null) pathBox.setColor(fill.getColor());
-    RMStroke stroke = aShape.getStroke(); if(stroke!=null) pathBox.setStroke(stroke.getColor(), stroke.getWidth());
+    Paint fill = aShape.getFill();
+    if (fill!=null)
+        pathBox.setColor(fill.getColor());
+    RMStroke stroke = aShape.getStroke();
+    if (stroke!=null)
+        pathBox.setStroke(stroke.getColor(), stroke.getWidth());
     pathBox.setOpacity(aShape.getOpacity());
     addShape(pathBox);
 }

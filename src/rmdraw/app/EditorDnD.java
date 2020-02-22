@@ -2,8 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.graphics.RMFill;
-import rmdraw.graphics.RMImageFill;
 import rmdraw.shape.*;
 import snap.gfx.*;
 import snap.view.*;
@@ -169,7 +167,7 @@ public class EditorDnD {
     {
         Color color = anEvent.getClipboard().getColor();
         getEditor().undoerSetUndoTitle("Set Fill Color");
-        aShape.setFill(new RMFill(color));
+        aShape.setFill(color);
     }
 
     /**
@@ -245,7 +243,11 @@ public class EditorDnD {
                     break;
 
                 // Handle Create Texture
-                case 1: aShape.setFill(new RMImageFill(imgSrc, true));
+                case 1: {
+                    Image img = Image.get(imgSrc);
+                    ImagePaint imgFill = img!=null ? new ImagePaint(img) : null;
+                    aShape.setFill(imgFill);
+                }
 
                     // Handle Cancel
                 case 2: return;

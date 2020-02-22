@@ -9,7 +9,7 @@ import snap.util.*;
  * This class represents a simple shape fill, drawing a given color in a provided path. Subclasses support things
  * like gradients, textures, etc.
  */
-public class RMFill implements Cloneable, XMLArchiver.Archivable {
+public class RMFill implements Paint, Cloneable, XMLArchiver.Archivable {
 
     // Fill color
     Color        _color = Color.BLACK;
@@ -18,11 +18,6 @@ public class RMFill implements Cloneable, XMLArchiver.Archivable {
  * Creates a plain, black fill.
  */
 public RMFill()  { }
-
-/**
- * Creates a plain fill with the given color.
- */
-public RMFill(Color aColor)  { _color = aColor; }
 
 /**
  * Returns the color associated with this fill.
@@ -35,34 +30,38 @@ public Color getColor()  { return _color; }
 public String getName()
 {
     if(getClass()==RMFill.class) return "Color Fill";
-    String cname = getClass().getSimpleName(); return cname.substring(2,cname.length()-4);
+    String cname = getClass().getSimpleName();
+    return cname.substring(2,cname.length()-4);
 }
+
+/**
+ * Derives an instance of this class from another fill.
+ */
+public Paint copyForColor(Color aColor)
+{
+    return snap().copyForColor(aColor);
+}
+  
+/**
+ * Returns whether paint is defined in terms independent of primitive to be filled.
+ */
+public boolean isAbsolute()  { return snap().isAbsolute(); }
+
+/**
+ * Returns whether paint is opaque.
+ */
+public boolean isOpaque()  { return snap().isOpaque(); }
+
+/**
+ * Returns an absolute paint for given bounds of primitive to be filled.
+ */
+public Paint copyForRect(Rect aRect)  { return snap().copyForRect(aRect); }
 
 /**
  * Returns the snap version of this fill.
  */
 public Paint snap()  { return getColor(); }
 
-/**
- * Derives an instance of this class from another fill.
- */
-public RMFill copyForColor(Color aColor)
-{
-    RMFill clone = clone();
-    clone._color = aColor!=null? aColor : _color;
-    return clone;
-}
-  
-/**
- * Derives an instance of this class from another fill.
- */
-public RMFill deriveFill(RMFill aFill)
-{
-    RMFill clone = clone();
-    if(aFill!=null) clone._color = aFill.getColor();
-    return clone;
-}
-  
 /**
  * Standard clone implementation.
  */
@@ -100,11 +99,11 @@ public XMLElement toXML(XMLArchiver anArchiver)
 /**
  * XML unarchival.
  */
-public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
+public Paint fromXML(XMLArchiver anArchiver, XMLElement anElement)
 {
-    String color = anElement.getAttributeValue("color");
-    if(color!=null) _color = new Color(color);
-    return this;
+    String colorStr = anElement.getAttributeValue("color");
+    Color color = colorStr!=null ? new Color(colorStr) : Color.BLACK;
+    return color;
 }
 
 /**

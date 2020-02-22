@@ -2,15 +2,19 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
-import rmdraw.graphics.*;
 import rmdraw.shape.*;
+import snap.gfx.Image;
+import snap.gfx.ImagePaint;
+import snap.gfx.Paint;
+import snap.gfx.Rect;
 import snap.view.*;
 import snap.viewx.FilePanel;
+import snap.web.WebURL;
 
 /**
- * UI editing for RMImageFill.
+ * UI editing for ImagePaint.
  */
-public class RMImageFillTool extends RMFillTool {
+public class ImagePaintTool extends RMFillTool {
 
 /**
  * Updates the UI controls from the currently selected shape.
@@ -19,7 +23,8 @@ public void resetUI()
 {
     // Get currently selected shape (just return if null) and image fill (if none, use default instance)
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape(); if(shape==null) return;
-    RMImageFill fill = shape.getFill() instanceof RMImageFill? (RMImageFill)shape.getFill() : _imageFill;
+    Paint sfill = shape.getFill();
+    ImagePaint fill = sfill instanceof ImagePaint ? (ImagePaint)sfill : _imageFill;
     
     // Update TiledCheckBox
     setViewValue("TiledCheckBox", fill.isTiled());
@@ -38,27 +43,35 @@ public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected shape (just return if null) and image fill (if none, use default instance)
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape(); if(shape==null) return;
-    RMImageFill fill = shape.getFill() instanceof RMImageFill? (RMImageFill)shape.getFill() : _imageFill;
+    Paint sfill = shape.getFill();
+    ImagePaint fill = sfill instanceof ImagePaint ? (ImagePaint)sfill : _imageFill;
     
     // Handle TiledCheckBox
-    if(anEvent.equals("TiledCheckBox"))
+    if (anEvent.equals("TiledCheckBox"))
         fill = fill.copyTiled(anEvent.getBoolValue());
     
     // Handle XSpinner, YSpinner, ScaleXSpinner, ScaleYSpinner
-    if(anEvent.equals("XSpinner"))
-        fill = fill.copyFor(anEvent.getFloatValue(), fill.getY(), fill.getWidth(), fill.getHeight(), fill.isAbsolute());
-    if(anEvent.equals("YSpinner"))
-        fill = fill.copyFor(fill.getX(), anEvent.getFloatValue(), fill.getWidth(), fill.getHeight(), fill.isAbsolute());
-    if(anEvent.equals("ScaleXSpinner"))
+    if (anEvent.equals("XSpinner")) {
+        Rect rect = new Rect(anEvent.getFloatValue(), fill.getY(), fill.getWidth(), fill.getHeight());
+        fill = fill.copyForRectAndTile(rect, fill.isAbsolute());
+    }
+    if (anEvent.equals("YSpinner")) {
+        Rect rect = new Rect(fill.getX(), anEvent.getFloatValue(), fill.getWidth(), fill.getHeight());
+        fill = fill.copyForRectAndTile(rect, fill.isAbsolute());
+    }
+    if (anEvent.equals("ScaleXSpinner"))
         fill = fill.copyForScale(anEvent.getFloatValue(), fill.getScaleY());
-    if(anEvent.equals("ScaleYSpinner"))
+    if (anEvent.equals("ScaleYSpinner"))
         fill = fill.copyForScale(fill.getScaleX(), anEvent.getFloatValue());
     
     // Handle ChooseButton
-    if(anEvent.equals("ChooseButton")) {
+    if (anEvent.equals("ChooseButton")) {
         String path = FilePanel.showOpenPanel(getUI(), "Image File", "png", "jpg", "gif");
-        if(path!=null)
-            fill = new RMImageFill(path, true);
+        if (path!=null) {
+            WebURL url = WebURL.getURL(path);
+            Image img = Image.get(url);
+            fill = img!=null ? new ImagePaint(img) : null;
+        }
     }
 
     // Set new fill
