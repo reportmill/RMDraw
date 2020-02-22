@@ -5,7 +5,7 @@ package rmdraw.app;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.Point;
-import snap.gfx.RichText;
+import snap.text.RichText;
 import snap.util.*;
 import snap.view.*;
 

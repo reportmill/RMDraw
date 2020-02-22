@@ -5,6 +5,7 @@ package rmdraw.shape;
 import rmdraw.graphics.*;
 import java.util.*;
 import snap.gfx.*;
+import snap.text.TextFormat;
 import snap.util.*;
 import snap.util.XMLArchiver.*;
 import snap.view.*;

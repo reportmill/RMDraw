@@ -5,7 +5,7 @@ package rmdraw.shape;
 import java.util.*;
 import java.util.List;
 import snap.gfx.*;
-import snap.text.TextEditor;
+import snap.text.*;
 import snap.util.*;
 
 /**
@@ -55,7 +55,7 @@ public class RMTextShape extends RMRectShape {
     RMLinkedText           _linkedText;
     
     // A text box to manage RichText in shape bounds
-    TextBox                _textBox;
+    TextBox _textBox;
 
     // The text editor, if one has been set
     TextEditor _textEdtr;

@@ -6,8 +6,8 @@ import rmdraw.graphics.*;
 import java.util.*;
 import snap.gfx.Color;
 import snap.gfx.Font;
-import snap.gfx.RichText;
-import snap.gfx.TextLineStyle;
+import snap.text.RichText;
+import snap.text.TextLineStyle;
 import snap.util.*;
 import snap.web.WebURL;
 

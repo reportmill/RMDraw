@@ -3,7 +3,7 @@
  */
 package rmdraw.shape;
 import snap.gfx.Font;
-import snap.gfx.RichText;
+import snap.text.RichText;
 import snap.util.*;
 
 /**

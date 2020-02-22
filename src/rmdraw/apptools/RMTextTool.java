@@ -7,7 +7,10 @@ import rmdraw.shape.*;
 import rmdraw.graphics.*;
 import java.util.List;
 import snap.gfx.*;
+import snap.text.RichTextLine;
+import snap.text.RichTextRun;
 import snap.text.TextEditor;
+import snap.text.TextLineStyle;
 import snap.util.*;
 import snap.view.*;
 
