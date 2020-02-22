@@ -7,8 +7,10 @@ import rmdraw.graphics.*;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.*;
+import snap.text.TextEditor;
 import snap.util.ListUtils;
 import snap.view.ViewUtils;
+import snap.viewx.SpellCheckPanel;
 
 /**
  * Handles useful methods to help editor.
@@ -560,7 +562,7 @@ public static void setSelectedColor(Editor anEditor, Color aColor)
     if(anEditor.getTextEditor()!=null) {
         
         // Get text editor
-        RMTextEditor ted = anEditor.getTextEditor();
+        TextEditor ted = anEditor.getTextEditor();
         
         // If command down, and text is outlined, set color of outline instead
         if(ViewUtils.isMetaDown() && ted.getTextBorder()!=null) {
@@ -796,7 +798,7 @@ public static void setJustify(Editor anEditor, boolean aValue)
 public static void setSuperscript(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Make Superscript");
-    RMTextEditor ted = anEditor.getTextEditor();
+    TextEditor ted = anEditor.getTextEditor();
     if(ted!=null)
         ted.setSuperscript();
 }
@@ -807,7 +809,7 @@ public static void setSuperscript(Editor anEditor)
 public static void setSubscript(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Make Subscript");
-    RMTextEditor ted = anEditor.getTextEditor();
+    TextEditor ted = anEditor.getTextEditor();
     if(ted!=null)
         ted.setSubscript();
 }
@@ -846,6 +848,66 @@ public static void addImagePlaceholder(Editor anEditor)
     anEditor.setSelectedShape(imageShape);
     anEditor.setCurrentToolToSelectTool();
     anEditor.repaint();
+}
+
+/**
+ * Check spelling for given editor.
+ */
+public static void checkSpelling(Editor anEditor)
+{
+    new EditorSpellCheck(anEditor).show(anEditor);
+}
+
+/**
+ * A SpellCheckPanel for Editor.
+ */
+private static class EditorSpellCheck extends SpellCheckPanel {
+
+    // The Editor
+    private Editor _editor;
+
+    // The TextShape being edited
+    private RMTextShape _workingText;
+
+    /** Create EditorSpellCheck. */
+    EditorSpellCheck(Editor anEditor)  { _editor = anEditor; }
+
+    @Override
+    protected String getText()
+    {
+        // Get editor and selected shape
+        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
+
+        // If shape has changed do the right thing
+        if(shape!=_workingText) {
+
+            // If new shape is text, make it the working text
+            if(shape instanceof RMTextShape)
+                _workingText = (RMTextShape)shape;
+
+                // If new shape isn't text, but is on same page as previous workingText, select previous working text
+            else if(_workingText!=null && shape.getPageShape()==_workingText.getPageShape()) {
+            }
+
+            // Otherwise, set workingText to null
+            else _workingText = null;
+        }
+
+        // Make sure working text is superselected
+        if(_workingText!=null && _workingText!=_editor.getSuperSelectedShape()) {
+            _editor.setSuperSelectedShape(_workingText);
+            _editor.getTextEditor().setSel(0);
+        }
+
+        // Return working text
+        return _workingText!=null ? _workingText.getText() : null;
+    }
+
+    @Override
+    protected TextEditor getTextEditor()
+    {
+        return _editor.getTextEditor();
+    }
 }
 
 }

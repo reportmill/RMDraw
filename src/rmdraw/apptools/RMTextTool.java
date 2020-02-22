@@ -7,6 +7,7 @@ import rmdraw.shape.*;
 import rmdraw.graphics.*;
 import java.util.List;
 import snap.gfx.*;
+import snap.text.TextEditor;
 import snap.util.*;
 import snap.view.*;
 
@@ -59,7 +60,7 @@ public void resetUI()
     TextLineStyle pgraph = text.getRichText().getLineStyleAt(selStart);
     
     // If editor is text editing, get paragraph from text editor instead
-    RMTextEditor ted = editor.getTextEditor();
+    TextEditor ted = editor.getTextEditor();
     if(ted!=null)
         pgraph = ted.getInputParagraph();
     
@@ -239,7 +240,7 @@ private void textAreaChangedSel()
         editor.setSuperSelectedShape(textShape);
     
     // Get TextEditor and update sel from TextArea
-    RMTextEditor textEd = editor.getTextEditor();
+    TextEditor textEd = editor.getTextEditor();
     if(textEd!=null)
         textEd.setSel(_textArea.getSelStart(), _textArea.getSelEnd());
         

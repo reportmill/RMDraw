@@ -2,10 +2,10 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.graphics.*;
 import java.util.*;
 import java.util.List;
 import snap.gfx.*;
+import snap.text.TextEditor;
 import snap.util.*;
 
 /**
@@ -58,7 +58,7 @@ public class RMTextShape extends RMRectShape {
     TextBox                _textBox;
 
     // The text editor, if one has been set
-    RMTextEditor           _textEdtr;
+    TextEditor _textEdtr;
     
     // The default text margin (top=1, left=2, bottom=0, right=2)
     static Insets          _marginDefault = new Insets(1, 2, 0, 2);
@@ -645,7 +645,7 @@ protected void updateTextBox()
     _textBox.setLinked(getLinkedText()!=null);
     _textBox.setAlignY(getAlignmentY());
     _textBox.setBoundsPath(!(getPath() instanceof Rect) || getPerformsWrap()? getPath() : null);
-    _textBox.setHyphenate(RMTextEditor.isHyphenating());
+    _textBox.setHyphenate(TextEditor.isHyphenating());
     _textBox.setFontScale(1);
     if(_fitText) _textBox.scaleTextToFit();
 }
@@ -658,10 +658,10 @@ public boolean isTextEditorSet()  { return _textEdtr!=null; }
 /**
  * Returns the text editor.
  */
-public RMTextEditor getTextEditor()
+public TextEditor getTextEditor()
 {
     if(_textEdtr!=null) return _textEdtr;
-    _textEdtr = new RMTextEditor();
+    _textEdtr = new TextEditor();
     _textEdtr.setTextBox(getTextBox());
     _textEdtr.setRichText(getRichText());
     return _textEdtr;
@@ -747,7 +747,7 @@ protected void paintShape(Painter aPntr)
 /**
  * Paints a given TextEditor.
  */
-protected void paintTextEditor(Painter aPntr, RMTextEditor aTE)
+protected void paintTextEditor(Painter aPntr, TextEditor aTE)
 {
     // Get selection path
     Shape path = aTE.getSelPath();

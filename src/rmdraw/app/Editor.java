@@ -3,7 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.graphics.RMTextEditor;
+import snap.text.TextEditor;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.*;
@@ -90,7 +90,7 @@ protected RMShapePaintProps createShapePaintProps()  { return new EditorShapePai
 /**
  * Returns the text editor (or null if not editing).
  */
-public RMTextEditor getTextEditor()
+public TextEditor getTextEditor()
 {
     RMShape shp = getSuperSelectedShape();
     return shp instanceof RMTextShape? ((RMTextShape)shp).getTextEditor() : null;
