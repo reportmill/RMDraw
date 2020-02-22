@@ -4,7 +4,7 @@
 package rmdraw.apptools;
 import rmdraw.app.*;
 import rmdraw.shape.*;
-import rmdraw.graphics.*;
+import rmdraw.gfx.*;
 import java.util.List;
 import snap.gfx.*;
 import snap.text.RichTextLine;

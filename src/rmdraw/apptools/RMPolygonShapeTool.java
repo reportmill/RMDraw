@@ -3,7 +3,7 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Editor;
-import rmdraw.graphics.*;
+import rmdraw.gfx.*;
 import rmdraw.shape.*;
 import snap.gfx.*;
 import snap.view.*;

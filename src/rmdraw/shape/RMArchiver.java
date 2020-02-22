@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.graphics.*;
+import rmdraw.gfx.*;
 import java.util.*;
 import snap.gfx.*;
 import snap.text.RichText;
@@ -98,7 +98,7 @@ public class RMArchiver extends XMLArchiver {
 
         // Strokes
         cmap.put("stroke", RMStroke.class); cmap.put("double-stroke", RMStroke.class);
-        cmap.put("border-stroke", "rmdraw.graphics.RMBorderStroke");
+        cmap.put("border-stroke", RMBorderStroke.class);
 
         // Fills
         cmap.put("fill", RMFill.class);

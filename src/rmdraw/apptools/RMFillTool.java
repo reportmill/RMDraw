@@ -3,7 +3,7 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.*;
-import rmdraw.graphics.*;
+import rmdraw.gfx.*;
 import rmdraw.shape.*;
 import java.util.*;
 

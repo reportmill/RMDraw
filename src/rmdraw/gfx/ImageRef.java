@@ -1,4 +1,4 @@
-package rmdraw.graphics;
+package rmdraw.gfx;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import snap.gfx.Image;

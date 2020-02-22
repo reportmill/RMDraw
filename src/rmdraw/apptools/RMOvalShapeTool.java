@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
-import rmdraw.graphics.RMStroke;
+import rmdraw.gfx.RMStroke;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.view.*;

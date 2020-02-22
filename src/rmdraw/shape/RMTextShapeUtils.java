@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.graphics.RMStroke;
+import rmdraw.gfx.RMStroke;
 import snap.gfx.*;
 import snap.text.RichText;
 import snap.text.TextBox;
