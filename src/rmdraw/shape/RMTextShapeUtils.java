@@ -3,6 +3,9 @@
  */
 package rmdraw.shape;
 import rmdraw.gfx.RMStroke;
+import snap.geom.Path;
+import snap.geom.Rect;
+import snap.geom.Shape;
 import snap.gfx.*;
 import snap.text.RichText;
 import snap.text.TextBox;

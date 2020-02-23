@@ -4,6 +4,10 @@
 package rmdraw.shape;
 import java.util.ArrayList;
 import java.util.List;
+
+import snap.geom.Point;
+import snap.geom.Rect;
+import snap.geom.Shape;
 import snap.gfx.*;
 import snap.util.*;
 

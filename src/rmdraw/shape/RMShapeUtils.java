@@ -3,6 +3,9 @@
  */
 package rmdraw.shape;
 import java.util.*;
+
+import snap.geom.Rect;
+import snap.geom.Shape;
 import snap.gfx.*;
 
 /**

@@ -6,6 +6,9 @@ import rmdraw.app.*;
 import rmdraw.shape.*;
 import java.text.DecimalFormat;
 import java.util.*;
+
+import snap.geom.Point;
+import snap.geom.Rect;
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.*;

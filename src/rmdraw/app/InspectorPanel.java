@@ -4,6 +4,7 @@
 package rmdraw.app;
 import rmdraw.apptools.*;
 import rmdraw.shape.*;
+import snap.geom.Polygon;
 import snap.gfx.*;
 import snap.util.SnapUtils;
 import snap.view.*;

@@ -5,6 +5,7 @@ package rmdraw.apptools;
 import rmdraw.app.Editor;
 import rmdraw.app.EditorProxGuide;
 import rmdraw.shape.*;
+import snap.geom.Size;
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.*;
@@ -15,7 +16,7 @@ import snap.view.*;
 public class RMDocumentTool <T extends RMDocument> extends RMTool <T> {
     
     // The array of supported paper sizes
-    static Size      _paperSizes[];
+    static Size _paperSizes[];
     
     // The array of supported paper size names
     static String    _paperSizeNames[];

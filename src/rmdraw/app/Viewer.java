@@ -3,6 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.shape.*;
+import snap.geom.*;
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.*;

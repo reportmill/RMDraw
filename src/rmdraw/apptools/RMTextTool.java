@@ -6,6 +6,8 @@ import rmdraw.app.*;
 import rmdraw.shape.*;
 import rmdraw.gfx.*;
 import java.util.List;
+
+import snap.geom.*;
 import snap.gfx.*;
 import snap.text.RichTextLine;
 import snap.text.RichTextRun;
@@ -74,7 +76,7 @@ public void resetUI()
     setViewValue("AlignFullButton", pgraph.isJustify());
     
     // Update AlignTopButton, AlignMiddleButton, AlignBottomButton
-    setViewValue("AlignTopButton", text.getAlignmentY()==VPos.TOP);
+    setViewValue("AlignTopButton", text.getAlignmentY()== VPos.TOP);
     setViewValue("AlignMiddleButton", text.getAlignmentY()==VPos.CENTER);
     setViewValue("AlignBottomButton", text.getAlignmentY()==VPos.BOTTOM);
     

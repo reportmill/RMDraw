@@ -4,6 +4,8 @@
 package rmdraw.shape;
 import rmdraw.gfx.*;
 import java.util.*;
+
+import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextFormat;
 import snap.util.*;

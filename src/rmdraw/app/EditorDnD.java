@@ -3,6 +3,8 @@
  */
 package rmdraw.app;
 import rmdraw.shape.*;
+import snap.geom.Point;
+import snap.geom.Rect;
 import snap.gfx.*;
 import snap.view.*;
 import snap.viewx.DialogBox;

@@ -6,7 +6,7 @@ import rmdraw.shape.*;
 import snap.gfx.Color;
 import snap.gfx.GradientPaint;
 import snap.gfx.Paint;
-import snap.gfx.Point;
+import snap.geom.Point;
 import snap.view.ViewEvent;
 
 /**

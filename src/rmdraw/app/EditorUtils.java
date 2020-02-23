@@ -5,6 +5,10 @@ package rmdraw.app;
 import rmdraw.apptools.*;
 import rmdraw.shape.*;
 import java.util.*;
+
+import snap.geom.HPos;
+import snap.geom.Point;
+import snap.geom.Size;
 import snap.gfx.*;
 import snap.text.TextEditor;
 import snap.util.ListUtils;

@@ -2,6 +2,8 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
+import snap.geom.RoundRect;
+import snap.geom.Shape;
 import snap.gfx.*;
 import snap.util.*;
 

@@ -6,7 +6,7 @@ import rmdraw.shape.*;
 import snap.gfx.Image;
 import snap.gfx.ImagePaint;
 import snap.gfx.Paint;
-import snap.gfx.Rect;
+import snap.geom.Rect;
 import snap.view.*;
 import snap.viewx.FilePanel;
 import snap.web.WebURL;

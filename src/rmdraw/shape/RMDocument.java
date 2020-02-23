@@ -4,6 +4,9 @@
 package rmdraw.shape;
 import java.util.*;
 import java.io.File;
+
+import snap.geom.Rect;
+import snap.geom.Size;
 import snap.gfx.*;
 import snap.util.*;
 import snap.web.WebURL;
@@ -50,7 +53,7 @@ public class RMDocument extends RMParentShape {
     boolean           _snapMargin = true;
     
     // The margin rect
-    Rect              _margins = getMarginRectDefault();
+    Rect _margins = getMarginRectDefault();
     
     // The string to be used when report encounters a null value
     String            _nullString = "<NA>";

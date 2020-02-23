@@ -3,6 +3,9 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
+import snap.geom.Point;
+import snap.geom.Rect;
+import snap.geom.Shape;
 import snap.text.TextEditor;
 import rmdraw.shape.*;
 import java.util.*;

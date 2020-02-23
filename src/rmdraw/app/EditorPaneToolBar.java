@@ -5,6 +5,9 @@ package rmdraw.app;
 import rmdraw.apptools.*;
 import rmdraw.shape.*;
 import java.util.*;
+
+import snap.geom.HPos;
+import snap.geom.Pos;
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.*;

@@ -3,6 +3,7 @@
  */
 package rmdraw.shape;
 import rmdraw.gfx.*;
+import snap.geom.*;
 import snap.gfx.*;
 import snap.util.*;
 
@@ -235,7 +236,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     // Archive Key, Padding, Alignment, GrowToFit, PreserveRatio
     if(_key!=null && _key.length()>0) e.add("key", _key);
     if(_padding>0) e.add("Padding", _padding);
-    if(getAlignment()!=Pos.CENTER) e.add("Alignment", getAlignment());
+    if(getAlignment()!= Pos.CENTER) e.add("Alignment", getAlignment());
     if(!isGrowToFit()) e.add("GrowToFit", isGrowToFit());
     if(!getPreserveRatio()) e.add("PreserveRatio", getPreserveRatio());
     

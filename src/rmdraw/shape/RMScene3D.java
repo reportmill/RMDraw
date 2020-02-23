@@ -5,6 +5,9 @@ package rmdraw.shape;
 import rmdraw.gfx3d.*;
 import rmdraw.gfx.*;
 import java.util.*;
+
+import snap.geom.Path;
+import snap.geom.Rect;
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.ViewEvent;

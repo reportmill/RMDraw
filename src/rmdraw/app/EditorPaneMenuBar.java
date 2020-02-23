@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import snap.gfx.HPos;
+import snap.geom.HPos;
 import snap.text.TextEditor;
 import snap.util.*;
 import snap.view.*;
