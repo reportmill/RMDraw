@@ -249,8 +249,8 @@ public void setTextBorder(Border aBorder)
  */
 public HPos getAlignmentX()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getAlignX();
+    if (isTextEditorSet())
+        return getTextEditor().getLineAlign();
     return getRichText().getLineStyleAt(0).getAlign();
 }
 
@@ -259,9 +259,9 @@ public HPos getAlignmentX()
  */
 public void setAlignmentX(HPos anAlignX)
 {
-    if(isTextEditorSet())
-        getTextEditor().setAlignX(anAlignX);
-    else getRichText().setAlignX(anAlignX);
+    if (isTextEditorSet())
+        getTextEditor().setLineAlign(anAlignX); else
+    getRichText().setAlignX(anAlignX);
 }
 
 /**
@@ -354,8 +354,7 @@ public void setMultiline(boolean aValue)
  */
 public float getCharSpacing()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getCharSpacing();
+    if (isTextEditorSet()) return getTextEditor().getCharSpacing();
     return getRichText().getRunAt(0).getCharSpacing();
 }
 
@@ -364,9 +363,8 @@ public float getCharSpacing()
  */
 public void setCharSpacing(float aValue)
 {
-    if(isTextEditorSet())
-        getTextEditor().setCharSpacing(aValue);
-    else getRichText().setStyleValue(TextStyle.CHAR_SPACING_KEY, aValue==0? null : aValue);
+    if (isTextEditorSet()) { getTextEditor().setCharSpacing(aValue); return; }
+    getRichText().setStyleValue(TextStyle.CHAR_SPACING_KEY, aValue==0? null : aValue);
 }
 
 /**
@@ -374,8 +372,7 @@ public void setCharSpacing(float aValue)
  */
 public double getLineSpacing()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getLineSpacing();
+    if (isTextEditorSet()) return getTextEditor().getLineSpacing();
     return getRichText().getLineStyleAt(0).getSpacing();
 }
 
@@ -384,12 +381,10 @@ public double getLineSpacing()
  */
 public void setLineSpacing(float aHeight)
 {
-    if(isTextEditorSet())
-        getTextEditor().setLineSpacing(aHeight);
-    else {
-        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
-        getRichText().setLineStyle(ps, 0, length());
-    }
+    if(isTextEditorSet()) { getTextEditor().setLineSpacing(aHeight); return; }
+
+    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
+    getRichText().setLineStyle(ps, 0, length());
 }
 
 /**
@@ -397,8 +392,7 @@ public void setLineSpacing(float aHeight)
  */
 public double getLineGap()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getLineGap();
+    if (isTextEditorSet()) return getTextEditor().getLineGap();
     return getRichText().getLineStyleAt(0).getSpacing();
 }
 
@@ -407,12 +401,10 @@ public double getLineGap()
  */
 public void setLineGap(double aHeight)
 {
-    if(isTextEditorSet())
-        getTextEditor().setLineGap(aHeight);
-    else {
-        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_KEY, aHeight);
-        getRichText().setLineStyle(ps, 0, length());
-    }
+    if (isTextEditorSet()) { getTextEditor().setLineGap(aHeight); return; }
+
+    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_KEY, aHeight);
+    getRichText().setLineStyle(ps, 0, length());
 }
 
 /**
@@ -420,8 +412,7 @@ public void setLineGap(double aHeight)
  */
 public double getLineHeightMin()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getLineHeightMin();
+    if (isTextEditorSet()) return getTextEditor().getLineHeightMin();
     return getRichText().getLineStyleAt(0).getMinHeight();
 }
 
@@ -430,12 +421,10 @@ public double getLineHeightMin()
  */
 public void setLineHeightMin(float aHeight)
 {
-    if(isTextEditorSet())
-        getTextEditor().setLineHeightMin(aHeight);
-    else {
-        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
-        getRichText().setLineStyle(ps, 0, length());
-    }
+    if (isTextEditorSet()) { getTextEditor().setLineHeightMin(aHeight); return; }
+
+    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
+    getRichText().setLineStyle(ps, 0, length());
 }
 
 /**
@@ -443,8 +432,7 @@ public void setLineHeightMin(float aHeight)
  */
 public double getLineHeightMax()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getLineHeightMax();
+    if (isTextEditorSet()) return getTextEditor().getLineHeightMax();
     return getRichText().getLineStyleAt(0).getMaxHeight();
 }
 
@@ -453,12 +441,9 @@ public double getLineHeightMax()
  */
 public void setLineHeightMax(float aHeight)
 {
-    if(isTextEditorSet())
-        getTextEditor().setLineHeightMax(aHeight);
-    else {
-        TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MAX_HEIGHT_KEY, aHeight);
-        getRichText().setLineStyle(ps, 0, length());
-    }
+    if (isTextEditorSet()) { getTextEditor().setLineHeightMax(aHeight); return; }
+    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MAX_HEIGHT_KEY, aHeight);
+    getRichText().setLineStyle(ps, 0, length());
 }
 
 /**
@@ -663,10 +648,21 @@ public boolean isTextEditorSet()  { return _textEdtr!=null; }
 public TextEditor getTextEditor()
 {
     if(_textEdtr!=null) return _textEdtr;
-    _textEdtr = new TextEditor();
+    _textEdtr = new TextShapeTextEditor();
     _textEdtr.setTextBox(getTextBox());
-    _textEdtr.setRichText(getRichText());
     return _textEdtr;
+}
+
+/**
+ * A TextEditor subclass to repaint TextShape when selection changes.
+ */
+private class TextShapeTextEditor extends TextEditor {
+    @Override
+    protected void repaintSel()
+    {
+        super.repaintSel();
+        RMTextShape.this.repaint();
+    }
 }
 
 /**
@@ -756,18 +752,29 @@ protected void paintTextEditor(Painter aPntr, TextEditor aTE)
 
     // If empty selection, draw caret
     if(aTE.isSelEmpty() && path!=null) {
-        aPntr.setColor(Color.BLACK); aPntr.setStroke(Stroke.Stroke1); // Set color and stroke of cursor
-        aPntr.setAntialiasing(false); aPntr.draw(path); aPntr.setAntialiasing(true); // Draw cursor
+        if (aTE.isShowCaret()) {
+            aPntr.setColor(Color.BLACK);
+            aPntr.setStroke(Stroke.Stroke1); // Set color and stroke of cursor
+            aPntr.setAntialiasing(false);
+            aPntr.draw(path);
+            aPntr.setAntialiasing(true); // Draw cursor
+        }
     }
 
     // If selection, get selection path and fill
-    else { aPntr.setColor(new Color(128, 128, 128, 128)); aPntr.fill(path); }
+    else {
+        aPntr.setColor(new Color(128, 128, 128, 128));
+        aPntr.fill(path);
+    }
 
     // If spell checking, get path for misspelled words and draw
-    if(aTE.isSpellChecking() && aTE.length()>0) {
+    if (aTE.isSpellChecking() && aTE.length()>0) {
         Shape spath = aTE.getSpellingPath();
-        if(spath!=null) { aPntr.setColor(Color.RED); aPntr.setStroke(Stroke.StrokeDash1); aPntr.draw(spath);
-            aPntr.setColor(Color.BLACK); aPntr.setStroke(Stroke.Stroke1); }
+        if(spath!=null) {
+            aPntr.setColor(Color.RED); aPntr.setStroke(Stroke.StrokeDash1);
+            aPntr.draw(spath);
+            aPntr.setColor(Color.BLACK); aPntr.setStroke(Stroke.Stroke1);
+        }
     }
 }
 

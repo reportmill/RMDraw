@@ -542,7 +542,7 @@ public static Color getSelectedColor(Editor anEditor)
         
     // If text color and text editing, return color of text editor
     if(anEditor.getTextEditor()!=null)
-        return anEditor.getTextEditor().getColor();
+        return anEditor.getTextEditor().getTextColor();
         
     // Return selected shape's color
     return anEditor.getSelectedOrSuperSelectedShape().getColor();
@@ -574,7 +574,7 @@ public static void setSelectedColor(Editor anEditor, Color aColor)
         }
         
         // If no command down, set color of text editor
-        else ted.setColor(color);
+        else ted.setTextColor(color);
     }
     
     // If fill color, set selected shapes' fill color
@@ -618,7 +618,7 @@ public static void setTextColor(Editor anEditor, Color aColor)
 {
     // If text editing, forward on to text editor
     if(anEditor.getTextEditor()!=null)
-        anEditor.getTextEditor().setColor(aColor);
+        anEditor.getTextEditor().setTextColor(aColor);
         
     // Otherwise, iterate over editor selected shapes or super selected shape
     else for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())

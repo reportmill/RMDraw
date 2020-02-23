@@ -36,8 +36,8 @@ public class RMTextTool <T extends RMTextShape> extends RMTool <T> {
     // Whether current mouse drag should be moving table column
     boolean            _moveTableColumn;
 
-    // A Listener for RichText PropChange
-    PropChangeListener  _richTextLsnr = pc -> richTextDidPropChange(pc);
+    // A Listener for TextEditor Selection PropChange
+    PropChangeListener _textEditorSelChangeLsnr = pc -> textEditorSelChanged();
 
 /**
  * Initialize UI panel.
@@ -48,7 +48,7 @@ protected void initUI()
     TextView textView = getView("TextView", TextView.class);
     textView.getScrollView().setBarSize(12);
     _textArea = textView.getTextArea();
-    _textArea.addPropChangeListener(pc -> textAreaChangedSel(), TextArea.Selection_Prop);
+    _textArea.addPropChangeListener(pc -> textAreaPropChanged(pc));
 }
 
 /**
@@ -66,8 +66,10 @@ public void resetUI()
     
     // If editor is text editing, get paragraph from text editor instead
     TextEditor ted = editor.getTextEditor();
-    if(ted!=null)
-        pgraph = ted.getInputParagraph();
+    if (ted!=null) {
+        pgraph = ted.getSelLineStyle();
+        ted.setActive(editor.isFocused() && isSuperSelected(text));
+    }
     
     // Update AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton
     setViewValue("AlignLeftButton", pgraph.getAlign()==HPos.LEFT);
@@ -82,18 +84,21 @@ public void resetUI()
     
     // Set TextView RichText and selection
     _textArea.setRichText(text.getRichText());
-    if(ted!=null)
+    if (ted!=null)
         _textArea.setSel(ted.getSelStart(), ted.getSelEnd());
 
     // Get text's background color and set in TextArea if found
-    Color color = null; for(RMShape shape=text; color==null && shape!=null;) {
-        if(shape.getFill()==null) shape = shape.getParent(); else color = shape.getFill().getColor(); }
-    _textArea.setFill(color==null? Color.WHITE : color);
+    Color color = null;
+    for (RMShape shape=text; color==null && shape!=null;) {
+        if (shape.getFill()==null) shape = shape.getParent();
+        else color = shape.getFill().getColor();
+    }
+    _textArea.setFill(color==null ? Color.WHITE : color);
     
     // Get xstring font size and scale up to 12pt if any string run is smaller
     double fsize = 12;
-    for(RichTextLine line : text.getRichText().getLines())
-        for(RichTextRun run : line.getRuns())
+    for (RichTextLine line : text.getRichText().getLines())
+        for (RichTextRun run : line.getRuns())
             fsize = Math.min(fsize, run.getFont().getSize());
     _textArea.setFontScale(fsize<12? 12/fsize : 1);
     
@@ -227,30 +232,6 @@ public void respondUI(ViewEvent anEvent)
     // Update PDF options: EditableCheckBox, MultilineCheckBox
     if(anEvent.equals("EditableCheckBox")) text.setEditable(anEvent.getBoolValue());
     if(anEvent.equals("MultilineCheckBox")) text.setMultiline(anEvent.getBoolValue());
-}
-
-/**
- * Called when TextArea changes selection.
- */
-private void textAreaChangedSel()
-{
-    // If in resetUI, just return
-    if(isSendEventDisabled()) return;
-    
-    // Get text, repaint and make sure it's super-selected
-    Editor editor = getEditor();
-    RMTextShape textShape = getSelectedShape(); if(textShape==null) return;
-    textShape.repaint();
-    if(textShape!=editor.getSuperSelectedShape())
-        editor.setSuperSelectedShape(textShape);
-    
-    // Get TextEditor and update sel from TextArea
-    TextEditor textEd = editor.getTextEditor();
-    if(textEd!=null)
-        textEd.setSel(_textArea.getSelStart(), _textArea.getSelEnd());
-        
-    // ResetUI on MouseUp
-    ViewUtils.runOnMouseUp(() -> getEditorPane().resetLater());
 }
 
 /**
@@ -489,8 +470,9 @@ private void moveTableColumn(ViewEvent anEvent)
  */
 public void didBecomeSuperSelected(T aTextShape)
 {
-    // Start listening to changes to TextShape RichText
-    aTextShape.getRichText().addPropChangeListener(_richTextLsnr);
+    // Start listening to changes to TextEditor Selection change
+    TextEditor ted = aTextShape.getTextEditor();
+    ted.addPropChangeListener(_textEditorSelChangeLsnr, TextEditor.Selection_Prop);
 }
 
 /**
@@ -504,7 +486,9 @@ public void willLoseSuperSelected(T aTextShape)
         aTextShape.removeFromParent();
     
     // Stop listening to changes to TextShape RichText
-    aTextShape.getRichText().removePropChangeListener(_richTextLsnr);
+    TextEditor ted = aTextShape.getTextEditor();
+    ted.removePropChangeListener(_textEditorSelChangeLsnr, TextEditor.Selection_Prop);
+    ted.setActive(false);
     _updatingSize = false; _updatingMinHeight = 0;
     
     // Set text editor's text shape to null
@@ -514,29 +498,69 @@ public void willLoseSuperSelected(T aTextShape)
 /**
  * Handle changes to Selected TextShape.RichText
  */
-protected void richTextDidPropChange(PropChange aPC)
+protected void textAreaPropChanged(PropChange aPC)
 {
+    // Handle Selection change
+    if (aPC.getPropertyName()==TextArea.Selection_Prop) {
+
+        // Make sure TextShape is super-selected
+        Editor editor = getEditor();
+        RMTextShape textShape = getSelectedShape();
+        if (textShape!=null && textShape!=editor.getSuperSelectedShape())
+            editor.setSuperSelectedShape(textShape);
+
+        // Make sure TextEditor has same selection
+        TextEditor ted = editor.getTextEditor();
+        if (ted!=null)
+            ted.setSel(_textArea.getSelStart(), _textArea.getSelEnd());
+    }
+
+    // Handle Focus change
+    else if(aPC.getPropertyName()==TextArea.Focused_Prop) {
+        Editor editor = getEditor();
+        TextEditor ted = editor.getTextEditor();
+        if (ted!=null && _textArea.isFocused())
+            ted.setActive(false);
+    }
+
     // If updating size, reset text width & height to accommodate text
-    if(_updatingSize) {
+    else if (_updatingSize) {
         
         // Get TextShape
-        RMTextShape textShape = getSelectedShape(); if(textShape==null) return;
+        RMTextShape textShape = getSelectedShape(); if (textShape==null) return;
     
         // Get preferred text shape width
-        double maxWidth = _updatingMinHeight==0? textShape.getParent().getWidth() - textShape.getX() :
+        double maxWidth = _updatingMinHeight==0 ? textShape.getParent().getWidth() - textShape.getX() :
             textShape.getWidth();
-        double prefWidth = textShape.getPrefWidth(); if(prefWidth>maxWidth) prefWidth = maxWidth;
+        double prefWidth = textShape.getPrefWidth(); if (prefWidth>maxWidth) prefWidth = maxWidth;
 
         // If width gets updated, get & set desired width (make sure it doesn't go beyond page border)
-        if(_updatingMinHeight==0)
+        if (_updatingMinHeight==0)
             textShape.setWidth(prefWidth);
 
         // If PrefHeight or current height is greater than UpdatingMinHeight (which won't be zero if user drew a
         //  text box to enter text), set Height to PrefHeight
         double prefHeight = textShape.getPrefHeight();
-        if(prefHeight>_updatingMinHeight || textShape.getHeight()>_updatingMinHeight)
+        if (prefHeight>_updatingMinHeight || textShape.getHeight()>_updatingMinHeight)
             textShape.setHeight(Math.max(prefHeight, _updatingMinHeight));
     }
+}
+
+/**
+ * Called when TextArea changes selection.
+ */
+private void textEditorSelChanged()
+{
+    // Get TextEditor and update sel from TextArea
+    Editor editor = getEditor();
+    RMTextShape textShape = getSelectedShape(); if (textShape==null) return;
+    TextEditor textEd = editor.getTextEditor();
+    if (textEd!=null)
+        _textArea.setSel(textEd.getSelStart(), textEd.getSelEnd());
+
+    // Repaint TextShape and ResetUI on MouseUp
+    textShape.repaint();
+    ViewUtils.runOnMouseUp(() -> getEditorPane().resetLater());
 }
 
 /**
