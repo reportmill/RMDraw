@@ -711,6 +711,14 @@ public RMTool getTool(Object anObj)
 }
 
 /**
+ * Returns an EditorCellStyler that can get/set style attributes of current selection.
+ */
+public EditorStyler getStyler()  { return _styler; }
+
+// An EditorCellStyler to get/set style attributes of current selection
+private EditorStyler _styler = new EditorStyler(this);
+
+/**
  * Returns the specific tool for a given shape.
  */
 protected RMTool createTool(Class aClass)

@@ -91,7 +91,7 @@ public void resetUI()
 {
     // Get current font
     Editor editor = getEditor();
-    Font font = EditorUtils.getFont(editor);
+    Font font = editor.getStyler().getFont();
     
     // Get family name and size
     String familyName = font.getFamily();
@@ -106,8 +106,8 @@ public void resetUI()
     setViewEnabled("BoldButton", font.getBold()!=null);
     setViewValue("ItalicButton", font.isItalic());
     setViewEnabled("ItalicButton", font.getItalic()!=null);
-    setViewValue("UnderlineButton", EditorUtils.isUnderlined(editor));
-    setViewValue("OutlineButton", EditorUtils.getTextBorder(editor)!=null);
+    setViewValue("UnderlineButton", editor.getStyler().isUnderlined());
+    setViewValue("OutlineButton", editor.getStyler().getTextBorder()!=null);
     
     // Get font names in currently selected font's family
     String familyNames[] = Font.getFontNames(font.getFamily());
@@ -125,34 +125,35 @@ public void respondUI(ViewEvent anEvent)
 {
     // Get current editor
     Editor editor = getEditor();
+    EditorStyler styler = editor.getStyler();
     
     // Handle FontSizeUpButton, FontSizeDownButton
-    if(anEvent.equals("FontSizeUpButton")) { Font font = EditorUtils.getFont(editor);
-        EditorUtils.setFontSize(editor, font.getSize()<16? 1 : 2, true); }
-    if(anEvent.equals("FontSizeDownButton")) { Font font = EditorUtils.getFont(editor);
-        EditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
+    if(anEvent.equals("FontSizeUpButton")) { Font font = styler.getFont();
+        styler.setFontSize(font.getSize()<16? 1 : 2, true); }
+    if(anEvent.equals("FontSizeDownButton")) { Font font = styler.getFont();
+        styler.setFontSize(font.getSize()<16? -1 : -2, true); }
     
     // Handle BoldButton, ItalicButton, UnderlineButton, OutlineButton
-    if(anEvent.equals("BoldButton")) EditorUtils.setFontBold(editor, anEvent.getBoolValue());
-    if(anEvent.equals("ItalicButton")) EditorUtils.setFontItalic(editor, anEvent.getBoolValue());
-    if(anEvent.equals("UnderlineButton")) EditorUtils.setUnderlined(editor);
-    if(anEvent.equals("OutlineButton")) EditorUtils.setTextBorder(editor);
+    if(anEvent.equals("BoldButton")) styler.setFontBold(anEvent.getBoolValue());
+    if(anEvent.equals("ItalicButton")) styler.setFontItalic(anEvent.getBoolValue());
+    if(anEvent.equals("UnderlineButton")) styler.setUnderlined();
+    if(anEvent.equals("OutlineButton")) styler.setTextBorder();
     
     // Handle FontPickerButton
     if(anEvent.equals("FontPickerButton")) {
-        Font ofont = EditorUtils.getFont(editor);
+        Font ofont = styler.getFont();
         Font font = new FontPicker().showPicker(getEditorPane().getUI(), ofont);
         if(font!=null)
-            EditorUtils.setFontFamily(editor, font);
+            styler.setFontFamily(font);
     }
     
     // Handle SizesList
     if(anEvent.equals("SizesList") && anEvent.getValue()!=null)
-        EditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
+        styler.setFontSize(anEvent.getFloatValue(), false);
     
     // Handle SizeText
     if(anEvent.equals("SizeText"))
-        EditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
+        styler.setFontSize(anEvent.getFloatValue(), false);
 
     // Handle FamilyList, FamilyComboBox
     if(anEvent.equals("FamilyList") || (anEvent.equals("FamilyComboBox") && anEvent.isActionEvent())) {
@@ -160,7 +161,7 @@ public void respondUI(ViewEvent anEvent)
         String fontNames[] = Font.getFontNames(familyName); if(fontNames.length==0) return;
         String fontName = fontNames[0];
         Font font = Font.getFont(fontName, 12);
-        EditorUtils.setFontFamily(editor, font);
+        styler.setFontFamily(font);
     }
     
     // Handle AllButton, PDFButton
@@ -170,7 +171,7 @@ public void respondUI(ViewEvent anEvent)
     // Handle FontNameComboBox
     if(anEvent.equals("FontNameComboBox")) {
         Font font = Font.getFont(anEvent.getStringValue(), 12);
-        EditorUtils.setFontName(editor, font);
+        styler.setFontName(font);
     }
 }
 

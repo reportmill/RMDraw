@@ -78,7 +78,7 @@ protected void resetUI()
 {
     // Get the editor
     Editor editor = getEditor();
-    Font font = EditorUtils.getFont(editor);
+    Font font = editor.getStyler().getFont();
     
     // Update UndoButton, RedoButton
     Undoer undoer = editor.getUndoer();
@@ -105,7 +105,7 @@ protected void resetUI()
     setViewEnabled("BoldButton", font.getBold()!=null);
 
     // Update ColorWell
-    Color color = EditorUtils.getSelectedColor(editor);
+    Color color = editor.getStyler().getFillColor();
     _colorWell.setColor(color);
 }
 
@@ -136,11 +136,11 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle FillColorButton, StrokeColorButton, TextColorButton
     if (anEvent.equals("FillColorButton"))
-        EditorUtils.setColor(editor, anEvent.getView(ColorButton.class).getColor());
+        editor.getStyler().setFillColor(anEvent.getView(ColorButton.class).getColor());
     if (anEvent.equals("StrokeColorButton"))
-        EditorUtils.setStrokeColor(editor, anEvent.getView(ColorButton.class).getColor());
+        editor.getStyler().setStrokeColor(anEvent.getView(ColorButton.class).getColor());
     if (anEvent.equals("TextColorButton"))
-        EditorUtils.setTextColor(editor, anEvent.getView(ColorButton.class).getColor());
+        editor.getStyler().setTextColor(anEvent.getView(ColorButton.class).getColor());
 
     // Handle SamplesButton
     if(anEvent.equals("SamplesButton")) {
@@ -176,43 +176,43 @@ protected void respondUI(ViewEvent anEvent)
         String fontNames[] = Font.getFontNames(familyName); if(fontNames==null || fontNames.length==0) return;
         String fontName = fontNames[0];
         Font font = Font.get(fontName, 12);
-        EditorUtils.setFontFamily(editor, font);
+        editor.getStyler().setFontFamily(font);
         editor.requestFocus();
     }
     
     // Handle FontSizeComboBox
     if (anEvent.equals("FontSizeComboBox")) {
-        EditorUtils.setFontSize(editor, anEvent.getFloatValue(), false);
+        editor.getStyler().setFontSize(anEvent.getFloatValue(), false);
         editor.requestFocus();
     }
     
     // Handle FontSizeUpButton, FontSizeDownButton
-    if (anEvent.equals("FontSizeUpButton")) { Font font = EditorUtils.getFont(editor);
-        EditorUtils.setFontSize(editor, font.getSize()<16? 1 : 2, true); }
-    if (anEvent.equals("FontSizeDownButton")) { Font font = EditorUtils.getFont(editor);
-        EditorUtils.setFontSize(editor, font.getSize()<16? -1 : -2, true); }
+    if (anEvent.equals("FontSizeUpButton")) { Font font = editor.getStyler().getFont();
+        editor.getStyler().setFontSize(font.getSize()<16? 1 : 2, true); }
+    if (anEvent.equals("FontSizeDownButton")) { Font font = editor.getStyler().getFont();
+        editor.getStyler().setFontSize(font.getSize()<16? -1 : -2, true); }
     
     // Handle BoldButton, ItalicButton, UnderlineButton
     if (anEvent.equals("BoldButton"))
-        EditorUtils.setFontBold(editor, anEvent.getBoolValue());
+        editor.getStyler().setFontBold(anEvent.getBoolValue());
     if (anEvent.equals("ItalicButton"))
-        EditorUtils.setFontItalic(editor, anEvent.getBoolValue());
+        editor.getStyler().setFontItalic(anEvent.getBoolValue());
     if (anEvent.equals("UnderlineButton"))
-        EditorUtils.setUnderlined(editor);
+        editor.getStyler().setUnderlined();
         
     // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton
     if (anEvent.equals("AlignLeftButton"))
-        EditorUtils.setAlignmentX(editor, HPos.LEFT);
+        editor.getStyler().setAlignX(HPos.LEFT);
     if (anEvent.equals("AlignCenterButton"))
-        EditorUtils.setAlignmentX(editor, HPos.CENTER);
+        editor.getStyler().setAlignX(HPos.CENTER);
     if (anEvent.equals("AlignRightButton"))
-        EditorUtils.setAlignmentX(editor, HPos.RIGHT);
+        editor.getStyler().setAlignX(HPos.RIGHT);
     if (anEvent.equals("AlignFullButton"))
-        EditorUtils.setJustify(editor, true);
+        editor.getStyler().setJustify(true);
     
     // Handle ColorWell
     if (anEvent.equals("ColorWell"))
-        EditorUtils.setSelectedColor(editor, _colorWell.getColor());
+        editor.getStyler().setFillColor(_colorWell.getColor());
 }
 
 /**

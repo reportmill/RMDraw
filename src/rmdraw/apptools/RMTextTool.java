@@ -142,10 +142,10 @@ public void respondUI(ViewEvent anEvent)
     for(RMShape txt : texts) txt.repaint(); //texts.forEach(i -> i.repaint());
     
     // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton, AlignTopButton, AlignMiddleButton
-    if (anEvent.equals("AlignLeftButton")) EditorUtils.setAlignmentX(editor, HPos.LEFT);
-    if (anEvent.equals("AlignCenterButton")) EditorUtils.setAlignmentX(editor, HPos.CENTER);
-    if (anEvent.equals("AlignRightButton")) EditorUtils.setAlignmentX(editor, HPos.RIGHT);
-    if (anEvent.equals("AlignFullButton")) EditorUtils.setJustify(editor, true);
+    if (anEvent.equals("AlignLeftButton")) editor.getStyler().setAlignX(HPos.LEFT);
+    if (anEvent.equals("AlignCenterButton")) editor.getStyler().setAlignX(HPos.CENTER);
+    if (anEvent.equals("AlignRightButton")) editor.getStyler().setAlignX(HPos.RIGHT);
+    if (anEvent.equals("AlignFullButton")) editor.getStyler().setJustify(true);
     if (anEvent.equals("AlignTopButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.TOP);
     if (anEvent.equals("AlignMiddleButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.CENTER);
     if (anEvent.equals("AlignBottomButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.BOTTOM);

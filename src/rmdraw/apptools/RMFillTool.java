@@ -58,20 +58,9 @@ protected void respondUI(ViewEvent anEvent)
         // Get Color from color well
         ColorWell cwell = getView("FillColorWell", ColorWell.class);
         Color color = cwell.getColor();
-        
-        // Iterate over selected shapes and set color
-        for(RMShape s : editor.getSelectedOrSuperSelectedShapes()) {
-            
-            // If command-click, set gradient fill
-            if(ViewUtils.isMetaDown()) {
-                Color c1 = shape.getFill()!=null? shape.getColor() : Color.CLEARWHITE;
-                Paint f = new GradientPaint(c1, color, 0);
-                s.setFill(f);
-            }
 
-            // If not command-click, just set color
-            else s.setColor(color);
-        }
+        // Set in editor
+        editor.getStyler().setFillColor(color);
     }
 }
 
