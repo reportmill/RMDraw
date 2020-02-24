@@ -28,7 +28,7 @@ public class EditorPaneToolBar extends EditorPane.SupportPane {
     ColorWell         _colorWell;
     
     // The toolbar tools
-    RMTool            _toolBarTools[];
+    Tool _toolBarTools[];
     
 /**
  * Creates a new editor pane tool bar.
@@ -165,7 +165,7 @@ protected void respondUI(ViewEvent anEvent)
 
     // Handle ToolButton(s)
     if (anEvent.getName().endsWith("ToolButton")) {
-        for(RMTool tool : _toolBarTools)
+        for(Tool tool : _toolBarTools)
             if(anEvent.getName().startsWith(tool.getClass().getSimpleName())) {
                 getEditor().setCurrentTool(tool); break; }
     }
@@ -259,14 +259,14 @@ public void stopSamplesButtonAnim()
 /**
  * Returns the ToolBar tools.
  */
-public RMTool[] getToolBarTools()  { return _toolBarTools; }
+public Tool[] getToolBarTools()  { return _toolBarTools; }
 
 /**
  * Creates the list of tool instances for tool bar.
  */
-protected RMTool[] createToolBarTools()
+protected Tool[] createToolBarTools()
 {
-    List <RMTool> tools = new ArrayList();
+    List <Tool> tools = new ArrayList();
     Editor editor = getEditor();
     tools.add(editor.getSelectTool());
     tools.add(editor.getTool(RMLineShape.class));
@@ -275,7 +275,7 @@ protected RMTool[] createToolBarTools()
     tools.add(editor.getTool(RMTextShape.class));
     tools.add(editor.getTool(RMPolygonShape.class));
     tools.add(new RMPolygonShapeTool.PencilTool(editor));
-    return tools.toArray(new RMTool[0]);
+    return tools.toArray(new Tool[0]);
 }
 
 }

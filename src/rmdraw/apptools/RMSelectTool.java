@@ -4,7 +4,7 @@
 package rmdraw.apptools;
 import rmdraw.app.Editor;
 import rmdraw.app.EditorProxGuide;
-import rmdraw.app.RMTool;
+import rmdraw.app.Tool;
 import rmdraw.shape.*;
 import java.util.*;
 
@@ -23,7 +23,7 @@ import snap.view.ViewEvent;
  *   - Shift click or shift drag XORs selection
  *   - Click and drag handle resizes shape
  */
-public class RMSelectTool extends RMTool {
+public class RMSelectTool extends Tool {
     
     // The mode of current even loop (Move, Resize, etc.)
     DragMode        _dragMode = DragMode.None;
@@ -61,7 +61,7 @@ public void mousePressed(ViewEvent anEvent)
     for(RMShape shp : editor.getSuperSelectedShapes()) shp.repaint();
 
     // See if tool wants to handle this one
-    RMTool toolShared = editor.getTool(editor.getSelectedOrSuperSelectedShapes());
+    Tool toolShared = editor.getTool(editor.getSelectedOrSuperSelectedShapes());
     if(toolShared!=null && toolShared.mousePressedSelection(anEvent)) {
         _dragMode = DragMode.None; return; }
     

@@ -3,7 +3,7 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Editor;
-import rmdraw.app.RMTool;
+import rmdraw.app.Tool;
 import rmdraw.gfx.*;
 import rmdraw.shape.*;
 import snap.geom.*;
@@ -13,7 +13,7 @@ import snap.view.*;
 /**
  * This class manages creation and editing of polygon shapes.
  */
-public class RMPolygonShapeTool <T extends RMPolygonShape> extends RMTool<T> {
+public class RMPolygonShapeTool <T extends RMPolygonShape> extends Tool<T> {
     
     // The current path being added
     Path         _path;

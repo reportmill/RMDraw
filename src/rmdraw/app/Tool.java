@@ -14,7 +14,7 @@ import snap.view.*;
 /**
  * This is the base class for tools in RM - the objects that provide GUI editing for RM shapes.
  */
-public class RMTool <T extends RMShape> extends ViewOwner {
+public class Tool<T extends RMShape> extends ViewOwner {
     
     // The Editor that owns this tool
     private Editor _editor;
@@ -71,7 +71,7 @@ public String getWindowTitle()  { return "Shape Inspector"; }
 /**
  * Create Node.
  */
-protected View createUI()  { return getClass()==RMTool.class? new Label() : super.createUI(); }
+protected View createUI()  { return getClass()== Tool.class? new Label() : super.createUI(); }
 
 /**
  * Returns the currently active editor.
@@ -115,12 +115,12 @@ public List <? extends RMShape> getSelectedShapes()  { return getEditor().getSel
 /**
  * Returns the tool for a given shape.
  */
-public RMTool getTool(RMShape aShape)  { return _editor.getTool(aShape); }
+public Tool getTool(RMShape aShape)  { return _editor.getTool(aShape); }
 
 /**
  * Returns the tool for a given shape class.
  */
-public RMTool getToolForClass(Class <? extends RMShape> aClass)  { return _editor.getTool(aClass); }
+public Tool getToolForClass(Class <? extends RMShape> aClass)  { return _editor.getTool(aClass); }
 
 /**
  * Called when a tool is selected.
@@ -229,7 +229,7 @@ public Font getFontDeep(Editor anEditor, RMShape aShape)
     
     // If not found, look for font with child tools (recurse)
     for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++) {
-        RMShape child = aShape.getChild(i); RMTool tool = getTool(child);
+        RMShape child = aShape.getChild(i); Tool tool = getTool(child);
         font = tool.getFontDeep(anEditor, child);
     }
     
@@ -332,7 +332,7 @@ public void setFontKeyDeep(Editor anEditor, RMShape aShape, String aKey, Object 
     
     // Set for children
     for(int i=0, iMax=aShape.getChildCount(); i<iMax; i++) { RMShape child = aShape.getChild(i);
-        RMTool tool = getTool(child);
+        Tool tool = getTool(child);
         tool.setFontKeyDeep(anEditor, child, aKey, aVal);
     }
 }
@@ -499,7 +499,7 @@ protected void paintHandlesForShapes(Painter aPntr, List <RMShape> theShapes)
     
     // Iterate over shapes and have tool paintHandles
     for(RMShape shape : shapes) {
-        RMTool tool = getTool(shape);
+        Tool tool = getTool(shape);
         tool.paintHandles(shape, aPntr, false);
     }
 }
@@ -513,7 +513,7 @@ protected void paintHandlesForSuperSelectedShapes(Painter aPntr)
     Editor editor = getEditor();
     for(int i=1, iMax=editor.getSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSuperSelectedShape(i);
-        RMTool tool = getTool(shape);
+        Tool tool = getTool(shape);
         tool.paintHandles(shape, aPntr, true);
     }
 }
@@ -713,10 +713,10 @@ public static class RMShapeHandle {
     // The shape, handle index and shape tool
     public RMShape  shape;
     public int      handle;
-    public RMTool   tool;
+    public Tool tool;
     
     /** Creates a new shape-handle. */
-    public RMShapeHandle(RMShape aShape, int aHndl, RMTool aTool) { shape = aShape; handle = aHndl; tool = aTool; }
+    public RMShapeHandle(RMShape aShape, int aHndl, Tool aTool) { shape = aShape; handle = aHndl; tool = aTool; }
 }
 
 /**
@@ -725,7 +725,7 @@ public static class RMShapeHandle {
 public RMShapeHandle getShapeHandleAtPoint(Point aPoint)
 {
     // Declare variable for shape and handle and shape tool
-    RMShape shape = null; int handle = -1; RMTool tool = null;
+    RMShape shape = null; int handle = -1; Tool tool = null;
     Editor editor = getEditor();
 
     // Check selected shapes for a selected handle index
@@ -813,12 +813,12 @@ Image _image;
  */
 protected Image getImageImpl()
 {
-    for(Class c=getClass(); c!=RMTool.class; c=c.getSuperclass()) {
+    for(Class c = getClass(); c!= Tool.class; c=c.getSuperclass()) {
         String name = c.getSimpleName().replace("Tool", "") + ".png";
         Image img = Image.get(c, name);
         if(img!=null) return img;
     }
-    return Image.get(RMTool.class, "RMShape.png");
+    return Image.get(Tool.class, "RMShape.png");
 }
 
 }

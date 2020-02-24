@@ -88,7 +88,7 @@ public void resetUI()
 {
     // Get editor (and just return if null) and tool for selected shapes
     Editor editor = getEditor(); if(editor==null) return;
-    RMTool tool = editor.getTool(editor.getSelectedOrSuperSelectedShapes());
+    Tool tool = editor.getTool(editor.getSelectedOrSuperSelectedShapes());
     
     // If ShapeSpecificButton is selected, instal inspector for current selection
     if(getViewBoolValue("ShapeSpecificButton"))
@@ -103,7 +103,7 @@ public void resetUI()
     
     // Get inspector title from owner and set
     String title = "Inspector";
-    if(owner instanceof RMTool) title = ((RMTool)owner).getWindowTitle();
+    if(owner instanceof Tool) title = ((Tool)owner).getWindowTitle();
     else if(owner instanceof EditorPane.SupportPane) {
         title = ((EditorPane.SupportPane)owner).getWindowTitle();
         String shpName = tool.getShapeClass().getSimpleName().replace("RM", "").replace("Shape", "");

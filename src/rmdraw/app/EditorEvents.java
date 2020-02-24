@@ -47,7 +47,7 @@ public void processEvent(ViewEvent anEvent)
     boolean isKey = anEvent.isKeyEvent() && !anEvent.isConsumed();
     if(isKey && (!editor.isPreview() || getOverridePreview())) {
         RMShape superSelectedShape = editor.getSuperSelectedShape();
-        RMTool tool = editor.getTool(superSelectedShape);
+        Tool tool = editor.getTool(superSelectedShape);
         tool.processKeyEvent(superSelectedShape, anEvent);
     }
     

@@ -14,7 +14,7 @@ import snap.viewx.FilePanel;
 /**
  * Provides UI for RMImage shape editing.
  */
-public class RMImageTool <T extends RMImageShape> extends RMTool <T> {
+public class RMImageTool <T extends RMImageShape> extends Tool<T> {
     
 /**
  * Returns the class that this tool is responsible for.

@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
-import rmdraw.app.RMTool;
+import rmdraw.app.Tool;
 import rmdraw.gfx3d.*;
 import rmdraw.shape.*;
 import snap.view.ViewEvent;
@@ -10,7 +10,7 @@ import snap.view.ViewEvent;
 /**
  * Tool for visual editing RMScene3D.
  */
-public class RMScene3DTool <T extends RMScene3D> extends RMTool<T> {
+public class RMScene3DTool <T extends RMScene3D> extends Tool<T> {
     
     // The Trackball control for rotating selected scene3d
     Trackball  _trackball;

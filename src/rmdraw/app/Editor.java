@@ -43,10 +43,10 @@ public class Editor extends Viewer implements DeepChangeListener {
     private RMSelectTool _selectTool;
     
     // Map of tool instances by shape class
-    private Map <Class, RMTool> _tools = new HashMap();
+    private Map <Class, Tool> _tools = new HashMap();
     
     // The current editor tool
-    private RMTool _currentTool = getSelectTool();
+    private Tool _currentTool = getSelectTool();
 
     // Constants for PropertyChanges
     public static final String CurrentTool_Prop = "CurrentTool";
@@ -363,7 +363,7 @@ public void flushEditingChanges()
 {
     // Get super-selected shape and its tool and tell tool to flushChanges
     RMShape shape = getSuperSelectedShape();
-    RMTool tool = getTool(shape);
+    Tool tool = getTool(shape);
     tool.flushChanges(this, shape);
 }
 
@@ -689,7 +689,7 @@ public RMSelectTool getSelectTool()
 /**
  * Returns the specific tool for a list of shapes (if they have the same tool).
  */
-public RMTool getTool(List aList)
+public Tool getTool(List aList)
 {
     Class commonClass = ClassUtils.getCommonClass(aList); // Get class for first object
     return getTool(commonClass); // Return tool for common class
@@ -698,11 +698,11 @@ public RMTool getTool(List aList)
 /**
  * Returns the specific tool for a given shape.
  */
-public RMTool getTool(Object anObj)
+public Tool getTool(Object anObj)
 {
     // Get the shape class and tool from tools map - if not there, find and set
     Class sclass = ClassUtils.getClass(anObj);
-    RMTool tool = _tools.get(sclass);
+    Tool tool = _tools.get(sclass);
     if(tool==null) {
         _tools.put(sclass, tool = createTool(sclass));
         tool.setEditor(this);
@@ -721,7 +721,7 @@ private EditorStyler _styler = new EditorStyler(this);
 /**
  * Returns the specific tool for a given shape.
  */
-protected RMTool createTool(Class aClass)
+protected Tool createTool(Class aClass)
 {
     if (aClass==RMDocument.class) return new RMDocumentTool();
     if (aClass==RMImageShape.class) return new RMImageTool();
@@ -733,23 +733,23 @@ protected RMTool createTool(Class aClass)
     if (aClass==RMPolygonShape.class) return new RMPolygonShapeTool();
     if (aClass==RMRectShape.class) return new RMRectShapeTool();
     if (aClass==RMScene3D.class) return new RMScene3DTool();
-    if (aClass==RMShape.class) return new RMTool();
+    if (aClass==RMShape.class) return new Tool();
     if (aClass==RMSpringShape.class) return new RMSpringShapeTool();
     if (aClass==RMTextShape.class) return new RMTextTool();
-    if (aClass==ViewerShape.class) return new RMTool();
+    if (aClass==ViewerShape.class) return new Tool();
     System.out.println("RMTool.createTool: " + aClass.getName());
-    return new RMTool();
+    return new Tool();
 }
 
 /**
  * Tool method - returns the currently selected tool.
  */
-public RMTool getCurrentTool()  { return _currentTool; }
+public Tool getCurrentTool()  { return _currentTool; }
 
 /**
  * Tool method - sets the currently select tool to the given tool.
  */
-public void setCurrentTool(RMTool aTool)
+public void setCurrentTool(Tool aTool)
 {
     // If tool is already current tool, just reactivate and return
     if(aTool==_currentTool) {
@@ -845,7 +845,7 @@ public void paintFront(Painter aPntr)
     super.paintFront(aPntr);
     
     // Have current tool paintTool (paints selected shape handles by default)
-    RMTool tool = getCurrentTool();
+    Tool tool = getCurrentTool();
     tool.paintTool(aPntr);
    
     // Paint proximity guides
@@ -905,7 +905,7 @@ public String getToolTip(ViewEvent anEvent)
     
     // Get deepest shape under point (just return if null), get tool and return tool's ToolTip for shape
     RMShape shape = getShapeAtPoint(anEvent.getX(), anEvent.getY(), true); if(shape==null) return null;
-    RMTool tool = getTool(shape);
+    Tool tool = getTool(shape);
     return tool.getToolTip(shape, anEvent);
 }
 

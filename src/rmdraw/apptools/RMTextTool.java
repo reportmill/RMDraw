@@ -19,7 +19,7 @@ import snap.view.*;
 /**
  * This class provides UI editing for text shapes.
  */
-public class RMTextTool <T extends RMTextShape> extends RMTool <T> {
+public class RMTextTool <T extends RMTextShape> extends Tool<T> {
     
     // The TextArea
     TextArea           _textArea;
