@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
+import rmdraw.app.RMTool;
 import rmdraw.gfx.RMStroke;
 import rmdraw.shape.*;
 import java.util.*;
@@ -10,7 +11,7 @@ import snap.view.*;
 /**
  * A tool subclass for editing RMOval.
  */
-public class RMOvalShapeTool <T extends RMOvalShape> extends RMTool <T> {
+public class RMOvalShapeTool <T extends RMOvalShape> extends RMTool<T> {
     
 /**
  * Returns a new instance of the shape class that this tool is responsible for.

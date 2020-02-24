@@ -1,5 +1,4 @@
 package rmdraw.app;
-import rmdraw.apptools.RMTool;
 import rmdraw.shape.RMDocument;
 import rmdraw.shape.RMPage;
 import rmdraw.shape.RMShape;

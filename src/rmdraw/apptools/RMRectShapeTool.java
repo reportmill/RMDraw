@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
+import rmdraw.app.RMTool;
 import rmdraw.gfx.RMStroke;
 import rmdraw.shape.*;
 import java.util.*;
@@ -10,7 +11,7 @@ import snap.view.*;
 /**
  * This class handles editing of rectangle shapes.
  */
-public class RMRectShapeTool <T extends RMRectShape> extends RMTool <T> {
+public class RMRectShapeTool <T extends RMRectShape> extends RMTool<T> {
     
 /**
  * Returns a new instance of the shape class that this tool is responsible for.

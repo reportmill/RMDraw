@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
+import rmdraw.app.RMTool;
 import rmdraw.shape.*;
 import java.util.*;
 
@@ -14,7 +15,7 @@ import snap.web.WebURL;
 /**
  * This class handles creation of lines.
  */
-public class RMLineShapeTool <T extends RMLineShape> extends RMTool <T> {
+public class RMLineShapeTool <T extends RMLineShape> extends RMTool<T> {
     
     // Indicates whether line should try to be strictly horizontal or vertical
     boolean             _hysteresis = false;

@@ -2,12 +2,13 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
+import rmdraw.app.RMTool;
 import rmdraw.shape.*;
 
 /**
  * A tool class for RMParentShape.
  */
-public class RMParentShapeTool <T extends RMParentShape> extends RMTool <T> {
+public class RMParentShapeTool <T extends RMParentShape> extends RMTool<T> {
 
 /**
  * Override to return shape class.

@@ -4,6 +4,7 @@
 package rmdraw.apptools;
 import rmdraw.app.Editor;
 import rmdraw.app.EditorProxGuide;
+import rmdraw.app.RMTool;
 import rmdraw.shape.*;
 import java.util.*;
 

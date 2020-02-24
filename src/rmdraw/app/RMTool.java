@@ -1,12 +1,10 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.apptools;
-import rmdraw.app.*;
+package rmdraw.app;
 import rmdraw.shape.*;
 import java.text.DecimalFormat;
 import java.util.*;
-
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.gfx.*;
@@ -19,22 +17,22 @@ import snap.view.*;
 public class RMTool <T extends RMShape> extends ViewOwner {
     
     // The Editor that owns this tool
-    Editor _editor;
+    private Editor _editor;
     
     // The Editor pane
-    EditorPane _editorPane;
+    private EditorPane _editorPane;
 
     // The newly created shape instance
-    RMShape                 _shape;
+    protected RMShape _shape;
     
     // The mouse down point that initiated last tool mouse loop
     protected Point _downPoint;
     
     // A formatter for bounds fields
-    static DecimalFormat    _fmt = new DecimalFormat("0.##");
+    private static DecimalFormat    _fmt = new DecimalFormat("0.##");
     
     // The image for a shape handle
-    static Image            _handle = Image.get(Editor.class, "Handle8x8.png");
+    private static Image            _handle = Image.get(Editor.class, "Handle8x8.png");
     
     // Handle constants
     public static final byte HandleWidth = 8;
