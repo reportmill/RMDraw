@@ -206,14 +206,14 @@ public double getPointsFromUnits(double aValue)
 }
 
 /**
- * Returns the font for the given shape.
+ * Returns a Styler for tool and shape.
  */
-public Font getFont(Editor anEditor, RMShape aShape)  { return aShape.getFont(); }
-
-/**
- * Sets the font for the given shape.
- */
-public void setFont(Editor anEditor, RMShape aShape, Font aFont)  { aShape.setFont(aFont); }
+public ToolStyler getStyler(RMShape aShape)
+{
+    if (aShape instanceof RMTextShape)
+        return new ToolStylerText(this, aShape);
+    return new ToolStyler(this, aShape);
+}
 
 /**
  * Returns the font for the given shape.
@@ -221,7 +221,7 @@ public void setFont(Editor anEditor, RMShape aShape, Font aFont)  { aShape.setFo
 public Font getFontDeep(Editor anEditor, RMShape aShape)
 {
     // Look for font from shape
-    Font font = getFont(anEditor, aShape);
+    Font font = aShape.getFont();
     
     // If not found, look for font in children
     for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++)
@@ -243,7 +243,7 @@ public Font getFontDeep(Editor anEditor, RMShape aShape)
 public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal)
 {
     // Get current font
-    Font font = getFont(anEditor, aShape);
+    Font font = aShape.getFont();
     
     // Handle given key
     switch(aKey) {
@@ -254,7 +254,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             // Get new font for name and current shape size and set
             Font aFont = (Font)aVal;
             Font font2 = font!=null? aFont.deriveFont(font.getSize()) : aFont;
-            setFont(anEditor, aShape, font2);
+            aShape.setFont(font2);
             break;
         }
         
@@ -271,7 +271,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
                     font2 = font2.getItalic();
                 font2 = font2.deriveFont(font.getSize());
             }
-            setFont(anEditor, aShape, font2);
+            aShape.setFont(font2);
             break;
         }
         
@@ -281,7 +281,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             // Get new font for current shape font at new size and set
             double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
             Font font2 = font.deriveFont(aSize);
-            setFont(anEditor, aShape, font2);
+            aShape.setFont(font2);
             break;
         }
         
@@ -291,7 +291,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             // Get new font for current shape font at new size and set
             double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
             Font font2 = font.deriveFont(font.getSize() + aSize);
-            setFont(anEditor, aShape, font2);
+            aShape.setFont(font2);
             break;
         }
         
@@ -302,7 +302,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             boolean aFlag = SnapUtils.boolValue(aVal);
             if(font==null || font.isBold()==aFlag) return;
             Font font2 = font.getBold(); if(font2==null) return;
-            setFont(anEditor, aShape, font2);
+            aShape.setFont(font2);
             break;
         }
         
@@ -313,7 +313,7 @@ public void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal
             boolean aFlag = SnapUtils.boolValue(aVal);
             if(font==null || font.isItalic()==aFlag) return;
             Font font2 = font.getItalic(); if(font2==null) return;
-            setFont(anEditor, aShape, font2);
+            aShape.setFont(font2);
             break;
         }
         
