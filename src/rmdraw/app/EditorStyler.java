@@ -66,17 +66,17 @@ public class EditorStyler {
     public Font getFont()
     {
         Font font = null;
-        for(int i = 0, iMax = getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
             Tool tool = getTool(shape);
             font = shape.getFont();
         }
-        for(int i = 0, iMax = getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
             Tool tool = getTool(shape);
             font = tool.getFontDeep(_editor, shape);
         }
-        return font!=null? font : Font.getDefaultFont();
+        return font!=null ? font : Font.getDefaultFont();
     }
 
     /**
@@ -84,10 +84,9 @@ public class EditorStyler {
      */
     public void setFontFamily(Font aFont)
     {
-        for(int i = 0, iMax = getSelOrSuperSelShapeCount(); i<iMax; i++) {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            Tool tool = getTool(shape);
-            tool.setFontKeyDeep(_editor, shape, Tool.FontFamily_Key, aFont);
+            getStyler(shape).setFontFamily(aFont);
         }
     }
 
@@ -96,10 +95,9 @@ public class EditorStyler {
      */
     public void setFontName(Font aFont)
     {
-        for(int i = 0, iMax = getSelOrSuperSelShapeCount(); i<iMax; i++) {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            Tool tool = getTool(shape);
-            tool.setFontKeyDeep(_editor, shape, Tool.FontName_Key, aFont);
+            getStyler(shape).setFontName(aFont);
         }
     }
 
@@ -108,11 +106,9 @@ public class EditorStyler {
      */
     public void setFontSize(float aSize, boolean isRelative)
     {
-        for(int i = 0, iMax = getSelOrSuperSelShapeCount(); i<iMax; i++) {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            Tool tool = getTool(shape);
-            String key = isRelative? Tool.FontSizeDelta_Key : Tool.FontSize_Key;
-            tool.setFontKeyDeep(_editor, shape, key, aSize);
+            getStyler(shape).setFontSize(aSize, isRelative);
         }
     }
 
@@ -122,10 +118,9 @@ public class EditorStyler {
     public void setFontBold(boolean aFlag)
     {
         _editor.undoerSetUndoTitle("Make Bold");
-        for(int i = 0, iMax = getSelOrSuperSelShapeCount(); i<iMax; i++) {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            Tool tool = getTool(shape);
-            tool.setFontKeyDeep(_editor, shape, Tool.FontBold_Key, aFlag);
+            getStyler(shape).setFontBold(aFlag);
         }
     }
 
@@ -135,10 +130,9 @@ public class EditorStyler {
     public void setFontItalic(boolean aFlag)
     {
         _editor.undoerSetUndoTitle("Make Italic");
-        for(int i = 0, iMax = getSelOrSuperSelShapeCount(); i<iMax; i++) {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            Tool tool = getTool(shape);
-            tool.setFontKeyDeep(_editor, shape, Tool.FontItalic_Key, aFlag);
+            getStyler(shape).setFontItalic(aFlag);
         }
     }
 

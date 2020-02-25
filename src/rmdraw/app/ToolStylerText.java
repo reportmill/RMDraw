@@ -48,12 +48,10 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     public void setFillColor(Color aColor)
     {
         // If text color and text editing, return color of text editor
-        if(_editor.getTextEditor()!=null) {
-
-            // Get text editor
-            TextEditor ted = _editor.getTextEditor();
+        if(getTextEditor()!=null) {
 
             // If command down, and text is outlined, set color of outline instead
+            TextEditor ted = getTextEditor();
             if(ViewUtils.isShortcutDown() && ted.getTextBorder()!=null) {
                 Border lbrdr = ted.getTextBorder();
                 ted.setTextBorder(Border.createLineBorder(aColor, lbrdr.getWidth()));
@@ -80,8 +78,8 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setTextColor(Color aColor)
     {
-        if(_editor.getTextEditor()!=null)
-            _editor.getTextEditor().setTextColor(aColor);
+        if(getTextEditor()!=null)
+            getTextEditor().setTextColor(aColor);
         else super.setTextColor(aColor);
     }
 
@@ -92,49 +90,6 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     {
         Font font = _shape.getFont();
         return font!=null? font : Font.getDefaultFont();
-    }
-
-    /**
-     * Sets the font family of editor's selected shape(s).
-     */
-    public void setFontFamily(Font aFont)
-    {
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontFamily_Key, aFont);
-    }
-
-    /**
-     * Sets the font name of editor's selected shape(s).
-     */
-    public void setFontName(Font aFont)
-    {
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontName_Key, aFont);
-    }
-
-    /**
-     * Sets the font size of editor's selected shape(s).
-     */
-    public void setFontSize(float aSize, boolean isRelative)
-    {
-        String key = isRelative? Tool.FontSizeDelta_Key : Tool.FontSize_Key;
-        _tool.setFontKeyDeep(_editor, _shape, key, aSize);
-    }
-
-    /**
-     * Sets the "boldness" of text in the currently selected shapes.
-     */
-    public void setFontBold(boolean aFlag)
-    {
-        _editor.undoerSetUndoTitle("Make Bold");
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontBold_Key, aFlag);
-    }
-
-    /**
-     * Sets the italic state of text in the currently selected shapes.
-     */
-    public void setFontItalic(boolean aFlag)
-    {
-        _editor.undoerSetUndoTitle("Make Italic");
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontItalic_Key, aFlag);
     }
 
     /**

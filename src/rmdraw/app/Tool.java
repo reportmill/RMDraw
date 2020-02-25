@@ -229,8 +229,8 @@ public Font getFontDeep(Editor anEditor, RMShape aShape)
     
     // If not found, look for font with child tools (recurse)
     for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++) {
-        RMShape child = aShape.getChild(i); Tool tool = getTool(child);
-        font = tool.getFontDeep(anEditor, child);
+        RMShape child = aShape.getChild(i);
+        font = getFontDeep(anEditor, child);
     }
     
     // Return font
