@@ -1892,8 +1892,9 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     }
     
     // Unarchive Fill 
-    for(int i=anArchiver.indexOf(anElement, Paint.class); i>=0; i=-1) {
-        Paint fill = (Paint)anArchiver.fromXML(anElement.get(i), this);
+    for(int i=anArchiver.indexOf(anElement, Paint.class); i>=0; i=-1) { XMLElement e = anElement.get(i);
+        if (e.getName().equals("color") && this instanceof RMTextShape) continue; // Bogus till we figure out RMFill to Paint stuff!
+        Paint fill = (Paint)anArchiver.fromXML(e, this);
         setFill(fill);
     }
     

@@ -7,7 +7,6 @@ import snap.gfx.Color;
 import snap.gfx.Font;
 import snap.text.TextEditor;
 import snap.text.TextFormat;
-import snap.util.SnapUtils;
 import snap.view.ViewUtils;
 
 /**
