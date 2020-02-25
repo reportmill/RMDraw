@@ -10,6 +10,7 @@ import snap.gfx.Font;
 import snap.gfx.GradientPaint;
 import snap.text.TextEditor;
 import snap.text.TextFormat;
+import snap.util.SnapUtils;
 import snap.view.ViewUtils;
 
 /**
@@ -19,10 +20,20 @@ public class ToolStyler <T extends RMShape> {
 
     // The Tool
     protected Tool _tool;
-    Editor _editor;
+
+    // The editor
+    protected Editor _editor;
 
     // The Shape
     protected T _shape;
+
+    // Constants for font keys
+    private static final String FontName_Key = "FontName";
+    private static final String FontFamily_Key = "FontFamily";
+    private static final String FontSize_Key = "FontSize";
+    private static final String FontSizeDelta_Key = "FontSizeDelta";
+    private static final String FontBold_Key = "FontBold";
+    private static final String FontItalic_Key = "FontItalic";
 
     /**
      * Creates ToolStyler for given shape.
@@ -91,11 +102,33 @@ public class ToolStyler <T extends RMShape> {
     }
 
     /**
+     * Returns the font for the given shape.
+     */
+    public Font getFontDeep(RMShape aShape)
+    {
+        // Look for font from shape
+        Font font = aShape.getFont();
+
+        // If not found, look for font in children
+        for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++)
+            font = aShape.getChild(i).getFont();
+
+        // If not found, look for font with child tools (recurse)
+        for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++) {
+            RMShape child = aShape.getChild(i);
+            font = getFontDeep(child);
+        }
+
+        // Return font
+        return font;
+    }
+
+    /**
      * Sets the font family of editor's selected shape(s).
      */
     public void setFontFamily(Font aFont)
     {
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontFamily_Key, aFont);
+        setFontKeyDeep(_editor, _shape, FontFamily_Key, aFont);
     }
 
     /**
@@ -103,7 +136,7 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setFontName(Font aFont)
     {
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontName_Key, aFont);
+        setFontKeyDeep(_editor, _shape, FontName_Key, aFont);
     }
 
     /**
@@ -111,8 +144,8 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setFontSize(float aSize, boolean isRelative)
     {
-        String key = isRelative? Tool.FontSizeDelta_Key : Tool.FontSize_Key;
-        _tool.setFontKeyDeep(_editor, _shape, key, aSize);
+        String key = isRelative? FontSizeDelta_Key : FontSize_Key;
+        setFontKeyDeep(_editor, _shape, key, aSize);
     }
 
     /**
@@ -121,7 +154,7 @@ public class ToolStyler <T extends RMShape> {
     public void setFontBold(boolean aFlag)
     {
         _editor.undoerSetUndoTitle("Make Bold");
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontBold_Key, aFlag);
+        setFontKeyDeep(_editor, _shape, FontBold_Key, aFlag);
     }
 
     /**
@@ -130,7 +163,107 @@ public class ToolStyler <T extends RMShape> {
     public void setFontItalic(boolean aFlag)
     {
         _editor.undoerSetUndoTitle("Make Italic");
-        _tool.setFontKeyDeep(_editor, _shape, Tool.FontItalic_Key, aFlag);
+        setFontKeyDeep(_editor, _shape, FontItalic_Key, aFlag);
+    }
+
+    /**
+     * Sets the font family for given shape.
+     */
+    private void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal)
+    {
+        // Get current font
+        Font font = aShape.getFont();
+
+        // Handle given key
+        switch(aKey) {
+
+            // Handle FontName
+            case FontName_Key: {
+
+                // Get new font for name and current shape size and set
+                Font aFont = (Font)aVal;
+                Font font2 = font!=null? aFont.deriveFont(font.getSize()) : aFont;
+                aShape.setFont(font2);
+                break;
+            }
+
+            // Handle FontFamily
+            case FontFamily_Key: {
+
+                // Get new font for given font family font and current shape font size/style and set
+                Font aFont = (Font)aVal;
+                Font font2 = aFont;
+                if(font!=null) {
+                    if(font.isBold()!=font2.isBold() && font2.getBold()!=null)
+                        font2 = font2.getBold();
+                    if(font.isItalic()!=font2.isItalic() && font2.getItalic()!=null)
+                        font2 = font2.getItalic();
+                    font2 = font2.deriveFont(font.getSize());
+                }
+                aShape.setFont(font2);
+                break;
+            }
+
+            // Handle FontSize
+            case FontSize_Key: {
+
+                // Get new font for current shape font at new size and set
+                double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
+                Font font2 = font.deriveFont(aSize);
+                aShape.setFont(font2);
+                break;
+            }
+
+            // Handle FontSizeDelta
+            case FontSizeDelta_Key: {
+
+                // Get new font for current shape font at new size and set
+                double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
+                Font font2 = font.deriveFont(font.getSize() + aSize);
+                aShape.setFont(font2);
+                break;
+            }
+
+            // Handle FontBold
+            case FontBold_Key: {
+
+                // Get new font
+                boolean aFlag = SnapUtils.boolValue(aVal);
+                if(font==null || font.isBold()==aFlag) return;
+                Font font2 = font.getBold(); if(font2==null) return;
+                aShape.setFont(font2);
+                break;
+            }
+
+            // Handle FontItalic
+            case FontItalic_Key: {
+
+                // Get new font
+                boolean aFlag = SnapUtils.boolValue(aVal);
+                if(font==null || font.isItalic()==aFlag) return;
+                Font font2 = font.getItalic(); if(font2==null) return;
+                aShape.setFont(font2);
+                break;
+            }
+
+            // Handle anything else
+            default: System.err.println("ToolStyler.setFontKey: Unknown key: " + aKey)   ;
+        }
+    }
+
+    /**
+     * Sets the font family for given shape.
+     */
+    private void setFontKeyDeep(Editor anEditor, RMShape aShape, String aKey, Object aVal)
+    {
+        // Set font key for shape
+        setFontKey(anEditor, aShape, aKey, aVal);
+
+        // Set for children
+        for(int i=0, iMax=aShape.getChildCount(); i<iMax; i++) { RMShape child = aShape.getChild(i);
+            Tool tool = _editor.getTool(child);
+            tool.getStyler(child).setFontKeyDeep(anEditor, child, aKey, aVal);
+        }
     }
 
     /**

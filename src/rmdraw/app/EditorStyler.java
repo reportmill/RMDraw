@@ -73,8 +73,7 @@ public class EditorStyler {
         }
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            Tool tool = getTool(shape);
-            font = tool.getFontDeep(_editor, shape);
+            getStyler(shape).getFontDeep(shape);
         }
         return font!=null ? font : Font.getDefaultFont();
     }
