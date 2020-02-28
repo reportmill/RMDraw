@@ -93,8 +93,8 @@ public void respondUI(ViewEvent anEvent)
         float value = anEvent.getFloatValue();
         for(RMImageShape im : images) {
             im.setRadius(value);
-            if(im.getStroke()==null)
-                im.setStroke(new RMStroke());
+            if(im.getBorder()==null)
+                im.setBorder(new RMStroke());
         }
     }
     

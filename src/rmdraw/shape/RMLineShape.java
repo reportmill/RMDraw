@@ -18,7 +18,7 @@ public class RMLineShape extends RMParentShape {
 /**
  * Creates a basic line (a point actually at 0,0).
  */
-public RMLineShape()  { setStroke(new RMStroke()); }
+public RMLineShape()  { setBorder(new RMStroke()); }
 
 /**
  * Creates a basic black line from the given x1, y1 to the given x2, y2.
@@ -58,18 +58,19 @@ public boolean childrenSuperSelectImmediately()  { return false; }
 /**
  * Override to handle arrow heads special.
  */
-public void setStroke(RMStroke aStroke)
+@Override
+public void setBorder(Border aBorder)
 {
     // Sets stroke
-    super.setStroke(aStroke);
+    super.setBorder(aBorder);
     
     // Get arrow head (just return if null)
     ArrowHead arrowHead = getArrowHead(); if(arrowHead==null) return;
     
     // If stroke, set arrow head to stroke color and scale to line width
-    if(aStroke!=null) {
-        arrowHead.setColor(aStroke.getColor());
-        arrowHead.setScaleXY(aStroke.getWidth(), aStroke.getWidth());
+    if (aBorder!=null) {
+        arrowHead.setColor(aBorder.getColor());
+        arrowHead.setScaleXY(aBorder.getWidth(), aBorder.getWidth());
     }
     
     // Otherwise, just clear arrow head fill

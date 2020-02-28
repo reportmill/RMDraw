@@ -49,7 +49,7 @@ public static RMPolygonShape getTextPathShape(RMTextShape aText)
     // Set polygon color to run or outline color and stroke and return
     polygon.setColor(aText.getTextColor());
     Border brdr = aText.getTextBorder();
-    polygon.setStroke(brdr!=null? new RMStroke(brdr.getColor(), brdr.getWidth()) : null);
+    polygon.setBorder(brdr!=null? new RMStroke(brdr.getColor(), brdr.getWidth()) : null);
     return polygon;
 }
 

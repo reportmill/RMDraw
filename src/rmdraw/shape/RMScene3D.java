@@ -3,9 +3,7 @@
  */
 package rmdraw.shape;
 import rmdraw.gfx3d.*;
-import rmdraw.gfx.*;
 import java.util.*;
-
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.gfx.*;
@@ -287,7 +285,7 @@ protected void addShapesForRMShape(RMShape aShape, double z1, double z2, boolean
     if (aShape instanceof RMTextShape) { RMTextShape text = (RMTextShape)aShape;
         
         // If text draws fill or stroke, add child for background
-        if (text.getFill()!=null || text.getStroke()!=null) {
+        if (text.getFill()!=null || text.getBorder()!=null) {
             RMShape background = new RMPolygonShape(aShape.getPath()); // Create background shape from text
             background.copyShape(aShape);
             addShapesForRMShape(background, z1+.1f, z2, fixEdges); // Add background shape
@@ -311,9 +309,9 @@ protected void addShapesForRMShape(RMShape aShape, double z1, double z2, boolean
     Paint fill = aShape.getFill();
     if (fill!=null)
         pathBox.setColor(fill.getColor());
-    RMStroke stroke = aShape.getStroke();
-    if (stroke!=null)
-        pathBox.setStroke(stroke.getColor(), stroke.getWidth());
+    Border border = aShape.getBorder();
+    if (border!=null)
+        pathBox.setStroke(border.getColor(), border.getWidth());
     pathBox.setOpacity(aShape.getOpacity());
     addShape(pathBox);
 }

@@ -6,6 +6,8 @@ import rmdraw.app.Editor;
 import rmdraw.gfx.*;
 import rmdraw.shape.RMShape;
 import java.util.List;
+
+import snap.gfx.Border;
 import snap.gfx.Color;
 import snap.view.ViewEvent;
 import snap.viewx.ColorWell;
@@ -19,13 +21,13 @@ public void resetUI()
 {
     // Get currently selected shape
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
-    RMStroke stroke = shape.getStroke(); if(stroke==null) stroke = new RMStroke();
-    RMBorderStroke bstroke = stroke instanceof RMBorderStroke? (RMBorderStroke)stroke : new RMBorderStroke();
+    Border border = shape.getBorder(); if (border==null) border = new RMStroke();
+    RMBorderStroke bstroke = border instanceof RMBorderStroke? (RMBorderStroke)border : new RMBorderStroke();
     
     // Update StrokeColorWell, StrokeWidthText, StrokeWidthThumb
-    setViewValue("StrokeColorWell", stroke.getColor());
-    setViewValue("StrokeWidthText", stroke.getWidth());
-    setViewValue("StrokeWidthThumb", stroke.getWidth());
+    setViewValue("StrokeColorWell", border.getColor());
+    setViewValue("StrokeWidthText", border.getWidth());
+    setViewValue("StrokeWidthThumb", border.getWidth());
     
     // Update TopCheckBox, RightCheckBox, BottomCheckBox, LeftCheckBox
     setViewValue("TopCheckBox", bstroke.isShowTop());
@@ -61,27 +63,27 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle TopCheckBox, RightCheckBox, BottomCheckBox, LeftCheckBox
     if(anEvent.equals("TopCheckBox")) {
-        for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
+        for(RMShape shp : shapes) { Border str = shp.getBorder();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.copyForShowTop(anEvent.getBoolValue()));
+            shp.setBorder(bstr.copyForShowTop(anEvent.getBoolValue()));
         }
     }
     if(anEvent.equals("RightCheckBox")) {
-        for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
+        for(RMShape shp : shapes) { Border str = shp.getBorder();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.copyForShowRight(anEvent.getBoolValue()));
+            shp.setBorder(bstr.copyForShowRight(anEvent.getBoolValue()));
         }
     }
     if(anEvent.equals("BottomCheckBox")) {
-        for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
+        for(RMShape shp : shapes) { Border str = shp.getBorder();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.copyForShowBottom(anEvent.getBoolValue()));
+            shp.setBorder(bstr.copyForShowBottom(anEvent.getBoolValue()));
         }
     }
     if(anEvent.equals("LeftCheckBox")) {
-        for(RMShape shp : shapes) { RMStroke str = shp.getStroke();
+        for(RMShape shp : shapes) { Border str = shp.getBorder();
             RMBorderStroke bstr = str instanceof RMBorderStroke? (RMBorderStroke)str : new RMBorderStroke();
-            shp.setStroke(bstr.copyForShowLeft(anEvent.getBoolValue()));
+            shp.setBorder(bstr.copyForShowLeft(anEvent.getBoolValue()));
         }
     }
 }

@@ -98,10 +98,10 @@ public Paint getFill(int anIndex)
 /**
  * Returns the currently selected shape's stroke.
  */
-public RMStroke getSelectedStroke()
+public Border getSelectedStroke()
 {
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
-    return shape.getStroke();
+    return shape.getBorder();
 }
 
 /**
@@ -112,7 +112,7 @@ public void setSelectedStroke(RMStroke aStroke)
     Editor editor = getEditor();
     for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
-        shape.setStroke(aStroke);
+        shape.setBorder(aStroke);
     }
 }
 

@@ -304,7 +304,7 @@ protected void paintShape(Painter aPntr)
     
     // Paint dashed box around bounds
     RMShapePaintProps props = RMShapePaintProps.get(aPntr);
-    if(props.isEditing() && getStroke()==null && getFill()==null && getEffect()==null &&
+    if(props.isEditing() && getBorder()==null && getFill()==null && getEffect()==null &&
         (props.isSelected(this) || props.isSuperSelected(this))) {
         aPntr.setColor(Color.LIGHTGRAY); aPntr.setStroke(Stroke.Stroke1.copyForDashes(3,2));
         aPntr.setAntialiasing(false); aPntr.draw(getBoundsInside()); aPntr.setAntialiasing(true);

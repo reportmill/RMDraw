@@ -459,7 +459,7 @@ protected void paintShape(Painter aPntr)
     aPntr.setAntialiasing(false);
     
     // If no explicit page stroke, draw page border fill (1 point black by default)
-    if(getPaintBackground() && getStroke()==null) {
+    if(getPaintBackground() && getBorder()==null) {
         aPntr.setStroke(Stroke.Stroke1); aPntr.setColor(Color.GRAY);
         aPntr.drawRect(.5, .5, getWidth()-1, getHeight()-1);
     }

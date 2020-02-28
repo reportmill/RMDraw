@@ -16,7 +16,7 @@ public class RMRectShapeTool <T extends RMRectShape> extends Tool<T> {
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
  */
-protected T newInstance()  { T shape = super.newInstance(); shape.setStroke(new RMStroke()); return shape; }
+protected T newInstance()  { T shape = super.newInstance(); shape.setBorder(new RMStroke()); return shape; }
 
 /**
  * Updates the UI controls from the currently selected rectangle.
@@ -46,8 +46,8 @@ public void respondUI(ViewEvent anEvent)
         float value = anEvent.getFloatValue();
         for(RMRectShape r : rects) {
             r.setRadius(value);
-            if(r.getStroke()==null)
-                r.setStroke(new RMStroke());
+            if(r.getBorder()==null)
+                r.setBorder(new RMStroke());
         }
     }
 }

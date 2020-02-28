@@ -152,7 +152,7 @@ public void respondUI(ViewEvent anEvent)
     
     // If RoundingThumb or RoundingText, make sure shapes have stroke
     if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText"))
-        for(RMTextShape t : texts) t.setStroke(new RMStroke());
+        for(RMTextShape t : texts) t.setBorder(new RMStroke());
 
     // Handle MarginText, RoundingThumb, RoundingText
     if(anEvent.equals("MarginText")) for(RMTextShape txt : texts) txt.setMarginString(anEvent.getStringValue());
@@ -684,7 +684,7 @@ public void paintBoundsRect(RMTextShape aText, Painter aPntr)
 private boolean isShowBoundsRect(RMTextShape aText)
 {
     Editor editor = getEditor();
-    if(aText.getStroke()!=null) return false; // If text draws it's own stroke, return false
+    if(aText.getBorder()!=null) return false; // If text draws it's own stroke, return false
     if(!editor.isEditing()) return false; // If editor is previewing, return false
     if(isStructured(aText)) return false; // If structured text, return false
     if(editor.isSelected(aText) || editor.isSuperSelected(aText)) return true; // If selected, return true

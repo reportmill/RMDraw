@@ -59,15 +59,15 @@ public void resetUI()
     // Get currently selected shape
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
     
-    // Get stroke from shape (or default, if not available)
-    RMStroke stroke = shape.getStroke(); if(stroke==null) stroke = new RMStroke();
+    // Get border from shape (or default, if not available)
+    Border border = shape.getBorder(); if(border==null) border = new RMStroke();
 
     // Update StrokeCheckBox, StrokeComboBox
-    setViewValue("StrokeCheckBox", shape.getStroke()!=null);
-    setViewValue("StrokeComboBox", stroke.getName());
+    setViewValue("StrokeCheckBox", shape.getBorder()!=null);
+    setViewValue("StrokeComboBox", border.getName());
     
     // Get stroke tool, install tool UI in stroke panel and ResetUI
-    RMFillTool stool = _fillTool.getTool(stroke);
+    RMFillTool stool = _fillTool.getTool(border);
     getView("StrokePane", BoxView.class).setContent(stool.getUI());
     stool.resetLater();
     
@@ -116,15 +116,15 @@ public void respondUI(ViewEvent anEvent)
     if (anEvent.equals("StrokeCheckBox")) {
         boolean selected = anEvent.getBoolValue();
         for (RMShape s : shapes) {
-            if (selected && s.getStroke()==null) s.setStroke(new RMStroke()); // If requested and missing, add
-            if (!selected && s.getStroke()!=null) s.setStroke(null); // If turned off and present, remove
+            if (selected && s.getBorder()==null) s.setBorder(new RMStroke()); // If requested and missing, add
+            if (!selected && s.getBorder()!=null) s.setBorder(null); // If turned off and present, remove
         }
     }
     
     // Handle StrokeComboBox: Get selected stroke instance and iterate over shapes and add stroke if not there
     if (anEvent.equals("StrokeComboBox")) {
         RMStroke newStroke = _fillTool.getStroke(anEvent.getSelIndex());
-        for (RMShape s : shapes) s.setStroke(newStroke);
+        for (RMShape s : shapes) s.setBorder(newStroke);
     }
 
     // Handle FillCheckBox: Iterate over shapes and add fill if not there or remove if there

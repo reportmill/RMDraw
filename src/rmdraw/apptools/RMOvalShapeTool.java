@@ -16,7 +16,7 @@ public class RMOvalShapeTool <T extends RMOvalShape> extends Tool<T> {
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
  */
-protected T newInstance()  { T shape = super.newInstance(); shape.setStroke(new RMStroke()); return shape; }
+protected T newInstance()  { T shape = super.newInstance(); shape.setBorder(new RMStroke()); return shape; }
 
 /**
  * Updates the UI controls from the currently selected oval.

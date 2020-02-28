@@ -46,8 +46,8 @@ public class RMShape implements Cloneable, Archivable, Key.GetSet {
     // An array to hold optional roll/scale/skew values
     double         _rss[];
     
-    // The stroke for this shape
-    RMStroke       _stroke = null;
+    // The border for this shape
+    Border         _stroke = null;
     
     // The fill for this shape
     Paint          _fill = null;
@@ -412,8 +412,10 @@ public Rect getBoundsLocal()  { return new Rect(0, 0, getWidth(), getHeight()); 
 public Rect getBoundsStroked()
 {
     Rect bnds = getBoundsInside();
-    RMStroke stroke = getStroke(); if(stroke==null) return bnds;
-    bnds.inset(-stroke.getWidth()/2); return bnds;
+    Border border = getBorder();
+    if (border==null) return bnds;
+    bnds.inset(-border.getWidth()/2);
+    return bnds;
 }
 
 /**
@@ -557,14 +559,14 @@ protected double[] getRSS()  { return _rss!=null? _rss : (_rss=new double[] { 0,
 /**
  * Returns the stroke for this shape.
  */
-public RMStroke getStroke()  { return _stroke; }
+public Border getBorder()  { return _stroke; }
 
 /**
  * Sets the stroke for this shape, with an option to turn on drawsStroke.
  */
-public void setStroke(RMStroke aStroke)
+public void setBorder(Border aStroke)
 {
-    if(SnapUtils.equals(getStroke(), aStroke)) return;
+    if(SnapUtils.equals(getBorder(), aStroke)) return;
     repaint();
     firePropChange(Stroke_Prop, _stroke, _stroke = aStroke);
 }
@@ -572,7 +574,7 @@ public void setStroke(RMStroke aStroke)
 /**
  * Sets the stroke for this shape, with an option to turn on drawsStroke.
  */
-public void setStroke(Color aColor, double aWidth)  { setStroke(new RMStroke(aColor, aWidth)); }
+public void setBorder(Color aColor, double aWidth)  { setBorder(new RMStroke(aColor, aWidth)); }
 
 /**
  * Returns the fill for this shape.
@@ -624,16 +626,17 @@ public void setColor(Color aColor)
 /**
  * Returns the stroke color of the shape.
  */
-public Color getStrokeColor()  { return getStroke()==null? Color.BLACK : getStroke().getColor(); }
+public Color getStrokeColor()  { return getBorder()==null? Color.BLACK : getBorder().getColor(); }
 
 /**
  * Sets the stroke color of the shape.
  */
 public void setStrokeColor(Color aColor)
 {
-    if(aColor==null) setStroke(null);
-    else if(getStroke()==null) setStroke(new RMStroke(aColor, 1));
-    else setStroke(getStroke().copyForColor(aColor));
+    if (aColor==null) setBorder(null);
+    else if (getBorder()==null)
+        setBorder(new RMStroke(aColor, 1));
+    else setBorder(getBorder().copyForColor(aColor));
 }
 
 /**
@@ -641,7 +644,7 @@ public void setStrokeColor(Color aColor)
  */
 public double getStrokeWidth()
 {
-    return getStroke()==null? 0 : getStroke().getWidth();
+    return getBorder()==null? 0 : getBorder().getWidth();
 }
 
 /**
@@ -649,9 +652,9 @@ public double getStrokeWidth()
  */
 public void setStrokeWidth(double aValue)
 {
-    if (getStroke()==null)
-        setStroke(new RMStroke(Color.BLACK, aValue));
-    else setStroke(getStroke().copyForWidth(aValue));
+    if (getBorder()==null)
+        setBorder(new RMStroke(Color.BLACK, aValue));
+    else setBorder(getBorder().copyForWidth(aValue));
 }
 
 /**
@@ -1472,7 +1475,7 @@ public void copyShape(RMShape aShape)
     }
     
     // Copy Stroke, Fill, Effect
-    setStroke(aShape.getStroke());
+    setBorder(aShape.getBorder());
     setFill(aShape.getFill());
     setEffect(aShape.getEffect());
     
@@ -1636,24 +1639,22 @@ public void paintShapeAll(Painter aPntr)
  */
 protected void paintShape(Painter aPntr)
 {
-    // Get fill/stroke
+    // Get fill/border
     Paint fill = getFill();
-    RMStroke stroke = getStroke();
+    Border border = getBorder();
     
     // Paint fill
-    if(fill!=null) { //getFill().paint(aPntr, this);
+    if (fill!=null) { //getFill().paint(aPntr, this);
         Paint fill2 = fill.copyForRect(getBoundsInside());
         aPntr.setPaint(fill2);
         Shape path = getPath();
         aPntr.fill(path);
     }
     
-    // Paint stroke
-    if(stroke!=null && !isStrokeOnTop()) { //getStroke().paint(aPntr, this);
-        aPntr.setPaint(stroke.getColor());
-        aPntr.setStroke(stroke.snap());
-        Shape path = getPath(), spath = stroke.getStrokePath(path);
-        aPntr.draw(spath);
+    // Paint border
+    if (border!=null && !isStrokeOnTop()) {
+        Shape path = getPath();
+        border.paint(aPntr, path);
     }
 }
 
@@ -1662,9 +1663,10 @@ protected void paintShape(Painter aPntr)
  */
 protected void paintShapeChildren(Painter aPntr)
 {
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
-        if(child.isVisible())
-            child.paint(aPntr); }
+    for (int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+        if (child.isVisible())
+            child.paint(aPntr);
+    }
 }
 
 /**
@@ -1672,12 +1674,10 @@ protected void paintShapeChildren(Painter aPntr)
  */
 protected void paintShapeOver(Painter aPntr)
 {
-    RMStroke stroke = getStroke();
-    if(stroke!=null && isStrokeOnTop()) { //getStroke().paint(aPntr, this);
-        aPntr.setPaint(stroke.getColor());
-        aPntr.setStroke(stroke.snap());
-        Shape path = getPath(), spath = stroke.getStrokePath(path);
-        aPntr.draw(spath);
+    Border border = getBorder();
+    if (border!=null && isStrokeOnTop()) {
+        Shape path = getPath();
+        border.paint(aPntr, path);
     }
 }
 
@@ -1763,7 +1763,7 @@ public Object getKeyValue(String aPropName)
         case ScaleY_Prop: return getScaleY();
         case SkewX_Prop: return getSkewX();
         case SkewY_Prop: return getSkewY();
-        case Stroke_Prop: return getStroke();
+        case Stroke_Prop: return getBorder();
         case Fill_Prop: return getFill();
         case Effect_Prop: return getEffect();
         case Opacity_Prop: return getOpacity();
@@ -1794,7 +1794,7 @@ public void setKeyValue(String aPropName, Object aValue)
         case ScaleY_Prop: setScaleY(SnapUtils.doubleValue(aValue)); break;
         case SkewX_Prop: setSkewX(SnapUtils.doubleValue(aValue)); break;
         case SkewY_Prop: setSkewY(SnapUtils.doubleValue(aValue)); break;
-        case Stroke_Prop: setStroke(aValue instanceof RMStroke? (RMStroke)aValue : null); break;
+        case Stroke_Prop: setBorder(aValue instanceof RMStroke? (RMStroke)aValue : null); break;
         case Fill_Prop: setFill(aValue instanceof Paint? (Paint)aValue : null); break;
         case Effect_Prop: setEffect(aValue instanceof Effect? (Effect)aValue : null); break;
         case Opacity_Prop: setOpacity(SnapUtils.doubleValue(aValue)); break;
@@ -1834,7 +1834,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     if(getSkewY()!=0) e.add("skewy", getSkewY());
 
     // Archive Stroke, Fill, Effect
-    if(getStroke()!=null) e.add(anArchiver.toXML(getStroke(), this));
+    if(getBorder()!=null) e.add(anArchiver.toXML(getBorder(), this));
     if(getFill()!=null) e.add(anArchiver.toXML(getFill(), this));
     if(getEffect()!=null) e.add(anArchiver.toXML(getEffect(), this));
     
@@ -1892,7 +1892,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     // Unarchive Stroke 
     for(int i=anArchiver.indexOf(anElement, RMStroke.class); i>=0; i=-1) {
         RMStroke stroke = (RMStroke)anArchiver.fromXML(anElement.get(i), this);
-        setStroke(stroke);
+        setBorder(stroke);
     }
     
     // Unarchive Fill 

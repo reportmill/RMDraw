@@ -83,7 +83,7 @@ public Class getShapeClass()  { return RMPolygonShape.class; }
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
  */
-protected T newInstance()  { T shape = super.newInstance(); shape.setStroke(new RMStroke()); return shape; }
+protected T newInstance()  { T shape = super.newInstance(); shape.setBorder(new RMStroke()); return shape; }
 
 /**
  * Returns whether a given shape is super-selectable.
@@ -253,7 +253,7 @@ private void createPoly()
         RMPolygonShape poly = new RMPolygonShape();
         Rect polyFrame = getEditor().getSuperSelectedShape().parentToLocal(_path.getBounds(), null).getBounds();
         poly.setFrame(polyFrame);
-        poly.setStroke(new RMStroke());
+        poly.setBorder(new RMStroke());
         poly.setPath(_path);
 
         // Add shape to superSelectedShape (within an undo grouping).
