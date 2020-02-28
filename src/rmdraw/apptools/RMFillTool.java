@@ -112,7 +112,7 @@ public void setSelectedStroke(RMStroke aStroke)
     Editor editor = getEditor();
     for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
-        shape.setStroke(i==0? aStroke : aStroke.clone());
+        shape.setStroke(aStroke);
     }
 }
 

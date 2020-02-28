@@ -9,19 +9,19 @@ import snap.util.*;
 /**
  * An RMFill subclass specifically designed to describe strokes.
  */
-public class RMStroke implements Cloneable, XMLArchiver.Archivable {
+public class RMStroke extends Border {
     
     // The color
-    Color        _color = Color.BLACK;
+    private Color _color = Color.BLACK;
     
     // The stroke width
-    float        _width = 1;
+    private double _width = 1;
     
     // The dash array
-    float        _dashArray[];
+    private double _dashArray[];
     
     // The dash phase
-    float        _dashPhase = 0;
+    private double _dashPhase = 0;
 
 /**
  * Creates a plain, black stroke.
@@ -41,12 +41,12 @@ public Color getColor()  { return _color; }
 /**
  * Returns the line width of this stroke.
  */
-public float getWidth()  { return _width; }
+public double getWidth()  { return _width; }
 
 /**
  * Returns the dash array for this stroke.
  */
-public float[] getDashArray()  { return _dashArray; }
+public double[] getDashArray()  { return _dashArray; }
 
 /**
  * Returns the dash array for this stroke as a string.
@@ -56,32 +56,34 @@ public String getDashArrayString()  { return getDashArrayString(getDashArray(), 
 /**
  * Returns a dash array for given dash array string and delimeter.
  */
-public static float[] getDashArray(String aString, String aDelimeter)
+public static double[] getDashArray(String aString, String aDelimeter)
 {
     // Just return null if empty
-    if(aString==null || aString.length()==0) return null;
+    if (aString==null || aString.length()==0) return null;
     
     String dashStrings[] = aString.split(",");
-    float dashArray[] = new float[dashStrings.length];
-    for(int i=0; i<dashStrings.length; i++) dashArray[i] = SnapUtils.floatValue(dashStrings[i]);
+    double dashArray[] = new double[dashStrings.length];
+    for (int i=0; i<dashStrings.length; i++)
+        dashArray[i] = SnapUtils.doubleValue(dashStrings[i]);
     return dashArray;
 }
 
 /**
  * Returns the dash array for this stroke as a string.
  */
-public static String getDashArrayString(float dashArray[], String aDelimiter)
+public static String getDashArrayString(double dashArray[], String aDelimiter)
 {
-    if(dashArray==null || dashArray.length==0) return null;
+    if (dashArray==null || dashArray.length==0) return null;
     String dstring = SnapUtils.stringValue(dashArray[0]);
-    for(int i=1; i<dashArray.length; i++) dstring += aDelimiter + SnapUtils.stringValue(dashArray[i]);
+    for (int i=1; i<dashArray.length; i++)
+        dstring += aDelimiter + SnapUtils.stringValue(dashArray[i]);
     return dstring;
 }
 
 /**
  * Returns the dash phase.
  */
-public float getDashPhase()  { return _dashPhase; }
+public double getDashPhase()  { return _dashPhase; }
 
 /**
  * Returns the path to be stroked, transformed from the input path.
@@ -100,22 +102,27 @@ public String getName()
 /**
  * Returns a duplicate stroke with new color.
  */
-public RMStroke deriveColor(Color aColor)  { RMStroke s = clone(); s._color = aColor; return s; }
+public RMStroke copyForColor(Color aColor)  { RMStroke s = clone(); s._color = aColor; return s; }
 
 /**
  * Returns a duplicate stroke with new stroke width.
  */
-public RMStroke deriveWidth(float aWidth)  { RMStroke s = clone(); s._width = aWidth; return s; }
+public RMStroke copyForWidth(double aWidth)  { RMStroke s = clone(); s._width = aWidth; return s; }
 
 /**
  * Returns a duplicate stroke with new dash array.
  */
-public RMStroke deriveDashArray(float ... aDA)  { RMStroke s = clone(); s._dashArray = aDA; return s; }
+public RMStroke copyForDashArray(double ... aDA)  { RMStroke s = clone(); s._dashArray = aDA; return s; }
 
 /**
  * Returns a duplicate stroke with new dash phase.
  */
-public RMStroke deriveDashPhase(float aDP)  { RMStroke s = clone(); s._dashPhase = aDP; return s; }
+public RMStroke copyForDashPhase(double aDP)  { RMStroke s = clone(); s._dashPhase = aDP; return s; }
+
+/**
+ * Returns a copy of this border, used for copy methods.
+ */
+protected RMStroke clone()   { return (RMStroke)super.clone(); }
 
 /**
  * Returns the snap version of this fill.
@@ -137,15 +144,6 @@ public boolean equals(Object anObj)
     if(!ArrayUtils.equals(other._dashArray, _dashArray)) return false;
     if(other._dashPhase!=_dashPhase) return false;
     return true; // Return true since all checks passed
-}
-
-/**
- * Standard clone implementation.
- */
-public RMStroke clone()
-{
-    try { return (RMStroke)super.clone(); }
-    catch(CloneNotSupportedException e) { throw new RuntimeException(e); }
 }
 
 /**

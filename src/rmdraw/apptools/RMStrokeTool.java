@@ -89,16 +89,19 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle DashArrayText
     if(anEvent.equals("DashArrayText")) {
-        float darray[] = RMStroke.getDashArray(anEvent.getStringValue(), ",");
-        for(RMShape shp : shapes) { RMStroke stroke = shp.getStroke(); if(stroke==null) stroke = new RMStroke();
-            shp.setStroke(stroke.deriveDashArray(darray)); }
+        double darray[] = RMStroke.getDashArray(anEvent.getStringValue(), ",");
+        for (RMShape shp : shapes) {
+            RMStroke stroke = shp.getStroke();
+            if (stroke==null) stroke = new RMStroke();
+            shp.setStroke(stroke.copyForDashArray(darray));
+        }
     }
 
     // Handle DashPhaseSpinner
     if(anEvent.equals("DashPhaseSpinner")) {
         float dphase = anEvent.getFloatValue();
         for(RMShape shp : shapes) { RMStroke stroke = shp.getStroke(); if(stroke==null) stroke = new RMStroke();
-            shp.setStroke(stroke.deriveDashPhase(dphase)); }
+            shp.setStroke(stroke.copyForDashPhase(dphase)); }
     }
 
 }

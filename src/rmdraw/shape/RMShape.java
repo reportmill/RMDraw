@@ -633,21 +633,25 @@ public void setStrokeColor(Color aColor)
 {
     if(aColor==null) setStroke(null);
     else if(getStroke()==null) setStroke(new RMStroke(aColor, 1));
-    else setStroke(getStroke().deriveColor(aColor));
+    else setStroke(getStroke().copyForColor(aColor));
 }
 
 /**
  * Returns the stroke width of the shape's stroke in printer points.
  */
-public float getStrokeWidth()  { return getStroke()==null? 0 : getStroke().getWidth(); }
+public double getStrokeWidth()
+{
+    return getStroke()==null? 0 : getStroke().getWidth();
+}
 
 /**
  * Sets the stroke width of the shape's stroke in printer points.
  */
-public void setStrokeWidth(float aValue)
+public void setStrokeWidth(double aValue)
 {
-    if(getStroke()==null) setStroke(new RMStroke(Color.BLACK, aValue));
-    else setStroke(getStroke().deriveWidth(aValue));
+    if (getStroke()==null)
+        setStroke(new RMStroke(Color.BLACK, aValue));
+    else setStroke(getStroke().copyForWidth(aValue));
 }
 
 /**
@@ -1324,7 +1328,7 @@ public boolean contains(Point aPoint)
 public boolean intersects(Shape aPath)
 {
     // Get line width to be used in intersects test
-    float lineWidth = getStrokeWidth();
+    double lineWidth = getStrokeWidth();
     
     // Get bounds, adjusted for line width
     Rect bounds = getBoundsInside();

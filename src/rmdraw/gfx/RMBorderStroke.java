@@ -5,7 +5,6 @@ package rmdraw.gfx;
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.geom.Shape;
-import snap.gfx.*;
 import snap.util.*;
 
 /**
@@ -73,22 +72,39 @@ public Shape getStrokePath(Shape aShape)
 /**
  * Returns a duplicate stroke with new ShowTop.
  */
-public RMBorderStroke deriveTop(boolean aValue)  { RMBorderStroke s = clone(); s._showTop = aValue; return s; }
+public RMBorderStroke copyForShowTop(boolean aValue)
+{
+    RMBorderStroke s = clone(); s._showTop = aValue; return s;
+}
 
 /**
  * Returns a duplicate stroke with new ShowRight.
  */
-public RMBorderStroke deriveRight(boolean aValue)  { RMBorderStroke s = clone(); s._showRight = aValue; return s; }
+public RMBorderStroke copyForShowRight(boolean aValue)
+{
+    RMBorderStroke s = clone(); s._showRight = aValue; return s;
+}
 
 /**
  * Returns a duplicate stroke with new ShowBottom.
  */
-public RMBorderStroke deriveBottom(boolean aValue)  { RMBorderStroke s = clone(); s._showBottom = aValue; return s; }
+public RMBorderStroke copyForShowBottom(boolean aValue)
+{
+    RMBorderStroke s = clone(); s._showBottom = aValue; return s;
+}
 
 /**
  * Returns a duplicate stroke with new ShowLeft.
  */
-public RMBorderStroke deriveLeft(boolean aValue)  { RMBorderStroke s = clone(); s._showLeft = aValue; return s; }
+public RMBorderStroke copyForShowLeft(boolean aValue)
+{
+    RMBorderStroke s = clone(); s._showLeft = aValue; return s;
+}
+
+/**
+ * Standard clone implementation.
+ */
+protected RMBorderStroke clone()  { return (RMBorderStroke)super.clone(); }
 
 /**
  * Standard equals implementation.
@@ -109,11 +125,6 @@ public boolean equals(Object anObj)
     return true; // Return true since all checks passed
 }
 
-/**
- * Standard clone implementation.
- */
-public RMBorderStroke clone()  { return (RMBorderStroke)super.clone(); }
-        
 /**
  * XML archival.
  */

@@ -124,7 +124,7 @@ public void respondUI(ViewEvent anEvent)
     // Handle StrokeComboBox: Get selected stroke instance and iterate over shapes and add stroke if not there
     if (anEvent.equals("StrokeComboBox")) {
         RMStroke newStroke = _fillTool.getStroke(anEvent.getSelIndex());
-        for (RMShape s : shapes) s.setStroke(newStroke.clone());
+        for (RMShape s : shapes) s.setStroke(newStroke);
     }
 
     // Handle FillCheckBox: Iterate over shapes and add fill if not there or remove if there

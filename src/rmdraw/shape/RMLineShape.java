@@ -88,10 +88,11 @@ public void setStrokeColor(Color aColor)
 /**
  * Override to handle arrow heads special.
  */
-public void setStrokeWidth(float aValue)
+public void setStrokeWidth(double aValue)
 {
     super.setStrokeWidth(aValue);
-    if(getArrowHead()!=null) getArrowHead().setScaleXY(aValue, aValue);
+    if (getArrowHead()!=null)
+        getArrowHead().setScaleXY(aValue, aValue);
 }
 
 /**
