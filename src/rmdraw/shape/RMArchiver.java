@@ -104,7 +104,7 @@ public class RMArchiver extends XMLArchiver {
         cmap.put("fill", RMFill.class);
         cmap.put("gradient-fill", GradientPaint.class);
         cmap.put("radial-fill", GradientPaint.class);
-        cmap.put("image-fill", RMImageFill.class);
+        cmap.put("image-fill", RMArchivers.RMImageFillStub.class);
 
         // Effects
         cmap.put("blur-effect", BlurEffect.class);

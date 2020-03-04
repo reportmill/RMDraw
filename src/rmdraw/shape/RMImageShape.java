@@ -6,6 +6,7 @@ import rmdraw.gfx.*;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.util.*;
+import snap.web.WebURL;
 
 /**
  * This class is a shape representation of an image.
@@ -29,9 +30,9 @@ public class RMImageShape extends RMRectShape {
     
     // The image name, if image read from external file
     String             _iname;
-    
+
 /**
- * Creates an RMImageShape.
+ * Creates RMImageShape.
  */
 public RMImageShape()  { }
 
@@ -178,7 +179,7 @@ protected void paintShape(Painter aPntr)
     Image img = getImage();
     if(img==null) {
         if(!RMShapePaintProps.isEditing(aPntr)) return;
-        img = RMImageFill.getEmptyImage(); if(img==null) return;
+        img = ImageUtils.getEmptyImage(); if(img==null) return;
     }
     
     // Draw image transformed to bounds
@@ -195,7 +196,7 @@ protected void paintShape(Painter aPntr)
 public Rect getImageBounds()
 {
     // Get image and padding
-    Image img = getImage(); if(img==null) img = RMImageFill.getEmptyImage();
+    Image img = getImage(); if(img==null) img = ImageUtils.getEmptyImage();
     int pd = getPadding();
     
     // Get width/height for shape, image and padded area
