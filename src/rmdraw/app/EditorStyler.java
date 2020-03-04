@@ -115,7 +115,24 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Returns the specified type of color (text, stroke or fill) of editor's selected shape.
+     * Returns the fill of currently selected view.
+     */
+    public Paint getFill()
+    {
+        return getSelOrSuperSelStyler().getFill();
+    }
+
+    /**
+     * Sets the fill of currently selected views.
+     */
+    public void setFill(Paint aPaint)
+    {
+        for(RMShape shape : getSelOrSuperSelShapes())
+            getStyler(shape).setFill(aPaint);
+    }
+
+    /**
+     * Returns the color of currently selected view.
      */
     public Color getFillColor()
     {
@@ -123,7 +140,7 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Sets the specified type of color (text, stroke or fill) of editor's selected shape.
+     * Sets the color of currently selected view.
      */
     public void setFillColor(Color aColor)
     {

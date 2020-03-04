@@ -4,10 +4,7 @@ import rmdraw.shape.RMPage;
 import rmdraw.shape.RMShape;
 import rmdraw.shape.RMTextShape;
 import snap.geom.HPos;
-import snap.gfx.Border;
-import snap.gfx.Color;
-import snap.gfx.Font;
-import snap.gfx.GradientPaint;
+import snap.gfx.*;
 import snap.text.TextEditor;
 import snap.text.TextFormat;
 import snap.util.SnapUtils;
@@ -43,6 +40,31 @@ public class ToolStyler <T extends RMShape> {
         _tool = aTool;
         _shape = (T)aShape;
         _editor = aTool.getEditor();
+    }
+
+    /**
+     * Returns the currently selected fill.
+     */
+    public Paint getFill()
+    {
+        // If selected or super selected shape is page that doesn't draw color, return "last color" (otherwise, reset it)
+        if((_shape instanceof RMPage || _shape instanceof RMDocument) && _shape.getFill()==null)
+            return Color.WHITE;
+
+        // Return shape color
+        return _shape.getFill();
+    }
+
+    /**
+     * Sets the currently selected fill.
+     */
+    public void setFill(Paint aPaint)
+    {
+        // If Doc or Page, just return
+        if(_shape instanceof RMPage || _shape instanceof RMDocument) return;
+
+        // Set color fill
+        _shape.setFill(aPaint);
     }
 
     /**

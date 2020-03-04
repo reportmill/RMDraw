@@ -3,6 +3,7 @@ import rmdraw.shape.RMShape;
 import snap.geom.Pos;
 import snap.gfx.Border;
 import snap.gfx.Color;
+import snap.gfx.Paint;
 import snap.gfx.Stroke;
 
 /**
@@ -66,4 +67,28 @@ public class Styler {
      * Sets the selected border show edge.
      */
     public void setBorderShowEdge(Pos aPos, boolean aValue)  { }
+
+    /**
+     * Returns the fill of currently selected view.
+     */
+    public Paint getFill()  { return null; }
+
+    /**
+     * Sets the fill of currently selected views.
+     */
+    public void setFill(Paint aPaint)  { }
+
+    /**
+     * Returns the color of currently selected view.
+     */
+    public Color getFillColor()
+    {
+        Paint fill = getFill();
+        return fill!=null ? fill.getColor() : null;
+    }
+
+    /**
+     * Sets the color of currently selected view.
+     */
+    public void setFillColor(Color aColor)  { setFill(aColor); }
 }

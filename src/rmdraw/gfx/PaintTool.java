@@ -2,130 +2,127 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.gfx;
-import rmdraw.app.*;
-import rmdraw.shape.*;
 import java.util.*;
-
 import snap.gfx.*;
 import snap.view.*;
 import snap.viewx.ColorWell;
 
 /**
- * Provides a tool for editing RMFills.
+ * Provides a tool for editing Paint.
  */
-public class PaintTool extends EditorPane.SupportPane {
+public class PaintTool extends ViewOwner {
 
-    // Map of tool instances by shape class
+    // The Styler
+    private Styler _styler;
+
+    // Map of PaintTool instances by Paint class
     private Map<Class,PaintTool> _tools = new Hashtable();
     
-    // List of known fills
-    private static Paint  _fill0, _fill1;
+    // Array of known fills
+    private static Paint  _fills[];
+
+    // The default image fill
     protected static ImagePaint  _imageFill;
 
-/**
- * Creates a new RMFillTool panel.
- */
-public PaintTool()  { super(null); }
-
-/**
- * Called to reset UI controls.
- */
-protected void resetUI()
-{
-    // Get currently selected shape
-    RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
-    
-    // Update FillColorWell
-    setViewValue("FillColorWell", shape.getColor());    
-}
-
-/**
- * Called to respond to UI controls
- */
-protected void respondUI(ViewEvent anEvent)
-{
-    // Get the current editor and currently selected shape (just return if null)
-    Editor editor = getEditor(); if(editor==null) return;
-    RMShape shape = editor.getSelectedOrSuperSelectedShape(); if(shape==null) return;
-    
-    // Handle FillColorWell
-    if(anEvent.equals("FillColorWell")) {
-        
-        // Get Color from color well
-        ColorWell cwell = getView("FillColorWell", ColorWell.class);
-        Color color = cwell.getColor();
-
-        // Set in editor
-        editor.getStyler().setFillColor(color);
+    /**
+     * Creates PaintTool.
+     */
+    public PaintTool()
+    {
+        super();
     }
-}
 
-/**
- * Returns the number of known fills.
- */
-public int getFillCount()  { return 3; }
+    /**
+     * Returns the styler.
+     */
+    public Styler getStyler()  { return _styler; }
 
-/**
- * Returns an individual fill at given index.
- */
-public Paint getFill(int anIndex)
-{
-    if (anIndex==0)
-        return _fill0!=null ? _fill0 : (_fill0 = Color.BLACK);
-    if (anIndex==1)
-        return _fill1!=null ? _fill1 : (_fill1 = new GradientPaint());
-    if (_imageFill==null) {
+    /**
+     * Sets the styler.
+     */
+    public void setStyler(Styler aStyler)
+    {
+        _styler = aStyler;
+    }
+
+    /**
+     * Called to reset UI controls.
+     */
+    protected void resetUI()
+    {
+        // Get currently selected color
+        Color color = getStyler().getFillColor();
+
+        // Update FillColorWell
+        setViewValue("FillColorWell", color);
+    }
+
+    /**
+     * Called to respond to UI controls
+     */
+    protected void respondUI(ViewEvent anEvent)
+    {
+        // Handle FillColorWell
+        if(anEvent.equals("FillColorWell")) {
+
+            // Get Color from color well
+            ColorWell cwell = getView("FillColorWell", ColorWell.class);
+            Color color = cwell.getColor();
+
+            // Set in styler
+            getStyler().setFillColor(color);
+        }
+    }
+
+    /**
+     * Returns the number of known fills.
+     */
+    public int getFillCount()  { return getFills().length; }
+
+    /**
+     * Returns an individual fill at given index.
+     */
+    public Paint getFill(int anIndex)  { return getFills()[anIndex]; }
+
+    /**
+     * Returns the fills.
+     */
+    private Paint[] getFills()
+    {
+        // If already set, just return
+        if (_fills!=null) return _fills;
+
+        // Create default fills array and return
+        Paint f0 = Color.BLACK;
+        Paint f1 = new GradientPaint();
         Image img = Image.get(getClass(), "pkg.images/Clouds.jpg");
         _imageFill = new ImagePaint(img);
+        return _fills = new Paint[] { f0, f1, _imageFill };
     }
-    return _imageFill;
-}
 
-/**
- * Returns the currently selected shape's fill.
- */
-public Paint getSelectedFill()
-{
-    RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
-    return shape.getFill();
-}
-
-/**
- * Iterate over editor selected shapes and set fill.
- */
-public void setSelectedFill(Paint aFill)
-{
-    Editor editor = getEditor();
-    for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
-        RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
-        shape.setFill(aFill);
+    /**
+     * Returns the specific tool for a given fill.
+     */
+    public PaintTool getTool(Object anObj)
+    {
+        // Get tool from tools map - just return if present
+        Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
+        PaintTool tool = _tools.get(cls);
+        if(tool==null) {
+            _tools.put(cls, tool=getToolImpl(cls));
+            tool.setStyler(getStyler());
+        }
+        return tool;
     }
-}
 
-/**
- * Returns the specific tool for a given fill.
- */
-public PaintTool getTool(Object anObj)
-{
-    // Get tool from tools map - just return if present
-    Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
-    PaintTool tool = _tools.get(cls);
-    if(tool==null) {
-        _tools.put(cls, tool=getToolImpl(cls));
-        tool.setEditorPane(getEditorPane());
+    /**
+     * Returns the specific tool for a given fill.
+     */
+    private static PaintTool getToolImpl(Class aClass)
+    {
+        if(aClass==Color.class) return new PaintTool();
+        if(aClass==GradientPaint.class) return new GradientPaintTool();
+        if(aClass==ImagePaint.class) return new ImagePaintTool();
+        throw new RuntimeException("PaintTool.getToolImp: No tool class for " + aClass);
     }
-    return tool;
-}
-
-/**
- * Returns the specific tool for a given fill.
- */
-private static PaintTool getToolImpl(Class aClass)
-{
-    if(aClass==Color.class) return new PaintTool();
-    if(aClass==GradientPaint.class) return new GradientPaintTool();
-    if(aClass==ImagePaint.class) return new ImagePaintTool();
-    throw new RuntimeException("PaintTool.getToolImp: No tool class for " + aClass);
-}
-
 }

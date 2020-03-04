@@ -38,7 +38,7 @@ public ShapeFills(EditorPane anEP)
 protected void initUI()
 {
     // Initialize tools
-    _fillTool.setEditorPane(getEditorPane());
+    _fillTool.setStyler(getEditor().getStyler());
     _borderTool.setStyler(getEditor().getStyler());
     _effectTool.setEditorPane(getEditorPane());
 
