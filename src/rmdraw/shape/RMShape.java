@@ -556,18 +556,18 @@ public boolean isRSS()  { return _rss!=null; }
 protected double[] getRSS()  { return _rss!=null? _rss : (_rss=new double[] { 0, 1, 1, 0, 0 }); }
 
 /**
- * Returns the stroke for this shape.
+ * Returns the border for this shape.
  */
 public Border getBorder()  { return _stroke; }
 
 /**
- * Sets the stroke for this shape, with an option to turn on drawsStroke.
+ * Sets the border for this shape.
  */
-public void setBorder(Border aStroke)
+public void setBorder(Border aBorder)
 {
-    if(SnapUtils.equals(getBorder(), aStroke)) return;
+    if(SnapUtils.equals(getBorder(), aBorder)) return;
     repaint();
-    firePropChange(Border_Prop, _stroke, _stroke = aStroke);
+    firePropChange(Border_Prop, _stroke, _stroke = aBorder);
 }
 
 /**

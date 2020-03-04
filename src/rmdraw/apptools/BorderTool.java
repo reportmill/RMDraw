@@ -12,9 +12,9 @@ import snap.view.*;
 import snap.viewx.ColorWell;
 
 /**
- * UI editing for RMStroke.
+ * UI editing for Borders.
  */
-public class RMStrokeTool extends RMFillTool {
+public class BorderTool extends RMFillTool {
 
 /**
  * Reset UI controls.

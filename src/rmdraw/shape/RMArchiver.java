@@ -98,7 +98,7 @@ public class RMArchiver extends XMLArchiver {
 
         // Strokes
         cmap.put("stroke", RMStroke.class); cmap.put("double-stroke", RMStroke.class);
-        cmap.put("border-stroke", RMBorderStroke.class);
+        cmap.put("border-stroke", Borders.EdgeBorder.class);
 
         // Fills
         cmap.put("fill", RMFill.class);

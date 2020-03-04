@@ -3,7 +3,6 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.*;
-import rmdraw.gfx.*;
 import rmdraw.shape.*;
 import java.util.*;
 
@@ -20,7 +19,7 @@ public class RMFillTool extends EditorPane.SupportPane {
     private Map  _tools = new Hashtable();
     
     // List of known borders
-    private static Border  _borders[] = { Border.blackBorder(), new RMBorderStroke() };
+    private static Border  _borders[] = { Border.blackBorder(), new Borders.EdgeBorder() };
     
     // List of known fills
     private static Paint  _fill0, _fill1;
@@ -157,8 +156,8 @@ public RMFillTool getTool(Object anObj)
  */
 static RMFillTool getToolImpl(Class aClass)
 {
-    if(aClass==RMBorderStroke.class) return new RMBorderStrokeTool();
-    if(Border.class.isAssignableFrom(aClass)) return new RMStrokeTool();
+    if(aClass==Borders.EdgeBorder.class) return new EdgeBorderTool();
+    if(Border.class.isAssignableFrom(aClass)) return new BorderTool();
     if(aClass==Color.class) return new RMFillTool();
     if(aClass==GradientPaint.class) return new GradientPaintTool();
     if(aClass==ImagePaint.class) return new ImagePaintTool();
