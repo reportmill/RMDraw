@@ -1,10 +1,10 @@
 package rmdraw.app;
+import rmdraw.gfx.Styler;
 import rmdraw.shape.RMShape;
 import rmdraw.shape.RMTextShape;
 import snap.geom.HPos;
-import snap.gfx.Border;
-import snap.gfx.Color;
-import snap.gfx.Font;
+import snap.geom.Pos;
+import snap.gfx.*;
 import snap.text.TextEditor;
 import snap.text.TextFormat;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Sets style attributes.
  */
-public class EditorStyler {
+public class EditorStyler extends Styler {
 
     // The editor
     private Editor _editor;
@@ -23,6 +23,95 @@ public class EditorStyler {
     public EditorStyler(Editor anEditor)
     {
         _editor = anEditor;
+    }
+
+    /**
+     * Returns the currently selected border.
+     */
+    public Border getBorder()
+    {
+        RMShape shape = getSelOrSuperSelShape();
+        return shape.getBorder();
+    }
+
+    /**
+     * Sets the currently selected border.
+     */
+    public void setBorder(Border aBorder)
+    {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
+            RMShape shape = getSelOrSuperSelShape(i);
+            shape.setBorder(aBorder);
+        }
+    }
+
+    /**
+     * Sets the selected border stroke color.
+     */
+    public void setBorderStrokeColor(Color aColor)
+    {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
+            RMShape shape = getSelOrSuperSelShape(i);
+            Border b1 = shape.getBorder(); if (b1==null) b1 = Border.blackBorder();
+            Border b2 = b1.copyForColor(aColor);
+            shape.setBorder(b2);
+        }
+    }
+
+    /**
+     * Sets the selected border stroke width.
+     */
+    public void setBorderStrokeWidth(double aWidth)
+    {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
+            RMShape shape = getSelOrSuperSelShape(i);
+            Border b1 = shape.getBorder(); if (b1==null) b1 = Border.blackBorder();
+            Border b2 = b1.copyForStrokeWidth(aWidth);
+            shape.setBorder(b2);
+        }
+    }
+
+    /**
+     * Sets the selected border stroke dash array.
+     */
+    public void setBorderStrokeDashArray(double theDashes[])
+    {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
+            RMShape shape = getSelOrSuperSelShape(i);
+            Border bdr1 = shape.getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
+            Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashes(theDashes);
+            Border bdr2 = bdr1.copyForStroke(str2);
+            shape.setBorder(bdr2);
+        }
+    }
+
+    /**
+     * Sets the selected border stroke dash array.
+     */
+    public void setBorderStrokeDashPhase(double aValue)
+    {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
+            RMShape shape = getSelOrSuperSelShape(i);
+            Border bdr1 = shape.getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
+            Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashOffset(aValue);
+            Border bdr2 = bdr1.copyForStroke(str2);
+            shape.setBorder(bdr2);
+        }
+    }
+
+    /**
+     * Sets the selected border show edge.
+     */
+    public void setBorderShowEdge(Pos aPos, boolean aValue)
+    {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
+            RMShape shape = getSelOrSuperSelShape(i);
+            Border bdr1 = shape.getBorder();
+            Borders.EdgeBorder ebdr = bdr1 instanceof Borders.EdgeBorder ? (Borders.EdgeBorder)bdr1 : null;
+            if (ebdr==null) ebdr = new Borders.EdgeBorder();
+            Border bdr2 = ebdr.copyForShowEdge(aPos, aValue);
+            shape.setBorder(bdr2);
+        }
     }
 
     /**

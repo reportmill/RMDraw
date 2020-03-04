@@ -16,10 +16,7 @@ import snap.viewx.ColorWell;
 public class PaintTool extends EditorPane.SupportPane {
 
     // Map of tool instances by shape class
-    private Map  _tools = new Hashtable();
-    
-    // List of known borders
-    private static Border  _borders[] = { Border.blackBorder(), new Borders.EdgeBorder() };
+    private Map<Class,PaintTool> _tools = new Hashtable();
     
     // List of known fills
     private static Paint  _fill0, _fill1;
@@ -64,16 +61,6 @@ protected void respondUI(ViewEvent anEvent)
 }
 
 /**
- * Returns the number of known borders.
- */
-public int getBorderCount()  { return _borders.length; }
-
-/**
- * Returns the individual border at given index.
- */
-public Border getBorder(int anIndex)  { return _borders[anIndex]; }
-
-/**
  * Returns the number of known fills.
  */
 public int getFillCount()  { return 3; }
@@ -92,27 +79,6 @@ public Paint getFill(int anIndex)
         _imageFill = new ImagePaint(img);
     }
     return _imageFill;
-}
-
-/**
- * Returns the currently selected shape's stroke.
- */
-public Border getSelectedStroke()
-{
-    RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
-    return shape.getBorder();
-}
-
-/**
- * Iterate over editor selected shapes and set border.
- */
-public void setSelectedStroke(Border aBorder)
-{
-    Editor editor = getEditor();
-    for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
-        RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
-        shape.setBorder(aBorder);
-    }
 }
 
 /**
@@ -143,7 +109,7 @@ public PaintTool getTool(Object anObj)
 {
     // Get tool from tools map - just return if present
     Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
-    PaintTool tool = (PaintTool)_tools.get(cls);
+    PaintTool tool = _tools.get(cls);
     if(tool==null) {
         _tools.put(cls, tool=getToolImpl(cls));
         tool.setEditorPane(getEditorPane());
@@ -154,15 +120,12 @@ public PaintTool getTool(Object anObj)
 /**
  * Returns the specific tool for a given fill.
  */
-static PaintTool getToolImpl(Class aClass)
+private static PaintTool getToolImpl(Class aClass)
 {
-    if(aClass==Borders.EdgeBorder.class) return new EdgeBorderTool();
-    if(Border.class.isAssignableFrom(aClass)) return new BorderTool();
     if(aClass==Color.class) return new PaintTool();
     if(aClass==GradientPaint.class) return new GradientPaintTool();
     if(aClass==ImagePaint.class) return new ImagePaintTool();
-    System.err.println("RMFillTool.getToolImp: No tool class for " + aClass);
-    return new PaintTool();
+    throw new RuntimeException("PaintTool.getToolImp: No tool class for " + aClass);
 }
 
 }

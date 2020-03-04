@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
+import rmdraw.gfx.BorderTool;
 import rmdraw.gfx.EffectTool;
 import rmdraw.gfx.PaintTool;
 import rmdraw.shape.*;
@@ -14,11 +15,14 @@ import snap.view.*;
  */
 public class ShapeFills extends EditorPane.SupportPane {
     
-    // The RMFillTool
-    PaintTool _fillTool = new PaintTool();
+    // The PaintTool
+    private PaintTool _fillTool = new PaintTool();
+
+    // The BorderTool
+    private BorderTool _borderTool = new BorderTool();
     
     // The EffectTool
-    EffectTool      _effectTool = new EffectTool();
+    private EffectTool _effectTool = new EffectTool();
     
 /**
  * Creates a new ShapeFills pane.
@@ -26,8 +30,6 @@ public class ShapeFills extends EditorPane.SupportPane {
 public ShapeFills(EditorPane anEP)
 {
     super(anEP);
-    _fillTool.setEditorPane(anEP);
-    _effectTool.setEditorPane(anEP);
 }
 
 /**
@@ -35,19 +37,27 @@ public ShapeFills(EditorPane anEP)
  */
 protected void initUI()
 {
+    // Initialize tools
+    _fillTool.setEditorPane(getEditorPane());
+    _borderTool.setStyler(getEditor().getStyler());
+    _effectTool.setEditorPane(getEditorPane());
+
     // Get array of known stroke names and initialize StrokeComboBox
-    int scount = _fillTool.getBorderCount();
-    Object snames[] = new String[scount]; for(int i=0;i<scount;i++) snames[i] = _fillTool.getBorder(i).getName();
+    int scount = _borderTool.getBorderCount();
+    Object snames[] = new String[scount];
+    for (int i=0;i<scount;i++) snames[i] = _borderTool.getBorder(i).getName();
     setViewItems("StrokeComboBox", snames);
     
     // Get array of known fill names and initialize FillComboBox
     int fcount = _fillTool.getFillCount();
-    Object fnames[] = new String[fcount]; for(int i=0;i<fcount;i++) fnames[i] = _fillTool.getFill(i).getName();
+    Object fnames[] = new String[fcount];
+    for (int i=0;i<fcount;i++) fnames[i] = _fillTool.getFill(i).getName();
     setViewItems("FillComboBox", fnames);
     
     // Get array of known effect names and initialize EffectComboBox
     int ecount = _effectTool.getEffectCount();
-    Object enames[] = new String[ecount]; for(int i=0;i<ecount;i++) enames[i] = _effectTool.getEffect(i).getName();
+    Object enames[] = new String[ecount];
+    for (int i=0;i<ecount;i++) enames[i] = _effectTool.getEffect(i).getName();
     setViewItems("EffectComboBox", enames);
 }
 
@@ -67,9 +77,9 @@ public void resetUI()
     setViewValue("StrokeComboBox", border.getName());
     
     // Get stroke tool, install tool UI in stroke panel and ResetUI
-    PaintTool stool = _fillTool.getTool(border);
-    getView("StrokePane", BoxView.class).setContent(stool.getUI());
-    stool.resetLater();
+    BorderTool btool = _borderTool.getTool(border);
+    getView("StrokePane", BoxView.class).setContent(btool.getUI());
+    btool.resetLater();
     
     // Get fill from shape (or default, if not available)
     Paint fill = shape.getFill();
@@ -123,7 +133,7 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle StrokeComboBox: Get selected border and iterate over shapes and set
     if (anEvent.equals("StrokeComboBox")) {
-        Border newBorder = _fillTool.getBorder(anEvent.getSelIndex());
+        Border newBorder = _borderTool.getBorder(anEvent.getSelIndex());
         for (RMShape s : shapes) s.setBorder(newBorder);
     }
 
