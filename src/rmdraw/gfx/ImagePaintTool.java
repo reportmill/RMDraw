@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.apptools;
+package rmdraw.gfx;
 import rmdraw.shape.*;
 import snap.gfx.Image;
 import snap.gfx.ImagePaint;
@@ -14,7 +14,7 @@ import snap.web.WebURL;
 /**
  * UI editing for ImagePaint.
  */
-public class ImagePaintTool extends RMFillTool {
+public class ImagePaintTool extends PaintTool {
 
 /**
  * Updates the UI controls from the currently selected shape.

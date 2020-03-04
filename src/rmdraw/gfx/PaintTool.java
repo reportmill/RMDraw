@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.apptools;
+package rmdraw.gfx;
 import rmdraw.app.*;
 import rmdraw.shape.*;
 import java.util.*;
@@ -13,7 +13,7 @@ import snap.viewx.ColorWell;
 /**
  * Provides a tool for editing RMFills.
  */
-public class RMFillTool extends EditorPane.SupportPane {
+public class PaintTool extends EditorPane.SupportPane {
 
     // Map of tool instances by shape class
     private Map  _tools = new Hashtable();
@@ -28,7 +28,7 @@ public class RMFillTool extends EditorPane.SupportPane {
 /**
  * Creates a new RMFillTool panel.
  */
-public RMFillTool()  { super(null); }
+public PaintTool()  { super(null); }
 
 /**
  * Called to reset UI controls.
@@ -139,11 +139,11 @@ public void setSelectedFill(Paint aFill)
 /**
  * Returns the specific tool for a given fill.
  */
-public RMFillTool getTool(Object anObj)
+public PaintTool getTool(Object anObj)
 {
     // Get tool from tools map - just return if present
     Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
-    RMFillTool tool = (RMFillTool)_tools.get(cls);
+    PaintTool tool = (PaintTool)_tools.get(cls);
     if(tool==null) {
         _tools.put(cls, tool=getToolImpl(cls));
         tool.setEditorPane(getEditorPane());
@@ -154,15 +154,15 @@ public RMFillTool getTool(Object anObj)
 /**
  * Returns the specific tool for a given fill.
  */
-static RMFillTool getToolImpl(Class aClass)
+static PaintTool getToolImpl(Class aClass)
 {
     if(aClass==Borders.EdgeBorder.class) return new EdgeBorderTool();
     if(Border.class.isAssignableFrom(aClass)) return new BorderTool();
-    if(aClass==Color.class) return new RMFillTool();
+    if(aClass==Color.class) return new PaintTool();
     if(aClass==GradientPaint.class) return new GradientPaintTool();
     if(aClass==ImagePaint.class) return new ImagePaintTool();
     System.err.println("RMFillTool.getToolImp: No tool class for " + aClass);
-    return new RMFillTool();
+    return new PaintTool();
 }
 
 }

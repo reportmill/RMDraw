@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.apptools;
+package rmdraw.gfx;
 import java.util.*;
 
 import snap.geom.Point;

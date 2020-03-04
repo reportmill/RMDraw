@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.apptools;
+package rmdraw.gfx;
 import snap.geom.Insets;
 import snap.geom.Point;
 import snap.geom.Rect;

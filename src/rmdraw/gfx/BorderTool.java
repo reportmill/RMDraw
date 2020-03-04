@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.apptools;
+package rmdraw.gfx;
 import rmdraw.app.Editor;
 import rmdraw.shape.RMShape;
 import java.util.*;
@@ -14,7 +14,7 @@ import snap.viewx.ColorWell;
 /**
  * UI editing for Borders.
  */
-public class BorderTool extends RMFillTool {
+public class BorderTool extends PaintTool {
 
 /**
  * Reset UI controls.

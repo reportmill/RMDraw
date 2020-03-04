@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.apptools;
+package rmdraw.gfx;
 import rmdraw.shape.*;
 import snap.gfx.Color;
 import snap.gfx.GradientPaint;
@@ -12,7 +12,7 @@ import snap.view.ViewEvent;
 /**
  * UI editing for GradientPaint.
  */
-public class GradientPaintTool extends RMFillTool {
+public class GradientPaintTool extends PaintTool {
     
 /**
  * Initialize UI.

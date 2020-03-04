@@ -2,7 +2,8 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.apptools.*;
+import rmdraw.gfx.EffectTool;
+import rmdraw.gfx.PaintTool;
 import rmdraw.shape.*;
 import java.util.List;
 import snap.gfx.*;
@@ -14,7 +15,7 @@ import snap.view.*;
 public class ShapeFills extends EditorPane.SupportPane {
     
     // The RMFillTool
-    RMFillTool      _fillTool = new RMFillTool();
+    PaintTool _fillTool = new PaintTool();
     
     // The EffectTool
     EffectTool      _effectTool = new EffectTool();
@@ -66,7 +67,7 @@ public void resetUI()
     setViewValue("StrokeComboBox", border.getName());
     
     // Get stroke tool, install tool UI in stroke panel and ResetUI
-    RMFillTool stool = _fillTool.getTool(border);
+    PaintTool stool = _fillTool.getTool(border);
     getView("StrokePane", BoxView.class).setContent(stool.getUI());
     stool.resetLater();
     
@@ -79,7 +80,7 @@ public void resetUI()
     setViewValue("FillComboBox", fill.getName());
     
     // Get fill tool, install tool UI in fill panel and ResetUI
-    RMFillTool ftool = _fillTool.getTool(fill);
+    PaintTool ftool = _fillTool.getTool(fill);
     getView("FillPane", BoxView.class).setContent(ftool.getUI());
     ftool.resetLater();
     
