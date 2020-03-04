@@ -3,9 +3,9 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.*;
-import rmdraw.gfx.*;
 import rmdraw.shape.*;
 import java.util.List;
+import snap.gfx.Border;
 import snap.gfx.Image;
 import snap.util.*;
 import snap.view.*;
@@ -94,7 +94,7 @@ public void respondUI(ViewEvent anEvent)
         for(RMImageShape im : images) {
             im.setRadius(value);
             if(im.getBorder()==null)
-                im.setBorder(new RMStroke());
+                im.setBorder(Border.blackBorder());
         }
     }
     

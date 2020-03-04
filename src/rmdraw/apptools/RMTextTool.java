@@ -4,9 +4,7 @@
 package rmdraw.apptools;
 import rmdraw.app.*;
 import rmdraw.shape.*;
-import rmdraw.gfx.*;
 import java.util.List;
-
 import snap.geom.*;
 import snap.gfx.*;
 import snap.text.RichTextLine;
@@ -152,7 +150,7 @@ public void respondUI(ViewEvent anEvent)
     
     // If RoundingThumb or RoundingText, make sure shapes have stroke
     if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText"))
-        for(RMTextShape t : texts) t.setBorder(new RMStroke());
+        for(RMTextShape t : texts) t.setBorder(Border.blackBorder());
 
     // Handle MarginText, RoundingThumb, RoundingText
     if(anEvent.equals("MarginText")) for(RMTextShape txt : texts) txt.setMarginString(anEvent.getStringValue());

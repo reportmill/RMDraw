@@ -5,6 +5,7 @@ package rmdraw.gfx;
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.geom.Shape;
+import snap.gfx.Borders;
 import snap.gfx.Color;
 import snap.gfx.Painter;
 import snap.gfx.Stroke;
@@ -14,7 +15,7 @@ import snap.util.*;
  * This Border subclass strokes the rectangular border of a given shape, with option include/exclude
  * individual sides.
  */
-public class RMBorderStroke extends RMStroke {
+public class RMBorderStroke extends Borders.LineBorder {
 
     // Whether to show left border
     private boolean _showLeft = true;
@@ -54,9 +55,22 @@ public class RMBorderStroke extends RMStroke {
     public boolean isShowAll()  { return _showLeft && _showRight && _showTop && _showBottom; }
 
     /**
+     * Paint border.
+     */
+    public void paint(Painter aPntr, Shape aShape)
+    {
+        Color color = getColor();
+        Stroke stroke = getStroke();
+        aPntr.setPaint(color);
+        aPntr.setStroke(stroke);
+        Shape spath = getBoxPath(aShape);
+        aPntr.draw(spath);
+    }
+
+    /**
      * Returns the path to be stroked, transformed from the input path.
      */
-    public Shape getStrokePath(Shape aShape)
+    private Shape getBoxPath(Shape aShape)
     {
         // If showing all borders, just return bounds
         Rect rect = aShape.getBounds(); if(isShowAll()) return rect;
@@ -70,19 +84,6 @@ public class RMBorderStroke extends RMStroke {
         if(sb) { if(!sr) path.moveTo(w, h); path.lineTo(0, h); }
         if(sl) { if(!sb) path.moveTo(0, h); path.lineTo(0,0); }
         return path;
-    }
-
-    /**
-     * Paint border.
-     */
-    public void paint(Painter aPntr, Shape aShape)
-    {
-        Color color = getColor();
-        Stroke stroke = getStroke();
-        aPntr.setPaint(color);
-        aPntr.setStroke(stroke);
-        Shape spath = getStrokePath(aShape);
-        aPntr.draw(spath);
     }
 
     /**
@@ -130,8 +131,7 @@ public class RMBorderStroke extends RMStroke {
         // Check identity, super, class and get other
         if(anObj==this) return true;
         if(!super.equals(anObj)) return false;
-        if(!(anObj instanceof RMBorderStroke)) return false;
-        RMBorderStroke other = (RMBorderStroke)anObj;
+        RMBorderStroke other = anObj instanceof RMBorderStroke ? (RMBorderStroke)anObj : null; if (other==null) return false;
 
         // Check ShowLeft, ShowRight, ShowTop, ShowBottom
         if(other._showLeft!=_showLeft) return false;
@@ -160,7 +160,7 @@ public class RMBorderStroke extends RMStroke {
     /**
      * XML unarchival.
      */
-    public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
+    public RMBorderStroke fromXML(XMLArchiver anArchiver, XMLElement anElement)
     {
         // Unarchive basic stroke attributes
         super.fromXML(anArchiver, anElement);

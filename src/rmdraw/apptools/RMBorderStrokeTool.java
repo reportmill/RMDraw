@@ -21,7 +21,7 @@ public void resetUI()
 {
     // Get currently selected shape
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
-    Border border = shape.getBorder(); if (border==null) border = new RMStroke();
+    Border border = shape.getBorder(); if (border==null) border = Border.blackBorder();
     RMBorderStroke bstroke = border instanceof RMBorderStroke? (RMBorderStroke)border : new RMBorderStroke();
     
     // Update StrokeColorWell, StrokeWidthText, StrokeWidthThumb

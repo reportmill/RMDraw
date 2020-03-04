@@ -3,9 +3,9 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Tool;
-import rmdraw.gfx.RMStroke;
 import rmdraw.shape.*;
 import java.util.*;
+import snap.gfx.Border;
 import snap.view.*;
 
 /**
@@ -16,7 +16,12 @@ public class RMOvalShapeTool <T extends RMOvalShape> extends Tool<T> {
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
  */
-protected T newInstance()  { T shape = super.newInstance(); shape.setBorder(new RMStroke()); return shape; }
+protected T newInstance()
+{
+    T shape = super.newInstance();
+    shape.setBorder(Border.blackBorder());
+    return shape;
+}
 
 /**
  * Updates the UI controls from the currently selected oval.

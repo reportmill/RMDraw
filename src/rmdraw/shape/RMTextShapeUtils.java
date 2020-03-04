@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.gfx.RMStroke;
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.geom.Shape;
@@ -48,8 +47,7 @@ public static RMPolygonShape getTextPathShape(RMTextShape aText)
     
     // Set polygon color to run or outline color and stroke and return
     polygon.setColor(aText.getTextColor());
-    Border brdr = aText.getTextBorder();
-    polygon.setBorder(brdr!=null? new RMStroke(brdr.getColor(), brdr.getWidth()) : null);
+    polygon.setBorder(aText.getTextBorder());
     return polygon;
 }
 

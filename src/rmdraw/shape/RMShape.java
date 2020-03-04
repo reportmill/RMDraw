@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.gfx.*;
 import java.util.*;
 
 import snap.geom.*;
@@ -86,7 +85,7 @@ public class RMShape implements Cloneable, Archivable, Key.GetSet {
     public static final String ScaleY_Prop = "ScaleY";
     public static final String SkewX_Prop = "SkewX";
     public static final String SkewY_Prop = "SkewY";
-    public static final String Stroke_Prop = "Stroke";
+    public static final String Border_Prop = "Border";
     public static final String Fill_Prop = "Fill";
     public static final String Effect_Prop = "Effect";
     public static final String Opacity_Prop = "Opacity";
@@ -568,13 +567,16 @@ public void setBorder(Border aStroke)
 {
     if(SnapUtils.equals(getBorder(), aStroke)) return;
     repaint();
-    firePropChange(Stroke_Prop, _stroke, _stroke = aStroke);
+    firePropChange(Border_Prop, _stroke, _stroke = aStroke);
 }
 
 /**
  * Sets the stroke for this shape, with an option to turn on drawsStroke.
  */
-public void setBorder(Color aColor, double aWidth)  { setBorder(new RMStroke(aColor, aWidth)); }
+public void setBorder(Color aColor, double aWidth)
+{
+    setBorder(Border.createLineBorder(aColor, aWidth));
+}
 
 /**
  * Returns the fill for this shape.
@@ -635,7 +637,7 @@ public void setStrokeColor(Color aColor)
 {
     if (aColor==null) setBorder(null);
     else if (getBorder()==null)
-        setBorder(new RMStroke(aColor, 1));
+        setBorder(Border.createLineBorder(aColor, 1));
     else setBorder(getBorder().copyForColor(aColor));
 }
 
@@ -653,8 +655,8 @@ public double getStrokeWidth()
 public void setStrokeWidth(double aValue)
 {
     if (getBorder()==null)
-        setBorder(new RMStroke(Color.BLACK, aValue));
-    else setBorder(getBorder().copyForWidth(aValue));
+        setBorder(Border.createLineBorder(Color.BLACK, aValue));
+    else setBorder(getBorder().copyForStrokeWidth(aValue));
 }
 
 /**
@@ -1763,7 +1765,7 @@ public Object getKeyValue(String aPropName)
         case ScaleY_Prop: return getScaleY();
         case SkewX_Prop: return getSkewX();
         case SkewY_Prop: return getSkewY();
-        case Stroke_Prop: return getBorder();
+        case Border_Prop: return getBorder();
         case Fill_Prop: return getFill();
         case Effect_Prop: return getEffect();
         case Opacity_Prop: return getOpacity();
@@ -1794,7 +1796,7 @@ public void setKeyValue(String aPropName, Object aValue)
         case ScaleY_Prop: setScaleY(SnapUtils.doubleValue(aValue)); break;
         case SkewX_Prop: setSkewX(SnapUtils.doubleValue(aValue)); break;
         case SkewY_Prop: setSkewY(SnapUtils.doubleValue(aValue)); break;
-        case Stroke_Prop: setBorder(aValue instanceof RMStroke? (RMStroke)aValue : null); break;
+        case Border_Prop: setBorder(aValue instanceof Border? (Border)aValue : null); break;
         case Fill_Prop: setFill(aValue instanceof Paint? (Paint)aValue : null); break;
         case Effect_Prop: setEffect(aValue instanceof Effect? (Effect)aValue : null); break;
         case Opacity_Prop: setOpacity(SnapUtils.doubleValue(aValue)); break;
@@ -1833,7 +1835,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     if(getSkewX()!=0) e.add("skewx", getSkewX());
     if(getSkewY()!=0) e.add("skewy", getSkewY());
 
-    // Archive Stroke, Fill, Effect
+    // Archive Border, Fill, Effect
     if(getBorder()!=null) e.add(anArchiver.toXML(getBorder(), this));
     if(getFill()!=null) e.add(anArchiver.toXML(getFill(), this));
     if(getEffect()!=null) e.add(anArchiver.toXML(getEffect(), this));
@@ -1889,10 +1891,10 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     setSkewX(anElement.getAttributeFloatValue("skewx", 0));
     setSkewY(anElement.getAttributeFloatValue("skewy", 0));
 
-    // Unarchive Stroke 
-    for(int i=anArchiver.indexOf(anElement, RMStroke.class); i>=0; i=-1) {
-        RMStroke stroke = (RMStroke)anArchiver.fromXML(anElement.get(i), this);
-        setBorder(stroke);
+    // Unarchive Border
+    for(int i=anArchiver.indexOf(anElement, Border.class); i>=0; i=-1) {
+        Border border = (Border)anArchiver.fromXML(anElement.get(i), this);
+        setBorder(border);
     }
     
     // Unarchive Fill 

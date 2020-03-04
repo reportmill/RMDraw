@@ -17,14 +17,14 @@ import snap.viewx.ColorWell;
 public class RMFillTool extends EditorPane.SupportPane {
 
     // Map of tool instances by shape class
-    Map                 _tools = new Hashtable();
+    private Map  _tools = new Hashtable();
     
-    // List of known strokes
-    static RMStroke     _strokes[] = { new RMStroke(), new RMBorderStroke() };
+    // List of known borders
+    private static Border  _borders[] = { Border.blackBorder(), new RMBorderStroke() };
     
     // List of known fills
-    static Paint       _fill0, _fill1;
-    static ImagePaint  _imageFill;
+    private static Paint  _fill0, _fill1;
+    protected static ImagePaint  _imageFill;
 
 /**
  * Creates a new RMFillTool panel.
@@ -65,14 +65,14 @@ protected void respondUI(ViewEvent anEvent)
 }
 
 /**
- * Returns the number of known strokes.
+ * Returns the number of known borders.
  */
-public int getStrokeCount()  { return _strokes.length; }
+public int getBorderCount()  { return _borders.length; }
 
 /**
- * Returns an individual stroke at given index.
+ * Returns the individual border at given index.
  */
-public RMStroke getStroke(int anIndex)  { return _strokes[anIndex]; }
+public Border getBorder(int anIndex)  { return _borders[anIndex]; }
 
 /**
  * Returns the number of known fills.
@@ -105,14 +105,14 @@ public Border getSelectedStroke()
 }
 
 /**
- * Iterate over editor selected shapes and set stroke.
+ * Iterate over editor selected shapes and set border.
  */
-public void setSelectedStroke(RMStroke aStroke)
+public void setSelectedStroke(Border aBorder)
 {
     Editor editor = getEditor();
     for(int i=0, iMax=editor.getSelectedOrSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSelectedOrSuperSelectedShape(i);
-        shape.setBorder(aStroke);
+        shape.setBorder(aBorder);
     }
 }
 
@@ -157,8 +157,8 @@ public RMFillTool getTool(Object anObj)
  */
 static RMFillTool getToolImpl(Class aClass)
 {
-    if(aClass==RMStroke.class) return new RMStrokeTool();
     if(aClass==RMBorderStroke.class) return new RMBorderStrokeTool();
+    if(Border.class.isAssignableFrom(aClass)) return new RMStrokeTool();
     if(aClass==Color.class) return new RMFillTool();
     if(aClass==GradientPaint.class) return new GradientPaintTool();
     if(aClass==ImagePaint.class) return new ImagePaintTool();

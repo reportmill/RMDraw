@@ -3,9 +3,9 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Tool;
-import rmdraw.gfx.RMStroke;
 import rmdraw.shape.*;
 import java.util.*;
+import snap.gfx.Border;
 import snap.view.*;
 
 /**
@@ -16,7 +16,12 @@ public class RMRectShapeTool <T extends RMRectShape> extends Tool<T> {
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
  */
-protected T newInstance()  { T shape = super.newInstance(); shape.setBorder(new RMStroke()); return shape; }
+protected T newInstance()
+{
+    T shape = super.newInstance();
+    shape.setBorder(Border.blackBorder());
+    return shape;
+}
 
 /**
  * Updates the UI controls from the currently selected rectangle.
@@ -41,13 +46,13 @@ public void respondUI(ViewEvent anEvent)
     List <RMRectShape> rects = (List)getSelectedShapes();
 
     // Handle Rounding Radius Thumb & Text
-    if(anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText")) {
+    if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText")) {
         rect.undoerSetUndoTitle("Rounding Change");
         float value = anEvent.getFloatValue();
-        for(RMRectShape r : rects) {
+        for (RMRectShape r : rects) {
             r.setRadius(value);
-            if(r.getBorder()==null)
-                r.setBorder(new RMStroke());
+            if (r.getBorder()==null)
+                r.setBorder(Border.blackBorder());
         }
     }
 }

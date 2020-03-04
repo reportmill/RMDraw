@@ -3,7 +3,6 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.gfx.*;
 import rmdraw.shape.*;
 import java.util.List;
 import snap.gfx.*;
@@ -36,8 +35,8 @@ public ShapeFills(EditorPane anEP)
 protected void initUI()
 {
     // Get array of known stroke names and initialize StrokeComboBox
-    int scount = _fillTool.getStrokeCount();
-    Object snames[] = new String[scount]; for(int i=0;i<scount;i++) snames[i] = _fillTool.getStroke(i).getName();
+    int scount = _fillTool.getBorderCount();
+    Object snames[] = new String[scount]; for(int i=0;i<scount;i++) snames[i] = _fillTool.getBorder(i).getName();
     setViewItems("StrokeComboBox", snames);
     
     // Get array of known fill names and initialize FillComboBox
@@ -60,7 +59,7 @@ public void resetUI()
     RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
     
     // Get border from shape (or default, if not available)
-    Border border = shape.getBorder(); if(border==null) border = new RMStroke();
+    Border border = shape.getBorder(); if(border==null) border = Border.blackBorder();
 
     // Update StrokeCheckBox, StrokeComboBox
     setViewValue("StrokeCheckBox", shape.getBorder()!=null);
@@ -116,15 +115,15 @@ public void respondUI(ViewEvent anEvent)
     if (anEvent.equals("StrokeCheckBox")) {
         boolean selected = anEvent.getBoolValue();
         for (RMShape s : shapes) {
-            if (selected && s.getBorder()==null) s.setBorder(new RMStroke()); // If requested and missing, add
+            if (selected && s.getBorder()==null) s.setBorder(Border.blackBorder()); // If requested and missing, add
             if (!selected && s.getBorder()!=null) s.setBorder(null); // If turned off and present, remove
         }
     }
     
-    // Handle StrokeComboBox: Get selected stroke instance and iterate over shapes and add stroke if not there
+    // Handle StrokeComboBox: Get selected border and iterate over shapes and set
     if (anEvent.equals("StrokeComboBox")) {
-        RMStroke newStroke = _fillTool.getStroke(anEvent.getSelIndex());
-        for (RMShape s : shapes) s.setBorder(newStroke);
+        Border newBorder = _fillTool.getBorder(anEvent.getSelIndex());
+        for (RMShape s : shapes) s.setBorder(newBorder);
     }
 
     // Handle FillCheckBox: Iterate over shapes and add fill if not there or remove if there

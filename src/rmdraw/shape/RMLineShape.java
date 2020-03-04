@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.gfx.*;
 import snap.geom.Line;
 import snap.geom.Point;
 import snap.geom.Shape;
@@ -18,7 +17,7 @@ public class RMLineShape extends RMParentShape {
 /**
  * Creates a basic line (a point actually at 0,0).
  */
-public RMLineShape()  { setBorder(new RMStroke()); }
+public RMLineShape()  { setBorder(Border.blackBorder()); }
 
 /**
  * Creates a basic black line from the given x1, y1 to the given x2, y2.

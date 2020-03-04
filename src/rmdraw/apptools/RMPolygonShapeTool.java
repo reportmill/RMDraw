@@ -4,7 +4,6 @@
 package rmdraw.apptools;
 import rmdraw.app.Editor;
 import rmdraw.app.Tool;
-import rmdraw.gfx.*;
 import rmdraw.shape.*;
 import snap.geom.*;
 import snap.gfx.*;
@@ -83,7 +82,12 @@ public Class getShapeClass()  { return RMPolygonShape.class; }
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
  */
-protected T newInstance()  { T shape = super.newInstance(); shape.setBorder(new RMStroke()); return shape; }
+protected T newInstance()
+{
+    T shape = super.newInstance();
+    shape.setBorder(Border.blackBorder());
+    return shape;
+}
 
 /**
  * Returns whether a given shape is super-selectable.
@@ -253,7 +257,7 @@ private void createPoly()
         RMPolygonShape poly = new RMPolygonShape();
         Rect polyFrame = getEditor().getSuperSelectedShape().parentToLocal(_path.getBounds(), null).getBounds();
         poly.setFrame(polyFrame);
-        poly.setBorder(new RMStroke());
+        poly.setBorder(Border.blackBorder());
         poly.setPath(_path);
 
         // Add shape to superSelectedShape (within an undo grouping).
@@ -597,10 +601,6 @@ private static void setPointStructured(Path aPath, int index, Point point)
                     double mag = size2.getMagnitude();
                     aPath.setPoint(index-2, endPoint.x + size.getWidth()*mag, endPoint.y + size.getHeight()*mag);
                 }
-                else {
-                    // Illustrator pops the otherControlPoint here to what it was at the 
-                    // start of the drag loop.  Not sure that's much better...
-                }
             }
         }
 
@@ -616,7 +616,6 @@ private static void setPointStructured(Path aPath, int index, Point point)
                     double mag = size2.getMagnitude();
                     aPath.setPoint(index+2, endPoint.x+size.width*mag, endPoint.y + size.height*mag);
                 }
-                else { }
             }
         }
 
