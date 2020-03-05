@@ -11,61 +11,61 @@ import snap.viewx.ColorWell;
  */
 public class ShadowEffectTool extends EffectTool {
     
-/**
- * Reset UI controls.
- */
-public void resetUI()
-{
-    // Get currently selected effect and shadow effect (or default if not available)
-    Effect eff = getSelectedEffect();
-    ShadowEffect seff = eff instanceof ShadowEffect? (ShadowEffect)eff : new ShadowEffect();
-    
-    // Update ShadowColor
-    setViewValue("ShadowColorWell", seff.getColor());
-    
-    // Set SoftnessSlider and SoftnessText
-    setViewValue("SoftnessSlider", seff.getRadius());
-    setViewValue("SoftnessText", seff.getRadius());
-        
-    // Update ShadowDXSpinner and ShadowDYSpinner
-    setViewValue("ShadowDXSpinner", seff.getDX());
-    setViewValue("ShadowDYSpinner", seff.getDY());
-}
+    /**
+     * Reset UI controls.
+     */
+    public void resetUI()
+    {
+        // Get currently selected effect and shadow effect (create new if not available)
+        Effect eff = getEffect();
+        ShadowEffect seff = eff instanceof ShadowEffect ? (ShadowEffect)eff : new ShadowEffect();
 
-/**
- * Responds to changes from the UI panel controls and updates currently selected shape.
- */
-public void respondUI(ViewEvent anEvent)
-{
-    // Get currently selected effect and shadow effect (or default if not available)
-    Effect eff = getSelectedEffect();
-    ShadowEffect seff = eff instanceof ShadowEffect? (ShadowEffect)eff : new ShadowEffect();
-    
-    // Handle ShadowColorWell: Create new fill from old shadow fill with new softness
-    if(anEvent.equals("ShadowColorWell")) {
-        ColorWell cwell = getView("ShadowColorWell", ColorWell.class);
-        seff = seff.copyForColor(cwell.getColor());
-    }        
-    
-    // Handle SoftnessText and SoftnessSlider
-    if(anEvent.equals("SoftnessText") || anEvent.equals("SoftnessSlider"))
-        seff = seff.copyForRadius(anEvent.getIntValue());
-    
-    // Handle ShadowDXSpinner, ShadowDYSpinner
-    if(anEvent.equals("ShadowDXSpinner"))
-        seff = seff.copyForOffset(anEvent.getIntValue(), seff.getDY());
-    if(anEvent.equals("ShadowDYSpinner"))
-        seff = seff.copyForOffset(seff.getDX(), anEvent.getIntValue());
-    
-    // Handle OffsetPanel - get the offset panel and create new fill from old shadow fill with new dx
-    if(anEvent.equals("ShadowOffsetPanel")) {
-        OffsetPanel op = getView("ShadowOffsetPanel", OffsetPanel.class);
-        seff = seff.copyForOffset(seff.getDX() + op.getDX(), seff.getDY() + op.getDY());
+        // Update ShadowColor
+        setViewValue("ShadowColorWell", seff.getColor());
+
+        // Set SoftnessSlider and SoftnessText
+        setViewValue("SoftnessSlider", seff.getRadius());
+        setViewValue("SoftnessText", seff.getRadius());
+
+        // Update ShadowDXSpinner and ShadowDYSpinner
+        setViewValue("ShadowDXSpinner", seff.getDX());
+        setViewValue("ShadowDYSpinner", seff.getDY());
     }
-    
-    // Set new shadow effect
-    setSelectedEffect(seff);
-}
+
+    /**
+     * Responds to changes from the UI panel controls and updates currently selected shape.
+     */
+    public void respondUI(ViewEvent anEvent)
+    {
+        // Get currently selected effect and shadow effect (create new if not available)
+        Effect eff = getEffect();
+        ShadowEffect seff = eff instanceof ShadowEffect ? (ShadowEffect)eff : new ShadowEffect();
+
+        // Handle ShadowColorWell: Create new fill from old shadow fill with new softness
+        if (anEvent.equals("ShadowColorWell")) {
+            ColorWell cwell = getView("ShadowColorWell", ColorWell.class);
+            seff = seff.copyForColor(cwell.getColor());
+        }
+
+        // Handle SoftnessText and SoftnessSlider
+        if (anEvent.equals("SoftnessText") || anEvent.equals("SoftnessSlider"))
+            seff = seff.copyForRadius(anEvent.getIntValue());
+
+        // Handle ShadowDXSpinner, ShadowDYSpinner
+        if (anEvent.equals("ShadowDXSpinner"))
+            seff = seff.copyForOffset(anEvent.getIntValue(), seff.getDY());
+        if (anEvent.equals("ShadowDYSpinner"))
+            seff = seff.copyForOffset(seff.getDX(), anEvent.getIntValue());
+
+        // Handle OffsetPanel - get the offset panel and create new fill from old shadow fill with new dx
+        if (anEvent.equals("ShadowOffsetPanel")) {
+            OffsetPanel op = getView("ShadowOffsetPanel", OffsetPanel.class);
+            seff = seff.copyForOffset(seff.getDX() + op.getDX(), seff.getDY() + op.getDY());
+        }
+
+        // Set new shadow effect
+        setEffect(seff);
+    }
 
 /**
  * Implements a simple control to edit shadow position.
@@ -85,11 +85,11 @@ public static class OffsetPanel extends View {
     protected void processEvent(ViewEvent e)
     {
         // Handle MousePressed
-        if(e.isMousePress())  {
+        if (e.isMousePress())  {
             _x1 = _x2 = (int)e.getX(); _y1 = _y2 = (int)e.getY(); }
         
         // Handle MouseDragged, MouseReleased
-        else if(e.isMouseDrag() || e.isMouseRelease()) {
+        else if (e.isMouseDrag() || e.isMouseRelease()) {
             if(!isEnabled()) return;
             _x1 = _x2; _y1 = _y2;
             _x2 = (int)e.getX(); _y2 = (int)e.getY();

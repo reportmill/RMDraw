@@ -1,10 +1,7 @@
 package rmdraw.gfx;
 import rmdraw.shape.RMShape;
 import snap.geom.Pos;
-import snap.gfx.Border;
-import snap.gfx.Color;
-import snap.gfx.Paint;
-import snap.gfx.Stroke;
+import snap.gfx.*;
 
 /**
  * A class to handle getting/setting style attributes for Paint/Border/Effect tools.
@@ -91,4 +88,13 @@ public class Styler {
      * Sets the color of currently selected view.
      */
     public void setFillColor(Color aColor)  { setFill(aColor); }
+    /**
+     * Returns the currently selected effect.
+     */
+    public Effect getEffect()  { return null; }
+
+    /**
+     * Sets the currently selected effect.
+     */
+    public void setEffect(Effect anEffect)  { }
 }

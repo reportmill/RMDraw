@@ -16,8 +16,8 @@ public class BlurEffectTool extends EffectTool {
 public void resetUI()
 {
     // Get currently selected effect and blur effect
-    Effect eff = getSelectedEffect();
-    BlurEffect beff = eff instanceof BlurEffect? (BlurEffect)eff : new BlurEffect();
+    Effect eff = getEffect();
+    BlurEffect beff = eff instanceof BlurEffect ? (BlurEffect)eff : new BlurEffect();
     
     // Set BlurRadiusSpinner, BlurRadiusSlider
     setViewValue("BlurRadiusSpinner", beff.getRadius());
@@ -30,21 +30,19 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected effect and blur effect
-    Effect eff = getSelectedEffect();
+    Effect eff = getEffect();
     BlurEffect beff = eff instanceof BlurEffect? (BlurEffect)eff : new BlurEffect();
     
     // Handle BlurRadiusSpinner
-    if(anEvent.equals("BlurRadiusSpinner"))
+    if (anEvent.equals("BlurRadiusSpinner"))
         beff = new BlurEffect(anEvent.getIntValue());
     
     // Handle BlurRadiusSlider
-    if(anEvent.equals("BlurRadiusSlider")) {
+    if (anEvent.equals("BlurRadiusSlider"))
         beff = new BlurEffect(anEvent.getIntValue());
-        setViewValue("BlurRadiusSpinner", anEvent.getIntValue());
-    }
-    
+
     // Set new shadow effect
-    setSelectedEffect(beff);
+    setEffect(beff);
 }
 
 }

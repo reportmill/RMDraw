@@ -15,9 +15,9 @@ public class ReflectEffectTool extends EffectTool {
  */
 public void resetUI()
 {
-    // Get currently selected effect, and get as reflect (or create new if not available)
-    Effect eff = getSelectedEffect();
-    ReflectEffect reff = eff instanceof ReflectEffect? (ReflectEffect)eff : new ReflectEffect();
+    // Get currently selected effect, and get as reflect (create new if not available)
+    Effect eff = getEffect();
+    ReflectEffect reff = eff instanceof ReflectEffect ? (ReflectEffect)eff : new ReflectEffect();
     
     // Update ReflectionHeightSpinner, FadeHeightSpinner, GapHeightSpinner
     setViewValue("ReflectionHeightSpinner", reff.getReflectHeight());
@@ -30,17 +30,20 @@ public void resetUI()
  */
 public void respondUI(ViewEvent anEvent)
 {
-    // Get currently selected effect, and get as reflect (or create new if not available)
-    Effect eff = getSelectedEffect();
-    ReflectEffect reff = eff instanceof ReflectEffect? (ReflectEffect)eff : new ReflectEffect();
+    // Get currently selected effect, and get as reflect (create new if not available)
+    Effect eff = getEffect();
+    ReflectEffect reff = eff instanceof ReflectEffect ? (ReflectEffect)eff : new ReflectEffect();
     
     // Handle ReflectionHeightSpinner, FadeHeightSpinner, GapHeightSpinner
-    if(anEvent.equals("ReflectionHeightSpinner")) reff = reff.copyForReflectHeight(anEvent.getFloatValue());
-    if(anEvent.equals("FadeHeightSpinner")) reff = reff.copyForFadeHeight(anEvent.getFloatValue());
-    if(anEvent.equals("GapHeightSpinner")) reff = reff.copyForGap(anEvent.getFloatValue());
+    if (anEvent.equals("ReflectionHeightSpinner"))
+        reff = reff.copyForReflectHeight(anEvent.getFloatValue());
+    if (anEvent.equals("FadeHeightSpinner"))
+        reff = reff.copyForFadeHeight(anEvent.getFloatValue());
+    if (anEvent.equals("GapHeightSpinner"))
+        reff = reff.copyForGap(anEvent.getFloatValue());
     
     // Set new effect
-    setSelectedEffect(reff);
+    setEffect(reff);
 }
 
 }

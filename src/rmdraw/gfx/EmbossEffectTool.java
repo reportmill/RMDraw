@@ -13,10 +13,10 @@ public class EmbossEffectTool extends EffectTool {
 /**
  * Return emboss effect (or default emboss effect, if not available).
  */
-public EmbossEffect getEffect()
+public EmbossEffect getEmbossEffect()
 {
-    Effect eff = getSelectedEffect();
-    return eff instanceof EmbossEffect? (EmbossEffect)eff : new EmbossEffect();
+    Effect eff = getEffect();
+    return eff instanceof EmbossEffect ? (EmbossEffect)eff : new EmbossEffect();
 }
 
 /**
@@ -25,7 +25,7 @@ public EmbossEffect getEffect()
 public void resetUI()
 {
     // Get currently selected effect
-    EmbossEffect emboss = getEffect();
+    EmbossEffect emboss = getEmbossEffect();
     
     // Update everybody
     setViewValue("RadiusWheel", emboss.getRadius());
@@ -42,23 +42,23 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected effect
-    EmbossEffect eff = getEffect(), neff = null;
+    EmbossEffect eff = getEmbossEffect(), neff = null;
 
     // Handle AltitudeTextField and AltitudeWheel
-    if(anEvent.equals("AltitudeWheel") || anEvent.equals("AltitudeTextField"))
+    if (anEvent.equals("AltitudeWheel") || anEvent.equals("AltitudeTextField"))
         neff = eff.copyForAltitude(anEvent.getFloatValue());
 
     // Handle AltitudeTextField and AltitudeWheel
-    if(anEvent.equals("AzimuthWheel") || anEvent.equals("AzimuthTextField"))
+    if (anEvent.equals("AzimuthWheel") || anEvent.equals("AzimuthTextField"))
         neff = eff.copyForAzimuth(anEvent.getFloatValue());
 
     // Handle AltitudeTextField and AltitudeWheel
-    if(anEvent.equals("RadiusWheel") || anEvent.equals("RadiusTextField"))
+    if (anEvent.equals("RadiusWheel") || anEvent.equals("RadiusTextField"))
         neff = eff.copyForRadius(anEvent.getIntValue());
 
     // Set new effect
-    if(neff!=null)
-        setSelectedEffect(neff);
+    if (neff!=null)
+        setEffect(neff);
 }
 
 }

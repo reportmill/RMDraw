@@ -12,7 +12,7 @@ import snap.viewx.ColorWell;
  */
 public class PaintTool extends ViewOwner {
 
-    // The Styler
+    // The Styler used to get/set paint attributes
     private Styler _styler;
 
     // Map of PaintTool instances by Paint class
@@ -62,14 +62,10 @@ public class PaintTool extends ViewOwner {
      */
     protected void respondUI(ViewEvent anEvent)
     {
-        // Handle FillColorWell
-        if(anEvent.equals("FillColorWell")) {
-
-            // Get Color from color well
+        // Handle FillColorWell: Get color from ColorWell and set with styler
+        if (anEvent.equals("FillColorWell")) {
             ColorWell cwell = getView("FillColorWell", ColorWell.class);
             Color color = cwell.getColor();
-
-            // Set in styler
             getStyler().setFillColor(color);
         }
     }
@@ -108,7 +104,7 @@ public class PaintTool extends ViewOwner {
         // Get tool from tools map - just return if present
         Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
         PaintTool tool = _tools.get(cls);
-        if(tool==null) {
+        if (tool==null) {
             _tools.put(cls, tool=getToolImpl(cls));
             tool.setStyler(getStyler());
         }
@@ -120,9 +116,9 @@ public class PaintTool extends ViewOwner {
      */
     private static PaintTool getToolImpl(Class aClass)
     {
-        if(aClass==Color.class) return new PaintTool();
-        if(aClass==GradientPaint.class) return new GradientPaintTool();
-        if(aClass==ImagePaint.class) return new ImagePaintTool();
+        if (aClass==Color.class) return new PaintTool();
+        if (aClass==GradientPaint.class) return new GradientPaintTool();
+        if (aClass==ImagePaint.class) return new ImagePaintTool();
         throw new RuntimeException("PaintTool.getToolImp: No tool class for " + aClass);
     }
 }

@@ -40,7 +40,7 @@ protected void initUI()
     // Initialize tools
     _fillTool.setStyler(getEditor().getStyler());
     _borderTool.setStyler(getEditor().getStyler());
-    _effectTool.setEditorPane(getEditorPane());
+    _effectTool.setStyler(getEditor().getStyler());
 
     // Get array of known stroke names and initialize StrokeComboBox
     int scount = _borderTool.getBorderCount();

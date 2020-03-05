@@ -372,6 +372,24 @@ public class EditorStyler extends Styler {
     }
 
     /**
+     * Returns the currently selected effect.
+     */
+    public Effect getEffect()
+    {
+        RMShape shape = getSelOrSuperSelShape();
+        return shape.getEffect();
+    }
+
+    /**
+     * Sets the currently selected effect.
+     */
+    public void setEffect(Effect anEffect)
+    {
+        for (RMShape shape : getSelOrSuperSelShapes())
+            shape.setEffect(anEffect);
+    }
+
+    /**
      * Returns the currently selected shapes or, if none, the super-selected shape in a list.
      */
     private List<RMShape> getSelOrSuperSelShapes()  { return _editor.getSelectedOrSuperSelectedShapes(); }
