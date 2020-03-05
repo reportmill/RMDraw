@@ -222,7 +222,7 @@ public class EditorStyler extends Styler {
      */
     public void setFontBold(boolean aFlag)
     {
-        _editor.undoerSetUndoTitle("Make Bold");
+        setUndoTitle("Make Bold");
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
             getStyler(shape).setFontBold(aFlag);
@@ -234,7 +234,7 @@ public class EditorStyler extends Styler {
      */
     public void setFontItalic(boolean aFlag)
     {
-        _editor.undoerSetUndoTitle("Make Italic");
+        setUndoTitle("Make Italic");
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
             getStyler(shape).setFontItalic(aFlag);
@@ -254,7 +254,7 @@ public class EditorStyler extends Styler {
      */
     public void setUnderlined()
     {
-        _editor.undoerSetUndoTitle("Make Underlined");
+        setUndoTitle("Make Underlined");
         for(RMShape shape : getSelOrSuperSelShapes())
             shape.setUnderlined(!shape.isUnderlined());
     }
@@ -289,7 +289,7 @@ public class EditorStyler extends Styler {
      */
     public void setTextBorder(Border aBorder)
     {
-        _editor.undoerSetUndoTitle("Make Outlined");
+        setUndoTitle("Make Outlined");
         for(RMShape shp : getSelOrSuperSelShapes()) {
             if(shp instanceof RMTextShape)
                 ((RMTextShape)shp).setTextBorder(aBorder);
@@ -309,7 +309,7 @@ public class EditorStyler extends Styler {
      */
     public void setAlignX(HPos anAlign)
     {
-        _editor.undoerSetUndoTitle("Alignment Change");
+        setUndoTitle("Alignment Change");
         for(RMShape shape : getSelOrSuperSelShapes())
             shape.setAlignmentX(anAlign);
     }
@@ -327,7 +327,7 @@ public class EditorStyler extends Styler {
      */
     public void setJustify(boolean aValue)
     {
-        _editor.undoerSetUndoTitle("Jusify Change");
+        setUndoTitle("Jusify Change");
         //for (RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
         //    shape.setJustify(anAlign);
     }
@@ -337,7 +337,7 @@ public class EditorStyler extends Styler {
      */
     public void setSuperscript()
     {
-        _editor.undoerSetUndoTitle("Make Superscript");
+        setUndoTitle("Make Superscript");
         TextEditor ted = _editor.getTextEditor();
         if(ted!=null)
             ted.setSuperscript();
@@ -348,7 +348,7 @@ public class EditorStyler extends Styler {
      */
     public void setSubscript()
     {
-        _editor.undoerSetUndoTitle("Make Subscript");
+        setUndoTitle("Make Subscript");
         TextEditor ted = _editor.getTextEditor();
         if(ted!=null)
             ted.setSubscript();
@@ -387,6 +387,25 @@ public class EditorStyler extends Styler {
     {
         for (RMShape shape : getSelOrSuperSelShapes())
             shape.setEffect(anEffect);
+    }
+
+    /**
+     * Returns the currently selected opacity.
+     */
+    public double getOpacity()
+    {
+        RMShape shape = getSelOrSuperSelShape();
+        return shape.getOpacity();
+    }
+
+    /**
+     * Sets the currently selected opacity.
+     */
+    public void setOpacity(double aValue)
+    {
+        setUndoTitle("Transparency Change");
+        for (RMShape shape : getSelOrSuperSelShapes())
+            shape.setOpacity(aValue);
     }
 
     /**
@@ -430,5 +449,13 @@ public class EditorStyler extends Styler {
     {
         RMShape shape = _editor.getSelectedOrSuperSelectedShape();
         return getStyler(shape);
+    }
+
+    /**
+     * Sets undo title.
+     */
+    public void setUndoTitle(String aTitle)
+    {
+        _editor.undoerSetUndoTitle(aTitle);
     }
 }

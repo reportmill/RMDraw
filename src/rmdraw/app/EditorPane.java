@@ -84,7 +84,10 @@ protected View createUI()
     // Get AttributesPanel (early so editor pane can register with correct ColorPanel)
     AttributesPanel attrPanel = getAttributesPanel();
     attrPanel.getUI();
-    
+
+    // Create normal ViewerPane BorderView UI
+    BorderView borderView = (BorderView)super.createUI();
+
     // Get InspectorPanel
     InspectorPanel inspPanel = getInspectorPanel();
     View inspPanelUI = inspPanel.getUI();
@@ -95,17 +98,16 @@ protected View createUI()
     colView.setFillWidth(true);
     colView.setBorder(Color.LIGHTGRAY, 1);
     colView.addChild(inspPanelUI);
-    
-    // Create normal RMViewerPane BorderView UI and panels to right side
-    BorderView bview = (BorderView)super.createUI();
-    bview.setRight(colView);
+
+    // Add ColView to BorderView
+    borderView.setRight(colView);
 
     // Install AttributesPanel    
     ParentView rbox = getRulerBox();
     attrPanel.getDrawer().showTabButton(rbox);
     
     // Create ColView holding MenuBar and EditorPane UI (with key listener so MenuBar catches shortcut keys)
-    View mbarView = MenuBar.createMenuBarView(getMenuBar().getUI(), bview);
+    View mbarView = MenuBar.createMenuBarView(getMenuBar().getUI(), borderView);
     return mbarView;
 }
 

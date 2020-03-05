@@ -88,6 +88,7 @@ public class Styler {
      * Sets the color of currently selected view.
      */
     public void setFillColor(Color aColor)  { setFill(aColor); }
+
     /**
      * Returns the currently selected effect.
      */
@@ -97,4 +98,14 @@ public class Styler {
      * Sets the currently selected effect.
      */
     public void setEffect(Effect anEffect)  { }
+
+    /**
+     * Returns the currently selected opacity.
+     */
+    public double getOpacity()  { return 0; }
+
+    /**
+     * Sets the currently selected opacity.
+     */
+    public void setOpacity(double aValue)  { }
 }

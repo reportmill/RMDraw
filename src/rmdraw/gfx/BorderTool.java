@@ -12,7 +12,7 @@ import snap.viewx.ColorWell;
  */
 public class BorderTool extends ViewOwner {
 
-    // The Styler
+    // The Styler used to get/set border attributes
     private Styler _styler;
 
     // Map of tool instances by shape class
