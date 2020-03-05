@@ -97,11 +97,12 @@ public class RMArchiver extends XMLArchiver {
         cmap.put("xstring", RichText.class); // Was RMXString
 
         // Strokes
-        cmap.put("stroke", RMStroke.class); cmap.put("double-stroke", RMStroke.class);
+        cmap.put("stroke", RMArchivers.RMStrokeStub.class);
+        cmap.put("double-stroke", RMArchivers.RMStrokeStub.class);
         cmap.put("border-stroke", Borders.EdgeBorder.class);
 
         // Fills
-        cmap.put("fill", RMFill.class);
+        cmap.put("fill", RMArchivers.RMFillStub.class);
         cmap.put("gradient-fill", GradientPaint.class);
         cmap.put("radial-fill", GradientPaint.class);
         cmap.put("image-fill", RMArchivers.RMImageFillStub.class);
