@@ -188,7 +188,7 @@ public void setFormat(TextFormat aFormat)
 {
     if(isTextEditorSet())
         getTextEditor().setFormat(aFormat);
-    else getRichText().setStyleValue(aFormat, 0, length());
+    else getRichText().setStyleValue(aFormat);
 }
 
 /**
@@ -209,8 +209,6 @@ public void setTextColor(Color aColor)
  */
 public boolean isUnderlined()
 {
-    if(isTextEditorSet())
-        return getTextEditor().isUnderlined();
     return getRichText().getRunAt(0).isUnderlined();
 }
 
@@ -219,9 +217,7 @@ public boolean isUnderlined()
  */
 public void setUnderlined(boolean aFlag)
 {
-    if(isTextEditorSet())
-        getTextEditor().setUnderlined(aFlag);
-    else getRichText().setStyleValue(TextStyle.UNDERLINE_KEY, aFlag? 1 : 0, 0, length());
+    getRichText().setStyleValue(TextStyle.UNDERLINE_KEY, aFlag? 1 : 0);
 }
 
 /**

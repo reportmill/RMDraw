@@ -137,8 +137,8 @@ protected void respondUI(ViewEvent anEvent)
         editor.getStyler().setFontBold(!editor.getStyler().getFont().isBold());
     if (anEvent.equals("ItalicMenuItem") || anEvent.equals("ItalicButton"))
         editor.getStyler().setFontItalic(!editor.getStyler().getFont().isItalic());
-    if (anEvent.equals("UnderlineMenuItem") || anEvent.equals("UnderlineButton"))
-        editor.getStyler().setUnderlined();
+    if (anEvent.equals("UnderlineMenuItem"))
+        editor.getStyler().setUnderlined(!editor.getStyler().isUnderlined());
     if (anEvent.equals("OutlineMenuItem"))
         editor.getStyler().setTextBorder();
     if (anEvent.equals("AlignLeftMenuItem") || anEvent.equals("AlignLeftButton"))

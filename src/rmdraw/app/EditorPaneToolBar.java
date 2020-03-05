@@ -186,20 +186,14 @@ protected void respondUI(ViewEvent anEvent)
         editor.requestFocus();
     }
     
-    // Handle FontSizeUpButton, FontSizeDownButton
+    // Handle FontSizeUpButton, FontSizeDownButton, BoldButton
     if (anEvent.equals("FontSizeUpButton")) { Font font = editor.getStyler().getFont();
         editor.getStyler().setFontSize(font.getSize()<16? 1 : 2, true); }
     if (anEvent.equals("FontSizeDownButton")) { Font font = editor.getStyler().getFont();
         editor.getStyler().setFontSize(font.getSize()<16? -1 : -2, true); }
-    
-    // Handle BoldButton, ItalicButton, UnderlineButton
     if (anEvent.equals("BoldButton"))
         editor.getStyler().setFontBold(anEvent.getBoolValue());
-    if (anEvent.equals("ItalicButton"))
-        editor.getStyler().setFontItalic(anEvent.getBoolValue());
-    if (anEvent.equals("UnderlineButton"))
-        editor.getStyler().setUnderlined();
-        
+
     // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton
     if (anEvent.equals("AlignLeftButton"))
         editor.getStyler().setAlignX(HPos.LEFT);

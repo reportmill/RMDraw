@@ -5,7 +5,6 @@ import rmdraw.shape.RMShape;
 import rmdraw.shape.RMTextShape;
 import snap.geom.HPos;
 import snap.gfx.*;
-import snap.text.TextEditor;
 import snap.text.TextFormat;
 import snap.util.SnapUtils;
 import snap.view.ViewUtils;
@@ -126,7 +125,15 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Returns the font for the given shape.
      */
-    public Font getFontDeep(RMShape aShape)
+    public Font getFontDeep()
+    {
+        return getFontDeep(_shape);
+    }
+
+    /**
+     * Returns the font for the given shape.
+     */
+    private Font getFontDeep(RMShape aShape)
     {
         // Look for font from shape
         Font font = aShape.getFont();
@@ -150,7 +157,7 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setFontFamily(Font aFont)
     {
-        setFontKeyDeep(_editor, _shape, FontFamily_Key, aFont);
+        setFontKeyDeep(_shape, FontFamily_Key, aFont);
     }
 
     /**
@@ -158,7 +165,7 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setFontName(Font aFont)
     {
-        setFontKeyDeep(_editor, _shape, FontName_Key, aFont);
+        setFontKeyDeep(_shape, FontName_Key, aFont);
     }
 
     /**
@@ -167,7 +174,7 @@ public class ToolStyler <T extends RMShape> {
     public void setFontSize(float aSize, boolean isRelative)
     {
         String key = isRelative? FontSizeDelta_Key : FontSize_Key;
-        setFontKeyDeep(_editor, _shape, key, aSize);
+        setFontKeyDeep(_shape, key, aSize);
     }
 
     /**
@@ -175,8 +182,8 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setFontBold(boolean aFlag)
     {
-        _editor.undoerSetUndoTitle("Make Bold");
-        setFontKeyDeep(_editor, _shape, FontBold_Key, aFlag);
+        setUndoTitle("Make Bold");
+        setFontKeyDeep(_shape, FontBold_Key, aFlag);
     }
 
     /**
@@ -184,14 +191,14 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setFontItalic(boolean aFlag)
     {
-        _editor.undoerSetUndoTitle("Make Italic");
-        setFontKeyDeep(_editor, _shape, FontItalic_Key, aFlag);
+        setUndoTitle("Make Italic");
+        setFontKeyDeep(_shape, FontItalic_Key, aFlag);
     }
 
     /**
      * Sets the font family for given shape.
      */
-    private void setFontKey(Editor anEditor, RMShape aShape, String aKey, Object aVal)
+    private void setFontKey(RMShape aShape, String aKey, Object aVal)
     {
         // Get current font
         Font font = aShape.getFont();
@@ -276,15 +283,15 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Sets the font family for given shape.
      */
-    private void setFontKeyDeep(Editor anEditor, RMShape aShape, String aKey, Object aVal)
+    private void setFontKeyDeep(RMShape aShape, String aKey, Object aVal)
     {
         // Set font key for shape
-        setFontKey(anEditor, aShape, aKey, aVal);
+        setFontKey(aShape, aKey, aVal);
 
         // Set for children
         for(int i=0, iMax=aShape.getChildCount(); i<iMax; i++) { RMShape child = aShape.getChild(i);
             Tool tool = _editor.getTool(child);
-            tool.getStyler(child).setFontKeyDeep(anEditor, child, aKey, aVal);
+            tool.getStyler(child).setFontKeyDeep(child, aKey, aVal);
         }
     }
 
@@ -299,10 +306,10 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Sets the currently selected shapes to be underlined.
      */
-    public void setUnderlined()
+    public void setUnderlined(boolean aValue)
     {
-        _editor.undoerSetUndoTitle("Make Underlined");
-        _shape.setUnderlined(!_shape.isUnderlined());
+        setUndoTitle("Change Underline");
+        _shape.setUnderlined(aValue);
     }
 
     /**
@@ -335,7 +342,7 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setTextBorder(Border aBorder)
     {
-        _editor.undoerSetUndoTitle("Make Outlined");
+        setUndoTitle("Make Outlined");
         if(_shape instanceof RMTextShape)
             ((RMTextShape)_shape).setTextBorder(aBorder);
     }
@@ -353,7 +360,7 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setAlignX(HPos anAlign)
     {
-        _editor.undoerSetUndoTitle("Alignment Change");
+        setUndoTitle("Alignment Change");
         _shape.setAlignmentX(anAlign);
     }
 
@@ -362,39 +369,23 @@ public class ToolStyler <T extends RMShape> {
      */
     public boolean isJustify()
     {
-        return false; //_shape.getAlignmentX();
+        return false;
     }
 
     /**
      * Sets the horizontal alignment of the text of the currently selected shapes.
      */
-    public void setJustify(boolean aValue)
-    {
-        _editor.undoerSetUndoTitle("Jusify Change");
-        //_shape.setJustify(anAlign);
-    }
+    public void setJustify(boolean aValue)  { }
 
     /**
      * Sets the currently selected shapes to show text as superscript.
      */
-    public void setSuperscript()
-    {
-        _editor.undoerSetUndoTitle("Make Superscript");
-        TextEditor ted = _editor.getTextEditor();
-        if(ted!=null)
-            ted.setSuperscript();
-    }
+    public void setSuperscript()  { }
 
     /**
      * Sets the currently selected shapes to show text as subscript.
      */
-    public void setSubscript()
-    {
-        _editor.undoerSetUndoTitle("Make Subscript");
-        TextEditor ted = _editor.getTextEditor();
-        if(ted!=null)
-            ted.setSubscript();
-    }
+    public void setSubscript()  { }
 
     /**
      * Returns the format of the editor's selected shape.
@@ -410,5 +401,13 @@ public class ToolStyler <T extends RMShape> {
     public void setFormat(TextFormat aFormat)
     {
         _shape.setFormat(aFormat);
+    }
+
+    /**
+     * Sets the title of the next registered undo in the viewer's documents's undoer (convenience).
+     */
+    protected void setUndoTitle(String aTitle)
+    {
+        _editor.undoerSetUndoTitle(aTitle);
     }
 }

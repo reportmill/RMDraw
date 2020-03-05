@@ -179,7 +179,7 @@ public class EditorStyler extends Styler {
         }
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).getFontDeep(shape);
+            getStyler(shape).getFontDeep();
         }
         return font!=null ? font : Font.getDefaultFont();
     }
@@ -252,11 +252,13 @@ public class EditorStyler extends Styler {
     /**
      * Sets the currently selected shapes to be underlined.
      */
-    public void setUnderlined()
+    public void setUnderlined(boolean aValue)
     {
         setUndoTitle("Make Underlined");
-        for(RMShape shape : getSelOrSuperSelShapes())
-            shape.setUnderlined(!shape.isUnderlined());
+        for(RMShape shape : getSelOrSuperSelShapes()) {
+            ToolStyler styler = getStyler(shape);
+            styler.setUnderlined(aValue);
+        }
     }
 
     /**
@@ -338,9 +340,7 @@ public class EditorStyler extends Styler {
     public void setSuperscript()
     {
         setUndoTitle("Make Superscript");
-        TextEditor ted = _editor.getTextEditor();
-        if(ted!=null)
-            ted.setSuperscript();
+        getSelOrSuperSelStyler().setSuperscript();
     }
 
     /**
@@ -349,9 +349,7 @@ public class EditorStyler extends Styler {
     public void setSubscript()
     {
         setUndoTitle("Make Subscript");
-        TextEditor ted = _editor.getTextEditor();
-        if(ted!=null)
-            ted.setSubscript();
+        getSelOrSuperSelStyler().setSubscript();
     }
 
     /**

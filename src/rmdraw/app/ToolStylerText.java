@@ -23,14 +23,6 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     }
 
     /**
-     * Returns the TextEditor (or null if not editing).
-     */
-    private TextEditor getTextEditor()
-    {
-        return _editor.getTextEditor();
-    }
-
-    /**
      * Returns the specified type of color (text, stroke or fill) of editor's selected shape.
      */
     public Color getFillColor()
@@ -97,16 +89,20 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public boolean isUnderlined()
     {
-        return _shape.isUnderlined();
+        if(getTextEditor()!=null)
+            return getTextEditor().isUnderlined();
+        return super.isUnderlined();
     }
 
     /**
      * Sets the currently selected shapes to be underlined.
      */
-    public void setUnderlined()
+    public void setUnderlined(boolean aValue)
     {
-        _editor.undoerSetUndoTitle("Make Underlined");
-        _shape.setUnderlined(!_shape.isUnderlined());
+        setUndoTitle("Make Underlined");
+        if(getTextEditor()!=null)
+            getTextEditor().setUnderlined(aValue);
+        else super.setUnderlined(aValue);
     }
 
     /**
@@ -114,9 +110,16 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public Border getTextBorder()
     {
-        RMTextShape tshp = _shape instanceof RMTextShape? (RMTextShape)_shape : null;
-        if( tshp==null) return null;
-        return tshp.getTextBorder();
+        return _shape.getTextBorder();
+    }
+
+    /**
+     * Sets the outline state of the currently selected shapes.
+     */
+    public void setTextBorder(Border aBorder)
+    {
+        setUndoTitle("Make Outlined");
+        _shape.setTextBorder(aBorder);
     }
 
     /**
@@ -135,16 +138,6 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     }
 
     /**
-     * Sets the outline state of the currently selected shapes.
-     */
-    public void setTextBorder(Border aBorder)
-    {
-        _editor.undoerSetUndoTitle("Make Outlined");
-        if(_shape instanceof RMTextShape)
-            ((RMTextShape)_shape).setTextBorder(aBorder);
-    }
-
-    /**
      * Returns the horizontal alignment of the text of the currently selected shapes.
      */
     public HPos getAlignX()
@@ -157,7 +150,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setAlignX(HPos anAlign)
     {
-        _editor.undoerSetUndoTitle("Alignment Change");
+        setUndoTitle("Alignment Change");
         _shape.setAlignmentX(anAlign);
     }
 
@@ -174,7 +167,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setJustify(boolean aValue)
     {
-        _editor.undoerSetUndoTitle("Jusify Change");
+        setUndoTitle("Jusify Change");
         //_shape.setJustify(anAlign);
     }
 
@@ -183,8 +176,8 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setSuperscript()
     {
-        _editor.undoerSetUndoTitle("Make Superscript");
-        TextEditor ted = _editor.getTextEditor();
+        setUndoTitle("Make Superscript");
+        TextEditor ted = getTextEditor();
         if(ted!=null)
             ted.setSuperscript();
     }
@@ -194,8 +187,8 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setSubscript()
     {
-        _editor.undoerSetUndoTitle("Make Subscript");
-        TextEditor ted = _editor.getTextEditor();
+        setUndoTitle("Make Subscript");
+        TextEditor ted = getTextEditor();
         if(ted!=null)
             ted.setSubscript();
     }
@@ -214,5 +207,13 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     public void setFormat(TextFormat aFormat)
     {
         _shape.setFormat(aFormat);
+    }
+
+    /**
+     * Returns the TextEditor (or null if not editing).
+     */
+    private TextEditor getTextEditor()
+    {
+        return _editor.getTextEditor();
     }
 }
