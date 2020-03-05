@@ -683,7 +683,7 @@ protected Image getImageImpl()
         Image img = Image.get(c, name);
         if(img!=null) return img;
     }
-    return Image.get(Tool.class, "RMShape.png");
+    return Image.get(Tool.class, "Tool.png");
 }
 
 }
