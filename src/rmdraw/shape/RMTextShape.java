@@ -156,8 +156,6 @@ public boolean isAllTextVisible()  { return !getTextBox().isOutOfRoom(); }
  */
 public Font getFont()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getFont();
     return getRichText().getFontAt(0);
 }
 
@@ -166,9 +164,7 @@ public Font getFont()
  */
 public void setFont(Font aFont)
 {
-    if(isTextEditorSet())
-        getTextEditor().setFont(aFont);
-    else getRichText().setStyleValue(aFont);
+    getRichText().setStyleValue(aFont);
 }
 
 /**
@@ -176,8 +172,6 @@ public void setFont(Font aFont)
  */
 public TextFormat getFormat()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getFormat();
     return getRichText().getRunAt(0).getFormat();
 }
 
@@ -186,9 +180,7 @@ public TextFormat getFormat()
  */
 public void setFormat(TextFormat aFormat)
 {
-    if(isTextEditorSet())
-        getTextEditor().setFormat(aFormat);
-    else getRichText().setStyleValue(aFormat);
+    getRichText().setStyleValue(aFormat);
 }
 
 /**
@@ -225,8 +217,6 @@ public void setUnderlined(boolean aFlag)
  */
 public Border getTextBorder()
 {
-    if(isTextEditorSet())
-        return getTextEditor().getTextBorder();
     return getRichText().getRunAt(0).getBorder();
 }
 
@@ -235,9 +225,7 @@ public Border getTextBorder()
  */
 public void setTextBorder(Border aBorder)
 {
-    if(isTextEditorSet())
-        getTextEditor().setTextBorder(aBorder);
-    else getRichText().setStyleValue(TextStyle.BORDER_KEY,aBorder,0,length());
+    getRichText().setStyleValue(TextStyle.BORDER_KEY,aBorder,0,length());
 }
 
 /**
@@ -245,8 +233,6 @@ public void setTextBorder(Border aBorder)
  */
 public HPos getAlignmentX()
 {
-    if (isTextEditorSet())
-        return getTextEditor().getLineAlign();
     return getRichText().getLineStyleAt(0).getAlign();
 }
 
@@ -255,8 +241,6 @@ public HPos getAlignmentX()
  */
 public void setAlignmentX(HPos anAlignX)
 {
-    if (isTextEditorSet())
-        getTextEditor().setLineAlign(anAlignX); else
     getRichText().setAlignX(anAlignX);
 }
 
@@ -350,7 +334,6 @@ public void setMultiline(boolean aValue)
  */
 public float getCharSpacing()
 {
-    if (isTextEditorSet()) return getTextEditor().getCharSpacing();
     return getRichText().getRunAt(0).getCharSpacing();
 }
 

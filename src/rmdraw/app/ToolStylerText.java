@@ -30,8 +30,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
         // If text color and text editing, return color of text editor
         if(getTextEditor()!=null)
             return getTextEditor().getTextColor();
-
-        return _shape.getColor();
+        return super.getFillColor();
     }
 
     /**
@@ -62,7 +61,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setStrokeColor(Color aColor)
     {
-        _shape.setStrokeColor(aColor);
+        if (getTextEditor()!=null)
+            getTextEditor().setTextBorder(Border.createLineBorder(aColor, 1));
+        else super.setStrokeColor(aColor);
     }
 
     /**
@@ -70,7 +71,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public Color getTextColor()
     {
-        if(getTextEditor()!=null)
+        if (getTextEditor()!=null)
             return getTextEditor().getTextColor();
         return super.getTextColor();
     }
@@ -80,7 +81,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setTextColor(Color aColor)
     {
-        if(getTextEditor()!=null)
+        if (getTextEditor()!=null)
             getTextEditor().setTextColor(aColor);
         else super.setTextColor(aColor);
     }
@@ -131,7 +132,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public Border getTextBorder()
     {
-        return _shape.getTextBorder();
+        if (getTextEditor()!=null)
+            return getTextEditor().getTextBorder();
+        return super.getTextBorder();
     }
 
     /**
@@ -139,8 +142,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setTextBorder(Border aBorder)
     {
-        setUndoTitle("Make Outlined");
-        _shape.setTextBorder(aBorder);
+        if (getTextEditor()!=null)
+            getTextEditor().setTextBorder(aBorder);
+        else super.setTextBorder(aBorder);
     }
 
     /**
@@ -163,7 +167,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public HPos getAlignX()
     {
-        return _shape.getAlignmentX();
+        if (getTextEditor()!=null)
+            return getTextEditor().getLineAlign();
+        return super.getAlignX();
     }
 
     /**
@@ -171,8 +177,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setAlignX(HPos anAlign)
     {
-        setUndoTitle("Alignment Change");
-        _shape.setAlignmentX(anAlign);
+        if (getTextEditor()!=null)
+            getTextEditor().setLineAlign(anAlign);
+        else super.setAlignX(anAlign);
     }
 
     /**
@@ -219,7 +226,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public TextFormat getFormat()
     {
-        return _shape.getFormat();
+        if (getTextEditor()!=null)
+            return getTextEditor().getFormat();
+        return super.getFormat();
     }
 
     /**
@@ -227,7 +236,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setFormat(TextFormat aFormat)
     {
-        _shape.setFormat(aFormat);
+        if (getTextEditor()!=null)
+            getTextEditor().setFormat(aFormat);
+        else super.setFormat(aFormat);
     }
 
     /**
