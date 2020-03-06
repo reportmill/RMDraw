@@ -1,9 +1,10 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.app;
+package rmdraw.gfx;
 import java.util.ArrayList;
 import java.util.List;
+import rmdraw.app.FontPicker;
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.*;
@@ -16,9 +17,9 @@ import snap.view.*;
  */
 public class FontPanel extends ViewOwner {
     
-    // The EditorPane
-    EditorPane _editorPane;
-    
+    // The Styler used to get/set paint attributes
+    private Styler _styler;
+
     // Whether to show all fonts (or PDF only)
     boolean         _showAll = true;
     
@@ -31,17 +32,23 @@ public class FontPanel extends ViewOwner {
     /**
      * Creates a new FontPanel for EditorPane.
      */
-    public FontPanel(EditorPane anEP)  { _editorPane = anEP; }
+    public FontPanel(Styler aStyler)
+    {
+        setStyler(aStyler);
+    }
 
     /**
-     * Returns the Editor.
+     * Returns the styler.
      */
-    public Editor getEditor()  { return _editorPane.getEditor(); }
+    public Styler getStyler()  { return _styler; }
 
     /**
-     * Returns the EditorPane.
+     * Sets the styler.
      */
-    public EditorPane getEditorPane()  { return _editorPane; }
+    public void setStyler(Styler aStyler)
+    {
+        _styler = aStyler;
+    }
 
     /**
      * Returns the array of font family names.
@@ -89,9 +96,9 @@ public class FontPanel extends ViewOwner {
      */
     public void resetUI()
     {
-        // Get current font
-        Editor editor = getEditor();
-        Font font = editor.getStyler().getFont();
+        // Get current styler and font
+        Styler styler = getStyler();
+        Font font = styler.getFont();
 
         // Get family name and size
         String familyName = font.getFamily();
@@ -106,8 +113,8 @@ public class FontPanel extends ViewOwner {
         setViewEnabled("BoldButton", font.getBold()!=null);
         setViewValue("ItalicButton", font.isItalic());
         setViewEnabled("ItalicButton", font.getItalic()!=null);
-        setViewValue("UnderlineButton", editor.getStyler().isUnderlined());
-        setViewValue("OutlineButton", editor.getStyler().getTextBorder()!=null);
+        setViewValue("UnderlineButton", styler.isUnderlined());
+        setViewValue("OutlineButton", styler.getTextBorder()!=null);
 
         // Get font names in currently selected font's family
         String familyNames[] = Font.getFontNames(font.getFamily());
@@ -123,9 +130,8 @@ public class FontPanel extends ViewOwner {
      */
     public void respondUI(ViewEvent anEvent)
     {
-        // Get current editor
-        Editor editor = getEditor();
-        EditorStyler styler = editor.getStyler();
+        // Get current styler
+        Styler styler = getStyler();
 
         // Handle FontSizeUpButton, FontSizeDownButton
         if (anEvent.equals("FontSizeUpButton")) { Font font = styler.getFont();
@@ -140,13 +146,18 @@ public class FontPanel extends ViewOwner {
             styler.setFontItalic(anEvent.getBoolValue());
         if (anEvent.equals("UnderlineButton"))
             styler.setUnderlined(anEvent.getBoolValue());
-        if (anEvent.equals("OutlineButton"))
-            styler.setTextBorder();
+        if (anEvent.equals("OutlineButton")) {
+            Border tbdr = styler.getTextBorder();
+            Border tbdr2 = tbdr==null ? Border.blackBorder() : null;
+            Color tclr2 = tbdr==null ? Color.WHITE : Color.BLACK;
+            styler.setTextBorder(tbdr2);
+            styler.setTextColor(tclr2);
+        }
 
         // Handle FontPickerButton
         if (anEvent.equals("FontPickerButton")) {
             Font ofont = styler.getFont();
-            Font font = new FontPicker().showPicker(getEditorPane().getUI(), ofont);
+            Font font = new FontPicker().showPicker(styler.getClientView(), ofont);
             if(font!=null)
                 styler.setFontFamily(font);
         }

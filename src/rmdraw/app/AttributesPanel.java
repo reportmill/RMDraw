@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
+import rmdraw.gfx.FontPanel;
 import snap.gfx.*;
 import snap.view.*;
 import snap.viewx.ColorPanel;
@@ -55,7 +56,7 @@ public ViewOwner[] getInspectors()  { return _insprs!=null? _insprs : (_insprs=c
 public ViewOwner[] createInspectors()
 {
     APColorPanel color = new APColorPanel();
-    FontPanel font = new FontPanel(getEditorPane());
+    FontPanel font = new FontPanel(getEditor().getStyler());
     return new ViewOwner[] { color, font };
 }
 

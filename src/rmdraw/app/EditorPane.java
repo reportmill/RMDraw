@@ -81,10 +81,6 @@ public void setEditing(boolean aFlag)
  */
 protected View createUI()
 {
-    // Get AttributesPanel (early so editor pane can register with correct ColorPanel)
-    AttributesPanel attrPanel = getAttributesPanel();
-    attrPanel.getUI();
-
     // Create normal ViewerPane BorderView UI
     BorderView borderView = (BorderView)super.createUI();
 
@@ -92,7 +88,11 @@ protected View createUI()
     InspectorPanel inspPanel = getInspectorPanel();
     View inspPanelUI = inspPanel.getUI();
     inspPanelUI.setGrowHeight(true);
-    
+
+    // Get AttributesPanel
+    AttributesPanel attrPanel = getAttributesPanel();
+    attrPanel.getUI();
+
     // Create ColView to hold them
     ColView colView = new ColView();
     colView.setFillWidth(true);

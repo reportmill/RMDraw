@@ -1,7 +1,7 @@
 package rmdraw.gfx;
-import rmdraw.shape.RMShape;
 import snap.geom.Pos;
 import snap.gfx.*;
+import snap.view.View;
 
 /**
  * A class to handle getting/setting style attributes for Paint/Border/Effect tools.
@@ -108,4 +108,77 @@ public class Styler {
      * Sets the currently selected opacity.
      */
     public void setOpacity(double aValue)  { }
+
+    /**
+     * Returns the current font.
+     */
+    public Font getFont()  { return null; }
+
+    /**
+     * Sets the current font.
+     */
+    public void setFont(Font aFont)  { }
+
+    /**
+     * Returns whether current text is underlined.
+     */
+    public boolean isUnderlined()
+    {
+        return false;
+    }
+
+    /**
+     * Sets whether current text is underlined.
+     */
+    public void setUnderlined(boolean aValue)  { }
+
+    /**
+     * Returns the outline state of the currently selected shape (null if none).
+     */
+    public Border getTextBorder()  { return null; }
+
+    /**
+     * Sets the currently selected shapes to be outlined.
+     */
+    public void setTextBorder(Border aBorder)  { }
+
+    /**
+     * Returns the text color current text.
+     */
+    public Color getTextColor()  { return null; }
+
+    /**
+     * Sets the text color current text.
+     */
+    public void setTextColor(Color aColor)  { }
+
+    /**
+     * Sets the font family of selected text.
+     */
+    public void setFontFamily(Font aFont)  { }
+
+    /**
+     * Sets the font name of editor's selected shape(s).
+     */
+    public void setFontName(Font aFont)  { }
+
+    /**
+     * Sets the font size of editor's selected shape(s).
+     */
+    public void setFontSize(float aSize, boolean isRelative)  { }
+
+    /**
+     * Sets the "boldness" of text in the currently selected shapes.
+     */
+    public void setFontBold(boolean aFlag)  { }
+
+    /**
+     * Sets the italic state of text in the currently selected shapes.
+     */
+    public void setFontItalic(boolean aFlag)  { }
+
+    /**
+     * Returns the client View.
+     */
+    public View getClientView()  { return null; }
 }

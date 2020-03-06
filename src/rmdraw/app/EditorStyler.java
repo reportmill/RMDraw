@@ -5,8 +5,8 @@ import rmdraw.shape.RMTextShape;
 import snap.geom.HPos;
 import snap.geom.Pos;
 import snap.gfx.*;
-import snap.text.TextEditor;
 import snap.text.TextFormat;
+import snap.view.View;
 import java.util.List;
 
 /**
@@ -158,7 +158,15 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Sets the text color of the editor's selected shapes.
+     * Returns the text color current text.
+     */
+    public Color getTextColor()
+    {
+        return getSelOrSuperSelStyler().getTextColor();
+    }
+
+    /**
+     * Sets the text color current text.
      */
     public void setTextColor(Color aColor)
     {
@@ -182,6 +190,17 @@ public class EditorStyler extends Styler {
             getStyler(shape).getFontDeep();
         }
         return font!=null ? font : Font.getDefaultFont();
+    }
+
+    /**
+     * Sets the current font.
+     */
+    public void setFont(Font aFont)
+    {
+        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
+            RMShape shape = getSelOrSuperSelShape(i);
+            getStyler(shape).setFont(aFont);
+        }
     }
 
     /**
@@ -272,6 +291,18 @@ public class EditorStyler extends Styler {
     }
 
     /**
+     * Sets the outline state of the currently selected shapes.
+     */
+    public void setTextBorder(Border aBorder)
+    {
+        setUndoTitle("Make Outlined");
+        for(RMShape shp : getSelOrSuperSelShapes()) {
+            if(shp instanceof RMTextShape)
+                ((RMTextShape)shp).setTextBorder(aBorder);
+        }
+    }
+
+    /**
      * Sets the currently selected shapes to be outlined.
      */
     public void setTextBorder()
@@ -283,18 +314,6 @@ public class EditorStyler extends Styler {
         else {
             setTextBorder(null);
             setTextColor(Color.BLACK);
-        }
-    }
-
-    /**
-     * Sets the outline state of the currently selected shapes.
-     */
-    public void setTextBorder(Border aBorder)
-    {
-        setUndoTitle("Make Outlined");
-        for(RMShape shp : getSelOrSuperSelShapes()) {
-            if(shp instanceof RMTextShape)
-                ((RMTextShape)shp).setTextBorder(aBorder);
         }
     }
 
@@ -405,6 +424,11 @@ public class EditorStyler extends Styler {
         for (RMShape shape : getSelOrSuperSelShapes())
             shape.setOpacity(aValue);
     }
+
+    /**
+     * Returns the client View.
+     */
+    public View getClientView()  { return _editor; }
 
     /**
      * Returns the currently selected shapes or, if none, the super-selected shape in a list.
