@@ -1,7 +1,6 @@
 package rmdraw.app;
 import rmdraw.gfx.Styler;
 import rmdraw.shape.RMShape;
-import rmdraw.shape.RMTextShape;
 import snap.geom.HPos;
 import snap.geom.Pos;
 import snap.gfx.*;
@@ -18,7 +17,7 @@ public class EditorStyler extends Styler {
     private Editor _editor;
 
     /**
-     * Creates EditorCellStyler.
+     * Creates EditorStyler.
      */
     public EditorStyler(Editor anEditor)
     {
@@ -30,8 +29,7 @@ public class EditorStyler extends Styler {
      */
     public Border getBorder()
     {
-        RMShape shape = getSelOrSuperSelShape();
-        return shape.getBorder();
+        return getSelOrSuperSelStyler().getBorder();
     }
 
     /**
@@ -39,10 +37,8 @@ public class EditorStyler extends Styler {
      */
     public void setBorder(Border aBorder)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            shape.setBorder(aBorder);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setBorder(aBorder);
     }
 
     /**
@@ -50,12 +46,8 @@ public class EditorStyler extends Styler {
      */
     public void setBorderStrokeColor(Color aColor)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            Border b1 = shape.getBorder(); if (b1==null) b1 = Border.blackBorder();
-            Border b2 = b1.copyForColor(aColor);
-            shape.setBorder(b2);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setBorderStrokeColor(aColor);
     }
 
     /**
@@ -63,12 +55,8 @@ public class EditorStyler extends Styler {
      */
     public void setBorderStrokeWidth(double aWidth)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            Border b1 = shape.getBorder(); if (b1==null) b1 = Border.blackBorder();
-            Border b2 = b1.copyForStrokeWidth(aWidth);
-            shape.setBorder(b2);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setBorderStrokeWidth(aWidth);
     }
 
     /**
@@ -76,13 +64,8 @@ public class EditorStyler extends Styler {
      */
     public void setBorderStrokeDashArray(double theDashes[])
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            Border bdr1 = shape.getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
-            Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashes(theDashes);
-            Border bdr2 = bdr1.copyForStroke(str2);
-            shape.setBorder(bdr2);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setBorderStrokeDashArray(theDashes);
     }
 
     /**
@@ -90,13 +73,8 @@ public class EditorStyler extends Styler {
      */
     public void setBorderStrokeDashPhase(double aValue)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            Border bdr1 = shape.getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
-            Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashOffset(aValue);
-            Border bdr2 = bdr1.copyForStroke(str2);
-            shape.setBorder(bdr2);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setBorderStrokeDashPhase(aValue);
     }
 
     /**
@@ -104,14 +82,8 @@ public class EditorStyler extends Styler {
      */
     public void setBorderShowEdge(Pos aPos, boolean aValue)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            Border bdr1 = shape.getBorder();
-            Borders.EdgeBorder ebdr = bdr1 instanceof Borders.EdgeBorder ? (Borders.EdgeBorder)bdr1 : null;
-            if (ebdr==null) ebdr = new Borders.EdgeBorder();
-            Border bdr2 = ebdr.copyForShowEdge(aPos, aValue);
-            shape.setBorder(bdr2);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setBorderShowEdge(aPos, aValue);
     }
 
     /**
@@ -127,8 +99,8 @@ public class EditorStyler extends Styler {
      */
     public void setFill(Paint aPaint)
     {
-        for(RMShape shape : getSelOrSuperSelShapes())
-            getStyler(shape).setFill(aPaint);
+        for(ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFill(aPaint);
     }
 
     /**
@@ -144,8 +116,8 @@ public class EditorStyler extends Styler {
      */
     public void setFillColor(Color aColor)
     {
-        for(RMShape shape : getSelOrSuperSelShapes())
-            getStyler(shape).setFillColor(aColor);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFillColor(aColor);
     }
 
     /**
@@ -153,8 +125,8 @@ public class EditorStyler extends Styler {
      */
     public void setStrokeColor(Color aColor)
     {
-        for(RMShape shape : getSelOrSuperSelShapes())
-            getStyler(shape).setStrokeColor(aColor);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setStrokeColor(aColor);
     }
 
     /**
@@ -170,8 +142,8 @@ public class EditorStyler extends Styler {
      */
     public void setTextColor(Color aColor)
     {
-        for(RMShape shape : getSelOrSuperSelShapes())
-            getStyler(shape).setTextColor(aColor);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setTextColor(aColor);
     }
 
     /**
@@ -197,10 +169,8 @@ public class EditorStyler extends Styler {
      */
     public void setFont(Font aFont)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).setFont(aFont);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFont(aFont);
     }
 
     /**
@@ -208,10 +178,8 @@ public class EditorStyler extends Styler {
      */
     public void setFontFamily(Font aFont)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).setFontFamily(aFont);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFontFamily(aFont);
     }
 
     /**
@@ -219,10 +187,8 @@ public class EditorStyler extends Styler {
      */
     public void setFontName(Font aFont)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).setFontName(aFont);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFontName(aFont);
     }
 
     /**
@@ -230,10 +196,8 @@ public class EditorStyler extends Styler {
      */
     public void setFontSize(float aSize, boolean isRelative)
     {
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).setFontSize(aSize, isRelative);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFontSize(aSize, isRelative);
     }
 
     /**
@@ -242,10 +206,8 @@ public class EditorStyler extends Styler {
     public void setFontBold(boolean aFlag)
     {
         setUndoTitle("Make Bold");
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).setFontBold(aFlag);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFontBold(aFlag);
     }
 
     /**
@@ -254,10 +216,8 @@ public class EditorStyler extends Styler {
     public void setFontItalic(boolean aFlag)
     {
         setUndoTitle("Make Italic");
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).setFontItalic(aFlag);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFontItalic(aFlag);
     }
 
     /**
@@ -265,7 +225,7 @@ public class EditorStyler extends Styler {
      */
     public boolean isUnderlined()
     {
-        return _editor.getSelectedOrSuperSelectedShape().isUnderlined();
+        return getSelOrSuperSelStyler().isUnderlined();
     }
 
     /**
@@ -274,10 +234,8 @@ public class EditorStyler extends Styler {
     public void setUnderlined(boolean aValue)
     {
         setUndoTitle("Make Underlined");
-        for(RMShape shape : getSelOrSuperSelShapes()) {
-            ToolStyler styler = getStyler(shape);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
             styler.setUnderlined(aValue);
-        }
     }
 
     /**
@@ -285,9 +243,7 @@ public class EditorStyler extends Styler {
      */
     public Border getTextBorder()
     {
-        RMShape shp = getSelOrSuperSelShape();
-        RMTextShape tshp = shp instanceof RMTextShape? (RMTextShape)shp : null; if(tshp==null) return null;
-        return tshp.getTextBorder();
+        return getSelOrSuperSelStyler().getTextBorder();
     }
 
     /**
@@ -296,10 +252,8 @@ public class EditorStyler extends Styler {
     public void setTextBorder(Border aBorder)
     {
         setUndoTitle("Make Outlined");
-        for(RMShape shp : getSelOrSuperSelShapes()) {
-            if(shp instanceof RMTextShape)
-                ((RMTextShape)shp).setTextBorder(aBorder);
-        }
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setTextBorder(aBorder);
     }
 
     /**
@@ -322,7 +276,7 @@ public class EditorStyler extends Styler {
      */
     public HPos getAlignX()
     {
-        return getSelOrSuperSelShape().getAlignmentX();
+        return getSelOrSuperSelStyler().getAlignX();
     }
 
     /**
@@ -331,8 +285,8 @@ public class EditorStyler extends Styler {
     public void setAlignX(HPos anAlign)
     {
         setUndoTitle("Alignment Change");
-        for(RMShape shape : getSelOrSuperSelShapes())
-            shape.setAlignmentX(anAlign);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setAlignX(anAlign);
     }
 
     /**
@@ -354,7 +308,7 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Sets the currently selected shapes to show text as superscript.
+     * Sets the current text to show as superscript.
      */
     public void setSuperscript()
     {
@@ -363,7 +317,7 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Sets the currently selected shapes to show text as subscript.
+     * Sets the current text to show as subscript.
      */
     public void setSubscript()
     {
@@ -372,47 +326,45 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Returns the format of the editor's selected shape.
+     * Returns the current format.
      */
     public TextFormat getFormat()
     {
-        return getSelOrSuperSelShape().getFormat();
+        return getSelOrSuperSelStyler().getFormat();
     }
 
     /**
-     * Sets the format of editor's selected shape(s).
+     * Sets the current format.
      */
     public void setFormat(TextFormat aFormat)
     {
-        for (RMShape shape : getSelOrSuperSelShapes())
-            shape.setFormat(aFormat);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setFormat(aFormat);
     }
 
     /**
-     * Returns the currently selected effect.
+     * Returns the current effect.
      */
     public Effect getEffect()
     {
-        RMShape shape = getSelOrSuperSelShape();
-        return shape.getEffect();
+        return getSelOrSuperSelStyler().getEffect();
     }
 
     /**
-     * Sets the currently selected effect.
+     * Sets the current effect.
      */
     public void setEffect(Effect anEffect)
     {
-        for (RMShape shape : getSelOrSuperSelShapes())
-            shape.setEffect(anEffect);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setEffect(anEffect);
     }
 
     /**
-     * Returns the currently selected opacity.
+     * Returns the current opacity.
      */
     public double getOpacity()
     {
-        RMShape shape = getSelOrSuperSelShape();
-        return shape.getOpacity();
+        return getSelOrSuperSelStyler().getOpacity();
     }
 
     /**
@@ -421,8 +373,8 @@ public class EditorStyler extends Styler {
     public void setOpacity(double aValue)
     {
         setUndoTitle("Transparency Change");
-        for (RMShape shape : getSelOrSuperSelShapes())
-            shape.setOpacity(aValue);
+        for (ToolStyler styler : getSelOrSuperSelStylers())
+            styler.setOpacity(aValue);
     }
 
     /**
@@ -431,14 +383,34 @@ public class EditorStyler extends Styler {
     public View getClientView()  { return _editor; }
 
     /**
-     * Returns the currently selected shapes or, if none, the super-selected shape in a list.
+     * Returns the currently selected shape or, if none, the super-selected shape.
      */
-    private List<RMShape> getSelOrSuperSelShapes()  { return _editor.getSelectedOrSuperSelectedShapes(); }
+    private ToolStyler getSelOrSuperSelStyler()
+    {
+        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
+        return getStyler(shape);
+    }
+
+    /**
+     * Returns the currently selected shape or, if none, the super-selected shape.
+     */
+    private ToolStyler[] getSelOrSuperSelStylers()
+    {
+        List<RMShape> shapes = getSelOrSuperSelShapes();
+        ToolStyler stylers[] = new ToolStyler[shapes.size()];
+        for (int i=0, iMax=shapes.size(); i<iMax; i++) stylers[i] = getStyler(shapes.get(i));
+        return stylers;
+    }
 
     /**
      * Returns the currently selected shape or, if none, the super-selected shape.
      */
     private RMShape getSelOrSuperSelShape()  { return _editor.getSelectedOrSuperSelectedShape(); }
+
+    /**
+     * Returns the currently selected shapes or, if none, the super-selected shape in a list.
+     */
+    private List<RMShape> getSelOrSuperSelShapes()  { return _editor.getSelectedOrSuperSelectedShapes(); }
 
     /**
      * Returns the number of currently selected shapes or simply 1, if a shape is super-selected.
@@ -462,15 +434,6 @@ public class EditorStyler extends Styler {
     {
         Tool tool = getTool(aShape);
         return tool.getStyler(aShape);
-    }
-
-    /**
-     * Returns the currently selected shape or, if none, the super-selected shape.
-     */
-    private ToolStyler getSelOrSuperSelStyler()
-    {
-        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
-        return getStyler(shape);
     }
 
     /**

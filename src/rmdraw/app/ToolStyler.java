@@ -2,8 +2,8 @@ package rmdraw.app;
 import rmdraw.shape.RMDocument;
 import rmdraw.shape.RMPage;
 import rmdraw.shape.RMShape;
-import rmdraw.shape.RMTextShape;
 import snap.geom.HPos;
+import snap.geom.Pos;
 import snap.gfx.*;
 import snap.text.TextFormat;
 import snap.util.SnapUtils;
@@ -42,7 +42,77 @@ public class ToolStyler <T extends RMShape> {
     }
 
     /**
-     * Returns the currently selected fill.
+     * Returns the border.
+     */
+    public Border getBorder()
+    {
+        return _shape.getBorder();
+    }
+
+    /**
+     * Sets the border.
+     */
+    public void setBorder(Border aBorder)
+    {
+        _shape.setBorder(aBorder);
+    }
+
+    /**
+     * Sets the selected border stroke color.
+     */
+    public void setBorderStrokeColor(Color aColor)
+    {
+        Border b1 = getBorder(); if (b1==null) b1 = Border.blackBorder();
+        Border b2 = b1.copyForColor(aColor);
+        setBorder(b2);
+    }
+
+    /**
+     * Sets the selected border stroke width.
+     */
+    public void setBorderStrokeWidth(double aWidth)
+    {
+        Border b1 = getBorder(); if (b1==null) b1 = Border.blackBorder();
+        Border b2 = b1.copyForStrokeWidth(aWidth);
+        setBorder(b2);
+    }
+
+    /**
+     * Sets the selected border stroke dash array.
+     */
+    public void setBorderStrokeDashArray(double theDashes[])
+    {
+        Border bdr1 = getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
+        Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashes(theDashes);
+        Border bdr2 = bdr1.copyForStroke(str2);
+        setBorder(bdr2);
+    }
+
+    /**
+     * Sets the selected border stroke dash array.
+     */
+    public void setBorderStrokeDashPhase(double aValue)
+    {
+        Border bdr1 = getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
+        Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashOffset(aValue);
+        Border bdr2 = bdr1.copyForStroke(str2);
+        setBorder(bdr2);
+    }
+
+    /**
+     * Sets the selected border show edge.
+     */
+    public void setBorderShowEdge(Pos aPos, boolean aValue)
+    {
+        Border bdr1 = getBorder();
+        Borders.EdgeBorder ebdr = bdr1 instanceof Borders.EdgeBorder ? (Borders.EdgeBorder)bdr1 : null;
+        if (ebdr==null) ebdr = new Borders.EdgeBorder();
+        Border bdr2 = ebdr.copyForShowEdge(aPos, aValue);
+        setBorder(bdr2);
+    }
+
+    /**
+     * Returns the fill.
      */
     public Paint getFill()
     {
@@ -55,7 +125,7 @@ public class ToolStyler <T extends RMShape> {
     }
 
     /**
-     * Sets the currently selected fill.
+     * Sets the fill.
      */
     public void setFill(Paint aPaint)
     {
@@ -67,7 +137,7 @@ public class ToolStyler <T extends RMShape> {
     }
 
     /**
-     * Returns the specified type of color (text, stroke or fill) of editor's selected shape.
+     * Returns the fill color.
      */
     public Color getFillColor()
     {
@@ -80,7 +150,7 @@ public class ToolStyler <T extends RMShape> {
     }
 
     /**
-     * Sets the specified type of color (text, stroke or fill) of editor's selected shape.
+     * Sets the fill color.
      */
     public void setFillColor(Color aColor)
     {
@@ -331,37 +401,12 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Returns the outline state of the currently selected shape (null if none).
      */
-    public Border getTextBorder()
-    {
-        RMTextShape tshp = _shape instanceof RMTextShape? (RMTextShape)_shape : null;
-        if( tshp==null) return null;
-        return tshp.getTextBorder();
-    }
-
-    /**
-     * Sets the currently selected shapes to be outlined.
-     */
-    public void setTextBorder()
-    {
-        if(getTextBorder()==null) {
-            setTextBorder(Border.createLineBorder(Color.BLACK,1));
-            setTextColor(Color.WHITE);
-        }
-        else {
-            setTextBorder(null);
-            setTextColor(Color.BLACK);
-        }
-    }
+    public Border getTextBorder()  { return null; }
 
     /**
      * Sets the outline state of the currently selected shapes.
      */
-    public void setTextBorder(Border aBorder)
-    {
-        setUndoTitle("Make Outlined");
-        if(_shape instanceof RMTextShape)
-            ((RMTextShape)_shape).setTextBorder(aBorder);
-    }
+    public void setTextBorder(Border aBorder)  { }
 
     /**
      * Returns the horizontal alignment of the text of the currently selected shapes.
@@ -417,6 +462,38 @@ public class ToolStyler <T extends RMShape> {
     public void setFormat(TextFormat aFormat)
     {
         _shape.setFormat(aFormat);
+    }
+
+    /**
+     * Returns the current effect.
+     */
+    public Effect getEffect()
+    {
+        return _shape.getEffect();
+    }
+
+    /**
+     * Sets the current effect.
+     */
+    public void setEffect(Effect anEffect)
+    {
+        _shape.setEffect(anEffect);
+    }
+
+    /**
+     * Returns the current opacity.
+     */
+    public double getOpacity()
+    {
+        return _shape.getOpacity();
+    }
+
+    /**
+     * Sets the currently selected opacity.
+     */
+    public void setOpacity(double aValue)
+    {
+        _shape.setOpacity(aValue);
     }
 
     /**

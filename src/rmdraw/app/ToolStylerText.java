@@ -5,8 +5,7 @@ import snap.geom.HPos;
 import snap.gfx.Border;
 import snap.gfx.Color;
 import snap.gfx.Font;
-import snap.text.TextEditor;
-import snap.text.TextFormat;
+import snap.text.*;
 import snap.view.ViewUtils;
 
 /**
@@ -28,7 +27,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     public Color getFillColor()
     {
         // If text color and text editing, return color of text editor
-        if(getTextEditor()!=null)
+        if(isTextEditorSet())
             return getTextEditor().getTextColor();
         return super.getFillColor();
     }
@@ -39,7 +38,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     public void setFillColor(Color aColor)
     {
         // If text color and text editing, return color of text editor
-        if(getTextEditor()!=null) {
+        if(isTextEditorSet()) {
 
             // If command down, and text is outlined, set color of outline instead
             TextEditor ted = getTextEditor();
@@ -61,7 +60,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setStrokeColor(Color aColor)
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             getTextEditor().setTextBorder(Border.createLineBorder(aColor, 1));
         else super.setStrokeColor(aColor);
     }
@@ -71,7 +70,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public Color getTextColor()
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             return getTextEditor().getTextColor();
         return super.getTextColor();
     }
@@ -81,7 +80,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setTextColor(Color aColor)
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             getTextEditor().setTextColor(aColor);
         else super.setTextColor(aColor);
     }
@@ -91,7 +90,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public Font getFont()
     {
-        if(getTextEditor()!=null)
+        if(isTextEditorSet())
             return getTextEditor().getFont();
         return super.getFont();
     }
@@ -101,7 +100,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setFont(Font aFont)
     {
-        if(getTextEditor()!=null)
+        if(isTextEditorSet())
             getTextEditor().setFont(aFont);
         else super.setFont(aFont);
     }
@@ -111,7 +110,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public boolean isUnderlined()
     {
-        if(getTextEditor()!=null)
+        if(isTextEditorSet())
             return getTextEditor().isUnderlined();
         return super.isUnderlined();
     }
@@ -122,7 +121,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     public void setUnderlined(boolean aValue)
     {
         setUndoTitle("Make Underlined");
-        if(getTextEditor()!=null)
+        if(isTextEditorSet())
             getTextEditor().setUnderlined(aValue);
         else super.setUnderlined(aValue);
     }
@@ -132,7 +131,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public Border getTextBorder()
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             return getTextEditor().getTextBorder();
         return super.getTextBorder();
     }
@@ -142,24 +141,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setTextBorder(Border aBorder)
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             getTextEditor().setTextBorder(aBorder);
         else super.setTextBorder(aBorder);
-    }
-
-    /**
-     * Sets the currently selected shapes to be outlined.
-     */
-    public void setTextBorder()
-    {
-        if(getTextBorder()==null) {
-            setTextBorder(Border.createLineBorder(Color.BLACK,1));
-            setTextColor(Color.WHITE);
-        }
-        else {
-            setTextBorder(null);
-            setTextColor(Color.BLACK);
-        }
     }
 
     /**
@@ -167,7 +151,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public HPos getAlignX()
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             return getTextEditor().getLineAlign();
         return super.getAlignX();
     }
@@ -177,7 +161,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setAlignX(HPos anAlign)
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             getTextEditor().setLineAlign(anAlign);
         else super.setAlignX(anAlign);
     }
@@ -206,7 +190,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     {
         setUndoTitle("Make Superscript");
         TextEditor ted = getTextEditor();
-        if(ted!=null)
+        if(isTextEditorSet())
             ted.setSuperscript();
     }
 
@@ -217,7 +201,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     {
         setUndoTitle("Make Subscript");
         TextEditor ted = getTextEditor();
-        if(ted!=null)
+        if(isTextEditorSet())
             ted.setSubscript();
     }
 
@@ -226,7 +210,7 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public TextFormat getFormat()
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             return getTextEditor().getFormat();
         return super.getFormat();
     }
@@ -236,16 +220,139 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
      */
     public void setFormat(TextFormat aFormat)
     {
-        if (getTextEditor()!=null)
+        if (isTextEditorSet())
             getTextEditor().setFormat(aFormat);
         else super.setFormat(aFormat);
     }
 
     /**
+     * Returns the char spacing at char 0.
+     */
+    public float getCharSpacing()
+    {
+        return getRichText().getRunAt(0).getCharSpacing();
+    }
+
+    /**
+     * Sets the char spacing for the text string.
+     */
+    public void setCharSpacing(float aValue)
+    {
+        if (isTextEditorSet())
+            getTextEditor().setCharSpacing(aValue);
+        else getRichText().setStyleValue(TextStyle.CHAR_SPACING_KEY, aValue==0? null : aValue);
+    }
+
+    /**
+     * Returns the line spacing at char 0.
+     */
+    public double getLineSpacing()
+    {
+        if (isTextEditorSet())
+            return getTextEditor().getLineSpacing();
+        return getRichText().getLineStyleAt(0).getSpacing();
+    }
+
+    /**
+     * Sets the line spacing for all chars.
+     */
+    public void setLineSpacing(float aHeight)
+    {
+        if(isTextEditorSet())
+            getTextEditor().setLineSpacing(aHeight);
+        else {
+
+            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
+            getRichText().setLineStyle(ps, 0, length());
+        }
+    }
+
+    /**
+     * Returns the line gap at char 0.
+     */
+    public double getLineGap()
+    {
+        if (isTextEditorSet())
+            return getTextEditor().getLineGap();
+        return getRichText().getLineStyleAt(0).getSpacing();
+    }
+
+    /**
+     * Sets the line gap for all chars.
+     */
+    public void setLineGap(double aHeight)
+    {
+        if (isTextEditorSet())
+            getTextEditor().setLineGap(aHeight);
+        else {
+            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_KEY, aHeight);
+            getRichText().setLineStyle(ps, 0, length());
+        }
+    }
+
+    /**
+     * Returns the minimum line height at char 0.
+     */
+    public double getLineHeightMin()
+    {
+        if (isTextEditorSet())
+            return getTextEditor().getLineHeightMin();
+        return getRichText().getLineStyleAt(0).getMinHeight();
+    }
+
+    /**
+     * Sets the minimum line height for all chars.
+     */
+    public void setLineHeightMin(float aHeight)
+    {
+        if (isTextEditorSet())
+            getTextEditor().setLineHeightMin(aHeight);
+        else {
+            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
+            getRichText().setLineStyle(ps, 0, length());
+        }
+    }
+
+    /**
+     * Returns the maximum line height at char 0.
+     */
+    public double getLineHeightMax()
+    {
+        if (isTextEditorSet())
+            return getTextEditor().getLineHeightMax();
+        return getRichText().getLineStyleAt(0).getMaxHeight();
+    }
+
+    /**
+     * Sets the maximum line height for all chars.
+     */
+    public void setLineHeightMax(float aHeight)
+    {
+        if (isTextEditorSet())
+            getTextEditor().setLineHeightMax(aHeight);
+        else {
+            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MAX_HEIGHT_KEY, aHeight);
+            getRichText().setLineStyle(ps, 0, length());
+        }
+    }
+
+    /**
      * Returns the TextEditor (or null if not editing).
      */
-    private TextEditor getTextEditor()
-    {
-        return _editor.getTextEditor();
-    }
+    private boolean isTextEditorSet()  { return getTextEditor()!=null; }
+
+    /**
+     * Returns the TextEditor (or null if not editing).
+     */
+    private TextEditor getTextEditor()  { return _editor.getTextEditor(); }
+
+    /**
+     * Returns the TextShape RichText.
+     */
+    private RichText getRichText()  { return _shape.getRichText(); }
+
+    /**
+     * Returns the TextShape RichText.
+     */
+    private int length()  { return _shape.length(); }
 }

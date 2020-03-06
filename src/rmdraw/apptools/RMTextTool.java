@@ -57,6 +57,7 @@ public void resetUI()
     // Get editor and currently selected text
     Editor editor = getEditor();
     RMTextShape text = getSelectedShape(); if(text==null) return;
+    ToolStylerText styler = (ToolStylerText)getStyler(text);
     
     // Get paragraph from text
     int selStart = 0; if(_textArea.isFocused()) selStart = _textArea.getSelStart();
@@ -116,9 +117,9 @@ public void resetUI()
     setViewValue("GrowRadio", text.getWraps()==RMTextShape.WRAP_NONE);
     
     // Update CharSpacingSpinner, LineSpacingSpinner, LineGapSpinner
-    setViewValue("CharSpacingSpinner", text.getCharSpacing());
-    setViewValue("LineSpacingSpinner", text.getLineSpacing());
-    setViewValue("LineGapSpinner", text.getLineGap());
+    setViewValue("CharSpacingSpinner", styler.getCharSpacing());
+    setViewValue("LineSpacingSpinner", styler.getLineSpacing());
+    setViewValue("LineGapSpinner", styler.getLineGap());
     
     // Update PDF options: EditableCheckBox, MultilineCheckBox
     setViewValue("EditableCheckBox", text.isEditable());
@@ -171,11 +172,11 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("GrowRadio")) for(RMTextShape txt : texts) txt.setWraps(RMTextShape.WRAP_NONE);
     
     // Handle CharSpacingSpinner, LineSpacingSpinner, LineSpacingSingleButton, LineSpacingDoubleButton, LineGapSpinner
-    if(anEvent.equals("CharSpacingSpinner")) RMTextTool.setCharSpacing(editor, anEvent.getFloatValue());
-    if(anEvent.equals("LineSpacingSpinner")) RMTextTool.setLineSpacing(editor, anEvent.getFloatValue());
-    if(anEvent.equals("LineSpacingSingleButton")) RMTextTool.setLineSpacing(editor, 1);
-    if(anEvent.equals("LineSpacingDoubleButton")) RMTextTool.setLineSpacing(editor, 2);
-    if(anEvent.equals("LineGapSpinner")) RMTextTool.setLineGap(editor, anEvent.getFloatValue());
+    if(anEvent.equals("CharSpacingSpinner")) setCharSpacing(anEvent.getFloatValue());
+    if(anEvent.equals("LineSpacingSpinner")) setLineSpacing(anEvent.getFloatValue());
+    if(anEvent.equals("LineSpacingSingleButton")) setLineSpacing(1);
+    if(anEvent.equals("LineSpacingDoubleButton")) setLineSpacing(2);
+    if(anEvent.equals("LineGapSpinner")) setLineGap(anEvent.getFloatValue());
 
     // Handle LineHeightMinSpinner, LineHeightMaxSpinner
     //if(anEvent.equals("LineHeightMinSpinner")) setLineHeightMin(editor, Math.max(anEvent.getFloatValue(), 0));
@@ -909,48 +910,62 @@ private static String getTestString()
 }
 
 /** Sets the character spacing for the currently selected shapes. */
-private static void setCharSpacing(Editor anEditor, float aValue)
+private void setCharSpacing(float aValue)
 {
-    anEditor.undoerSetUndoTitle("Char Spacing Change");
-    for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
-        if(shape instanceof RMTextShape)
-            ((RMTextShape)shape).setCharSpacing(aValue);
+    setUndoTitle("Char Spacing Change");
+    for (ToolStylerText styler : getSelOrSuperSelStylers())
+        styler.setCharSpacing(aValue);
 }
 
 /** Sets the line spacing for all chars (or all selected chars, if editing). */
-private static void setLineSpacing(Editor anEditor, float aHeight)
+private void setLineSpacing(float aHeight)
 {
-    anEditor.undoerSetUndoTitle("Line Spacing Change");
-    for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
-        if(shape instanceof RMTextShape)
-            ((RMTextShape)shape).setLineSpacing(aHeight);
+    setUndoTitle("Line Spacing Change");
+    for (ToolStylerText styler : getSelOrSuperSelStylers())
+        styler.setLineSpacing(aHeight);
 }
 
 /** Sets the line gap for all chars (or all selected chars, if editing). */
-private static void setLineGap(Editor anEditor, float aHeight)
+private void setLineGap(float aHeight)
 {
-    anEditor.undoerSetUndoTitle("Line Gap Change");
-    for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
-        if(shape instanceof RMTextShape)
-            ((RMTextShape)shape).setLineGap(aHeight);
+    setUndoTitle("Line Gap Change");
+    for (ToolStylerText styler : getSelOrSuperSelStylers())
+        styler.setLineGap(aHeight);
 }
 
 /** Sets the minimum line height for all chars (or all selected chars, if editing). */
-private static void setLineHeightMin(Editor anEditor, float aHeight)
+private void setLineHeightMin(float aHeight)
 {
-    anEditor.undoerSetUndoTitle("Min Line Height Change");
-    for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
-        if(shape instanceof RMTextShape)
-            ((RMTextShape)shape).setLineHeightMin(aHeight);
+    setUndoTitle("Min Line Height Change");
+    for (ToolStylerText styler : getSelOrSuperSelStylers())
+        styler.setLineHeightMin(aHeight);
 }
 
 /** Sets the maximum line height for all chars (or all selected chars, if eiditing). */
-private static void setLineHeightMax(Editor anEditor, float aHeight)
+private void setLineHeightMax(float aHeight)
 {
-    anEditor.undoerSetUndoTitle("Max Line Height Change");
-    for(RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
-        if(shape instanceof RMTextShape)
-            ((RMTextShape)shape).setLineHeightMax(aHeight);
+    setUndoTitle("Max Line Height Change");
+    for (ToolStylerText styler : getSelOrSuperSelStylers())
+        styler.setLineHeightMax(aHeight);
+}
+
+/**
+ * Returns the ToolStylerText objects for editor selected shapes.
+ */
+private ToolStylerText[] getSelOrSuperSelStylers()
+{
+    List<RMShape> shapes = getEditor().getSelectedOrSuperSelectedShapes();
+    ToolStylerText stylers[] = new ToolStylerText[shapes.size()];
+    for (int i=0, iMax=shapes.size(); i<iMax; i++) stylers[i] = (ToolStylerText)getStyler(shapes.get(i));
+    return stylers;
+}
+
+/**
+ * Sets undo title.
+ */
+public void setUndoTitle(String aTitle)
+{
+    getEditor().undoerSetUndoTitle(aTitle);
 }
 
 /**

@@ -245,11 +245,6 @@ public void setAlignmentX(HPos anAlignX)
 }
 
 /**
- * Returns the alignment as a string, one of: "left", "center" or "right".
- */
-public String getAlignString()  { return getAlignmentX().toString().toLowerCase(); }
-
-/**
  * Returns the vertical alignment.
  */
 public VPos getAlignmentY()  { return _alignY; }
@@ -327,102 +322,6 @@ public boolean isMultiline()  { return _multiline; }
 public void setMultiline(boolean aValue)
 {
     firePropChange(Multiline_Prop, _multiline, _multiline = aValue);
-}
-
-/**
- * Returns the char spacing at char 0.
- */
-public float getCharSpacing()
-{
-    return getRichText().getRunAt(0).getCharSpacing();
-}
-
-/**
- * Sets the char spacing for the text string.
- */
-public void setCharSpacing(float aValue)
-{
-    if (isTextEditorSet()) { getTextEditor().setCharSpacing(aValue); return; }
-    getRichText().setStyleValue(TextStyle.CHAR_SPACING_KEY, aValue==0? null : aValue);
-}
-
-/**
- * Returns the line spacing at char 0.
- */
-public double getLineSpacing()
-{
-    if (isTextEditorSet()) return getTextEditor().getLineSpacing();
-    return getRichText().getLineStyleAt(0).getSpacing();
-}
-
-/**
- * Sets the line spacing for all chars.
- */
-public void setLineSpacing(float aHeight)
-{
-    if(isTextEditorSet()) { getTextEditor().setLineSpacing(aHeight); return; }
-
-    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
-    getRichText().setLineStyle(ps, 0, length());
-}
-
-/**
- * Returns the line gap at char 0.
- */
-public double getLineGap()
-{
-    if (isTextEditorSet()) return getTextEditor().getLineGap();
-    return getRichText().getLineStyleAt(0).getSpacing();
-}
-
-/**
- * Sets the line gap for all chars.
- */
-public void setLineGap(double aHeight)
-{
-    if (isTextEditorSet()) { getTextEditor().setLineGap(aHeight); return; }
-
-    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_KEY, aHeight);
-    getRichText().setLineStyle(ps, 0, length());
-}
-
-/**
- * Returns the minimum line height at char 0.
- */
-public double getLineHeightMin()
-{
-    if (isTextEditorSet()) return getTextEditor().getLineHeightMin();
-    return getRichText().getLineStyleAt(0).getMinHeight();
-}
-
-/**
- * Sets the minimum line height for all chars.
- */
-public void setLineHeightMin(float aHeight)
-{
-    if (isTextEditorSet()) { getTextEditor().setLineHeightMin(aHeight); return; }
-
-    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
-    getRichText().setLineStyle(ps, 0, length());
-}
-
-/**
- * Returns the maximum line height at char 0.
- */
-public double getLineHeightMax()
-{
-    if (isTextEditorSet()) return getTextEditor().getLineHeightMax();
-    return getRichText().getLineStyleAt(0).getMaxHeight();
-}
-
-/**
- * Sets the maximum line height for all chars.
- */
-public void setLineHeightMax(float aHeight)
-{
-    if (isTextEditorSet()) { getTextEditor().setLineHeightMax(aHeight); return; }
-    TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MAX_HEIGHT_KEY, aHeight);
-    getRichText().setLineStyle(ps, 0, length());
 }
 
 /**
