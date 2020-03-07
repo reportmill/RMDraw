@@ -532,6 +532,11 @@ public TextEditor getTextEditor()
 }
 
 /**
+ * Clears the text editor.
+ */
+public void clearTextEditor()  { _textEdtr = null; }
+
+/**
  * A TextEditor subclass to repaint TextShape when selection changes.
  */
 private class TextShapeTextEditor extends TextEditor {
@@ -555,11 +560,6 @@ public void setFitText(boolean aValue)
 {
     _fitText = aValue;
 }
-
-/**
- * Clears the text editor.
- */
-public void clearTextEditor()  { _textEdtr = null; }
 
 /**
  * Override to compute from RMTextLayout.

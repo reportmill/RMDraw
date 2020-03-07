@@ -26,13 +26,10 @@ public class Editor extends Viewer implements DeepChangeListener {
     
     // List of super selected shapes (all ancestors of selected shapes)
     private List<RMShape> _superSelShapes = new ArrayList();
-    
-    // The last shape that was copied to the clipboard (used for smart paste)
-    RMShape _lastCopyShape;
-    
-    // The last shape that was pasted from the clipboard (used for smart paste)
-    RMShape _lastPasteShape;
-    
+
+    // The default CopyPaster
+    private EditorCopyPaster _copyPaster;
+
     // A helper class to handle drag and drop
     private EditorDnD _dragHelper = createDragHelper();
     
@@ -517,121 +514,46 @@ public RMShape firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
 }
 
 /**
+ * Returns the editor copy/paster.
+ */
+public CopyPaster getCopyPaster()
+{
+    return getCopyPasterDefault();
+}
+
+/**
+ * Returns the editor copy/paster.
+ */
+public EditorCopyPaster getCopyPasterDefault()
+{
+    if (_copyPaster!=null) return _copyPaster;
+    return _copyPaster = new EditorCopyPaster(this);
+}
+
+/**
  * Standard clipboard cut functionality.
  */
-public void cut()  { EditorClipboard.cut(this); }
+public void cut()  { getCopyPaster().cut(); }
 
 /**
  * Standard clipboard copy functionality.
  */
-public void copy()  { EditorClipboard.copy(this); }
+public void copy()  { getCopyPaster().copy(); }
 
 /**
  * Standard clipbard paste functionality.
  */
-public void paste()  { EditorClipboard.paste(this); }
+public void paste()  { getCopyPaster().paste(); }
 
 /**
  * Causes all the children of the current super selected shape to become selected.
  */
-public void selectAll()
-{
-    // If document selected, select page
-    RMShape superSelShape = getSuperSelectedShape();
-    if(superSelShape instanceof RMDocument) {
-        setSuperSelectedShape(((RMDocument)superSelShape).getSelPage());
-        superSelShape = getSuperSelectedShape();
-    }
-    
-    // If text editing, forward to text editor
-    if(getTextEditor()!=null)
-        getTextEditor().selectAll();
-    
-    // Otherwise, select all children
-    else if(superSelShape.getChildCount()>0) {
-        
-        // Get list of all hittable children of super-selected shape
-        List shapes = new ArrayList();
-        for(RMShape shape : superSelShape.getChildren())
-            if(shape.isHittable())
-                shapes.add(shape);
-        
-        // Select shapes
-        setSelectedShapes(shapes);
-    }
-}
+public void selectAll()  { getCopyPaster().selectAll(); }
 
 /**
  * Deletes all the currently selected shapes.
  */
-public void delete()
-{
-    // Get copy of selected shapes (just beep and return if no selected shapes)
-    RMShape shapes[] = _selShapes.toArray(new RMShape[0]);
-    if(shapes.length==0) { if(getTextEditor()==null) beep(); return; }
-
-    // Get/superSelect parent of selected shapes
-    RMParentShape parent = getSelectedShape().getParent(); if(parent==null) return;
-    setSuperSelectedShape(parent);
-
-    // Set undo title
-    undoerSetUndoTitle(getSelectedShapeCount()>1? "Delete Shapes" : "Delete Shape");
-    
-    // Remove all shapes from their parent
-    for(RMShape shape : shapes) {
-        parent.removeChild(shape);
-        if(_lastPasteShape==shape) _lastPasteShape = null;
-        if(_lastCopyShape==shape) _lastCopyShape = null;
-    }
-}
-
-/**
- * Adds shapes as children to given shape.
- */
-public void addShapesToShape(List <? extends RMShape> theShapes, RMParentShape aShape, boolean withCorrection)
-{
-    // If no shapes, just return
-    if(theShapes.size()==0) return;
-    
-    // Declare variables for dx, dy, dr
-    double dx = 0, dy = 0, dr = 0;
-
-    // Smart paste
-    if(withCorrection) {
-
-        // If there is an last-copy-shape and new shapes will be it's peer, set offset
-        if(_lastCopyShape!=null && _lastCopyShape.getParent()==aShape) {
-
-            if(_lastPasteShape!=null) {
-                RMShape firstShape = theShapes.get(0);
-                dx = 2*_lastPasteShape.x() - _lastCopyShape.x() - firstShape.x();
-                dy = 2*_lastPasteShape.y() - _lastCopyShape.y() - firstShape.y();
-                dr = 2*_lastPasteShape.getRoll() - _lastCopyShape.getRoll() - firstShape.getRoll();
-            }
-
-            else dx = dy = getDoc().getGridSpacing();
-        }
-    }
-
-    // Get each individual shape and add it to the superSelectedShape
-    for(int i=0, iMax=theShapes.size(); i<iMax; i++) { RMShape shape = theShapes.get(i);
-        
-        // Add current loop shape to given parent shape
-        aShape.addChild(shape);
-
-        // Smart paste
-        if(withCorrection) {
-            Rect parentShapeRect = aShape.getBoundsInside();
-            shape.setXY(shape.x() + dx, shape.y() + dy);
-            shape.setRoll(shape.getRoll() + dr);
-            Rect rect = shape.getFrame();
-            rect.width = Math.max(1, rect.width);
-            rect.height = Math.max(1, rect.height);
-            if(!parentShapeRect.intersectsRect(rect))
-                shape.setXY(0, 0);
-        }
-    }
-}
+public void delete()  { getCopyPaster().delete(); }
 
 /**
  * Adds a page to the document after current page.

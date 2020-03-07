@@ -158,7 +158,7 @@ public class EditorDnD {
             RMParentShape par = (RMParentShape)aShape;
             Clipboard cb = anEvent.getClipboard(); //Transferable transferable = anEvent.getTransferable();
             editor.undoerSetUndoTitle("Drag and Drop Key");
-            EditorClipboard.paste(editor, cb, par, anEvent.getPoint());
+            editor.getCopyPasterDefault().paste(cb, par, anEvent.getPoint());
         }
     }
 
