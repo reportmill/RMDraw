@@ -154,12 +154,11 @@ public class EditorStyler extends Styler {
         Font font = null;
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            Tool tool = getTool(shape);
-            font = shape.getFont();
+            font = getStyler(shape).getFont();
         }
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
             RMShape shape = getSelOrSuperSelShape(i);
-            getStyler(shape).getFontDeep();
+            font = getStyler(shape).getFontDeep();
         }
         return font!=null ? font : Font.getDefaultFont();
     }
@@ -403,11 +402,6 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Returns the currently selected shape or, if none, the super-selected shape.
-     */
-    private RMShape getSelOrSuperSelShape()  { return _editor.getSelectedOrSuperSelectedShape(); }
-
-    /**
      * Returns the currently selected shapes or, if none, the super-selected shape in a list.
      */
     private List<RMShape> getSelOrSuperSelShapes()  { return _editor.getSelectedOrSuperSelectedShapes(); }
@@ -425,7 +419,7 @@ public class EditorStyler extends Styler {
     /**
      * Returns the specific tool for a given shape.
      */
-    private Tool getTool(Object anObj)  { return _editor.getTool(anObj); }
+    private Tool getTool(RMShape aShape)  { return _editor.getTool(aShape); }
 
     /**
      * Returns the currently selected shape or, if none, the super-selected shape.

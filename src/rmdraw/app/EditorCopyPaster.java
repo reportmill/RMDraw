@@ -26,6 +26,9 @@ public class EditorCopyPaster implements CopyPaster {
     // The last shape that was pasted from the clipboard (used for smart paste)
     private RMShape _lastPasteShape;
 
+    // The MIME type for Draw archival format
+    public static final String DRAW_XML_FORMAT = "snapdraw/xml";
+
     /**
      * Creates EditorCopyPaster for given editor.
      */
@@ -39,24 +42,14 @@ public class EditorCopyPaster implements CopyPaster {
      */
     public Editor getEditor()  { return _editor; }
 
-    // The MIME type for reportmill xstring
-    public static final String    RM_XML_TYPE = "reportmill/xml";
-
     /**
      * Handles editor cut operation.
      */
     public void cut()
     {
-        // If text editing, have text editor do copy instead
-        if(_editor.getTextEditor()!=null)
-            _editor.getTextEditor().cut();
-
-            // If not text editing, do copy and delete (and null anchor & smart paste shape)
-        else {
-            _editor.copy();
-            _editor.delete();
-            _lastCopyShape = _lastPasteShape = null;
-        }
+        _editor.copy();
+        _editor.delete();
+        _lastCopyShape = _lastPasteShape = null;
     }
 
     /**
@@ -64,12 +57,8 @@ public class EditorCopyPaster implements CopyPaster {
      */
     public void copy()
     {
-        // If text editing, have text editor do copy instead
-        if(_editor.getTextEditor()!=null)
-            _editor.getTextEditor().copy();
-
-            // If not text editing, add selected shapes (serialized) to pasteboard for DrawPboardType
-        else if(!(_editor.getSelectedOrSuperSelectedShape() instanceof RMDocument) &&
+        // If not text editing, add selected shapes (serialized) to pasteboard for DrawPboardType
+        if(!(_editor.getSelectedOrSuperSelectedShape() instanceof RMDocument) &&
                 !(_editor.getSelectedOrSuperSelectedShape() instanceof RMPage)) {
 
             // Get xml for selected shapes
@@ -78,7 +67,7 @@ public class EditorCopyPaster implements CopyPaster {
 
             // Get System clipboard and add data as RMData and String (text/plain)
             Clipboard cb = Clipboard.getCleared();
-            cb.addData(RM_XML_TYPE, xmlStr);
+            cb.addData(DRAW_XML_FORMAT, xmlStr);
             cb.addData(xmlStr);
 
             // Reset Editor.LastCopyShape/LastPasteShape
@@ -95,15 +84,9 @@ public class EditorCopyPaster implements CopyPaster {
      */
     public void paste()
     {
-        // If text editing, have text editor do paste instead
-        if(_editor.getTextEditor()!=null)
-            _editor.getTextEditor().paste();
-
-            // If not text editing, do paste for system clipboard
-        else {
-            RMParentShape parent = _editor.firstSuperSelectedShapeThatAcceptsChildren();
-            paste(Clipboard.get(), parent, null);
-        }
+        // If not text editing, do paste for system clipboard
+        RMParentShape parent = _editor.firstSuperSelectedShapeThatAcceptsChildren();
+        paste(Clipboard.get(), parent, null);
     }
 
     /**
@@ -115,7 +98,7 @@ public class EditorCopyPaster implements CopyPaster {
         RMShape pastedShape = null;
 
         // If PasteBoard has ReportMill Data, paste it
-        if(aCB.hasData(RM_XML_TYPE)) {
+        if(aCB.hasData(DRAW_XML_FORMAT)) {
 
             // Unarchive shapes from clipboard bytes
             Object object = getShapesFromClipboard(aCB);
@@ -195,12 +178,8 @@ public class EditorCopyPaster implements CopyPaster {
             superSelShape = _editor.getSuperSelectedShape();
         }
 
-        // If text editing, forward to text editor
-        if(_editor.getTextEditor()!=null)
-            _editor.getTextEditor().selectAll();
-
-            // Otherwise, select all children
-        else if(superSelShape.getChildCount()>0) {
+        // Otherwise, select all children
+        if(superSelShape.getChildCount()>0) {
 
             // Get list of all hittable children of super-selected shape
             List shapes = new ArrayList();
@@ -219,9 +198,9 @@ public class EditorCopyPaster implements CopyPaster {
     public void delete()
     {
         // Get copy of selected shapes (just beep and return if no selected shapes)
-        RMShape shapes[] = _editor._selShapes.toArray(new RMShape[0]);
+        RMShape shapes[] = _editor.getSelectedShapes().toArray(new RMShape[0]);
         if (shapes.length==0) {
-            if(_editor.getTextEditor()==null) ViewUtils.beep(); return; }
+            ViewUtils.beep(); return; }
 
         // Get/superSelect parent of selected shapes
         RMParentShape parent = _editor.getSelectedShape().getParent(); if (parent==null) return;
@@ -231,10 +210,10 @@ public class EditorCopyPaster implements CopyPaster {
         _editor.undoerSetUndoTitle(_editor.getSelectedShapeCount()>1? "Delete Shapes" : "Delete Shape");
 
         // Remove all shapes from their parent
-        for(RMShape shape : shapes) {
+        for (RMShape shape : shapes) {
             parent.removeChild(shape);
-            if(_lastPasteShape==shape) _lastPasteShape = null;
-            if(_lastCopyShape==shape) _lastCopyShape = null;
+            if (_lastPasteShape==shape) _lastPasteShape = null;
+            if (_lastCopyShape==shape) _lastCopyShape = null;
         }
     }
 
@@ -258,11 +237,11 @@ public class EditorCopyPaster implements CopyPaster {
         Clipboard cboard = aCB!=null? aCB : Clipboard.get();
 
         // If no RMData, just return
-        if(!cboard.hasData(RM_XML_TYPE))
+        if(!cboard.hasData(DRAW_XML_FORMAT))
             return null;
 
         // Get unarchived object from clipboard bytes
-        byte bytes[] = cboard.getDataBytes(RM_XML_TYPE);
+        byte bytes[] = cboard.getDataBytes(DRAW_XML_FORMAT);
         Object obj = new RMArchiver().readFromXMLBytes(bytes);
 
         // A bit of a hack - remove any non-shapes (plugins for one)

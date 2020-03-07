@@ -6,7 +6,6 @@ import rmdraw.apptools.*;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.geom.Shape;
-import snap.text.TextEditor;
 import rmdraw.shape.*;
 import java.util.*;
 import snap.gfx.*;
@@ -26,6 +25,9 @@ public class Editor extends Viewer implements DeepChangeListener {
     
     // List of super selected shapes (all ancestors of selected shapes)
     private List<RMShape> _superSelShapes = new ArrayList();
+
+    // An EditorCellStyler to get/set style attributes of current selection
+    private EditorStyler _styler = new EditorStyler(this);
 
     // The default CopyPaster
     private EditorCopyPaster _copyPaster;
@@ -86,15 +88,6 @@ public void setEditing(boolean aFlag)  { _editing = aFlag; }
  * Creates the Painter.Props object to provide shape selection information.
  */
 protected RMShapePaintProps createShapePaintProps()  { return new EditorShapePainterProps(); }
-
-/**
- * Returns the text editor (or null if not editing).
- */
-public TextEditor getTextEditor()
-{
-    RMShape shp = getSuperSelectedShape();
-    return shp instanceof RMTextShape? ((RMTextShape)shp).getTextEditor() : null;
-}
 
 /**
  * Returns the drag helper.
@@ -514,11 +507,17 @@ public RMShape firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
 }
 
 /**
+ * Returns an EditorCellStyler that can get/set style attributes of current selection.
+ */
+public EditorStyler getStyler()  { return _styler; }
+
+/**
  * Returns the editor copy/paster.
  */
 public CopyPaster getCopyPaster()
 {
-    return getCopyPasterDefault();
+    Tool tool = getToolForShapes(getSelectedShapes());
+    return tool.getCopyPaster();
 }
 
 /**
@@ -611,7 +610,7 @@ public RMSelectTool getSelectTool()
 /**
  * Returns the specific tool for a list of shapes (if they have the same tool).
  */
-public Tool getTool(List aList)
+public Tool getToolForShapes(List aList)
 {
     Class commonClass = ClassUtils.getCommonClass(aList); // Get class for first object
     return getTool(commonClass); // Return tool for common class
@@ -620,25 +619,25 @@ public Tool getTool(List aList)
 /**
  * Returns the specific tool for a given shape.
  */
-public Tool getTool(Object anObj)
+public Tool getTool(RMShape aShape)
 {
-    // Get the shape class and tool from tools map - if not there, find and set
-    Class sclass = ClassUtils.getClass(anObj);
-    Tool tool = _tools.get(sclass);
+    Class cls = aShape.getClass();
+    return getTool(cls);
+}
+
+/**
+ * Returns the specific tool for a given shape.
+ */
+public Tool getTool(Class aClass)
+{
+    // Get tool from tools map - if not there, find and set
+    Tool tool = _tools.get(aClass);
     if(tool==null) {
-        _tools.put(sclass, tool = createTool(sclass));
+        _tools.put(aClass, tool = createTool(aClass));
         tool.setEditor(this);
     }
     return tool;
 }
-
-/**
- * Returns an EditorCellStyler that can get/set style attributes of current selection.
- */
-public EditorStyler getStyler()  { return _styler; }
-
-// An EditorCellStyler to get/set style attributes of current selection
-private EditorStyler _styler = new EditorStyler(this);
 
 /**
  * Returns the specific tool for a given shape.
@@ -712,14 +711,8 @@ public boolean isCurrentToolSelectToolAndSelecting()
     return isCurrentToolSelectTool() && getSelectTool().getDragMode()==RMSelectTool.DragMode.Select;
 }
 
-/**
- * Resets the currently selected tool.
- */
-public void resetCurrentTool()
-{
-    _currentTool.deactivateTool();
-    _currentTool.activateTool();
-}
+/** Resets the currently selected tool. */
+//public void resetCurrentTool() { _currentTool.deactivateTool(); _currentTool.activateTool(); }
 
 /**
  * Override viewer method to reset selected shapes on page change.

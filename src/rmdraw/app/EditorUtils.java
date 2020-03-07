@@ -7,9 +7,8 @@ import java.util.*;
 import snap.geom.Point;
 import snap.geom.Size;
 import snap.gfx.Image;
-import snap.text.TextEditor;
 import snap.util.ListUtils;
-import snap.viewx.SpellCheckPanel;
+import snap.view.ViewUtils;
 
 /**
  * Handles useful methods to help editor.
@@ -561,59 +560,60 @@ public static void addImagePlaceholder(Editor anEditor)
  */
 public static void checkSpelling(Editor anEditor)
 {
-    new EditorSpellCheck(anEditor).show(anEditor);
+    //new EditorSpellCheck(anEditor).show(anEditor);
+    ViewUtils.beep();
 }
 
-/**
- * A SpellCheckPanel for Editor.
- */
-private static class EditorSpellCheck extends SpellCheckPanel {
-
-    // The Editor
-    private Editor _editor;
-
-    // The TextShape being edited
-    private RMTextShape _workingText;
-
-    /** Create EditorSpellCheck. */
-    EditorSpellCheck(Editor anEditor)  { _editor = anEditor; }
-
-    @Override
-    protected String getText()
-    {
-        // Get editor and selected shape
-        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
-
-        // If shape has changed do the right thing
-        if(shape!=_workingText) {
-
-            // If new shape is text, make it the working text
-            if(shape instanceof RMTextShape)
-                _workingText = (RMTextShape)shape;
-
-                // If new shape isn't text, but is on same page as previous workingText, select previous working text
-            else if(_workingText!=null && shape.getPageShape()==_workingText.getPageShape()) {
-            }
-
-            // Otherwise, set workingText to null
-            else _workingText = null;
-        }
-
-        // Make sure working text is superselected
-        if(_workingText!=null && _workingText!=_editor.getSuperSelectedShape()) {
-            _editor.setSuperSelectedShape(_workingText);
-            _editor.getTextEditor().setSel(0);
-        }
-
-        // Return working text
-        return _workingText!=null ? _workingText.getText() : null;
-    }
-
-    @Override
-    protected TextEditor getTextEditor()
-    {
-        return _editor.getTextEditor();
-    }
-}
+///**
+// * A SpellCheckPanel for Editor.
+// */
+//private static class EditorSpellCheck extends SpellCheckPanel {
+//
+//    // The Editor
+//    private Editor _editor;
+//
+//    // The TextShape being edited
+//    private RMTextShape _workingText;
+//
+//    /** Create EditorSpellCheck. */
+//    EditorSpellCheck(Editor anEditor)  { _editor = anEditor; }
+//
+//    @Override
+//    protected String getText()
+//    {
+//        // Get editor and selected shape
+//        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
+//
+//        // If shape has changed do the right thing
+//        if(shape!=_workingText) {
+//
+//            // If new shape is text, make it the working text
+//            if(shape instanceof RMTextShape)
+//                _workingText = (RMTextShape)shape;
+//
+//            // If new shape isn't text, but is on same page as previous workingText, select previous working text
+//            else if(_workingText!=null && shape.getPageShape()==_workingText.getPageShape()) {
+//            }
+//
+//            // Otherwise, set workingText to null
+//            else _workingText = null;
+//        }
+//
+//        // Make sure working text is superselected
+//        if(_workingText!=null && _workingText!=_editor.getSuperSelectedShape()) {
+//            _editor.setSuperSelectedShape(_workingText);
+//            _editor.getTextEditor().setSel(0);
+//        }
+//
+//        // Return working text
+//        return _workingText!=null ? _workingText.getText() : null;
+//    }
+//
+//    @Override
+//    protected TextEditor getTextEditor()
+//    {
+//        return _editor.getTextEditor();
+//    }
+//}
 
 }

@@ -47,7 +47,7 @@ public class RMSelectTool extends Tool {
     boolean         _redoMousePressed;
 
     // Drag mode constants
-    public enum DragMode { None, Move, Rotate, Resize, Select, EventDispatch };
+    public enum DragMode { None, Move, Rotate, Resize, Select, EventDispatch }
     
 /**
  * Handles mouse pressed for the select tool.
@@ -61,7 +61,7 @@ public void mousePressed(ViewEvent anEvent)
     for(RMShape shp : editor.getSuperSelectedShapes()) shp.repaint();
 
     // See if tool wants to handle this one
-    Tool toolShared = editor.getTool(editor.getSelectedOrSuperSelectedShapes());
+    Tool toolShared = editor.getToolForShapes(editor.getSelectedOrSuperSelectedShapes());
     if(toolShared!=null && toolShared.mousePressedSelection(anEvent)) {
         _dragMode = DragMode.None; return; }
     
@@ -157,7 +157,7 @@ public void mousePressed(ViewEvent anEvent)
             
         // If event was consumed, set event shape and drag mode to event dispatch and return
         if(anEvent.isConsumed()) {
-            _eventShape = hitShape; _dragMode = DragMode.EventDispatch; return; }
+            _eventShape = hitShape; _dragMode = DragMode.EventDispatch; }
     }
 }
 

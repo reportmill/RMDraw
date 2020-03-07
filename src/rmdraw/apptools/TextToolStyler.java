@@ -1,4 +1,6 @@
-package rmdraw.app;
+package rmdraw.apptools;
+import rmdraw.app.Tool;
+import rmdraw.app.ToolStyler;
 import rmdraw.shape.RMShape;
 import rmdraw.shape.RMTextShape;
 import snap.geom.HPos;
@@ -11,12 +13,12 @@ import snap.view.ViewUtils;
 /**
  * Sets shape style attributes for shape.
  */
-public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
+public class TextToolStyler<T extends RMTextShape> extends ToolStyler<T> {
 
     /**
      * Creates ToolStylerText for given shape.
      */
-    public ToolStylerText(Tool aTool, RMShape aShape)
+    public TextToolStyler(Tool aTool, RMShape aShape)
     {
         super(aTool, aShape);
     }
@@ -337,14 +339,9 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     }
 
     /**
-     * Returns the TextEditor (or null if not editing).
+     * Returns the length of text.
      */
-    private boolean isTextEditorSet()  { return getTextEditor()!=null; }
-
-    /**
-     * Returns the TextEditor (or null if not editing).
-     */
-    private TextEditor getTextEditor()  { return _editor.getTextEditor(); }
+    private int length()  { return _shape.length(); }
 
     /**
      * Returns the TextShape RichText.
@@ -352,7 +349,16 @@ public class ToolStylerText<T extends RMTextShape> extends ToolStyler<T> {
     private RichText getRichText()  { return _shape.getRichText(); }
 
     /**
-     * Returns the TextShape RichText.
+     * Returns whether TextEditor is active.
      */
-    private int length()  { return _shape.length(); }
+    private boolean isTextEditorSet()  { return getTextEditor()!=null; }
+
+    /**
+     * Returns the TextEditor (or null if not editing).
+     */
+    private TextEditor getTextEditor()
+    {
+        RMTextTool tool = _tool instanceof RMTextTool ? (RMTextTool)_tool : null;
+        return tool!=null ? tool.getTextEditor() : null;
+    }
 }

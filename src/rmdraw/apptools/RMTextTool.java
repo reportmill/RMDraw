@@ -38,6 +38,23 @@ public class RMTextTool <T extends RMTextShape> extends Tool<T> {
     PropChangeListener _textEditorSelChangeLsnr = pc -> textEditorSelChanged();
 
 /**
+ * Returns the TextEditor used to edit text in Editor view.
+ */
+public TextEditor getTextEditor()
+{
+    RMTextShape text = getSelectedShape();
+    return text!=null ? text.getTextEditor() : null;
+}
+
+/**
+ * Returns whether TextEditor used to edit text in Editor view is active.
+ */
+public boolean isTextEditorActive()
+{
+    return getTextEditor()!=null;
+}
+
+/**
  * Initialize UI panel.
  */
 protected void initUI()
@@ -57,14 +74,14 @@ public void resetUI()
     // Get editor and currently selected text
     Editor editor = getEditor();
     RMTextShape text = getSelectedShape(); if(text==null) return;
-    ToolStylerText styler = (ToolStylerText)getStyler(text);
+    TextToolStyler styler = (TextToolStyler)getStyler(text);
     
     // Get paragraph from text
     int selStart = 0; if(_textArea.isFocused()) selStart = _textArea.getSelStart();
     TextLineStyle pgraph = text.getRichText().getLineStyleAt(selStart);
     
     // If editor is text editing, get paragraph from text editor instead
-    TextEditor ted = editor.getTextEditor();
+    TextEditor ted = getTextEditor();
     if (ted!=null) {
         pgraph = ted.getSelLineStyle();
         ted.setActive(editor.isFocused() && isSuperSelected(text));
@@ -243,6 +260,16 @@ public void activateTool()
 }
 
 /**
+ * Override to return TextToolCopyPaster to handle text copy/paste.
+ */
+protected CopyPaster getCopyPaster()
+{
+    if (isTextEditorActive())
+        return new TextEditorCopyPaster();
+    return super.getCopyPaster();
+}
+
+/**
  * Event handling - overridden to install text cursor.
  */
 public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.TEXT); }
@@ -380,7 +407,7 @@ public void processEvent(T aTextShape, ViewEvent anEvent)
     }
         
     // Forward on to editor
-    aTextShape.getTextEditor().processEvent(anEvent);
+    getTextEditor().processEvent(anEvent);
     aTextShape.repaint();
 }
 
@@ -411,7 +438,7 @@ public void processKeyEvent(T aTextShape, ViewEvent anEvent)
     }
 
     // Have text editor process key event
-    aTextShape.getTextEditor().processEvent(anEvent);
+    getTextEditor().processEvent(anEvent);
     aTextShape.repaint();
 }
 
@@ -470,7 +497,7 @@ private void moveTableColumn(ViewEvent anEvent)
 public void didBecomeSuperSelected(T aTextShape)
 {
     // Start listening to changes to TextEditor Selection change
-    TextEditor ted = aTextShape.getTextEditor();
+    TextEditor ted = getTextEditor();
     ted.addPropChangeListener(_textEditorSelChangeLsnr, TextEditor.Selection_Prop);
 }
 
@@ -485,7 +512,7 @@ public void willLoseSuperSelected(T aTextShape)
         aTextShape.removeFromParent();
     
     // Stop listening to changes to TextShape RichText
-    TextEditor ted = aTextShape.getTextEditor();
+    TextEditor ted = getTextEditor();
     ted.removePropChangeListener(_textEditorSelChangeLsnr, TextEditor.Selection_Prop);
     ted.setActive(false);
     _updatingSize = false; _updatingMinHeight = 0;
@@ -509,15 +536,14 @@ protected void textAreaPropChanged(PropChange aPC)
             editor.setSuperSelectedShape(textShape);
 
         // Make sure TextEditor has same selection
-        TextEditor ted = editor.getTextEditor();
+        TextEditor ted = getTextEditor();
         if (ted!=null)
             ted.setSel(_textArea.getSelStart(), _textArea.getSelEnd());
     }
 
     // Handle Focus change
     else if(aPC.getPropertyName()==TextArea.Focused_Prop) {
-        Editor editor = getEditor();
-        TextEditor ted = editor.getTextEditor();
+        TextEditor ted = getTextEditor();
         if (ted!=null && _textArea.isFocused())
             ted.setActive(false);
     }
@@ -551,9 +577,8 @@ protected void textAreaPropChanged(PropChange aPC)
 private void textEditorSelChanged()
 {
     // Get TextEditor and update sel from TextArea
-    Editor editor = getEditor();
     RMTextShape textShape = getSelectedShape(); if (textShape==null) return;
-    TextEditor textEd = editor.getTextEditor();
+    TextEditor textEd = getTextEditor();
     if (textEd!=null)
         _textArea.setSel(textEd.getSelStart(), textEd.getSelEnd());
 
@@ -913,7 +938,7 @@ private static String getTestString()
 private void setCharSpacing(float aValue)
 {
     setUndoTitle("Char Spacing Change");
-    for (ToolStylerText styler : getSelOrSuperSelStylers())
+    for (TextToolStyler styler : getSelOrSuperSelStylers())
         styler.setCharSpacing(aValue);
 }
 
@@ -921,7 +946,7 @@ private void setCharSpacing(float aValue)
 private void setLineSpacing(float aHeight)
 {
     setUndoTitle("Line Spacing Change");
-    for (ToolStylerText styler : getSelOrSuperSelStylers())
+    for (TextToolStyler styler : getSelOrSuperSelStylers())
         styler.setLineSpacing(aHeight);
 }
 
@@ -929,34 +954,25 @@ private void setLineSpacing(float aHeight)
 private void setLineGap(float aHeight)
 {
     setUndoTitle("Line Gap Change");
-    for (ToolStylerText styler : getSelOrSuperSelStylers())
+    for (TextToolStyler styler : getSelOrSuperSelStylers())
         styler.setLineGap(aHeight);
 }
 
-/** Sets the minimum line height for all chars (or all selected chars, if editing). */
-private void setLineHeightMin(float aHeight)
-{
-    setUndoTitle("Min Line Height Change");
-    for (ToolStylerText styler : getSelOrSuperSelStylers())
-        styler.setLineHeightMin(aHeight);
-}
-
-/** Sets the maximum line height for all chars (or all selected chars, if eiditing). */
-private void setLineHeightMax(float aHeight)
-{
-    setUndoTitle("Max Line Height Change");
-    for (ToolStylerText styler : getSelOrSuperSelStylers())
-        styler.setLineHeightMax(aHeight);
-}
+/** Set min line height for all chars (or all selected chars, if editing). */
+//private void setLineHeightMin(float aHeight) { setUndoTitle("Min Line Height Change");
+//    for (ToolStylerText styler : getSelOrSuperSelStylers()) styler.setLineHeightMin(aHeight); }
+/** Set max line height for all chars (or all selected chars, if editing). */
+//private void setLineHeightMax(float aHeight) { setUndoTitle("Max Line Height Change");
+//    for (ToolStylerText styler : getSelOrSuperSelStylers()) styler.setLineHeightMax(aHeight); }
 
 /**
  * Returns the ToolStylerText objects for editor selected shapes.
  */
-private ToolStylerText[] getSelOrSuperSelStylers()
+private TextToolStyler[] getSelOrSuperSelStylers()
 {
     List<RMShape> shapes = getEditor().getSelectedOrSuperSelectedShapes();
-    ToolStylerText stylers[] = new ToolStylerText[shapes.size()];
-    for (int i=0, iMax=shapes.size(); i<iMax; i++) stylers[i] = (ToolStylerText)getStyler(shapes.get(i));
+    TextToolStyler stylers[] = new TextToolStyler[shapes.size()];
+    for (int i=0, iMax=shapes.size(); i<iMax; i++) stylers[i] = (TextToolStyler)getStyler(shapes.get(i));
     return stylers;
 }
 
@@ -973,4 +989,24 @@ public void setUndoTitle(String aTitle)
  */
 protected boolean isStructured(RMShape aShape)  { return false; }
 
+    /**
+     * A CopyPaster for TextTool.
+     */
+    private class TextEditorCopyPaster implements CopyPaster {
+
+        /** Override to forward to TextEditor. */
+        public void cut()  { getTextEditor().cut(); }
+
+        /** Override to forward to TextEditor. */
+        public void copy()  { getTextEditor().copy(); }
+
+        /** Override to forward to TextEditor. */
+        public void paste()  { getTextEditor().paste(); }
+
+        /** Override to forward to TextEditor. */
+        public void delete()  { getTextEditor().delete(); }
+
+        /** Override to forward to TextEditor. */
+        public void selectAll()  { getTextEditor().selectAll(); }
+    }
 }

@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
+import rmdraw.apptools.TextToolStyler;
 import rmdraw.shape.*;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -88,6 +89,15 @@ public EditorPane getEditorPane()
  * Returns the editor event handler.
  */
 public EditorEvents getEditorEvents()  { return getEditor().getEvents(); }
+
+/**
+ * Returns a CopyPaster for editor to use.
+ * Might want to override if tool manages it's own selection (like TextTool).
+ */
+protected CopyPaster getCopyPaster()
+{
+    return getEditor().getCopyPasterDefault();
+}
     
 /**
  * Returns the current selected shape for the current editor.
@@ -203,7 +213,7 @@ public double getPointsFromUnits(double aValue)
 public ToolStyler getStyler(RMShape aShape)
 {
     if (aShape instanceof RMTextShape)
-        return new ToolStylerText(this, aShape);
+        return new TextToolStyler(this, aShape);
     return new ToolStyler(this, aShape);
 }
 
