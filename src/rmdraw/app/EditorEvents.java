@@ -47,7 +47,7 @@ public void processEvent(ViewEvent anEvent)
     boolean isKey = anEvent.isKeyEvent() && !anEvent.isConsumed();
     if(isKey && (!editor.isPreview() || getOverridePreview())) {
         RMShape superSelectedShape = editor.getSuperSelectedShape();
-        Tool tool = editor.getTool(superSelectedShape);
+        Tool tool = editor.getToolForView(superSelectedShape);
         tool.processKeyEvent(superSelectedShape, anEvent);
     }
     
@@ -205,7 +205,7 @@ public void keyPressed(ViewEvent anEvent)
     
     // If T key, swap in linked text
     else if(keyChar=='t')
-        ((RMTextTool)editor.getTool(RMTextShape.class)).convertToText(editor.getSelectedShape(), "test");
+        ((TextTool)editor.getToolForClass(RMTextShape.class)).convertToText(editor.getSelectedShape(), "test");
     
     // Otherwise, set consume to false
     else return;

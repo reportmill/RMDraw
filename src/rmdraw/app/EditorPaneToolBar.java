@@ -266,11 +266,11 @@ protected Tool[] createToolBarTools()
     List <Tool> tools = new ArrayList();
     Editor editor = getEditor();
     tools.add(editor.getSelectTool());
-    tools.add(editor.getTool(RMLineShape.class));
-    tools.add(editor.getTool(RMRectShape.class));
-    tools.add(editor.getTool(RMOvalShape.class));
-    tools.add(editor.getTool(RMTextShape.class));
-    tools.add(editor.getTool(RMPolygonShape.class));
+    tools.add(editor.getToolForClass(RMLineShape.class));
+    tools.add(editor.getToolForClass(RMRectShape.class));
+    tools.add(editor.getToolForClass(RMOvalShape.class));
+    tools.add(editor.getToolForClass(RMTextShape.class));
+    tools.add(editor.getToolForClass(RMPolygonShape.class));
     tools.add(new RMPolygonShapeTool.PencilTool(editor));
     return tools.toArray(new Tool[0]);
 }

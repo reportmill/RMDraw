@@ -117,12 +117,12 @@ public List <? extends RMShape> getSelectedShapes()  { return getEditor().getSel
 /**
  * Returns the tool for a given shape.
  */
-public Tool getTool(RMShape aShape)  { return _editor.getTool(aShape); }
+public Tool getTool(RMShape aShape)  { return _editor.getToolForView(aShape); }
 
 /**
  * Returns the tool for a given shape class.
  */
-public Tool getToolForClass(Class <? extends RMShape> aClass)  { return _editor.getTool(aClass); }
+public Tool getToolForClass(Class <? extends RMShape> aClass)  { return _editor.getToolForClass(aClass); }
 
 /**
  * Called when a tool is selected.

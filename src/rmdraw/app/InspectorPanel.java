@@ -278,7 +278,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
             button.setShowArea(false);
 
             // Set button images
-            Image img = editor.getTool(shp).getImage();
+            Image img = editor.getToolForView(shp).getImage();
             button.setImage(img);
             button.setToolTip(shp.getClass().getSimpleName());
             if (shp==selectedShape)

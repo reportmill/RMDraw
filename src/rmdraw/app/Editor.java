@@ -39,7 +39,7 @@ public class Editor extends Viewer implements DeepChangeListener {
     Shape _dragShape;
     
     // The select tool
-    private RMSelectTool _selectTool;
+    private SelectTool _selectTool;
     
     // Map of tool instances by shape class
     private Map <Class, Tool> _tools = new HashMap();
@@ -186,7 +186,8 @@ public void removeSelectedShape(RMShape aShape)
  */
 public RMShape getSuperSelectedShape()
 {
-    return getSuperSelectedShapeCount()==0? null : getSuperSelectedShape(getSuperSelectedShapeCount()-1);
+    int ssc = getSuperSelectedShapeCount();
+    return ssc!=0 ? getSuperSelectedShape(ssc-1) : null;
 }
 
 /**
@@ -204,9 +205,9 @@ public void setSuperSelectedShape(RMShape aShape)
     _selShapes.clear();
 
     // Remove current super-selected shapes that aren't an ancestor of given shape    
-    while(shape!=getSuperSelectedShape() && !shape.isAncestor(getSuperSelectedShape())) {
+    while (shape!=getSuperSelectedShape() && !shape.isAncestor(getSuperSelectedShape())) {
         RMShape ssShape = getSuperSelectedShape();
-        getTool(ssShape).willLoseSuperSelected(ssShape);
+        getToolForView(ssShape).willLoseSuperSelected(ssShape);
         ListUtils.removeLast(_superSelShapes);
     }
 
@@ -225,17 +226,17 @@ public void setSuperSelectedShape(RMShape aShape)
 private void addSuperSelectedShape(RMShape aShape)
 {
     // If parent isn't super selected, add parent first
-    if(aShape.getParent()!=null && !isSuperSelected(aShape.getParent()))
+    if (aShape.getParent()!=null && !isSuperSelected(aShape.getParent()))
         addSuperSelectedShape(aShape.getParent());
 
     // Add ancestor to super selected list
     _superSelShapes.add(aShape);
     
     // Notify tool
-    getTool(aShape).didBecomeSuperSelected(aShape);
+    getToolForView(aShape).didBecomeSuperSelected(aShape);
 
     // If ancestor is page but not document's selected page, make it the selected page
-    if(aShape instanceof RMPage && aShape!=getDoc().getSelPage())
+    if (aShape instanceof RMPage && aShape!=getDoc().getSelPage())
         getDoc().setSelPage((RMPage)aShape);
 }
 
@@ -244,7 +245,8 @@ private void addSuperSelectedShape(RMShape aShape)
  */
 public RMParentShape getSuperSelectedParentShape()
 {
-    RMShape ss = getSuperSelectedShape(); return ss instanceof RMParentShape? (RMParentShape)ss : null;
+    RMShape ss = getSuperSelectedShape();
+    return ss instanceof RMParentShape ? (RMParentShape)ss : null;
 }
 
 /**
@@ -340,7 +342,7 @@ protected Rect getRepaintBoundsForShape(RMShape aShape)
     
     // If shape is super-selected, correct for handles
     else if(isSuperSelected(aShape)) {
-        bnds = getTool(aShape).getBoundsSuperSelected(aShape); bnds.inset(-16, -16); }
+        bnds = getToolForView(aShape).getBoundsSuperSelected(aShape); bnds.inset(-16, -16); }
     
     // Return bounds
     return bnds;
@@ -353,7 +355,7 @@ public void flushEditingChanges()
 {
     // Get super-selected shape and its tool and tell tool to flushChanges
     RMShape shape = getSuperSelectedShape();
-    Tool tool = getTool(shape);
+    Tool tool = getToolForView(shape);
     tool.flushChanges(this, shape);
 }
 
@@ -437,7 +439,7 @@ public RMShape getChildShapeAtPoint(RMShape aShape, Point aPoint)
         Point point = child.parentToLocal(aPoint);
 
         // If child is super selected and point is in child super selected bounds, return child
-        if(isSuperSelected(child) && getTool(child).getBoundsSuperSelected(child).contains(point))
+        if(isSuperSelected(child) && getToolForView(child).getBoundsSuperSelected(child).contains(point))
             return child;
         
         // If child isn't super selected and contains point, return child
@@ -459,7 +461,7 @@ public RMParentShape firstSuperSelectedShapeThatAcceptsChildren()
     RMParentShape parent = shape instanceof RMParentShape? (RMParentShape)shape : shape.getParent();
 
     // Iterate up hierarchy until we find a shape that acceptsChildren
-    while(!getTool(parent).getAcceptsChildren(parent))
+    while(!getToolForView(parent).getAcceptsChildren(parent))
         parent = parent.getParent();
 
     // Make sure page is worst case
@@ -480,13 +482,13 @@ public RMShape firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
     RMParentShape parent = shape instanceof RMParentShape? (RMParentShape)shape : shape.getParent();
 
     // Iterate up shape hierarchy until we find a shape that is hit and accepts children
-    while(!getTool(parent).getAcceptsChildren(parent) ||
+    while(!getToolForView(parent).getAcceptsChildren(parent) ||
         !parent.contains(parent.parentToLocal(aPoint, null))) {
 
         // If shape childrenSuperSelImmd and shape hitByPt, see if any shape children qualify (otherwise use parent)
         if(parent.childrenSuperSelectImmediately() && parent.contains(parent.parentToLocal(aPoint, null))) {
             RMShape childShape = parent.getChildContaining(parent.parentToLocal(aPoint, null));
-            if(childShape!=null && getTool(childShape).getAcceptsChildren(childShape))
+            if(childShape!=null && getToolForView(childShape).getAcceptsChildren(childShape))
                 parent = (RMParentShape)childShape;
             else parent = parent.getParent();
         }
@@ -600,10 +602,10 @@ public void removePage(int anIndex)
 /**
  * Returns the SelectTool.
  */
-public RMSelectTool getSelectTool()
+public SelectTool getSelectTool()
 {
     if(_selectTool!=null) return _selectTool;
-    _selectTool = new RMSelectTool(); _selectTool.setEditor(this);
+    _selectTool = new SelectTool(); _selectTool.setEditor(this);
     return _selectTool;
 }
 
@@ -613,22 +615,22 @@ public RMSelectTool getSelectTool()
 public Tool getToolForShapes(List aList)
 {
     Class commonClass = ClassUtils.getCommonClass(aList); // Get class for first object
-    return getTool(commonClass); // Return tool for common class
+    return getToolForClass(commonClass); // Return tool for common class
 }
 
 /**
  * Returns the specific tool for a given shape.
  */
-public Tool getTool(RMShape aShape)
+public Tool getToolForView(RMShape aShape)
 {
     Class cls = aShape.getClass();
-    return getTool(cls);
+    return getToolForClass(cls);
 }
 
 /**
  * Returns the specific tool for a given shape.
  */
-public Tool getTool(Class aClass)
+public Tool getToolForClass(Class aClass)
 {
     // Get tool from tools map - if not there, find and set
     Tool tool = _tools.get(aClass);
@@ -647,7 +649,7 @@ protected Tool createTool(Class aClass)
     if (aClass==RMDocument.class) return new RMDocumentTool();
     if (aClass==RMImageShape.class) return new RMImageTool();
     if (aClass==RMLineShape.class) return new RMLineShapeTool();
-    if (aClass==RMLinkedText.class) return new RMTextTool();
+    if (aClass==RMLinkedText.class) return new TextTool();
     if (aClass==RMOvalShape.class) return new RMOvalShapeTool();
     if (aClass==RMPage.class) return new RMPageTool();
     if (aClass==RMParentShape.class) return new RMParentShapeTool();
@@ -656,7 +658,7 @@ protected Tool createTool(Class aClass)
     if (aClass==RMScene3D.class) return new RMScene3DTool();
     if (aClass==RMShape.class) return new Tool();
     if (aClass==RMSpringShape.class) return new RMSpringShapeTool();
-    if (aClass==RMTextShape.class) return new RMTextTool();
+    if (aClass==RMTextShape.class) return new TextTool();
     if (aClass==ViewerShape.class) return new Tool();
     System.out.println("RMTool.createTool: " + aClass.getName());
     return new Tool();
@@ -708,7 +710,7 @@ public void setCurrentToolToSelectTool()
  */
 public boolean isCurrentToolSelectToolAndSelecting()
 {
-    return isCurrentToolSelectTool() && getSelectTool().getDragMode()==RMSelectTool.DragMode.Select;
+    return isCurrentToolSelectTool() && getSelectTool().getDragMode()== SelectTool.DragMode.Select;
 }
 
 /** Resets the currently selected tool. */
@@ -801,7 +803,7 @@ protected void processEvent(ViewEvent anEvent)
             if(!getSize().equals(getPrefSize()))
                 relayout();
             if(!getVisRect().contains(getSelectedShapesBounds()) &&
-                getSelectTool().getDragMode()==RMSelectTool.DragMode.Move)
+                getSelectTool().getDragMode()== SelectTool.DragMode.Move)
                 scrollToVisible(getSelectedShapesBounds());
         }
         
@@ -820,7 +822,7 @@ public String getToolTip(ViewEvent anEvent)
     
     // Get deepest shape under point (just return if null), get tool and return tool's ToolTip for shape
     RMShape shape = getShapeAtPoint(anEvent.getX(), anEvent.getY(), true); if(shape==null) return null;
-    Tool tool = getTool(shape);
+    Tool tool = getToolForView(shape);
     return tool.getToolTip(shape, anEvent);
 }
 

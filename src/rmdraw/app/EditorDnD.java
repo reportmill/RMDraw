@@ -72,7 +72,7 @@ public class EditorDnD {
             overShape = _editor.getSelPage();
 
         // Go up chain until we find a shape that accepts drag
-        while(!_editor.getTool(overShape).acceptsDrag(overShape, anEvent))
+        while(!_editor.getToolForView(overShape).acceptsDrag(overShape, anEvent))
             overShape = overShape.getParent();
 
         // If new overShape, do drag exit/enter and reset border
@@ -80,10 +80,10 @@ public class EditorDnD {
 
             // Send drag exit
             if(_lastOverShape!=null)
-                _editor.getTool(_lastOverShape).dragExit(_lastOverShape, anEvent);
+                _editor.getToolForView(_lastOverShape).dragExit(_lastOverShape, anEvent);
 
             // Send drag enter
-            _editor.getTool(overShape).dragEnter(overShape, anEvent);
+            _editor.getToolForView(overShape).dragEnter(overShape, anEvent);
 
             // Get bounds of over shape in editor coords
             Rect bounds = overShape.getBoundsInside();
@@ -95,7 +95,7 @@ public class EditorDnD {
         }
 
         // If over shape didn't change, send drag over
-        else _editor.getTool(overShape).dragOver(overShape, anEvent);
+        else _editor.getToolForView(overShape).dragOver(overShape, anEvent);
     }
 
     /**
@@ -119,7 +119,7 @@ public class EditorDnD {
         _editor.getWindow().toFront();
 
         // Forward drop to last over shape
-        _editor.getTool(_lastOverShape).drop(_lastOverShape, anEvent);
+        _editor.getToolForView(_lastOverShape).drop(_lastOverShape, anEvent);
 
         // Formally complete drop
         anEvent.dropComplete();  //(true);
@@ -240,7 +240,7 @@ public class EditorDnD {
 
                 // Handle Create Image Shape
                 case 0:
-                    while(!editor.getTool(aShape).getAcceptsChildren(aShape))
+                    while(!editor.getToolForView(aShape).getAcceptsChildren(aShape))
                         aShape = aShape.getParent();
                     break;
 

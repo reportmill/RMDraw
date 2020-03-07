@@ -419,7 +419,7 @@ public class EditorStyler extends Styler {
     /**
      * Returns the specific tool for a given shape.
      */
-    private Tool getTool(RMShape aShape)  { return _editor.getTool(aShape); }
+    private Tool getTool(RMShape aShape)  { return _editor.getToolForView(aShape); }
 
     /**
      * Returns the currently selected shape or, if none, the super-selected shape.

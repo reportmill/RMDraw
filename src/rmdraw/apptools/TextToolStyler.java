@@ -358,7 +358,7 @@ public class TextToolStyler<T extends RMTextShape> extends ToolStyler<T> {
      */
     private TextEditor getTextEditor()
     {
-        RMTextTool tool = _tool instanceof RMTextTool ? (RMTextTool)_tool : null;
+        TextTool tool = _tool instanceof TextTool ? (TextTool)_tool : null;
         return tool!=null ? tool.getTextEditor() : null;
     }
 }

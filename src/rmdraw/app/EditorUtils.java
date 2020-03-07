@@ -95,7 +95,7 @@ public static void ungroupShapes(Editor anEditor)
     for(RMShape shape : anEditor.getSelectedShapes()) {
         
         // If shape cann't be ungrouped, skip
-        if(!anEditor.getTool(shape).isUngroupable(shape)) continue;
+        if(!anEditor.getToolForView(shape).isUngroupable(shape)) continue;
         RMParentShape groupShape = (RMParentShape)shape;
         RMParentShape parent = groupShape.getParent();
             

@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.apptools.*;
 import rmdraw.shape.*;
 import java.util.*;
 import java.util.List;
@@ -125,8 +124,8 @@ public static List <RMShape> getCandidateShapes(Editor anEditor)
 public static void createGuidelines(Editor anEditor)
 {
     // If not in select tool drag move or resize, just return
-    RMSelectTool.DragMode dragMode = anEditor.getSelectTool().getDragMode();
-    if(dragMode!=RMSelectTool.DragMode.Move && dragMode!=RMSelectTool.DragMode.Resize)
+    SelectTool.DragMode dragMode = anEditor.getSelectTool().getDragMode();
+    if(dragMode!= SelectTool.DragMode.Move && dragMode!= SelectTool.DragMode.Resize)
         return;
     
     // If no selected shapes, just return
@@ -279,14 +278,14 @@ public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint)
 /**
  * Returns the given point snapped to relevant proxity guides for a given drag mode.
  */
-public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint, RMSelectTool.DragMode aDragMode)
+public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint, SelectTool.DragMode aDragMode)
 {
     // If not enabled, just return point
     if(!_enabled)
         return aPoint;
 
     // If drag mode is not move or resize, just return point
-    if(aDragMode!=RMSelectTool.DragMode.Move && aDragMode!=RMSelectTool.DragMode.Resize)
+    if(aDragMode!= SelectTool.DragMode.Move && aDragMode!= SelectTool.DragMode.Resize)
         return aPoint;
 
     // Get parent
@@ -305,7 +304,7 @@ public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint,
     Rect bounds;
 
     // If mode is move, set bounds to snap the entire bounding box
-    if(aDragMode==RMSelectTool.DragMode.Move)
+    if(aDragMode== SelectTool.DragMode.Move)
         bounds = RMShapeUtils.getBoundsOfChildren(parent, selectedShapes);
     
     // If mode is resize, set bounds to just snap a handle

@@ -376,7 +376,7 @@ public class ToolStyler <T extends RMShape> {
 
         // Set for children
         for(int i=0, iMax=_shape.getChildCount(); i<iMax; i++) { RMShape child = _shape.getChild(i);
-            Tool tool = _editor.getTool(child);
+            Tool tool = _editor.getToolForView(child);
             tool.getStyler(child).setFontKeyDeep(aKey, aVal);
         }
     }
