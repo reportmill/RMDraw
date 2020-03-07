@@ -5,6 +5,7 @@ package rmdraw.app;
 import rmdraw.shape.*;
 import snap.geom.Point;
 import snap.geom.Rect;
+import snap.geom.Shape;
 import snap.gfx.*;
 import snap.view.*;
 import snap.viewx.DialogBox;
@@ -16,10 +17,13 @@ import java.util.List;
 public class EditorDragDropper implements DragDropper {
     
     // The editor that this class is working for
-    private Editor _editor;
-    
+    private Editor  _editor;
+
+    // A shape to be drawn if set to drag-over shape during drag and drop
+    private Shape  _dragShape;
+
     // The last shape that a drag and drop action was over
-    private RMShape _lastOverShape;
+    private RMShape  _lastOverShape;
 
     /**
      * Creates a new editor drop target listener.
@@ -30,6 +34,11 @@ public class EditorDragDropper implements DragDropper {
      * Returns the editor.
      */
     public Editor getEditor()  { return _editor; }
+
+    /**
+     * The shape of view that drag/drop is currently over.
+     */
+    public Shape getDragShape()  { return _dragShape; }
 
     /**
      * Implemented by shapes that can handle drag & drop.
@@ -98,7 +107,7 @@ public class EditorDragDropper implements DragDropper {
 
             // Get bounds of over shape in editor coords
             Rect bounds = overShape.getBoundsInside();
-            _editor._dragShape = _editor.convertFromShape(bounds, overShape);
+            _dragShape = _editor.convertFromShape(bounds, overShape);
             _editor.repaint();
 
             // Update last drop shape
@@ -115,8 +124,10 @@ public class EditorDragDropper implements DragDropper {
      */
     public void dragExit(ViewEvent anEvent)
     {
-        _editor._dragShape = null; _editor.repaint();        // Clear DragShape
-        EditorProxGuide.clearGuidelines(_editor);          // Reset proximity guide
+        // Repaint editor and clear guidelines and DragShape
+        _editor.repaint();
+        EditorProxGuide.clearGuidelines(_editor);
+        _dragShape = null;
     }
 
     /**
@@ -125,7 +136,7 @@ public class EditorDragDropper implements DragDropper {
     public void dragDrop(ViewEvent anEvent)
     {
         // Formally accept drop
-        anEvent.acceptDrag();//DnDConstants.ACTION_COPY);
+        anEvent.acceptDrag(); //DnDConstants.ACTION_COPY);
 
         // Order window front (for any getMainEditor calls, but really should be true anyway)
         _editor.getWindow().toFront();
@@ -138,7 +149,8 @@ public class EditorDragDropper implements DragDropper {
         anEvent.dropComplete();  //(true);
 
         // Clear DragShape (which may have been set during dragOver)
-        _editor._dragShape = null; _editor.repaint();
+        _editor.repaint();
+        _dragShape = null;
     }
 
     /**

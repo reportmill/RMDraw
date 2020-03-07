@@ -25,22 +25,22 @@ import snap.web.WebURL;
  *   myFrame.setContentPane(viewer);
  * </pre></blockquote>
  */
-public class Viewer extends ParentView {
+public class Viewer extends ParentView implements SceneGraph.Client {
 
     // The shape viewer uses to manage real root of shapes
-    ViewerShape _vshape = new ViewerShape(this);
+    private SceneGraph _sceneGraph = new SceneGraph(this);
     
     // The Zoom mode
-    ZoomMode                 _zoomMode = ZoomMode.ZoomAsNeeded;
+    private ZoomMode  _zoomMode = ZoomMode.ZoomAsNeeded;
     
     // Zoom factor
-    double                   _zoomFactor = 1;
+    private double  _zoomFactor = 1;
     
     // The previous zoom factor (for toggle zoom)
-    double                   _lastZoomFactor = 1;
+    private double  _lastZoomFactor = 1;
 
     // The helper class that handles events for viewer
-    ViewerInteractor _events = createInteractor();
+    private ViewerInteractor _interactor = createInteractor();
 
     // Zoom modes
     public enum ZoomMode { ZoomToFit, ZoomAsNeeded, ZoomToFactor }
@@ -61,14 +61,14 @@ public Viewer()
 }
 
 /**
- * Returns the viewer shape.
+ * Returns the SceneGraph.
  */
-public ViewerShape getViewerShape()  { return _vshape; }
+public SceneGraph getSceneGraph()  { return _sceneGraph; }
 
 /**
  * Returns the document associated with this viewer.
  */
-public RMDocument getDoc()  { return _vshape.getDoc(); }
+public RMDocument getDoc()  { return _sceneGraph.getDoc(); }
 
 /**
  * Sets the document associated with this viewer.
@@ -79,7 +79,7 @@ public void setDoc(RMDocument aDoc)
     RMDocument doc = getDoc(); if(aDoc==doc) return;
     
     // Set new document and fire property change
-    _vshape.setDoc(aDoc);
+    _sceneGraph.setDoc(aDoc);
     firePropChange(Content_Prop, doc, aDoc);
     
     // Set ZoomToFitFactor and relayout/repaint (for possible size change)
@@ -153,15 +153,6 @@ public void pageBack()  { setSelPageIndex(getSelPageIndex()-1); }
  * Returns the bounds of the viewer document.
  */
 public Rect getDocBounds()  { return convertFromShape(getDoc().getBoundsInside(), null).getBounds(); }
-
-/**
- * Returns the bounds of the viewer document's selected page.
- */
-public Rect getPageBounds()
-{
-    RMShape page = getSelPage();
-    return convertFromShape(page.getBoundsInside(), page).getBounds();
-}
 
 /**
  * Returns the first shape hit by the given point.
@@ -265,15 +256,17 @@ public boolean isZoomToFactor()  { return getZoomMode()==ZoomMode.ZoomToFactor; 
 public double getZoomFactor(ZoomMode aMode)
 {
     // If ZoomToFactor, just return ZoomFactor
-    if(aMode==ZoomMode.ZoomToFactor) return getZoomFactor();
+    if (aMode==ZoomMode.ZoomToFactor) return getZoomFactor();
     
     // Get ideal size and current size (if size is zero, return 1)
-    double pw = _vshape.getPrefWidth(), ph = _vshape.getPrefHeight();
-    double width = getWidth(), height = getHeight(); if(width==0 || height==0) return 1;
+    double pw = _sceneGraph.getPrefWidth();
+    double ph = _sceneGraph.getPrefHeight();
+    double width = getWidth();
+    double height = getHeight(); if (width==0 || height==0) return 1;
     
     // If ZoomAsNeeded and IdealSize is less than size, return
-    if(aMode==ZoomMode.ZoomAsNeeded && pw<=width && ph<=height) return 1;
-    if(aMode==ZoomMode.ZoomToFit && pw==width && ph==height) return 1;
+    if (aMode==ZoomMode.ZoomAsNeeded && pw<=width && ph<=height) return 1;
+    if (aMode==ZoomMode.ZoomToFit && pw==width && ph==height) return 1;
     
     // Otherwise get ratio of parent size to ideal size (with some gutter added in) and return smaller axis
     double zw = width/(pw + 8f), zh = height/(ph + 8f);
@@ -353,7 +346,7 @@ protected RMShapePaintProps createShapePaintProps()  { return null; }
 public void paintFront(Painter aPntr)
 {
     RMShapePaintProps props = createShapePaintProps(); if(props!=null) aPntr.setProps(props);
-    RMShapeUtils.paintShape(aPntr, _vshape, null, 1); //getZoomFactor();
+    RMShapeUtils.paintShape(aPntr, _sceneGraph, null, 1); //getZoomFactor();
     if(props!=null) aPntr.setProps(null);
     getInteractor().paint(aPntr); // Have event helper paint above
 }
@@ -361,7 +354,7 @@ public void paintFront(Painter aPntr)
 /**
  * Returns the ViewerInteractor for viewer which handles mouse and keyboard input.
  */
-public ViewerInteractor getInteractor()  { return _events; }
+public ViewerInteractor getInteractor()  { return _interactor; }
 
 /**
  * Creates a default ViewerInteractor.
@@ -382,8 +375,8 @@ protected void processEvent(ViewEvent anEvent)
  */
 protected double getPrefWidthImpl(double aH)
 {
-    double pw = _vshape.getPrefWidth();
-    if(isZoomToFactor()) pw *= getZoomFactor();
+    double pw = _sceneGraph.getPrefWidth();
+    if (isZoomToFactor()) pw *= getZoomFactor();
     return pw;
 }
 
@@ -392,25 +385,25 @@ protected double getPrefWidthImpl(double aH)
  */
 protected double getPrefHeightImpl(double aW)
 {
-    double ph = _vshape.getPrefHeight();
-    if(isZoomToFactor()) ph *= getZoomFactor();
+    double ph = _sceneGraph.getPrefHeight();
+    if (isZoomToFactor()) ph *= getZoomFactor();
     return ph;
 }
 
 /**
- * Override to reposition ViewerShape.
+ * Override to reposition SceneGraph.
  */
 protected void layoutImpl()
 {
     setZoomToFitFactor();
-    _vshape.setBounds(0,0,getWidth(),getHeight());
-    _vshape.layoutDeep();
+    _sceneGraph.setBounds(0,0, getWidth(), getHeight());
+    _sceneGraph.layoutDeep();
 }
 
 /**
  * Returns the undoer associated with the viewer's document.
  */
-public Undoer getUndoer()  { return _vshape.getUndoer(); }
+public Undoer getUndoer()  { return _sceneGraph.getUndoer(); }
 
 /**
  * Sets the title of the next registered undo in the viewer's documents's undoer (convenience).
@@ -427,9 +420,22 @@ public void undoerSetUndoTitle(String aTitle)
 public boolean undoerHasUndos()  { return getUndoer()!=null && getUndoer().hasUndos(); }
 
 /**
- * Called when a shape needs repaint.
+ * SceneGraph.Client method: Called when SceneGraph Doc has prop change.
  */
-protected void repaintShape(RMShape aShape)
+public void sceneDocDidPropChange(PropChange anEvent)
+{
+    // Handle SelectedPageIndex, PageSize, PageLayout
+    String pname = anEvent.getPropertyName();
+    if (pname.equals(RMDocument.SelPageIndex_Prop) || pname.equals("PageSize") || pname.equals("PageLayout")) {
+        relayout(); setZoomToFitFactor(); repaint();
+        firePropChange("ContentChange" + pname, anEvent.getOldValue(), anEvent.getNewValue());
+    }
+}
+
+/**
+ * SceneGraph.Client method: Called when SceneGraph view needs repaint.
+ */
+public void sceneNeedsRepaint(RMShape aShape)
 {
     // Get shape bounds in viewer coords and repaint
     Rect bnds0 = getRepaintBoundsForShape(aShape);
@@ -450,22 +456,17 @@ protected Rect getRepaintBoundsForShape(RMShape aShape)
 }
 
 /**
- * Called when document has PropChange.
+ * SceneGraph.Client method: Called when SceneGraph needs relayout.
  */
-protected void docDidPropChange(PropChange anEvent)
+public void sceneNeedsRelayout()
 {
-    // Handle SelectedPageIndex, PageSize, PageLayout
-    String pname = anEvent.getPropertyName();
-    if(pname.equals(RMDocument.SelPageIndex_Prop) || pname.equals("PageSize") || pname.equals("PageLayout")) {
-        relayout(); setZoomToFitFactor(); repaint();
-        firePropChange("ContentChange" + pname, anEvent.getOldValue(), anEvent.getNewValue());
-    }
+    relayout();
 }
 
 /**
- * Returns the document shape for given name.
+ * Returns the ZoomFactor for SceneGraph.
  */
-public RMShape getShape(String aName)  { return _vshape.getChildWithName(aName); }
+public double getSceneZoomFactor()  { return getZoomFactor(); }
 
 /**
  * Creates a shape mouse event.

@@ -140,11 +140,6 @@ public void deactivateTool()  { }
 public void reactivateTool()  { }
 
 /**
- * Called when a tool is deselected to give an opportunity to finalize changes in progress.
- */
-public void flushChanges(Editor anEditor, RMShape aShape)  { }
-
-/**
  * Returns whether a given shape is selected in the editor.
  */
 public boolean isSelected(RMShape aShape)  { return getEditor().isSelected(aShape); }

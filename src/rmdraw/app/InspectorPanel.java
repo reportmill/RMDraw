@@ -99,7 +99,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         // Get editor (and just return if null) and tool for selected shapes
         Editor editor = getEditor(); if (editor==null) return;
-        Tool tool = editor.getToolForShapes(editor.getSelectedOrSuperSelectedShapes());
+        Tool tool = editor.getToolForViews(editor.getSelectedOrSuperSelectedShapes());
 
         // If ShapeSpecificButton is selected, instal inspector for current selection
         if (getViewBoolValue("ShapeSpecificButton"))

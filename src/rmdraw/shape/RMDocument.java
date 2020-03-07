@@ -25,6 +25,9 @@ import snap.web.WebURL;
  */
 public class RMDocument extends RMParentShape {
 
+    // The SceneGraph that owns this doc
+    private SceneGraph  _sceneGraph;
+
     // The SourceURL
     WebURL            _sourceURL;
     
@@ -101,9 +104,14 @@ public RMDocument(Object aSource)  { new RMArchiver().getDoc(aSource, this); }
 public static RMDocument getDoc(Object aSource)  { return new RMArchiver().getDoc(aSource); }
 
 /**
- * Returns whether Source URL is set.
+ * Returns the SceneGraph.
  */
-public boolean isSourceURLSet()  { return _sourceURL!=null; }
+public SceneGraph getSceneGraph()  { return _sceneGraph; }
+
+/**
+ * Sets the SceneGraph.
+ */
+protected void setSceneGraph(SceneGraph aSG)  { _sceneGraph = aSG; }
 
 /**
  * Returns the Source URL.
@@ -219,14 +227,6 @@ public void setSelPageIndex(int anIndex)
     firePropChange(SelPageIndex_Prop, _selIndex, _selIndex = index);
     relayout(); // Rebuild
 }
-
-/**
- * Obsolete methods.
- */
-public int getSelectedIndex()  { return getSelPageIndex(); }
-public void setSelectedIndex(int anIndex)  { setSelPageIndex(anIndex); }
-public RMPage getSelectedPage()  { return getSelPage(); }
-public void setSelectedPage(RMPage aPage)  { setSelPage(aPage); }
 
 /**
  * Returns the page layout for the document.

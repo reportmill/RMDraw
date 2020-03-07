@@ -21,7 +21,7 @@ public class Editor extends Viewer implements DeepChangeListener {
     private boolean _editing = true;
     
     // List of currently selected shapes
-    List<RMShape> _selShapes = new ArrayList();
+    private List<RMShape> _selShapes = new ArrayList();
     
     // List of super selected shapes (all ancestors of selected shapes)
     private List<RMShape> _superSelShapes = new ArrayList();
@@ -35,9 +35,6 @@ public class Editor extends Viewer implements DeepChangeListener {
     // A helper class to handle drag and drop
     private EditorDragDropper _dragDropper;
     
-    // A shape to be drawn if set to drag-over shape during drag and drop
-    Shape _dragShape;
-    
     // The select tool
     private SelectTool _selectTool;
     
@@ -46,6 +43,9 @@ public class Editor extends Viewer implements DeepChangeListener {
     
     // The current editor tool
     private Tool _currentTool = getSelectTool();
+
+    // The EditorPane - I wish we didn't need this
+    private EditorPane _ep;
 
     // Constants for PropertyChanges
     public static final String CurrentTool_Prop = "CurrentTool";
@@ -58,7 +58,7 @@ public class Editor extends Viewer implements DeepChangeListener {
 public Editor()
 {
     // SuperSelect ViewerShape
-    setSuperSelectedShape(getViewerShape());
+    setSuperSelectedShape(getSceneGraph());
     
     // Enable Drag events
     enableEvents(DragEvents);
@@ -71,8 +71,7 @@ public Editor()
 /**
  * Returns the editor pane for this editor, if there is one.
  */
-public EditorPane getEditorPane()  { return _ep!=null? _ep : (_ep=getOwner(EditorPane.class)); }
-private EditorPane _ep;
+public EditorPane getEditorPane()  { return _ep!=null ? _ep : (_ep=getOwner(EditorPane.class)); }
 
 /**
  * Returns whether viewer is really doing editing.
@@ -92,27 +91,42 @@ protected RMShapePaintProps createShapePaintProps()  { return new EditorShapePai
 /**
  * Returns the first selected shape.
  */
-public RMShape getSelectedShape()  { return getSelectedShapeCount()==0? null : getSelectedShape(0); }
+public RMShape getSelectedShape()
+{
+    return getSelectedShapeCount()==0 ? null : getSelectedShape(0);
+}
 
 /**
  * Selects the given shape.
  */
-public void setSelectedShape(RMShape aShape)  { setSelectedShapes(aShape==null? null : Arrays.asList(aShape)); }
+public void setSelectedShape(RMShape aShape)
+{
+    setSelectedShapes(aShape==null? null : Arrays.asList(aShape));
+}
 
 /**
  * Returns the number of selected shapes.
  */
-public int getSelectedShapeCount()  { return _selShapes.size(); }
+public int getSelectedShapeCount()
+{
+    return _selShapes.size();
+}
 
 /**
  * Returns the selected shape at the given index.
  */
-public RMShape getSelectedShape(int anIndex)  { return ListUtils.get(_selShapes, anIndex); }
+public RMShape getSelectedShape(int anIndex)
+{
+    return ListUtils.get(_selShapes, anIndex);
+}
 
 /**
  * Returns the selected shapes list.
  */
-public List <RMShape> getSelectedShapes()  { return _selShapes; }
+public List <RMShape> getSelectedShapes()
+{
+    return _selShapes;
+}
 
 /**
  * Selects the shapes in the given list.
@@ -120,7 +134,7 @@ public List <RMShape> getSelectedShapes()  { return _selShapes; }
 public void setSelectedShapes(List <RMShape> theShapes)
 {
     // If shapes already set, just return
-    if(ListUtils.equalsId(theShapes, _selShapes)) return;
+    if (ListUtils.equalsId(theShapes, _selShapes)) return;
     
     // Request focus in case current focus view has changes
     requestFocus();
@@ -133,14 +147,17 @@ public void setSelectedShapes(List <RMShape> theShapes)
     RMShape shape = theShapes.get(0);
     
     // If shapes contains superSelectedShapes, superSelect last and return (hidden trick for undoSelectedObjects)
-    if(theShapes.size()>1 && shape==getDoc()) {
-        setSuperSelectedShape(theShapes.get(theShapes.size()-1)); return; }
+    if (theShapes.size()>1 && shape==getDoc()) {
+        RMShape last = theShapes.get(theShapes.size()-1);
+        setSuperSelectedShape(last);
+        return;
+    }
     
     // Get the shape's parent
     RMShape shapesParent = shape.getParent();
     
     // If shapes parent is the document, super select shape instead
-    if(shapesParent==getDoc()) {
+    if (shapesParent==getDoc()) {
         setSuperSelectedShape(shape); return; }
     
     // Super select shapes parent
@@ -189,7 +206,7 @@ public void setSuperSelectedShape(RMShape aShape)
     requestFocus();
     
     // If given shape is null, reset to selected page
-    RMShape shape = aShape!=null? aShape : getSelPage();
+    RMShape shape = aShape!=null ? aShape : getSelPage();
     
     // Unselect selected shapes
     _selShapes.clear();
@@ -202,7 +219,7 @@ public void setSuperSelectedShape(RMShape aShape)
     }
 
     // Add super selected shape (recursively adds parents if missing)
-    if(shape!=getSuperSelectedShape())
+    if (shape!=getSuperSelectedShape())
         addSuperSelectedShape(shape);
     
     // Fire PropertyChange and repaint
@@ -300,17 +317,17 @@ public void popSelection()
 {
     // If there is a selected shape, just super-select parent (clear selected shapes)
     RMShape selShape = getSelectedShape();
-    if(selShape!=null && selShape.getParent()!=null) {
+    if (selShape!=null && selShape.getParent()!=null) {
         setSuperSelectedShape(selShape.getParent());
         return;
     }
 
     // Otherwise select super-selected shape (or its parent if it has childrenSuperSelectImmediately)
-    if(getSuperSelectedShapeCount()>2) {
+    if (getSuperSelectedShapeCount()>2) {
         RMShape superSelShape = getSuperSelectedShape();
-        if(superSelShape instanceof RMTextShape)
+        if (superSelShape instanceof RMTextShape)
             setSelectedShape(superSelShape);
-        else if(superSelShape.getParent().childrenSuperSelectImmediately())
+        else if (superSelShape.getParent().childrenSuperSelectImmediately())
             setSuperSelectedShape(superSelShape.getParent());
         else setSelectedShape(superSelShape);
     }
@@ -328,25 +345,17 @@ protected Rect getRepaintBoundsForShape(RMShape aShape)
     Rect bnds = super.getRepaintBoundsForShape(aShape);
     
     // If shape is selected, correct for handles
-    if(isSelected(aShape)) bnds.inset(-4, -4);
+    if (isSelected(aShape))
+        bnds.inset(-4, -4);
     
     // If shape is super-selected, correct for handles
-    else if(isSuperSelected(aShape)) {
-        bnds = getToolForView(aShape).getBoundsSuperSelected(aShape); bnds.inset(-16, -16); }
+    else if (isSuperSelected(aShape)) {
+        bnds = getToolForView(aShape).getBoundsSuperSelected(aShape);
+        bnds.inset(-16, -16);
+    }
     
     // Return bounds
     return bnds;
-}
-
-/**
- * This method finalizes any (potentially cached) changes in progress in the editor (like from text editing).
- */
-public void flushEditingChanges()
-{
-    // Get super-selected shape and its tool and tell tool to flushChanges
-    RMShape shape = getSuperSelectedShape();
-    Tool tool = getToolForView(shape);
-    tool.flushChanges(this, shape);
 }
 
 /**
@@ -508,7 +517,7 @@ public EditorStyler getStyler()  { return _styler; }
  */
 public CopyPaster getCopyPaster()
 {
-    Tool tool = getToolForShapes(getSelectedShapes());
+    Tool tool = getToolForViews(getSelectedShapes());
     return tool.getCopyPaster();
 }
 
@@ -614,21 +623,21 @@ public SelectTool getSelectTool()
 }
 
 /**
- * Returns the specific tool for a list of shapes (if they have the same tool).
- */
-public Tool getToolForShapes(List aList)
-{
-    Class commonClass = ClassUtils.getCommonClass(aList); // Get class for first object
-    return getToolForClass(commonClass); // Return tool for common class
-}
-
-/**
- * Returns the specific tool for a given shape.
+ * Returns the specific tool for given view.
  */
 public Tool getToolForView(RMShape aShape)
 {
     Class cls = aShape.getClass();
     return getToolForClass(cls);
+}
+
+/**
+ * Returns the specific tool for a list of views (if they are of common class).
+ */
+public Tool getToolForViews(List<RMShape> aList)
+{
+    Class commonClass = ClassUtils.getCommonClass(aList);
+    return getToolForClass(commonClass);
 }
 
 /**
@@ -638,7 +647,7 @@ public Tool getToolForClass(Class aClass)
 {
     // Get tool from tools map - if not there, find and set
     Tool tool = _tools.get(aClass);
-    if(tool==null) {
+    if (tool==null) {
         _tools.put(aClass, tool = createTool(aClass));
         tool.setEditor(this);
     }
@@ -663,7 +672,7 @@ protected Tool createTool(Class aClass)
     if (aClass==RMShape.class) return new Tool();
     if (aClass==RMSpringShape.class) return new RMSpringShapeTool();
     if (aClass==RMTextShape.class) return new TextTool();
-    if (aClass==ViewerShape.class) return new Tool();
+    if (aClass== SceneGraph.class) return new Tool();
     System.out.println("RMTool.createTool: " + aClass.getName());
     return new Tool();
 }
@@ -737,7 +746,7 @@ public Rect getSelectedShapesBounds()
     // Get selected/super-selected shape(s) and parent (just return if parent is null or document)
     List <? extends RMShape> shapes = getSelectedOrSuperSelectedShapes();
     RMShape parent = shapes.get(0).getParent();
-    if(parent==null || parent instanceof RMDocument)
+    if (parent==null || parent instanceof RMDocument)
         return getDocBounds();
     
     // Get select shapes rect in viewer coords and return
@@ -773,8 +782,12 @@ public void paintFront(Painter aPntr)
     EditorProxGuide.paintProximityGuides(this, aPntr);
     
     // Paint DragShape, if set
-    if(_dragShape!=null) {
-        aPntr.setColor(new Color(0,.6,1,.5)); aPntr.setStrokeWidth(3); aPntr.draw(_dragShape); }
+    Shape dragShape = getDragDropper().getDragShape();
+    if(dragShape!=null) {
+        aPntr.setColor(new Color(0,.6,1,.5));
+        aPntr.setStrokeWidth(3);
+        aPntr.draw(dragShape);
+    }
 }
 
 /**

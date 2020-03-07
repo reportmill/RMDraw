@@ -934,9 +934,9 @@ public RMShape getChild(int anIndex)  { return null; }
 public List <RMShape> getChildren()  { return Collections.emptyList(); }
 
 /**
- * Returns the top level shape (usually an RMDocument).
+ * Returns the SceneGraph that owns the whole shape tree.
  */
-public RMShape getRootShape()  { return _parent!=null? _parent.getRootShape() : this; }
+public SceneGraph getSceneGraph()  { return _parent!=null? _parent.getSceneGraph() : null; }
 
 /**
  * Returns the RMDocument ancestor of this shape.
@@ -1515,8 +1515,8 @@ public void relayoutParent()
  */
 public void repaint()
 {
-    RMShape root = getRootShape(); if(root==null) return;
-    root.repaint(this);
+    SceneGraph sceneGraph = getSceneGraph(); if (sceneGraph==null) return;
+    sceneGraph.repaint(this);
 }
 
 /** Called to register view for repaint. */

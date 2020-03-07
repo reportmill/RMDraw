@@ -58,7 +58,7 @@ public class SelectTool extends Tool {
         for(RMShape shp : editor.getSuperSelectedShapes()) shp.repaint();
 
         // See if tool wants to handle this one
-        Tool toolShared = editor.getToolForShapes(editor.getSelectedOrSuperSelectedShapes());
+        Tool toolShared = editor.getToolForViews(editor.getSelectedOrSuperSelectedShapes());
         if(toolShared!=null && toolShared.mousePressedSelection(anEvent)) {
             _dragMode = DragMode.None; return; }
 
