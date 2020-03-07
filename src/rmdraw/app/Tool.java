@@ -88,7 +88,7 @@ public EditorPane getEditorPane()
 /**
  * Returns the editor event handler.
  */
-public EditorEvents getEditorEvents()  { return getEditor().getEvents(); }
+public EditorInteractor getEditorEvents()  { return getEditor().getInteractor(); }
 
 /**
  * Returns a CopyPaster for editor to use.
@@ -98,7 +98,7 @@ protected CopyPaster getCopyPaster()
 {
     return getEditor().getCopyPasterDefault();
 }
-    
+
 /**
  * Returns the current selected shape for the current editor.
  */
@@ -627,46 +627,32 @@ public RMShapeHandle getShapeHandleAtPoint(Point aPoint)
 }
 
 /**
- * Implemented by shapes that can handle drag & drop.
+ * Asks tool whether given shape accepts given drag event.
  */
-public boolean acceptsDrag(T aShape, ViewEvent anEvent)
-{
-    // Bogus, but currently the page accepts everything
-    if(aShape.isRoot()) return true;
-    
-    // Return true for Color drag or File drag
-    if(anEvent.getClipboard().hasColor()) return true;
-    
-    // Handle file drag - really just want to check for images here, but can't ask for transferable contents yet
-    if(anEvent.getClipboard().hasFiles())
-        return true;
-    
-    // Return true in any case if accepts children
-    return getTool(aShape).getAcceptsChildren(aShape);
-}
+public boolean acceptsDrag(T aShape, ViewEvent anEvent)  { return false; }
 
 /**
- * Notifies tool that a something was dragged into of one of it's shapes with drag and drop.
+ * Notifies tool that a something was dragged into of one of its shapes with drag and drop.
  */
 public void dragEnter(RMShape aShape, ViewEvent anEvent)  { }
 
 /**
- * Notifies tool that a something was dragged out of one of it's shapes with drag and drop.
+ * Notifies tool that a something was dragged out of one of its shapes with drag and drop.
  */
 public void dragExit(RMShape aShape, ViewEvent anEvent)  { }
 
 /**
- * Notifies tool that something was dragged over one of it's shapes with drag and drop.
+ * Notifies tool that something was dragged over one of its shapes with drag and drop.
  */
 public void dragOver(RMShape aShape, ViewEvent anEvent)  { }
 
 /**
  * Notifies tool that something was dropped on one of it's shapes with drag and drop.
  */
-public void drop(T aShape, ViewEvent anEvent)
+public void dragDrop(T aShape, ViewEvent anEvent)
 {
     Editor editor = getEditor();
-    editor.getDragHelper().dropForView(aShape, anEvent);
+    editor.getDragDropper().dropForView(aShape, anEvent);
 }
 
 /**

@@ -33,7 +33,7 @@ public class Editor extends Viewer implements DeepChangeListener {
     private EditorCopyPaster _copyPaster;
 
     // A helper class to handle drag and drop
-    private EditorDnD _dragHelper = createDragHelper();
+    private EditorDragDropper _dragDropper;
     
     // A shape to be drawn if set to drag-over shape during drag and drop
     Shape _dragShape;
@@ -88,16 +88,6 @@ public void setEditing(boolean aFlag)  { _editing = aFlag; }
  * Creates the Painter.Props object to provide shape selection information.
  */
 protected RMShapePaintProps createShapePaintProps()  { return new EditorShapePainterProps(); }
-
-/**
- * Returns the drag helper.
- */
-public EditorDnD getDragHelper()  { return _dragHelper; }
-
-/**
- * Creates the shapes helper.
- */
-protected EditorDnD createDragHelper()  { return new EditorDnD(this); }
 
 /**
  * Returns the first selected shape.
@@ -557,6 +547,20 @@ public void selectAll()  { getCopyPaster().selectAll(); }
 public void delete()  { getCopyPaster().delete(); }
 
 /**
+ * Returns the DragDropper implementation that handles response to drag operations.
+ */
+public EditorDragDropper getDragDropper()
+{
+    if (_dragDropper!=null) return _dragDropper;
+    return _dragDropper = createDragDropper();
+}
+
+/**
+ * Creates the shapes helper.
+ */
+protected EditorDragDropper createDragDropper()  { return new EditorDragDropper(this); }
+
+/**
  * Adds a page to the document after current page.
  */
 public void addPage()  { addPage(null, getSelPageIndex()+1); }
@@ -774,14 +778,14 @@ public void paintFront(Painter aPntr)
 }
 
 /**
- * Override to return as EditorEvents.
+ * Override to return as EditorInteractor.
  */
-public EditorEvents getEvents()  { return (EditorEvents)super.getEvents(); }
+public EditorInteractor getInteractor()  { return (EditorInteractor)super.getInteractor(); }
 
 /**
- * Override to return EditorEvents.
+ * Override to return EditorInteractor.
  */
-public ViewerEvents createEvents()  { return new EditorEvents(this); }
+public ViewerInteractor createInteractor()  { return new EditorInteractor(this); }
 
 /**
  * Override to revalidate when ideal size changes.
@@ -793,7 +797,7 @@ protected void processEvent(ViewEvent anEvent)
     
     // Handle DragEvent
     if(anEvent.isDragEvent())
-        _dragHelper.processEvent(anEvent);
+        DragDropper.dispatchDragEvent(getDragDropper(), anEvent);
         
     // See if zoom needs to be reset for any input events
     else if(anEvent.isMouseDrag() || anEvent.isMouseRelease() || anEvent.isKeyRelease()) {

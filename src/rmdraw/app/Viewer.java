@@ -40,7 +40,7 @@ public class Viewer extends ParentView {
     double                   _lastZoomFactor = 1;
 
     // The helper class that handles events for viewer
-    ViewerEvents _events = createEvents();
+    ViewerInteractor _events = createInteractor();
 
     // Zoom modes
     public enum ZoomMode { ZoomToFit, ZoomAsNeeded, ZoomToFactor }
@@ -355,18 +355,18 @@ public void paintFront(Painter aPntr)
     RMShapePaintProps props = createShapePaintProps(); if(props!=null) aPntr.setProps(props);
     RMShapeUtils.paintShape(aPntr, _vshape, null, 1); //getZoomFactor();
     if(props!=null) aPntr.setProps(null);
-    getEvents().paint(aPntr); // Have event helper paint above
+    getInteractor().paint(aPntr); // Have event helper paint above
 }
 
 /**
- * Returns the event helper for the viewer (handles mouse and keyboard input).
+ * Returns the ViewerInteractor for viewer which handles mouse and keyboard input.
  */
-public ViewerEvents getEvents()  { return _events; }
+public ViewerInteractor getInteractor()  { return _events; }
 
 /**
- * Creates a default event helper.
+ * Creates a default ViewerInteractor.
  */
-protected ViewerEvents createEvents()  { return new ViewerEvents(this); }
+protected ViewerInteractor createInteractor()  { return new ViewerInteractor(this); }
 
 /**
  * Handle mouse events.
@@ -374,7 +374,7 @@ protected ViewerEvents createEvents()  { return new ViewerEvents(this); }
 protected void processEvent(ViewEvent anEvent)
 {
     super.processEvent(anEvent); // Do normal version
-    getEvents().processEvent(anEvent); // Forward to event helper
+    getInteractor().processEvent(anEvent); // Forward to event helper
 }
 
 /**

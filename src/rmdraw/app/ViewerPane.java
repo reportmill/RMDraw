@@ -108,7 +108,7 @@ public void print()  { getViewer().print(); }
 /**
  * Copies the current viewer document selection.
  */
-public void copy()  { getViewer().getEvents().copy(); }
+public void copy()  { getViewer().getInteractor().copy(); }
 
 /**
  * Returns whether editor pane shows rulers.

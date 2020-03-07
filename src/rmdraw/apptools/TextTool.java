@@ -826,7 +826,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     /**
      * Override normal implementation to handle KeysPanel drop.
      */
-    public void drop(T aShape, ViewEvent anEvent)
+    public void dragDrop(T aShape, ViewEvent anEvent)
     {
         // If a keys panel drop, add key to text
         Clipboard cb = anEvent.getClipboard();
@@ -839,7 +839,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         }
 
         // Otherwise, do normal drop
-        else super.drop(aShape, anEvent);
+        else super.dragDrop(aShape, anEvent);
     }
 
     /**

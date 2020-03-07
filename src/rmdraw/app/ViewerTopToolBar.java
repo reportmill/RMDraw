@@ -51,15 +51,15 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle MoveButton
     if(anEvent.equals("MoveButton"))
-        getViewer().getEvents().setMode(ViewerEvents.DEFAULT);
+        getViewer().getInteractor().setMode(ViewerInteractor.DEFAULT);
     
     // Handle TextButton
     if(anEvent.equals("TextButton"))
-        getViewer().getEvents().setMode(ViewerEvents.SELECT_TEXT);
+        getViewer().getInteractor().setMode(ViewerInteractor.SELECT_TEXT);
 
     // Handle SelectButton
     if(anEvent.equals("SelectButton"))
-        getViewer().getEvents().setMode(ViewerEvents.SELECT_IMAGE);
+        getViewer().getInteractor().setMode(ViewerInteractor.SELECT_IMAGE);
 }
 
 }
