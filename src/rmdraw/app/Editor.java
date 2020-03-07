@@ -57,9 +57,6 @@ public class Editor extends Viewer implements DeepChangeListener {
  */
 public Editor()
 {
-    // SuperSelect ViewerShape
-    setSuperSelectedShape(getSceneGraph());
-    
     // Enable Drag events
     enableEvents(DragEvents);
     

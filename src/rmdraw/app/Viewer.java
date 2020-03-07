@@ -68,7 +68,7 @@ public SceneGraph getSceneGraph()  { return _sceneGraph; }
 /**
  * Returns the document associated with this viewer.
  */
-public RMDocument getDoc()  { return _sceneGraph.getDoc(); }
+public RMDocument getDoc()  { return getSceneGraph().getDoc(); }
 
 /**
  * Sets the document associated with this viewer.
