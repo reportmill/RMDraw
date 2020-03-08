@@ -1578,26 +1578,26 @@ public void paint(Painter aPntr)
     aPntr.save();
     
     // Apply transform for shape
-    if(isRSS()) aPntr.transform(getTransform());
+    if (isRSS()) aPntr.transform(getTransform());
     else aPntr.translate(getX(), getY());
     
     // If shape bounds don't intersect clip bounds, just return
     Rect cbounds = aPntr.getClipBounds();
-    if(cbounds!=null && !getBoundsMarkedDeep().intersects(cbounds)) {
+    if (cbounds!=null && !getBoundsMarkedDeep().intersects(cbounds)) {
         aPntr.restore(); return; }
     
     // If shape is semi-transparent, apply composite
-    if(getOpacityDeep()!=1) {
-        RMShapePaintProps props = RMShapePaintProps.get(aPntr);
-        double op = props.isEditing()? Math.max(.15, getOpacityDeep()) : getOpacityDeep();
+    if (getOpacityDeep()!=1) {
+        boolean isEditing = SceneGraph.isEditing(this);
+        double op = isEditing ? Math.max(.15, getOpacityDeep()) : getOpacityDeep();
         aPntr.setOpacity(op);
     }
     
     // If shape has a effect, have it paint
-    if(getEffect()!=null) { Effect eff = getEffect();
+    if (getEffect()!=null) { Effect eff = getEffect();
         PainterDVR pdvr = new PainterDVR(aPntr);
         paintShapeAll(pdvr);
-        if(!pdvr.equals(_pdvr1)) {
+        if (!pdvr.equals(_pdvr1)) {
             _pdvr1 = pdvr; _pdvr2 = new PainterDVR();
             eff.applyEffect(pdvr, _pdvr2, getBoundsStrokedDeep());
         }

@@ -99,11 +99,6 @@ public void setDoc(RMDocument aSource)
 }
 
 /**
- * Creates the Painter.Props object to provide shape selection information.
- */
-protected RMShapePaintProps createShapePaintProps()  { return new EditorShapePainterProps(); }
-
-/**
  * Returns the first selected shape.
  */
 public RMShape getSelectedShape()
@@ -941,6 +936,18 @@ public void sceneViewPropChangedDeep(PropChange aPC)
     resetEditorPaneLater();
 }
 
+/** SceneGraph.Client method: Returns whether SceneGraph is being edited. */
+public boolean isSceneEditing()  { return isEditing(); }
+
+/** SceneGraph.Client method: Returns whether given view is selected. */
+public boolean isSceneSelected(RMShape aView)  { return isSelected(aView); }
+
+/** SceneGraph.Client method: Returns whether given view is super selected. */
+public boolean isSceneSuperSelected(RMShape aView)  { return isSuperSelected(aView); }
+
+/** SceneGraph.Client method: Returns whether given view is THE super selected view. */
+public boolean isSceneSuperSelectedLeaf(RMShape aView)  { return getSuperSelectedShape()==aView; }
+
 /**
  * Property change.
  */
@@ -1007,24 +1014,6 @@ protected void saveUndoerChangesLater()
 
 // A Runnable for runLater(saveUndoerChanges())
 private Runnable _saveChangesRun, _scrShared = () -> { saveUndoerChanges(); _saveChangesRun = null; };
-
-/**
- * A RMShapePaintProps subclass for editor.
- */
-private class EditorShapePainterProps extends RMShapePaintProps {
-
-    /** Returns whether painting is for editor. */
-    public boolean isEditing()  { return Editor.this.isEditing(); }
-    
-    /** Returns whether given shape is selected. */
-    public boolean isSelected(RMShape aShape)  { return Editor.this.isSelected(aShape); }
-    
-    /** Returns whether given shape is super selected. */
-    public boolean isSuperSelected(RMShape aShape)  { return Editor.this.isSuperSelected(aShape); }
-    
-    /** Returns whether given shape is THE super selected shape. */
-    public boolean isSuperSelectedShape(RMShape aShape)  { return Editor.this.getSuperSelectedShape()==aShape; }
-}
 
 /** Play beep. */
 public void beep()  { ViewUtils.beep(); }

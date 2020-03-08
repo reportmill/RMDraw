@@ -303,11 +303,14 @@ protected void paintShape(Painter aPntr)
     super.paintShape(aPntr); if(getClass()!=RMSpringShape.class) return;
     
     // Paint dashed box around bounds
-    RMShapePaintProps props = RMShapePaintProps.get(aPntr);
-    if(props.isEditing() && getBorder()==null && getFill()==null && getEffect()==null &&
-        (props.isSelected(this) || props.isSuperSelected(this))) {
-        aPntr.setColor(Color.LIGHTGRAY); aPntr.setStroke(Stroke.Stroke1.copyForDashes(3,2));
-        aPntr.setAntialiasing(false); aPntr.draw(getBoundsInside()); aPntr.setAntialiasing(true);
+    boolean isEditing = SceneGraph.isEditing(this);
+    boolean isSelected = SceneGraph.isSelected(this) || SceneGraph.isSuperSelected(this);
+    if (isEditing && isSelected && getBorder()==null && getFill()==null && getEffect()==null) {
+        aPntr.setColor(Color.LIGHTGRAY);
+        aPntr.setStroke(Stroke.Stroke1.copyForDashes(3,2));
+        aPntr.setAntialiasing(false);
+        aPntr.draw(getBoundsInside());
+        aPntr.setAntialiasing(true);
     }
 }
 

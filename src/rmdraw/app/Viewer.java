@@ -340,21 +340,12 @@ public Shape convertToShape(Shape aShp, RMShape aShape)
 }
 
 /**
- * Creates the object that is actually responsible for paining shapes in the viewer.
- */
-protected RMShapePaintProps createShapePaintProps()  { return null; }
-
-/**
  * Override to paint viewer shapes and page, margin, grid, etc.
  */
 public void paintFront(Painter aPntr)
 {
-    // Set Painter props
-    RMShapePaintProps props = createShapePaintProps(); if (props!=null) aPntr.setProps(props);
-
-    // Paint SceneGraph and clear Painter props
+    // Paint SceneGraph
     _sceneGraph.paintScene(aPntr);
-    if (props!=null) aPntr.setProps(null);
 
     // Give interactor opportunity to paint
     getInteractor().paint(aPntr); // Have event helper paint above

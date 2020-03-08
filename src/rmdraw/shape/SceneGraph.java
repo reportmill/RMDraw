@@ -175,14 +175,14 @@ public class SceneGraph {
     /**
      * Called by views to request paint when they change visual properties.
      */
-    protected void repaintSceneForView(RMShape aShape)
+    protected void repaintSceneForView(RMShape aView)
     {
         // If painting, complain that someone is calling repaint during paint (should never happen, but good to check)
         if (_ptg)
             System.err.println("SceneGraph.repaint(): called during painting");
 
         // Forward to viewer
-        _client.sceneNeedsRepaint(aShape);
+        _client.sceneNeedsRepaint(aView);
     }
 
     /**
@@ -227,6 +227,62 @@ public class SceneGraph {
     public void undoerEnable()  { Undoer u = getUndoer(); if (u!=null) u.enable(); }
 
     /**
+     * Returns whether painting is for editor.
+     */
+    public boolean isEditing()  { return _client.isSceneEditing(); }
+
+    /**
+     * Returns whether given view is selected.
+     */
+    public boolean isSelectedView(RMShape aView)  { return _client.isSceneSelected(aView); }
+
+    /**
+     * Returns whether given view is super selected.
+     */
+    public boolean isSuperSelectedView(RMShape aView)  { return _client.isSceneSuperSelected(aView); }
+
+    /**
+     * Returns whether given view is THE super selected view.
+     */
+    public boolean isSuperSelectedLeafView(RMShape aView)  { return _client.isSceneSuperSelectedLeaf(aView); }
+
+    /**
+     * Returns whether painting is for editor.
+     */
+    public static boolean isEditing(RMShape aView)
+    {
+        SceneGraph scene = aView.getSceneGraph();
+        return scene!=null && scene.isEditing();
+    }
+
+    /**
+     * Returns whether given view is selected.
+     */
+    public static boolean isSelected(RMShape aView)
+    {
+        SceneGraph scene = aView.getSceneGraph();
+        return scene!=null && scene.isSelectedView(aView);
+    }
+
+    /**
+     * Returns whether given view is super selected.
+     */
+    public static boolean isSuperSelected(RMShape aView)
+    {
+        SceneGraph scene = aView.getSceneGraph();
+        return scene!=null && scene.isSuperSelectedView(aView);
+    }
+
+    /**
+     * Returns whether given view is THE super selected view.
+     */
+    public static boolean isSuperSelectedLeaf(RMShape aView)
+    {
+        SceneGraph scene = aView.getSceneGraph();
+        return scene!=null && scene.isSuperSelectedLeafView(aView);
+    }
+
+    /**
      * An interface for objects that want to use a SceneGraph.
      */
     public interface Client {
@@ -248,5 +304,17 @@ public class SceneGraph {
 
         /** Called when SceneGraph View has prop change. */
         default void sceneViewPropChangedDeep(PropChange aPC)  { }
+
+        /** Returns whether SceneGraph is being edited. */
+        default boolean isSceneEditing()  { return false; }
+
+        /** Returns whether given view is selected. */
+        default boolean isSceneSelected(RMShape aView)  { return false; }
+
+        /** Returns whether given view is super selected. */
+        default boolean isSceneSuperSelected(RMShape aView)  { return false; }
+
+        /** Returns whether given view is THE super selected view. */
+        default boolean isSceneSuperSelectedLeaf(RMShape aView)  { return false; }
     }
 }

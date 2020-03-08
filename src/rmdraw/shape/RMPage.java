@@ -163,20 +163,6 @@ public int removeLayer(RMPageLayer aLayer)
 }
 
 /**
- * Returns the layer with the given name.
- */
-public RMPageLayer getLayer(String aString) 
-{
-    // Iterate over layers and return the first encountered with matching name
-    for(int i=0; i<getLayerCount(); i++)
-        if(getLayer(i).getName().equals(aString))
-            return getLayer(i);
-    
-    // Return null if no layers matched given name
-    return null;
-}
-
-/**
  * Creates a new layer with the given name and adds it to this page's layer list.
  */
 public void addLayerNamed(String aString) 
@@ -186,27 +172,6 @@ public void addLayerNamed(String aString)
     
     // Reset selected layer index to last layer
     _layerIndex = getLayerCount() - 1;
-}
-
-/**
- * Moves the layer at fromIndex to toIndex.
- */
-public void moveLayer(int fromIndex, int toIndex) 
-{
-    // Get layer at first index (just return if null)
-    RMPageLayer layer = getLayer(fromIndex);
-    if(layer==null)
-        return;
-    
-    // Request repaint
-    repaint();
-    
-    // Remove layer at index and re-insert at new index
-    _layers.remove(fromIndex);
-    _layers.add(toIndex, layer);
-    
-    // Reorder children
-    orderChildrenFromLayers();
 }
 
 /**
@@ -239,11 +204,6 @@ public void selectLayer(RMPageLayer aLayer)
     repaint();
     _layerIndex = aLayer.getIndex();
 }
-
-/**
- * Selects the layer with the given name.
- */
-public void selectLayer(String aString)  { selectLayer(getLayer(aString)); }
 
 /**
  * Resets this page's list of layers to a single, selecctable layer named "Layer 1".
@@ -465,7 +425,7 @@ protected void paintShape(Painter aPntr)
     }
     
     // Draw grid if needed
-    if(getDocument().getShowGrid() && RMShapePaintProps.isEditing(aPntr)) {
+    if(getDocument().getShowGrid() && SceneGraph.isEditing(this)) {
         
         // Get grid spacing (corrected for zoom factor) and document's min x and y
         double gs = getDocument().getGridSpacing();
@@ -483,7 +443,7 @@ protected void paintShape(Painter aPntr)
     }
 
     // If Draw Margin is requested and editing, draw margin
-    if(getDocument().getShowMargin() && RMShapePaintProps.isEditing(aPntr)) {
+    if(getDocument().getShowMargin() && SceneGraph.isEditing(this)) {
         aPntr.setColor(new Color(9/15f)); // marginColor = new Color(9/15f, 9/15f, 9/15f)
         aPntr.draw(getDocument().getMarginRect());
     }

@@ -177,9 +177,9 @@ protected void paintShape(Painter aPntr)
     
     // Get image (use empty placeholder image if null and editing)
     Image img = getImage();
-    if(img==null) {
-        if(!RMShapePaintProps.isEditing(aPntr)) return;
-        img = ImageUtils.getEmptyImage(); if(img==null) return;
+    if (img==null) {
+        if (!SceneGraph.isEditing(this)) return;
+        img = ImageUtils.getEmptyImage(); if (img==null) return;
     }
     
     // Draw image transformed to bounds

@@ -42,6 +42,8 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
      */
     public TextEditor getTextEditor()
     {
+        getUI(); // I don't like this
+
         RMTextShape text = getSelectedShape();
         return text!=null ? text.getTextEditor() : null;
     }
@@ -386,6 +388,8 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
      */
     public void processEvent(T aTextShape, ViewEvent anEvent)
     {
+        // If TextEditor not set, just return
+
         // Handle KeyEvent
         if(anEvent.isKeyEvent()) {
             processKeyEvent(aTextShape, anEvent); return; }
