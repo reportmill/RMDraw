@@ -338,7 +338,7 @@ public void popSelection()
     }
 
     // Otherwise select super-selected shape (or its parent if it has childrenSuperSelectImmediately)
-    if (getSuperSelectedShapeCount()>2) {
+    if (getSuperSelectedShapeCount()>1) {
         RMShape superSelShape = getSuperSelectedShape();
         if (superSelShape instanceof RMTextShape)
             setSelectedShape(superSelShape);

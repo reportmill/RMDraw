@@ -9,10 +9,10 @@
     </RowView>
   </ScaleBox>
   <RowView PrefWidth="269" Align="CENTER" Padding="6,3,6,3">
-    <ToggleButton Name="ShapeSpecificButton" PrefWidth="66" PrefHeight="42" ToolTip="Shape-Specific Attributes Inspector" Position="CENTER_LEFT" Selected="true" Group="InspTG" />
-    <ToggleButton Name="ShapeFillsButton" PrefWidth="66" PrefHeight="42" ToolTip="Fill &amp; Stroke Inspector" image="ShapeFills.png" Position="CENTER" Group="InspTG" />
-    <ToggleButton Name="ShapePlacementButton" PrefWidth="66" PrefHeight="42" ToolTip="Placement Inspector" image="ShapePlacement.png" Position="CENTER" Group="InspTG" />
-    <ToggleButton Name="ShapeGeneralButton" PrefWidth="66" PrefHeight="42" ToolTip="General Attributes Inspector" image="ShapeGeneral.png" Position="CENTER_RIGHT" Group="InspTG" />
+    <ToggleButton Name="SpecificButton" PrefWidth="66" PrefHeight="42" ToolTip="View-Specific Attributes Inspector" Position="CENTER_LEFT" Selected="true" Group="InspTG" />
+    <ToggleButton Name="FillsButton" PrefWidth="66" PrefHeight="42" ToolTip="Fill &amp; Stroke Inspector" image="Insp_Styler.png" Position="CENTER" Group="InspTG" />
+    <ToggleButton Name="PlacementButton" PrefWidth="66" PrefHeight="42" ToolTip="Placement Inspector" image="Insp_Placement.png" Position="CENTER" Group="InspTG" />
+    <ToggleButton Name="GeneralButton" PrefWidth="66" PrefHeight="42" ToolTip="General Attributes Inspector" image="Insp_General.png" Position="CENTER_RIGHT" Group="InspTG" />
   </RowView>
   <ScrollView Name="ContentBox" GrowHeight="true" />
 </ColView>

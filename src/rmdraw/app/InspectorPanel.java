@@ -20,8 +20,8 @@ public class InspectorPanel extends EditorPane.SupportPane {
     // The Title label
     private Label  _titleLabel;
     
-    // The ShapeButton
-    private ToggleButton  _shapeBtn;
+    // The view SpecificButton
+    private ToggleButton _specificBtn;
     
     // The ScrollView that holds UI for child inspectors
     private ScrollView  _inspBox;
@@ -29,17 +29,17 @@ public class InspectorPanel extends EditorPane.SupportPane {
     // The child inspector current installed in inspector panel
     private ViewOwner  _childInspector;
     
-    // The inspector for paint/fill shape attributes
+    // The inspector for paint/fill attributes
     private StylerPane  _stylerPane;
     
-    // The inspector for shape placement attributes (location, size, roll, scale, skew, autosizing)
-    private ShapePlacement  _shapePlacement;
+    // The inspector for view placement attributes (location, size, roll, scale, skew, autosizing)
+    private ShapePlacement  _placementInsp;
     
-    // The inspector for shape general attributes (name, url, text wrap around)
-    private ShapeGeneral  _shapeGeneral;
+    // The inspector for view general attributes (name, url, text wrap around)
+    private ShapeGeneral  _generalInsp;
     
-    // The inspector for shape animation
-    private ShapeTree  _shapeTree;
+    // The inspector for view hierarchy
+    private ShapeTree  _viewTree;
     
     // The inspector for Undo
     private UndoInspector  _undoInspector;
@@ -48,10 +48,10 @@ public class InspectorPanel extends EditorPane.SupportPane {
     //private DataSourcePanel  _dataSource;
     
     // Used for managing selection path
-    private RMShape  _deepestShape;
+    private RMShape  _deepView;
     
     // Used for managing selection path
-    private RMShape  _selectedShape;
+    private RMShape  _selView;
 
     /**
      * Creates a new InspectorPanel for EditorPane.
@@ -69,9 +69,9 @@ public class InspectorPanel extends EditorPane.SupportPane {
 
         // Create other inspectors
         EditorPane epane = getEditorPane();
-        _shapePlacement = new ShapePlacement(epane);
-        _shapeGeneral = new ShapeGeneral(epane);
-        _shapeTree = new ShapeTree(epane);
+        _placementInsp = new ShapePlacement(epane);
+        _generalInsp = new ShapeGeneral(epane);
+        _viewTree = new ShapeTree(epane);
 
         // Get/configure TitleLabel
         _titleLabel = getView("TitleLabel", Label.class);
@@ -80,7 +80,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
         // Get SelPathView and InspectorPanel
         _selPathView = getView("SelPathView", ChildView.class);
         enableEvents(_selPathView, MouseRelease);
-        _shapeBtn = getView("ShapeSpecificButton", ToggleButton.class);
+        _specificBtn = getView("SpecificButton", ToggleButton.class);
 
         // Get/configure ContentBox
         _inspBox = getView("ContentBox", ScrollView.class);
@@ -97,29 +97,23 @@ public class InspectorPanel extends EditorPane.SupportPane {
      */
     public void resetUI()
     {
-        // Get editor (and just return if null) and tool for selected shapes
+        // Get editor (and just return if null) and tool for selected views
         Editor editor = getEditor(); if (editor==null) return;
         Tool tool = editor.getToolForViews(editor.getSelectedOrSuperSelectedShapes());
 
-        // If ShapeSpecificButton is selected, instal inspector for current selection
-        if (getViewBoolValue("ShapeSpecificButton"))
+        // If ViewSpecificButton is selected, instal inspector for current selection
+        if (getViewBoolValue("SpecificButton"))
             setInspector(tool);
 
-        // If ShapeFillsButton is selected, install fill inspector
-        if (getViewBoolValue("ShapeFillsButton"))
+        // If FillsButton is selected, install fill inspector
+        if (getViewBoolValue("FillsButton"))
             setInspector(_stylerPane);
 
         // Get the inspector (owner)
         ViewOwner owner = getInspector();
 
         // Get inspector title from owner and set
-        String title = "Inspector";
-        if (owner instanceof Tool) title = ((Tool)owner).getWindowTitle();
-        else if (owner instanceof EditorPane.SupportPane) {
-            title = ((EditorPane.SupportPane)owner).getWindowTitle();
-            String shpName = tool.getShapeClass().getSimpleName().replace("RM", "").replace("Shape", "");
-            title += " (" + shpName + ')';
-        }
+        String title = getInspectorTitle(owner, tool);
         _titleLabel.setText(title);
 
         // If owner non-null, tell it to reset
@@ -129,9 +123,9 @@ public class InspectorPanel extends EditorPane.SupportPane {
         // Reset the selection path view
         resetSelPathView();
 
-        // Get image for current tool and set in ShapeSpecificButton
+        // Get image for current tool and set in ViewSpecificButton
         Image timage = tool.getImage();
-        getView("ShapeSpecificButton", ButtonBase.class).setImage(timage);
+        getView("SpecificButton", ButtonBase.class).setImage(timage);
     }
 
     /**
@@ -139,13 +133,13 @@ public class InspectorPanel extends EditorPane.SupportPane {
      */
     public void respondUI(ViewEvent anEvent)
     {
-        // Handle ShapePlacementButton
-        if (anEvent.equals("ShapePlacementButton"))
-            setInspector(_shapePlacement);
+        // Handle PlacementButton
+        if (anEvent.equals("PlacementButton"))
+            setInspector(_placementInsp);
 
-        // Handle ShapeGeneralButton
-        if (anEvent.equals("ShapeGeneralButton"))
-            setInspector(_shapeGeneral);
+        // Handle GeneralButton
+        if (anEvent.equals("GeneralButton"))
+            setInspector(_generalInsp);
 
         // Handle UndoAction
         if (anEvent.equals("UndoAction"))
@@ -181,26 +175,26 @@ public class InspectorPanel extends EditorPane.SupportPane {
     public void setVisible(int anIndex)
     {
         // If index 0, 1 or 3, set appropriate toggle button true
-        if (anIndex==0) setViewValue("ShapeSpecificButton", true);
-        if (anIndex==1) setViewValue("ShapeFillsButton", true);
-        if (anIndex==3) setViewValue("ShapeGeneralButton", true);
+        if (anIndex==0) setViewValue("SpecificButton", true);
+        if (anIndex==1) setViewValue("FillsButton", true);
+        if (anIndex==3) setViewValue("GeneralButton", true);
 
         // If index is 6, show _undoInspector
         if (anIndex==6) {
             setInspector(_undoInspector!=null? _undoInspector : (_undoInspector = new UndoInspector(getEditorPane())));
-            _shapeBtn.getToggleGroup().setSelected(null); //setViewValue("OffscreenButton", true);
+            _specificBtn.getToggleGroup().setSelected(null); //setViewValue("OffscreenButton", true);
         }
 
         // If index is 7, show DataSource Inspector
         //if (anIndex==7) {
         //    setInspector(_dataSource!=null? _dataSource : (_dataSource = new DataSourcePanel(getEditorPane())));
-        //    _shapeBtn.getToggleGroup().setSelected(null); //setViewValue("OffscreenButton", true);
+        //    _specificBtn.getToggleGroup().setSelected(null); //setViewValue("OffscreenButton", true);
         //}
 
-        // If index is 9, show ShapeTree Inspector
+        // If index is 9, show ViewTree Inspector
         if (anIndex==9) {
-            setInspector(_shapeTree);
-            _shapeBtn.getToggleGroup().setSelected(null);
+            setInspector(_viewTree);
+            _specificBtn.getToggleGroup().setSelected(null);
         }
     }
 
@@ -211,7 +205,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         if (!isVisible()) return false;
         if (!ViewUtils.isMouseDrag()) return true;
-        return getInspector()==_shapePlacement;
+        return getInspector()== _placementInsp;
     }
 
     /**
@@ -249,45 +243,47 @@ public class InspectorPanel extends EditorPane.SupportPane {
      */
     public void resetSelPathView()
     {
-        // Get main editor, Selected/SuperSelected shape and shape that should be selected in selection path
+        // Get main editor, Selected/SuperSelected view and view that should be selected in selection path
         Editor editor = getEditor();
-        RMShape selectedShape = editor.getSelectedOrSuperSelectedShape();
-        RMShape shape = _deepestShape!=null && _deepestShape.isAncestor(selectedShape)? _deepestShape : selectedShape;
+        RMShape selView = editor.getSelectedOrSuperSelectedShape();
+        RMShape view = _deepView!=null && _deepView.isAncestor(selView)? _deepView : selView;
 
-        // If the selectedShape has changed because of external forces, reset selectionPath to point to it
-        if (selectedShape != _selectedShape)
-            shape = selectedShape;
+        // If the selView has changed because of external forces, reset selectionPath to point to it
+        if (selView != _selView)
+            view = selView;
 
-        // Set new DeepestShape to be shape
-        _deepestShape = shape; _selectedShape = selectedShape;
+        // Set new DeepView to be view
+        _deepView = view;
+        _selView = selView;
 
         // Remove current buttons
         for (int i=_selPathView.getChildCount()-1; i>=0; i--) {
             View button = _selPathView.removeChild(i);
-            if(button instanceof ToggleButton) getToggleGroup("SelPathGroup").remove((ToggleButton)button);
+            if (button instanceof ToggleButton)
+                getToggleGroup("SelPathGroup").remove((ToggleButton)button);
         }
 
-        // Add buttons for DeepestShape and its ancestors
-        for (RMShape shp=_deepestShape; shp!=null && shp.getParent()!=null; shp=shp.getParent()) {
+        // Add buttons for DeepView and its ancestors
+        for (RMShape vue=_deepView; vue!=null; vue=vue.getParent()) {
 
             // Create new button and configure action
             ToggleButton button = new ToggleButton();
-            button.setName("SelPath " + (shp.getAncestorCount()-1));
+            button.setName("SelPath " + vue.getAncestorCount());
             button.setPrefSize(40,40);
             button.setMinSize(40,40);
             button.setShowArea(false);
 
             // Set button images
-            Image img = editor.getToolForView(shp).getImage();
+            Image img = editor.getToolForView(vue).getImage();
             button.setImage(img);
-            button.setToolTip(shp.getClass().getSimpleName());
-            if (shp==selectedShape)
+            button.setToolTip(vue.getClass().getSimpleName());
+            if (vue==selView)
                 button.setSelected(true);  // Whether selected
 
             // Add button to selection path panel and button group
             _selPathView.addChild(button, 0); button.setOwner(this);
             getToggleGroup("SelPathGroup").add(button);
-            if (shp!=_deepestShape)
+            if (vue!= _deepView)
                 _selPathView.addChild(new Sep(), 1);
         }
     }
@@ -297,37 +293,37 @@ public class InspectorPanel extends EditorPane.SupportPane {
      */
     public void popSelection(int selIndex)
     {
-        // Get main editor (just return if editor or deepest shape is null)
-        Editor editor = getEditor(); if (editor==null || _deepestShape==null) return;
+        // Get main editor (just return if editor or deepest view is null)
+        Editor editor = getEditor(); if (editor==null || _deepView ==null) return;
 
-        // If user selected descendant of current selected shape, select on down to it
-        if (selIndex > editor.getSelectedOrSuperSelectedShape().getAncestorCount()-1) {
+        // If user selected descendant of current selected view, select on down to it
+        if (selIndex > editor.getSelectedOrSuperSelectedShape().getAncestorCount()) {
 
-            // Get current deepest shape
-            RMShape shape = _deepestShape;
+            // Get current deepest view
+            RMShape view = _deepView;
 
-            // Find shape that was clicked on
-            while (selIndex != shape.getAncestorCount()-1)
-                shape = shape.getParent();
+            // Find view that was clicked on
+            while (selIndex != view.getAncestorCount())
+                view = view.getParent();
 
-            // If shape parent's childrenSuperSelectImmediately, superSelect shape
-            if (shape.getParent().childrenSuperSelectImmediately())
-                editor.setSuperSelectedShape(shape);
+            // If view parent's childrenSuperSelectImmediately, superSelect view
+            if (view.getParent().childrenSuperSelectImmediately())
+                editor.setSuperSelectedShape(view);
 
-            // If shape shouldn't superSelect, just select it
-            else editor.setSelectedShape(shape);
+            // If view shouldn't superSelect, just select it
+            else editor.setSelectedShape(view);
         }
 
-        // If user selected ancestor of current shape, pop selection up to it
-        else while(selIndex != editor.getSelectedOrSuperSelectedShape().getAncestorCount()-1)
+        // If user selected ancestor of current view, pop selection up to it
+        else while (selIndex != editor.getSelectedOrSuperSelectedShape().getAncestorCount())
             editor.popSelection();
 
-        // Set selected shape to new editor selected shape
-        _selectedShape = editor.getSelectedOrSuperSelectedShape();
+        // Set selected view to new editor selected view
+        _selView = editor.getSelectedOrSuperSelectedShape();
 
-        // Make sure shape specific inspector is selected
-        if(!getViewBoolValue("ShapeSpecificButton"))
-            getView("ShapeSpecificButton", ToggleButton.class).fire();
+        // Make sure view specific inspector is selected
+        if (!getViewBoolValue("SpecificButton"))
+            getView("SpecificButton", ToggleButton.class).fire();
     }
 
     /**
@@ -338,6 +334,28 @@ public class InspectorPanel extends EditorPane.SupportPane {
         setVisible(0);
         resetSelPathView();
         popSelection(0);
+    }
+
+    /**
+     * Returns an inspector for ViewOwner and tool.
+     */
+    private String getInspectorTitle(ViewOwner owner, Tool tool)
+    {
+        // If Tool, just return title
+        if (owner instanceof Tool)
+            return ((Tool)owner).getWindowTitle();
+
+            // If SupportPane
+        else if (owner instanceof EditorPane.SupportPane) {
+            String title = ((EditorPane.SupportPane)owner).getWindowTitle();
+            String cname = tool.getShapeClass().getSimpleName();
+            String shpName = cname.replace("RM", "").replace("Shape", "");
+            title += " (" + shpName + ')';
+            return title;
+        }
+
+        // Just return generic title
+        return "Inspector";
     }
 
     /** View to render SelectionPath separator. */
