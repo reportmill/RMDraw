@@ -282,10 +282,24 @@ public boolean isNeedsLayoutDeep()  { return _needsLayoutDeep; }
  */
 protected void setNeedsLayoutDeep(boolean aVal)
 {
-    if(_needsLayoutDeep) return;
+    // If value already set, just return
+    if (_needsLayoutDeep) return;
     _needsLayoutDeep = true;
-    if(_inLayoutDeep) return;
-    RMParentShape par = getParent(); if(par!=null) par.setNeedsLayoutDeep(true);
+
+    // If still in layout, just return
+    if (_inLayoutDeep) return;
+
+    // If Parent available, forward to it
+    RMParentShape par = getParent();
+    if (par!=null)
+        par.setNeedsLayoutDeep(true);
+
+    // Otherwise, if SceneGraph available, request scene layout
+    else {
+        SceneGraph scene = getSceneGraph();
+        if (scene!=null)
+            scene.relayoutScene();
+    }
 }
 
 /**

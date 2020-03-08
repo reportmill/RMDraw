@@ -258,7 +258,7 @@ private static RMDocument getDoc(int anIndex)
     if(bytes==null) { System.err.println("SamplesPane.getDoc: Couldn't load " + url); return null; }
     
     // Return document
-    RMDocument doc = RMDocument.getDoc(bytes);
+    RMDocument doc = RMDocument.getDocFromSource(bytes);
     return doc;
 }
 

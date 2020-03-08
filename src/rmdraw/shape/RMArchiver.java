@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.gfx.*;
 import java.util.*;
 import snap.gfx.*;
 import snap.text.RichText;
@@ -26,28 +25,21 @@ public class RMArchiver extends XMLArchiver {
     /**
      * Returns a parent shape for source.
      */
-    public RMDocument getDoc(Object aSource)  { return getDoc(aSource, null); }
-
-    /**
-     * Creates a document.
-     */
-    public RMDocument getDoc(Object aSource, RMDocument aBaseDoc)
+    public RMDocument getDocFromSource(Object aSource)
     {
         // If source is a document, just return it
-        if(aSource instanceof RMDocument) return (RMDocument)aSource;
+        if (aSource instanceof RMDocument) return (RMDocument)aSource;
 
         // Get URL and/or bytes (complain if not found)
         WebURL url = WebURL.getURL(aSource);
         byte bytes[] = url!=null? url.getBytes() : SnapUtils.getBytes(aSource);
-        if(bytes==null)
+        if (bytes==null)
             throw new RuntimeException("RMArchiver.getDoc: Cannot read source: " + (url!=null? url : aSource));
 
         // If PDF, return PDF Doc
         //if(RMPDFData.canRead(bytes)) return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
 
-        // Create archiver, read, set source and return
-        setRootObject(aBaseDoc);
-
+        // Read document from source
         RMDocument doc = (RMDocument) readFromXMLSource(url!=null? url : bytes);
 
         // Set Source URL and return

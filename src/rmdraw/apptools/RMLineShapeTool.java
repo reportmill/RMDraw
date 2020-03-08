@@ -109,7 +109,7 @@ private RMShape[] getArrowHeads()
     
     // Load document with defined arrow heads
     WebURL url = WebURL.getURL(RMLineShapeTool.class, "RMLineShapeToolArrowHeads.rpt");
-    RMDocument doc = new RMDocument(url);
+    RMDocument doc = RMDocument.getDocFromSource(url);
     
     // Extract lines and heads and return array of heads
     List <RMLineShape> lines = doc.getChildrenWithClass(RMLineShape.class);

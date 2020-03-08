@@ -29,43 +29,43 @@ public class RMDocument extends RMParentShape {
     private SceneGraph  _sceneGraph;
 
     // The SourceURL
-    WebURL            _sourceURL;
+    private WebURL  _sourceURL;
     
     // The currently selected page index
-    int               _selIndex;
+    private int  _selIndex;
     
     // The page layout for the document (single, facing, continuous)
-    PageLayout        _pageLayout = PageLayout.Single;
+    private PageLayout  _pageLayout = PageLayout.Single;
     
     // The native units of measure for this document
-    Unit              _unit = Unit.Point;
+    private Unit  _unit = Unit.Point;
     
     // Whether to show a grid
-    boolean           _showGrid = false;
+    private boolean  _showGrid = false;
     
     // Whether to snap to grid
-    boolean           _snapGrid = false;
+    private boolean  _snapGrid = false;
     
     // Space between grid lines in points
-    double            _gridSpacing = 9f;
+    private double  _gridSpacing = 9f;
     
     // Whether to show margin
-    boolean           _showMargin = true;
+    private boolean  _showMargin = true;
     
     // Whether to snap to margin
-    boolean           _snapMargin = true;
+    private boolean  _snapMargin = true;
     
     // The margin rect
-    Rect _margins = getMarginRectDefault();
+    private Rect  _margins = getMarginRectDefault();
     
     // The string to be used when report encounters a null value
-    String            _nullString = "<NA>";
+    private String  _nullString = "<NA>";
     
     // Whether document should paginate or grow
-    boolean           _paginate = true;
+    private boolean  _paginate = true;
     
     // Whether output file formats should compress (PDF really)
-    boolean           _compress = true;
+    private boolean  _compress = true;
     
     // Locale
     public static Locale _locale = Locale.ENGLISH;  // Used by date/number formats    
@@ -94,14 +94,13 @@ public RMDocument(double aWidth, double aHeight)
 }
 
 /**
- * Creates a new document from the given source.
- */
-public RMDocument(Object aSource)  { new RMArchiver().getDoc(aSource, this); }
-
-/**
  * Creates a new document from aSource using RMArchiver.
  */
-public static RMDocument getDoc(Object aSource)  { return new RMArchiver().getDoc(aSource); }
+public static RMDocument getDocFromSource(Object aSource)
+{
+    RMArchiver arch = new RMArchiver();
+    return arch.getDocFromSource(aSource);
+}
 
 /**
  * Returns the SceneGraph.

@@ -271,7 +271,7 @@ public EditorPane open(Object aSource)
     }
     
     // Load document
-    RMDocument doc = null; try { doc = RMDocument.getDoc(aSource); }
+    RMDocument doc = null; try { doc = RMDocument.getDocFromSource(aSource); }
     
     // If there was an XML parse error loading aSource, show error dialog
     catch(Exception e) {

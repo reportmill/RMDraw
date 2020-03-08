@@ -11,16 +11,15 @@ import snap.viewx.Printer;
 import snap.web.WebURL;
 
 /**
- * The RMViewer class is a SnapKit View that can be used in Java client applications to display and/or print an
- * RMDocument.
+ * The Viewer is used to display or print a document/SceneGraph.
  *
  * You might use it like this to simply print a document:
  * <p><blockquote><pre>
- *   new RMViewer(aDocument).print();
+ *   new Viewer(aDocument).print();
  * </pre></blockquote><p>
  * Or you might want to allocate one and add it to a Swing component hierarchy:
  * <p><blockquote><pre>
- *   RMViewerPane viewer = new RMViewerPane(); viewer.getViewer().setContent(new RMDocument(aSource));
+ *   ViewerPane viewer = new ViewerPane(); viewer.getViewer().setContent(new RMDocument(aSource));
  *   JComponent vcomp = viewer.getRootView().getNative(JComponent.class);
  *   myFrame.setContentPane(viewer);
  * </pre></blockquote>
@@ -76,10 +75,12 @@ public RMDocument getDoc()  { return getSceneGraph().getDoc(); }
 public void setDoc(RMDocument aDoc)
 {
     // If already set, just return
-    RMDocument doc = getDoc(); if(aDoc==doc) return;
+    RMDocument doc = getDoc(); if (aDoc==doc) return;
     
-    // Set new document and fire property change
-    _sceneGraph.setDoc(aDoc);
+    // Set new document in SceneGraph
+    _sceneGraph.setRootView(aDoc);
+
+    // Fire property change
     firePropChange(Content_Prop, doc, aDoc);
     
     // Set ZoomToFitFactor and relayout/repaint (for possible size change)
@@ -88,12 +89,13 @@ public void setDoc(RMDocument aDoc)
 }
 
 /**
- * Sets the document from any source.
+ * Sets the document from given source.
  */
-public void setDoc(Object aSource)
+public void setDocFromSource(Object aSource)
 {
     RMArchiver archiver = createArchiver();
-    setDoc(archiver.getDoc(aSource));
+    RMDocument doc = archiver.getDocFromSource(aSource);
+    setDoc(doc);
 }
 
 /**
@@ -170,16 +172,16 @@ public RMShape getShapeAtPoint(Point aPoint, boolean goDeep)
     
     // Iterate over children to find shape hit by point
     RMShape shape = null; Point point2 = null;
-    for(int i=parent.getChildCount(); i>0 && shape==null; i--) { RMShape child = parent.getChild(i-1);
+    for (int i=parent.getChildCount(); i>0 && shape==null; i--) { RMShape child = parent.getChild(i-1);
         point2 = child.parentToLocal(point);
-        if(child.contains(point2))
+        if (child.contains(point2))
             shape = child;
     }
     
     // If we need to goDeep (and there was a top level hit shape), recurse until shape is found
-    while(goDeep && shape instanceof RMParentShape) { parent = (RMParentShape)shape;
+    while (goDeep && shape instanceof RMParentShape) { parent = (RMParentShape)shape;
         RMShape shp = parent.getChildContaining(point2);
-        if(shp!=null) { shape = shp; point2 = shape.parentToLocal(point2); }
+        if (shp!=null) { shape = shp; point2 = shape.parentToLocal(point2); }
         else break;
     }
     
@@ -208,17 +210,19 @@ protected void setZoomFactorImpl(double aFactor)
 {    
     // Constrain zoom factor to valid range (ZoomToFactor: 20%...10000%, ZoomAsNeed: Max of 1)
     ZoomMode zmode = getZoomMode();
-    if(zmode==ZoomMode.ZoomToFactor) aFactor = Math.min(Math.max(.2f, aFactor), 100);
-    else if(zmode==ZoomMode.ZoomAsNeeded) aFactor = Math.min(aFactor, 1);
+    if (zmode==ZoomMode.ZoomToFactor)
+        aFactor = Math.min(Math.max(.2f, aFactor), 100);
+    else if (zmode==ZoomMode.ZoomAsNeeded)
+        aFactor = Math.min(aFactor, 1);
 
     // If already at given factor, just return
-    if(aFactor==_zoomFactor) return;
+    if (aFactor==_zoomFactor) return;
 
     // Set last zoom factor and new zoom factor and fire property change
     firePropChange("ZoomFactor", _lastZoomFactor = _zoomFactor, _zoomFactor = aFactor);
     
     // If ZoomToFactor and parent is viewport, resize and scroll to center of previous zoom
-    if(isZoomToFactor()) {
+    if (isZoomToFactor()) {
         Rect vr = getZoomFocusRect(), vr2 = vr.clone();
         setSize(getPrefWidth(), getPrefHeight());
         vr2.scale(_zoomFactor/_lastZoomFactor);
@@ -240,7 +244,7 @@ public ZoomMode getZoomMode()  { return _zoomMode; }
  */
 public void setZoomMode(ZoomMode aZoomMode)
 {
-    if(aZoomMode==getZoomMode()) return;
+    if (aZoomMode==getZoomMode()) return;
     firePropChange("ZoomMode", _zoomMode, _zoomMode = aZoomMode);
     setZoomToFitFactor(); // Reset ZoomFactor
 }
@@ -345,9 +349,14 @@ protected RMShapePaintProps createShapePaintProps()  { return null; }
  */
 public void paintFront(Painter aPntr)
 {
-    RMShapePaintProps props = createShapePaintProps(); if(props!=null) aPntr.setProps(props);
-    RMShapeUtils.paintShape(aPntr, _sceneGraph, null, 1); //getZoomFactor();
-    if(props!=null) aPntr.setProps(null);
+    // Set Painter props
+    RMShapePaintProps props = createShapePaintProps(); if (props!=null) aPntr.setProps(props);
+
+    // Paint SceneGraph and clear Painter props
+    _sceneGraph.paintScene(aPntr);
+    if (props!=null) aPntr.setProps(null);
+
+    // Give interactor opportunity to paint
     getInteractor().paint(aPntr); // Have event helper paint above
 }
 
@@ -396,8 +405,8 @@ protected double getPrefHeightImpl(double aW)
 protected void layoutImpl()
 {
     setZoomToFitFactor();
-    _sceneGraph.setBounds(0,0, getWidth(), getHeight());
-    _sceneGraph.layoutDeep();
+    _sceneGraph.setSize(getWidth(), getHeight());
+    _sceneGraph.layoutViews();
 }
 
 /**
@@ -420,16 +429,16 @@ public void undoerSetUndoTitle(String aTitle)
 public boolean undoerHasUndos()  { return getUndoer()!=null && getUndoer().hasUndos(); }
 
 /**
- * SceneGraph.Client method: Called when SceneGraph Doc has prop change.
+ * Returns the ZoomFactor for SceneGraph.
  */
-public void sceneDocDidPropChange(PropChange anEvent)
+public double getSceneZoomFactor()  { return getZoomFactor(); }
+
+/**
+ * SceneGraph.Client method: Called when SceneGraph needs relayout.
+ */
+public void sceneNeedsRelayout()
 {
-    // Handle SelectedPageIndex, PageSize, PageLayout
-    String pname = anEvent.getPropertyName();
-    if (pname.equals(RMDocument.SelPageIndex_Prop) || pname.equals("PageSize") || pname.equals("PageLayout")) {
-        relayout(); setZoomToFitFactor(); repaint();
-        firePropChange("ContentChange" + pname, anEvent.getOldValue(), anEvent.getNewValue());
-    }
+    relayout();
 }
 
 /**
@@ -444,29 +453,30 @@ public void sceneNeedsRepaint(RMShape aShape)
 }
 
 /**
+ * SceneGraph.Client method: Called when SceneGraph Doc has prop change.
+ */
+public void sceneViewPropChanged(PropChange anEvent)
+{
+    // Handle SelectedPageIndex, PageSize, PageLayout
+    String pname = anEvent.getPropertyName();
+    if (pname.equals(RMDocument.SelPageIndex_Prop) || pname.equals("PageSize") || pname.equals("PageLayout")) {
+        setZoomToFitFactor();
+        relayout();
+        repaint();
+        firePropChange("ContentChange" + pname, anEvent.getOldValue(), anEvent.getNewValue());
+    }
+}
+
+/**
  * Returns the bounds for a given shape in the viewer. Editor overrides this to account for handles.
  */
 protected Rect getRepaintBoundsForShape(RMShape aShape)
 {
-    // Get bounds with stroke and effect and return
     //Rect bnds = aShape.getBoundsLocal();
     //if(aShape.getStroke()!=null) bnds.inset(-aShape.getStroke().getWidth()/2);
     //if(aShape.getEffect()!=null) bnds = aShape.getEffect().getBounds(bnds); return bnds;
     return aShape.getBoundsMarkedDeep();
 }
-
-/**
- * SceneGraph.Client method: Called when SceneGraph needs relayout.
- */
-public void sceneNeedsRelayout()
-{
-    relayout();
-}
-
-/**
- * Returns the ZoomFactor for SceneGraph.
- */
-public double getSceneZoomFactor()  { return getZoomFactor(); }
 
 /**
  * Creates a shape mouse event.

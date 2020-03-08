@@ -13,17 +13,17 @@ import snap.util.*;
 import snap.view.*;
 
 /**
- * This class subclasses RMViewer to support RMDocument editing.
+ * Viewer subclass to support Document/SceneGraph editing.
  */
-public class Editor extends Viewer implements DeepChangeListener {
+public class Editor extends Viewer {
 
-    // Whether we're really editing
+    // Whether actually editing
     private boolean _editing = true;
     
-    // List of currently selected shapes
+    // Current selected shapes
     private List<RMShape> _selShapes = new ArrayList();
     
-    // List of super selected shapes (all ancestors of selected shapes)
+    // Current super selected shapes (all ancestors of selected shapes)
     private List<RMShape> _superSelShapes = new ArrayList();
 
     // An EditorCellStyler to get/set style attributes of current selection
@@ -79,6 +79,24 @@ public boolean isEditing()  { return _editing; }
  * Sets whether viewer is really doing editing.
  */
 public void setEditing(boolean aFlag)  { _editing = aFlag; }
+
+/**
+ * Override to do editor things.
+ */
+@Override
+public void setDoc(RMDocument aSource)
+{
+    // Do normal version
+    super.setDoc(aSource);
+
+    // Super-select new doc page
+    RMPage page = getDoc().getSelPage();
+    setSuperSelectedShape(page);
+
+    // Set new undoer
+    if (isEditing())
+        getSceneGraph().setUndoer(new Undoer());
+}
 
 /**
  * Creates the Painter.Props object to provide shape selection information.
@@ -901,9 +919,16 @@ protected void setUndoSelection(Object aSelection)
 }
 
 /**
- * Property change.
+ *  SceneGraph.Client method: Called to see if client wants deep changes.
  */
-public void deepChange(Object aShape, PropChange aPC)
+@Override
+public boolean isSceneDeepChangeListener()  { return true; }
+
+/**
+ * SceneGraph.Client method: Called when SceneGraph View has prop change.
+ */
+@Override
+public void sceneViewPropChangedDeep(PropChange aPC)
 {
     // If deep change for EditorTextEditor, just return since it registers Undo itself (with better coalesce)
     //if(getTextEditor()!=null && getTextEditor().getTextShape()==aShape &&

@@ -956,22 +956,30 @@ public RMParentShape getPageShape()  { return _parent!=null? _parent.getPageShap
 /**
  * Returns the undoer for this shape (or null if not there).
  */
-public Undoer getUndoer()  { return _parent!=null? _parent.getUndoer() : null; }
+public Undoer getUndoer()
+{
+    SceneGraph scene = getSceneGraph();
+    return scene!=null ? scene.getUndoer() : null;
+}
 
 /**
  * Undoer convenience - sets title of next registered undo.
  */
-public void undoerSetUndoTitle(String aTitle) { Undoer u = getUndoer(); if(u!=null) u.setUndoTitle(aTitle); }
+public void undoerSetUndoTitle(String aTitle)
+{
+    Undoer u = getUndoer();
+    if (u!=null) u.setUndoTitle(aTitle);
+}
 
 /**
  * Undoer convenience - disable the undoer.
  */
-public void undoerDisable()  { Undoer u = getUndoer(); if(u!=null) u.disable(); }
+public void undoerDisable()  { Undoer u = getUndoer(); if (u!=null) u.disable(); }
 
 /**
  * Undoer convenience - enables the undoer.
  */
-public void undoerEnable()  { Undoer u = getUndoer(); if(u!=null) u.enable(); }
+public void undoerEnable()  { Undoer u = getUndoer(); if (u!=null) u.enable(); }
 
 /**
  * Editor method - returns whether this shape is at the top level (usually RMPage).
@@ -1516,11 +1524,8 @@ public void relayoutParent()
 public void repaint()
 {
     SceneGraph sceneGraph = getSceneGraph(); if (sceneGraph==null) return;
-    sceneGraph.repaint(this);
+    sceneGraph.repaintSceneForView(this);
 }
-
-/** Called to register view for repaint. */
-protected void repaint(RMShape aShape)  { }
 
 /** Editor method - indicates whether this shape can be super selected. */
 public boolean superSelectable()  { return getClass()==RMParentShape.class; }
