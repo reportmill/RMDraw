@@ -167,12 +167,9 @@ protected void respondUI(ViewEvent anEvent)
         EditorPaneUtils.previewXML(getEditorPane());
 
     // Handle ToolButton(s)
-    if (anEvent.getName().endsWith("ToolButton")) {
-        for(Tool tool : _toolBarTools)
-            if(anEvent.getName().startsWith(tool.getClass().getSimpleName())) {
-                getEditor().setCurrentTool(tool); break; }
-    }
-    
+    if (anEvent.getName().endsWith("ToolButton"))
+        setToolForButtonName(anEvent.getName());
+
     // Handle FontFaceComboBox
     if (anEvent.equals("FontFaceComboBox")) {
         String familyName = anEvent.getText();
@@ -210,6 +207,27 @@ protected void respondUI(ViewEvent anEvent)
     // Handle ColorWell
     if (anEvent.equals("ColorWell"))
         editor.getStyler().setFillColor(_colorWell.getColor());
+}
+
+/**
+ * Sets the current tool for toolbar name.
+ */
+protected void setToolForButtonName(String aName)
+{
+    Tool tool = getToolForButtonName(aName);
+    getEditor().setCurrentTool(tool);
+}
+
+/**
+ * Sets the current tool for toolbar name.
+ */
+protected Tool getToolForButtonName(String aName)
+{
+    for (Tool tool : _toolBarTools)
+        if (aName.startsWith(tool.getClass().getSimpleName()))
+            return tool;
+    System.out.println("EditorPaneToolBar.getToolForToolButtonName: Unknown name: " + aName);
+    return null;
 }
 
 /**

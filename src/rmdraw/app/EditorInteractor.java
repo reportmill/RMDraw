@@ -210,7 +210,7 @@ public class EditorInteractor extends ViewerInteractor {
 
         // If T key, swap in linked text
         else if (keyChar=='t')
-            ((TextTool)editor.getToolForClass(RMTextShape.class)).convertToText(editor.getSelectedShape(), "test");
+            TextToolUtils.convertToText(editor, editor.getSelectedShape(), "test");
 
         // Otherwise, set consume to false
         else return;

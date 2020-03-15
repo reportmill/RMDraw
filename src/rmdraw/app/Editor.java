@@ -527,7 +527,7 @@ public EditorStyler getStyler()  { return _styler; }
  */
 public CopyPaster getCopyPaster()
 {
-    Tool tool = getToolForViews(getSelectedShapes());
+    Tool tool = getToolForViews(getSelectedOrSuperSelectedShapes());
     return tool.getCopyPaster();
 }
 

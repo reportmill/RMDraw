@@ -125,6 +125,14 @@ public Tool getTool(RMShape aShape)  { return _editor.getToolForView(aShape); }
 public Tool getToolForClass(Class <? extends RMShape> aClass)  { return _editor.getToolForClass(aClass); }
 
 /**
+ * Sets undo title.
+ */
+public void setUndoTitle(String aTitle)
+{
+    getEditor().undoerSetUndoTitle(aTitle);
+}
+
+/**
  * Called when a tool is selected.
  */
 public void activateTool()  { }
@@ -223,7 +231,7 @@ public void mouseMoved(ViewEvent anEvent)  { }
 public void mousePressed(ViewEvent anEvent)
 {
     // Set undo title
-    getEditor().undoerSetUndoTitle("Add Shape");
+    setUndoTitle("Add Shape");
 
     // Save the mouse down point
     _downPoint = getEditorEvents().getEventPointInShape(true);
@@ -344,7 +352,7 @@ public String getToolTip(T aShape, ViewEvent anEvent)  { return null; }
 /**
  * Editor method.
  */
-public void processKeyEvent(T aShape, ViewEvent anEvent)  { }
+protected void processKeyEvent(T aShape, ViewEvent anEvent)  { }
 
 /**
  * Paints when tool is active for things like SelectTool's handles & selection rect or polygon's in-progress path.
@@ -386,7 +394,7 @@ protected void paintHandlesForSuperSelectedShapes(Painter aPntr)
 {
     // Iterate over super selected shapes and have tool paint SuperSelected
     Editor editor = getEditor();
-    for(int i=1, iMax=editor.getSuperSelectedShapeCount(); i<iMax; i++) {
+    for (int i=1, iMax=editor.getSuperSelectedShapeCount(); i<iMax; i++) {
         RMShape shape = editor.getSuperSelectedShape(i);
         Tool tool = getTool(shape);
         tool.paintHandles(shape, aPntr, true);
@@ -399,22 +407,23 @@ protected void paintHandlesForSuperSelectedShapes(Painter aPntr)
 public void paintHandles(T aShape, Painter aPntr, boolean isSuperSelected)
 {
     // If no handles, just return
-    if(getHandleCount(aShape)==0) return;
+    if (getHandleCount(aShape)==0) return;
     
     // Turn off antialiasing and cache current opacity
     aPntr.setAntialiasing(false);
     double opacity = aPntr.getOpacity();
     
     // If super-selected, set composite to make drawing semi-transparent
-    if(isSuperSelected)
+    if (isSuperSelected)
         aPntr.setOpacity(.64);
     
     // Determine if rect should be reduced if the shape is especially small
     boolean mini = aShape.getWidth()<=20 || aShape.getHeight()<=20;
         
     // Iterate over shape handles, get rect (reduce if needed) and draw
-    for(int i=0, iMax=getHandleCount(aShape); i<iMax; i++) {
-        Rect hr = getHandleRect(aShape, i, isSuperSelected); if(mini) hr.inset(1, 1);
+    for (int i=0, iMax=getHandleCount(aShape); i<iMax; i++) {
+        Rect hr = getHandleRect(aShape, i, isSuperSelected);
+        if (mini) hr.inset(1, 1);
         aPntr.drawImage(_handle, hr.x, hr.y, hr.width, hr.height);
     }
         

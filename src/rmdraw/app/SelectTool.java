@@ -179,7 +179,7 @@ public class SelectTool extends Tool {
                 if(anEvent.isClickCandidate()) return;
 
                 // Set undo title
-                editor.undoerSetUndoTitle("Move");
+                setUndoTitle("Move");
 
                 // Get SuperSelectedShape and disable ParentTracksBoundsOfChildren
                 RMParentShape parent = editor.getSuperSelectedParentShape();
@@ -205,7 +205,7 @@ public class SelectTool extends Tool {
             case Rotate:
 
                 // Set Undo title
-                editor.undoerSetUndoTitle("Rotate");
+                setUndoTitle("Rotate");
                 Point point2 = getEditorEvents().getEventPointInShape(false);
 
                 // Iterate over selected shapes and update roll
@@ -220,7 +220,7 @@ public class SelectTool extends Tool {
             case Resize:
 
                 // Register undo title "Resize"
-                editor.undoerSetUndoTitle("Resize");
+                setUndoTitle("Resize");
 
                 // Get event point in super selected shape coords snapped to grid
                 Point resizePoint = getEditorEvents().getEventPointInShape(shouldSnap);

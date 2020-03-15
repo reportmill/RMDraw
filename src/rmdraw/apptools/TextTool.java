@@ -31,9 +31,6 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     // The minimum height of the RMText when editor text editor is updating size
     private double  _updatingMinHeight = 0;
 
-    // Whether current mouse drag should be moving table column
-    private boolean  _moveTableColumn;
-
     // A Listener for TextEditor Selection PropChange
     private PropChangeListener  _textEditorSelChangeLsnr = pc -> textEditorSelChanged();
 
@@ -46,7 +43,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
 
         // Get selected text (just return if null)
         RMTextShape text = getSelectedShape();
-        if (text==null)
+        if (text==null || !isSuperSelected(text))
             return null;
 
         // Update TextEditor
@@ -279,21 +276,8 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         if (isSuperSelected)
             paintTextEditor(aText, aPntr);
 
-        // If text is structured, draw rectangle buttons
-        if (isStructured(aText)) {
-
-            // Iterate over shape handles, get rect and draw
-            aPntr.setAntialiasing(false);
-            for (int i=0, iMax=getHandleCount(aText); i<iMax; i++) {
-                Rect hr = getHandleRect(aText, i, isSuperSelected);
-                aPntr.drawButton(hr, false);
-            }
-            aPntr.setAntialiasing(true);
-        }
-
-        // If not structured or text linking, draw normal
-        else if (!isSuperSelected)
-            super.paintHandles(aText, aPntr, isSuperSelected);
+        // Otherwise, do normal paint
+        else super.paintHandles(aText, aPntr, isSuperSelected);
 
         // Call paintTextLinkIndicator
         if (isPaintingTextLinkIndicator(aText))
@@ -303,15 +287,14 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     /**
      * Returns whether to show bounds rect.
      */
-    private boolean isShowBoundsRect(RMTextShape aText)
+    protected boolean isShowBoundsRect(RMTextShape aText)
     {
         Editor editor = getEditor();
-        if(aText.getBorder()!=null) return false; // If text draws it's own stroke, return false
-        if(!editor.isEditing()) return false; // If editor is previewing, return false
-        if(isStructured(aText)) return false; // If structured text, return false
-        if(editor.isSelected(aText) || editor.isSuperSelected(aText)) return true; // If selected, return true
-        if(aText.length()==0) return true; // If text is zero length, return true
-        if(aText.getDrawsSelectionRect()) return true; // If text explicitly draws selection rect, return true
+        if (aText.getBorder()!=null) return false; // If text draws it's own stroke, return false
+        if (!editor.isEditing()) return false; // If editor is previewing, return false
+        if (editor.isSelected(aText) || editor.isSuperSelected(aText)) return true; // If selected, return true
+        if (aText.length()==0) return true; // If text is zero length, return true
+        if (aText.getDrawsSelectionRect()) return true; // If text explicitly draws selection rect, return true
         return false; // Otherwise, return false
     }
 
@@ -321,7 +304,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     public void paintBoundsRect(RMTextShape aText, Painter aPntr)
     {
         // If not ShowBoundsRect, just return
-        if(!isShowBoundsRect(aText)) return;
+        if (!isShowBoundsRect(aText)) return;
 
         // Save gstate, set color/stroke
         aPntr.save();
@@ -340,7 +323,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     }
 
     /**
-     * Paints a given TextEditor.
+     * Override to paint text when editing.
      */
     protected void paintTextEditor(T aText, Painter aPntr)
     {
@@ -354,39 +337,9 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         // Clip to bounds
         aPntr.clip(aText.getBoundsInside());
 
-        // Get selection path
+        // Have TextEditor paint active text
         TextEditor ted = getTextEditor();
-        Shape path = ted.getSelPath();
-
-        // If empty selection, draw caret
-        if(ted.isSelEmpty() && path!=null) {
-            if (ted.isShowCaret()) {
-                aPntr.setColor(Color.BLACK);
-                aPntr.setStroke(Stroke.Stroke1); // Set color and stroke of cursor
-                aPntr.setAntialiasing(false);
-                aPntr.draw(path);
-                aPntr.setAntialiasing(true); // Draw cursor
-            }
-        }
-
-        // If selection, get selection path and fill
-        else {
-            aPntr.setColor(new Color(128, 128, 128, 128));
-            aPntr.fill(path);
-        }
-
-        // If spell checking, get path for misspelled words and draw
-        if (ted.isSpellChecking() && ted.length()>0) {
-            Shape spath = ted.getSpellingPath();
-            if(spath!=null) {
-                aPntr.setColor(Color.RED); aPntr.setStroke(Stroke.StrokeDash1);
-                aPntr.draw(spath);
-                aPntr.setColor(Color.BLACK); aPntr.setStroke(Stroke.Stroke1);
-            }
-        }
-
-        // Paint TextBox
-        ted.getTextBox().paint(aPntr);
+        ted.paintActiveText(aPntr);
 
         // Restore gstate
         aPntr.restore();
@@ -466,7 +419,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
      */
     public void mouseMoved(T aShape, ViewEvent anEvent)
     {
-        if(getEditor().getShapeAtPoint(anEvent.getPoint()) instanceof RMTextShape) {
+        if (getEditor().getShapeAtPoint(anEvent.getPoint()) instanceof RMTextShape) {
             getEditor().setCursor(Cursor.TEXT); anEvent.consume(); }
     }
 
@@ -476,7 +429,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     public void mousePressed(ViewEvent anEvent)
     {
         // Register all selectedShapes dirty because their handles will probably need to be wiped out
-        for(RMShape shp : getEditor().getSelectedShapes()) shp.repaint();
+        for (RMShape shp : getEditor().getSelectedShapes()) shp.repaint();
 
         // Get shape hit by down point
         _downShape = getEditor().getShapeAtPoint(anEvent.getX(),anEvent.getY());
@@ -490,7 +443,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         _shape.setFrame(defaultBounds);
 
         // Add shape to superSelectedShape (within an undo grouping) and superSelect
-        getEditor().undoerSetUndoTitle("Add Text");
+        setUndoTitle("Add Text");
         getEditor().getSuperSelectedParentShape().addChild(_shape);
         getEditor().setSuperSelectedShape(_shape);
         _updatingSize = true;
@@ -503,7 +456,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     public void mouseDragged(ViewEvent anEvent)
     {
         // If shape wasn't created in mouse down, just return
-        if(_shape==null) return;
+        if (_shape==null) return;
 
         // Set shape to repaint
         _shape.repaint();
@@ -524,7 +477,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
 
         // Set UpdatingMinHeight to drag rect height, but if text rect unreasonably thin, reset to 0
         _updatingMinHeight = rect.height;
-        if(rect.width<=30)
+        if (rect.width<=30)
             _updatingMinHeight = 0;
 
         // Set new shape bounds
@@ -541,147 +494,69 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         upPoint = _shape.localToParent(upPoint);
 
         // If upRect is really small, see if the user meant to convert a shape to text instead
-        if(Math.abs(_downPoint.x - upPoint.x)<=3 && Math.abs(_downPoint.y - upPoint.y)<=3) {
+        if (Math.abs(_downPoint.x - upPoint.x)<=3 && Math.abs(_downPoint.y - upPoint.y)<=3) {
 
             // If hit shape is text, just super-select that text and return
-            if(_downShape instanceof RMTextShape) {
+            if (_downShape instanceof RMTextShape) {
                 _shape.removeFromParent();
                 getEditor().setSuperSelectedShape(_downShape);
             }
 
             // If hit shape is Rectangle, Oval or Polygon, swap for RMText and return
-            else if(TextToolUtils.shouldConvertToText(_downShape)) {
+            else if (TextToolUtils.shouldConvertToText(_downShape)) {
                 _shape.removeFromParent();
-                convertToText(_downShape, null);
+                TextToolUtils.convertToText(getEditor(), _downShape, null);
             }
         }
 
-        // Set editor current tool to select tool
+        // Set Editor.CurrentTool to SelectTool and reset new view
         getEditor().setCurrentToolToSelectTool();
-
-        // Reset tool shape
         _shape = null;
     }
 
     /**
      * Event handling for shape editing (just forwards to text editor).
      */
-    public void processEvent(T aTextShape, ViewEvent anEvent)
+    public void processEvent(T aText, ViewEvent anEvent)
     {
-        // Handle KeyEvent
-        if(anEvent.isKeyEvent()) {
-            processKeyEvent(aTextShape, anEvent); return; }
+        if (anEvent.isMouseEvent())
+            processMouseEvent(aText, anEvent);
+        else if (anEvent.isKeyEvent())
+            processKeyEvent(aText, anEvent);
+    }
 
-        // If MoveTableColumn, forward to moveTableColumn()
-        if(_moveTableColumn)
-            moveTableColumn(anEvent);
-
-        // If text is a structured table row column and point is outside column, start MoveTableRow
-        else if(anEvent.isMouseDrag()) { RMTextShape tshp = aTextShape;
-            Point pnt = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), aTextShape); double px = pnt.getX();
-            if(isStructured(tshp) && (px<-20 || px>tshp.getWidth()+10) && tshp.getParent().getChildCount()>1) {
-                tshp.undoerSetUndoTitle("Reorder columns");
-                getEditor().setSelectedShape(tshp); _moveTableColumn = true; return; }
-        }
-
+    /**
+     * Event handling for shape editing (just forwards to text editor).
+     */
+    protected void processMouseEvent(T aText, ViewEvent anEvent)
+    {
         // If shape isn't super selected, just return
-        if(!isSuperSelected(aTextShape)) return;
+        if (!isSuperSelected(aText)) return;
 
         // If mouse event, convert event to text shape coords and consume
-        if(anEvent.isMouseEvent()) { anEvent.consume();
-            Point pnt = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), aTextShape);
+        if (anEvent.isMouseEvent()) { anEvent.consume();
+            Point pnt = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), aText);
             anEvent = anEvent.copyForPoint(pnt.getX(), pnt.getY());
         }
 
         // Forward on to editor
         getTextEditor().processEvent(anEvent);
-        aTextShape.repaint();
+        aText.repaint();
     }
 
-    /**
-     * Key event handling for super selected text.
+   /**
+     * Override to forward to TextEditor.
      */
-    public void processKeyEvent(T aTextShape, ViewEvent anEvent)
+    protected void processKeyEvent(T aText, ViewEvent anEvent)
     {
-        // If tab was pressed and text is structured table row column, forward selection onto next column
-        if(isStructured(aTextShape) && anEvent.isKeyPress() &&
-            anEvent.getKeyCode()==KeyCode.TAB && !anEvent.isAltDown()) {
-
-            // Get structured text table row, child table rows and index of child
-            RMParentShape tableRow = aTextShape.getParent();
-            List children = RMShapeUtils.getShapesSortedByX(tableRow.getChildren());
-            int index = children.indexOf(aTextShape);
-
-            // If shift is down, get index to the left, wrapped, otherwise get index to the right, wrapped
-            if(anEvent.isShiftDown()) index = (index - 1 + children.size())%children.size();
-            else index = (index + 1)%children.size();
-
-            // Get next text and super-select
-            RMShape nextText = (RMShape)children.get(index);
-            getEditor().setSuperSelectedShape(nextText);
-
-            // Consume event and return
-            anEvent.consume(); return;
-        }
-
-        // Have text editor process key event
         getTextEditor().processEvent(anEvent);
-        aTextShape.repaint();
-    }
-
-    /**
-     * Move Table Column stuff (table row column re-ordering).
-     */
-    private void moveTableColumn(ViewEvent anEvent)
-    {
-        // Get editor, editor SelectedShape and TableRow
-        Editor editor = getEditor();
-        RMShape shape = editor.getSelectedOrSuperSelectedShape();
-        RMParentShape tableRow = shape.getParent();
-        tableRow.repaint();
-
-        // Get event x in TableRow coords and whether point is in TableRow
-        Point point = editor.convertToShape(anEvent.getX(), anEvent.getY(), tableRow); point.y = 2;
-        boolean inRow = tableRow.contains(point);
-
-        // Handle MouseDragged: layout children by X (if outside row, skip drag shape)
-        if (anEvent.isMouseDrag()) {
-            List <RMShape> children = RMShapeUtils.getShapesSortedByFrameX(tableRow.getChildren());
-            float x = 0;
-            for (RMShape child : children) {
-                if (child==shape) { if(inRow) child.setX(point.x-child.getWidth()/2);
-                else { child.setX(9999); continue; }}
-                else child.setX(x); x += child.getWidth(); }
-        }
-
-        // Handle MouseReleased: reset children
-        if(anEvent.isMouseRelease()) {
-
-            // If shape in row, set new index
-            if(inRow) {
-                int iold = shape.indexOf();
-                int inew = 0; while(inew<tableRow.getChildCount() && tableRow.getChild(inew).getX()<=shape.getX()) inew++;
-                if(iold!=inew) {
-                    tableRow.removeChild(iold); if(inew>iold) inew--;
-                    tableRow.addChild(shape, inew);
-                }
-            }
-
-            // If shape is outside bounds of tableRow, remove it
-            else {
-                tableRow.removeChild(shape);
-                editor.setSuperSelectedShape(tableRow);
-            }
-
-            // Do layout again to snap shape back into place
-            tableRow.layoutDeep(); _moveTableColumn = false;
-        }
+        aText.repaint();
     }
 
     /**
      * Editor method - installs this text in Editor's text editor.
      */
-    public void didBecomeSuperSelected(T aTextShape)
+    public void didBecomeSuperSelected(T aText)
     {
         // Start listening to changes to TextEditor Selection change
         TextEditor ted = getTextEditor();
@@ -709,6 +584,9 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
      */
     protected void textAreaPropChanged(PropChange aPC)
     {
+        // If in resetUI, just return
+        if (isSendEventDisabled()) return;
+
         // Handle Selection change
         if (aPC.getPropertyName()==TextArea.Selection_Prop) {
 
@@ -734,23 +612,22 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         // If updating size, reset text width & height to accommodate text
         else if (_updatingSize) {
 
-            // Get TextShape
-            RMTextShape textShape = getSelectedShape(); if (textShape==null) return;
+            // Get TextView
+            RMTextShape text = getSelectedShape(); if (text==null) return;
 
             // Get preferred text shape width
-            double maxWidth = _updatingMinHeight==0 ? textShape.getParent().getWidth() - textShape.getX() :
-                textShape.getWidth();
-            double prefWidth = textShape.getPrefWidth(); if (prefWidth>maxWidth) prefWidth = maxWidth;
+            double maxWidth = _updatingMinHeight==0 ? text.getParent().getWidth() - text.getX() : text.getWidth();
+            double prefWidth = text.getPrefWidth(); if (prefWidth>maxWidth) prefWidth = maxWidth;
 
             // If width gets updated, get & set desired width (make sure it doesn't go beyond page border)
             if (_updatingMinHeight==0)
-                textShape.setWidth(prefWidth);
+                text.setWidth(prefWidth);
 
             // If PrefHeight or current height is greater than UpdatingMinHeight (which won't be zero if user drew a
             //  text box to enter text), set Height to PrefHeight
-            double prefHeight = textShape.getPrefHeight();
-            if (prefHeight>_updatingMinHeight || textShape.getHeight()>_updatingMinHeight)
-                textShape.setHeight(Math.max(prefHeight, _updatingMinHeight));
+            double prefHeight = text.getPrefHeight();
+            if (prefHeight>_updatingMinHeight || text.getHeight()>_updatingMinHeight)
+                text.setHeight(Math.max(prefHeight, _updatingMinHeight));
         }
     }
 
@@ -798,93 +675,17 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     }
 
     /**
-     * Moves the handle at the given index to the given point.
-     */
-    public void moveShapeHandle(T aShape, int aHandle, Point toPoint)
-    {
-        // If not structured, do normal version
-        if (!isStructured(aShape)) { super.moveShapeHandle(aShape, aHandle, toPoint); return; }
-
-        // Get handle point in shape coords and shape parent coords
-        Point p1 = getHandlePoint(aShape, aHandle, false);
-        Point p2 = aShape.parentToLocal(toPoint);
-
-        // Get whether left handle and width change
-        boolean left = aHandle==HandleW || aHandle==HandleNW || aHandle==HandleSW;
-        double dw = p2.getX() - p1.getX(); if(left) dw = -dw;
-        double nw = aShape.getWidth() + dw;
-        if(nw<8) { nw = 8; dw = nw - aShape.getWidth(); }
-
-        // Get shape to adjust and new width (make sure it's no less than 8)
-        int index = aShape.indexOf();
-        int index2 = left? index-1 : index+1;
-        RMShape other = aShape.getParent().getChild(index2);
-        double nw2 = other.getWidth() - dw;
-        if(nw2<8) { nw2 = 8; dw = other.getWidth() - nw2; nw = aShape.getWidth() + dw; }
-
-        // Adjust shape and layout parent
-        aShape.setWidth(nw);
-        other.setWidth(nw2);
-        aShape.getParent().layout();
-    }
-
-    /**
      * Overrides tool tooltip method to return text string if some chars aren't visible.
      */
-    public String getToolTip(T aTextShape, ViewEvent anEvent)
+    public String getToolTip(T aText, ViewEvent anEvent)
     {
         // If all text is visible and greater than 8 pt, return null
-        if(aTextShape.isAllTextVisible() && aTextShape.getFont().getSize()>=8) return null;
+        if (aText.isAllTextVisible() && aText.getFont().getSize()>=8) return null;
 
         // Get text string (just return if empty), trim to 64 chars or less and return
-        String string = aTextShape.getText(); if(string==null || string.length()==0) return null;
-        if(string.length()>64) string = string.substring(0,64) + "...";
+        String string = aText.getText(); if (string==null || string.length()==0) return null;
+        if (string.length()>64) string = string.substring(0,64) + "...";
         return string;
-    }
-
-    /**
-     * Editor method - returns handle count.
-     */
-    public int getHandleCount(T aText)
-    {
-        return isStructured(aText)? 2 : super.getHandleCount(aText);
-    }
-
-    /**
-     * Editor method - returns handle rect in editor coords.
-     */
-    public Rect getHandleRect(T aTextShape, int handle, boolean isSuperSelected)
-    {
-        // If structured, return special handles (tall & thin)
-        if (isStructured(aTextShape)) {
-
-            // Get handle point in text bounds, convert to table row bounds
-            Point cp = getHandlePoint(aTextShape, handle, true);
-            cp = aTextShape.localToParent(cp);
-
-            // If point outside of parent, return bogus rect
-            if (cp.getX()<0 || cp.getX()>aTextShape.getParent().getWidth())
-               return new Rect(-9999,-9999,0,0);
-
-            // Get handle point in text coords
-            cp = getHandlePoint(aTextShape, handle, false);
-
-            // Get handle point in editor coords
-            cp = getEditor().convertFromShape(cp.getX(), cp.getY(), aTextShape);
-
-            // Get handle rect
-            Rect hr = new Rect(cp.getX()-3, cp.getY(), 6, aTextShape.height() * getEditor().getZoomFactor());
-
-            // If super selected, offset
-            if (isSuperSelected)
-                hr.offset(handle==0? -2 : 2, 0);
-
-            // Return handle rect
-            return hr;
-        }
-
-        // Return normal shape handle rect
-        return super.getHandleRect(aTextShape, handle, isSuperSelected);
     }
 
     /**
@@ -911,31 +712,13 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         if(cb.hasString()) {
             String string = anEvent.getClipboard().getString();
             RMTextShape text = aShape;
-            if(text.length()==0)
+            if (text.length()==0)
                 text.setText(string);
             else text.getRichText().addChars(" " + string);
         }
 
         // Otherwise, do normal drop
         else super.dragDrop(aShape, anEvent);
-    }
-
-    /**
-     * Returns the shape class that this tool edits.
-     */
-    public Class getShapeClass()  { return RMTextShape.class; }
-
-    /**
-     * Returns the name of this tool to be displayed by inspector.
-     */
-    public String getWindowTitle()  { return "Text Inspector"; }
-
-    /**
-     * Converts a shape to a text shape.
-     */
-    public void convertToText(RMShape aShape, String aString)
-    {
-        TextToolUtils.convertToText(getEditor(), aShape, aString);
     }
 
     /** Sets the character spacing for the currently selected shapes. */
@@ -981,17 +764,14 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     }
 
     /**
-     * Sets undo title.
+     * Returns the shape class that this tool edits.
      */
-    public void setUndoTitle(String aTitle)
-    {
-        getEditor().undoerSetUndoTitle(aTitle);
-    }
+    public Class getShapeClass()  { return RMTextShape.class; }
 
     /**
-     * Returns whether given shape is in a Structured TableRow.
+     * Returns the name of this tool to be displayed by inspector.
      */
-    protected boolean isStructured(RMShape aShape)  { return false; }
+    public String getWindowTitle()  { return "Text Inspector"; }
 
     /**
      * Returns the image used to represent shapes that this tool represents.

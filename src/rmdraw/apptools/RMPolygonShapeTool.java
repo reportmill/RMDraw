@@ -219,7 +219,6 @@ public void mousePressed(T aPolygon, ViewEvent anEvent)
     
     // Otherwise, figure out the size of a handle in path coordinates and set index of path point hit by mouse down
     else {
-        Size handles = new Size(9,9);
         int oldSelectedPt = _selectedPointIndex;
         int hp = handleAtPoint(aPolygon.getPath(), point, oldSelectedPt);
         _selectedPointIndex = hp;
@@ -261,7 +260,7 @@ private void createPoly()
         poly.setPath(_path);
 
         // Add shape to superSelectedShape (within an undo grouping).
-        getEditor().undoerSetUndoTitle("Add Polygon");
+        setUndoTitle("Add Polygon");
         getEditor().getSuperSelectedParentShape().addChild(poly);
 
         // Select Shape
@@ -500,7 +499,7 @@ public void deleteSelectedPoint()
 
     // if all points have been removed, delete the shape itself
     if (path.getSegCount()==0) {
-        getEditor().undoerSetUndoTitle("Delete Shape");
+        setUndoTitle("Delete Shape");
         p.getParent().repaint();
         p.removeFromParent();
         getEditor().setSelectedShape(null);
@@ -508,7 +507,7 @@ public void deleteSelectedPoint()
     
     // otherwise update path and bounds and deselect the deleted point
     else {
-        getEditor().undoerSetUndoTitle("Delete Control Point");
+        setUndoTitle("Delete Control Point");
         p.resetPath(path);
         _selectedPointIndex = -1;
     }
