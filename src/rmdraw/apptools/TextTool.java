@@ -7,10 +7,7 @@ import rmdraw.shape.*;
 import java.util.List;
 import snap.geom.*;
 import snap.gfx.*;
-import snap.text.RichTextLine;
-import snap.text.RichTextRun;
-import snap.text.TextEditor;
-import snap.text.TextLineStyle;
+import snap.text.*;
 import snap.util.*;
 import snap.view.*;
 
@@ -19,8 +16,11 @@ import snap.view.*;
  */
 public class TextTool<T extends RMTextShape> extends Tool<T> {
     
-    // The TextArea
+    // The TextArea in the inspector panel
     private TextArea  _textArea;
+
+    // The TextArea used to paint text in editor when super-selected
+    private TextEditor _textEdtr;
     
     // The shape hit by text tool on mouse down
     private RMShape  _downShape;
@@ -44,8 +44,15 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     {
         getUI(); // I don't like this
 
+        // Get selected text (just return if null)
         RMTextShape text = getSelectedShape();
-        return text!=null ? text.getTextEditor() : null;
+        if (text==null)
+            return null;
+
+        // Update TextEditor
+        TextBox tbox = text.getTextBox();
+        _textEdtr.setTextBox(tbox);
+        return _textEdtr;
     }
 
     /**
@@ -66,6 +73,9 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         textView.getScrollView().setBarSize(12);
         _textArea = textView.getTextArea();
         _textArea.addPropChangeListener(pc -> textAreaPropChanged(pc));
+
+        // Create TextEditor
+        _textEdtr = new TextShapeTextEditor();
     }
 
     /**
@@ -258,6 +268,176 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     }
 
     /**
+     * Paints selected shape indicator, like handles (and maybe a text linking indicator).
+     */
+    public void paintHandles(T aText, Painter aPntr, boolean isSuperSelected)
+    {
+        // Paint bounds rect (maybe)
+        paintBoundsRect(aText, aPntr);
+
+        // Paint SuperSelected
+        if (isSuperSelected)
+            paintTextEditor(aText, aPntr);
+
+        // If text is structured, draw rectangle buttons
+        if (isStructured(aText)) {
+
+            // Iterate over shape handles, get rect and draw
+            aPntr.setAntialiasing(false);
+            for (int i=0, iMax=getHandleCount(aText); i<iMax; i++) {
+                Rect hr = getHandleRect(aText, i, isSuperSelected);
+                aPntr.drawButton(hr, false);
+            }
+            aPntr.setAntialiasing(true);
+        }
+
+        // If not structured or text linking, draw normal
+        else if (!isSuperSelected)
+            super.paintHandles(aText, aPntr, isSuperSelected);
+
+        // Call paintTextLinkIndicator
+        if (isPaintingTextLinkIndicator(aText))
+            paintTextLinkIndicator(aText, aPntr);
+    }
+
+    /**
+     * Returns whether to show bounds rect.
+     */
+    private boolean isShowBoundsRect(RMTextShape aText)
+    {
+        Editor editor = getEditor();
+        if(aText.getBorder()!=null) return false; // If text draws it's own stroke, return false
+        if(!editor.isEditing()) return false; // If editor is previewing, return false
+        if(isStructured(aText)) return false; // If structured text, return false
+        if(editor.isSelected(aText) || editor.isSuperSelected(aText)) return true; // If selected, return true
+        if(aText.length()==0) return true; // If text is zero length, return true
+        if(aText.getDrawsSelectionRect()) return true; // If text explicitly draws selection rect, return true
+        return false; // Otherwise, return false
+    }
+
+    /**
+     * Paint bounds rect (maybe): Set color (red if selected, light gray otherwise), get bounds path and draw.
+     */
+    public void paintBoundsRect(RMTextShape aText, Painter aPntr)
+    {
+        // If not ShowBoundsRect, just return
+        if(!isShowBoundsRect(aText)) return;
+
+        // Save gstate, set color/stroke
+        aPntr.save();
+        aPntr.setColor(getEditor().isSuperSelected(aText)? new Color(.9f, .4f, .4f) : Color.LIGHTGRAY);
+        aPntr.setStroke(Stroke.Stroke1.copyForDashes(3, 2));
+
+        // Get bounds path
+        Shape path = aText.getPath().copyFor(aText.getBoundsInside());
+        path = getEditor().convertFromShape(path, aText);
+
+        // Draw bounds rect with no Antialiasing
+        aPntr.setAntialiasing(false);
+        aPntr.draw(path);
+        aPntr.setAntialiasing(true);
+        aPntr.restore();
+    }
+
+    /**
+     * Paints a given TextEditor.
+     */
+    protected void paintTextEditor(T aText, Painter aPntr)
+    {
+        // Save gstate
+        aPntr.save();
+
+        // Transform to Text coords
+        Transform xfm = aText.getLocalToParent(null);
+        aPntr.transform(xfm);
+
+        // Clip to bounds
+        aPntr.clip(aText.getBoundsInside());
+
+        // Get selection path
+        TextEditor ted = getTextEditor();
+        Shape path = ted.getSelPath();
+
+        // If empty selection, draw caret
+        if(ted.isSelEmpty() && path!=null) {
+            if (ted.isShowCaret()) {
+                aPntr.setColor(Color.BLACK);
+                aPntr.setStroke(Stroke.Stroke1); // Set color and stroke of cursor
+                aPntr.setAntialiasing(false);
+                aPntr.draw(path);
+                aPntr.setAntialiasing(true); // Draw cursor
+            }
+        }
+
+        // If selection, get selection path and fill
+        else {
+            aPntr.setColor(new Color(128, 128, 128, 128));
+            aPntr.fill(path);
+        }
+
+        // If spell checking, get path for misspelled words and draw
+        if (ted.isSpellChecking() && ted.length()>0) {
+            Shape spath = ted.getSpellingPath();
+            if(spath!=null) {
+                aPntr.setColor(Color.RED); aPntr.setStroke(Stroke.StrokeDash1);
+                aPntr.draw(spath);
+                aPntr.setColor(Color.BLACK); aPntr.setStroke(Stroke.Stroke1);
+            }
+        }
+
+        // Paint TextBox
+        ted.getTextBox().paint(aPntr);
+
+        // Restore gstate
+        aPntr.restore();
+    }
+
+    /**
+     * Returns whether to paint text link indicator.
+     */
+    protected boolean isPaintingTextLinkIndicator(RMTextShape aText)
+    {
+        // If there is a linked text, return true
+        if(aText.getLinkedText()!=null) return true;
+
+        // If height is less than half-inch, return false
+        if(aText.getHeight()<36) return false;
+
+        // If all text visible, return false
+        if(aText.isAllTextVisible()) return false;
+
+        // Return true
+        return true;
+    }
+
+    /**
+     * Paints the text link indicator.
+     */
+    private void paintTextLinkIndicator(RMTextShape aText, Painter aPntr)
+    {
+        // Turn off anti-aliasing
+        aPntr.setAntialiasing(false);
+
+        // Get overflow indicator box center point in editor coords
+        Point point = getEditor().convertFromShape(aText.getWidth()-15, aText.getHeight(), aText);
+
+        // Get overflow indicator box rect in editor coords
+        Rect rect = new Rect(point.x - 5, point.y - 5, 10, 10);
+
+        // Draw white background, black frame, and plus sign and turn off aliasing
+        aPntr.setColor(aText.getLinkedText()==null? Color.WHITE : new Color(90, 200, 255)); aPntr.fill(rect);
+        aPntr.setColor(aText.getLinkedText()==null? Color.BLACK : Color.GRAY);
+        aPntr.setStroke(Stroke.Stroke1); aPntr.draw(rect);
+        aPntr.setColor(aText.getLinkedText()==null? Color.BLACK : Color.WHITE);
+        aPntr.setStroke(new Stroke(1)); //, BasicStroke.CAP_BUTT, 0));
+        aPntr.drawLine(rect.getMidX(), rect.y + 2, rect.getMidX(), rect.getMaxY() - 2);
+        aPntr.drawLine(rect.x + 2, rect.getMidY(), rect.getMaxX() - 2, rect.getMidY());
+
+        // Turn on antialiasing
+        aPntr.setAntialiasing(true);
+    }
+
+    /**
      * Overrides standard tool method to deselect any currently editing text.
      */
     public void activateTool()
@@ -306,7 +486,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
 
         // Create default text instance and set initial bounds to reasonable value
         RMTextShape tshape = new RMTextShape(); _shape = tshape;
-        Rect defaultBounds = getDefaultBounds(tshape, _downPoint);
+        Rect defaultBounds = TextToolUtils.getDefaultBounds(tshape, _downPoint);
         _shape.setFrame(defaultBounds);
 
         // Add shape to superSelectedShape (within an undo grouping) and superSelect
@@ -334,7 +514,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
 
         // Get text default bounds and effective down point
         RMTextShape tshape = (RMTextShape)_shape;
-        Rect defaultBounds = getDefaultBounds(tshape, _downPoint);
+        Rect defaultBounds = TextToolUtils.getDefaultBounds(tshape, _downPoint);
         Point downPoint = defaultBounds.getPoint(Pos.TOP_LEFT);
 
         // Get new bounds rect from default bounds and drag point (make sure min height is default height)
@@ -370,7 +550,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
             }
 
             // If hit shape is Rectangle, Oval or Polygon, swap for RMText and return
-            else if(shouldConvertToText(_downShape)) {
+            else if(TextToolUtils.shouldConvertToText(_downShape)) {
                 _shape.removeFromParent();
                 convertToText(_downShape, null);
             }
@@ -388,8 +568,6 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
      */
     public void processEvent(T aTextShape, ViewEvent anEvent)
     {
-        // If TextEditor not set, just return
-
         // Handle KeyEvent
         if(anEvent.isKeyEvent()) {
             processKeyEvent(aTextShape, anEvent); return; }
@@ -513,21 +691,17 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     /**
      * Editor method - uninstalls this text from Editor's text editor and removes new text if empty.
      */
-    public void willLoseSuperSelected(T aTextShape)
+    public void willLoseSuperSelected(T aText)
     {
         // If text editor was really just an insertion point and ending text length is zero, remove text
-        if(_updatingSize && aTextShape.length()==0 &&
-            getEditor().getSelectTool().getDragMode()== SelectTool.DragMode.None)
-            aTextShape.removeFromParent();
+        if (_updatingSize && aText.length()==0 && getEditor().getSelectTool().getDragMode()==SelectTool.DragMode.None)
+            aText.removeFromParent();
 
         // Stop listening to changes to TextShape RichText
         TextEditor ted = getTextEditor();
         ted.removePropChangeListener(_textEditorSelChangeLsnr, TextEditor.Selection_Prop);
         ted.setActive(false);
         _updatingSize = false; _updatingMinHeight = 0;
-
-        // Set text editor's text shape to null
-        aTextShape.clearTextEditor();
     }
 
     /**
@@ -551,7 +725,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         }
 
         // Handle Focus change
-        else if(aPC.getPropertyName()==TextArea.Focused_Prop) {
+        else if (aPC.getPropertyName()==TextArea.Focused_Prop) {
             TextEditor ted = getTextEditor();
             if (ted!=null && _textArea.isFocused())
                 ted.setActive(false);
@@ -603,17 +777,17 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     {
         // Iterator over selected shapes and see if any has an overflow indicator box that was hit
         List shapes = getEditor().getSelectedOrSuperSelectedShapes();
-        for(int i=0, iMax=shapes.size(); i<iMax; i++) { RMTextShape text = (RMTextShape)shapes.get(i);
+        for (int i=0, iMax=shapes.size(); i<iMax; i++) { RMTextShape text = (RMTextShape)shapes.get(i);
 
             // If no linked text and not painting text indicator, just continue
-            if(text.getLinkedText()==null && !isPaintingTextLinkIndicator(text)) continue;
+            if (text.getLinkedText()==null && !isPaintingTextLinkIndicator(text)) continue;
 
             // Get point in text coords
             Point point = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), text);
 
             // If pressed was in overflow indicator box, add linked text (or select existing one)
-            if(point.x>=text.getWidth()-20 && point.x<=text.getWidth()-10 && point.y>=text.getHeight()-5) {
-                if(text.getLinkedText()==null) sendEvent("LinkedTextMenuItem");   // If not linked text, add it
+            if (point.x>=text.getWidth()-20 && point.x<=text.getWidth()-10 && point.y>=text.getHeight()-5) {
+                if (text.getLinkedText()==null) sendEvent("LinkedTextMenuItem");   // If not linked text, add it
                 else getEditor().setSelectedShape(text.getLinkedText());          // Otherwise, select it
                 return true;    // Return true so SelectTool goes to DragModeNone
             }
@@ -629,7 +803,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     public void moveShapeHandle(T aShape, int aHandle, Point toPoint)
     {
         // If not structured, do normal version
-        if(!isStructured(aShape)) { super.moveShapeHandle(aShape, aHandle, toPoint); return; }
+        if (!isStructured(aShape)) { super.moveShapeHandle(aShape, aHandle, toPoint); return; }
 
         // Get handle point in shape coords and shape parent coords
         Point p1 = getHandlePoint(aShape, aHandle, false);
@@ -669,112 +843,12 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     }
 
     /**
-     * Paints selected shape indicator, like handles (and maybe a text linking indicator).
-     */
-    public void paintHandles(T aText, Painter aPntr, boolean isSuperSelected)
-    {
-        // Paint bounds rect (maybe)
-        paintBoundsRect(aText, aPntr);
-
-        // If text is structured, draw rectangle buttons
-        if(isStructured(aText)) {
-
-            // Iterate over shape handles, get rect and draw
-            aPntr.setAntialiasing(false);
-            for(int i=0, iMax=getHandleCount(aText); i<iMax; i++) {
-                Rect hr = getHandleRect(aText, i, isSuperSelected);
-                aPntr.drawButton(hr, false); }
-            aPntr.setAntialiasing(true);
-        }
-
-        // If not structured or text linking, draw normal
-        else if(!isSuperSelected)
-            super.paintHandles(aText, aPntr, isSuperSelected);
-
-        // Call paintTextLinkIndicator
-        if(isPaintingTextLinkIndicator(aText))
-            paintTextLinkIndicator(aText, aPntr);
-    }
-
-    /**
-     * Paint bounds rect (maybe): Set color (red if selected, light gray otherwise), get bounds path and draw.
-     */
-    public void paintBoundsRect(RMTextShape aText, Painter aPntr)
-    {
-        if(!isShowBoundsRect(aText)) return;
-        aPntr.save();
-        aPntr.setColor(getEditor().isSuperSelected(aText)? new Color(.9f, .4f, .4f) : Color.LIGHTGRAY);
-        aPntr.setStroke(Stroke.Stroke1.copyForDashes(3, 2));
-        Shape path = aText.getPath().copyFor(aText.getBoundsInside());
-        path = getEditor().convertFromShape(path, aText);
-        aPntr.setAntialiasing(false); aPntr.draw(path); aPntr.setAntialiasing(true);
-        aPntr.restore();
-    }
-
-    /**
-     * Returns whether to show bounds rect.
-     */
-    private boolean isShowBoundsRect(RMTextShape aText)
-    {
-        Editor editor = getEditor();
-        if(aText.getBorder()!=null) return false; // If text draws it's own stroke, return false
-        if(!editor.isEditing()) return false; // If editor is previewing, return false
-        if(isStructured(aText)) return false; // If structured text, return false
-        if(editor.isSelected(aText) || editor.isSuperSelected(aText)) return true; // If selected, return true
-        if(aText.length()==0) return true; // If text is zero length, return true
-        if(aText.getDrawsSelectionRect()) return true; // If text explicitly draws selection rect, return true
-        return false; // Otherwise, return false
-    }
-
-    /**
-     * Returns whether to paint text link indicator.
-     */
-    protected boolean isPaintingTextLinkIndicator(RMTextShape aText)
-    {
-        // If there is a linked text, return true
-        if(aText.getLinkedText()!=null) return true;
-
-        // If height is less than half-inch, return false
-        if(aText.getHeight()<36) return false;
-
-        // If all text visible, return false
-        if(aText.isAllTextVisible()) return false;
-
-        // Return true
-        return true;
-    }
-
-    /**
-     * Paints the text link indicator.
-     */
-    private void paintTextLinkIndicator(RMTextShape aText, Painter aPntr)
-    {
-        // Turn off anti-aliasing
-        aPntr.setAntialiasing(false);
-
-        // Get overflow indicator box center point in editor coords
-        Point point = getEditor().convertFromShape(aText.getWidth()-15, aText.getHeight(), aText);
-
-        // Get overflow indicator box rect in editor coords
-        Rect rect = new Rect(point.x - 5, point.y - 5, 10, 10);
-
-        // Draw white background, black frame, and plus sign and turn off aliasing
-        aPntr.setColor(aText.getLinkedText()==null? Color.WHITE : new Color(90, 200, 255)); aPntr.fill(rect);
-        aPntr.setColor(aText.getLinkedText()==null? Color.BLACK : Color.GRAY);
-        aPntr.setStroke(Stroke.Stroke1); aPntr.draw(rect);
-        aPntr.setColor(aText.getLinkedText()==null? Color.BLACK : Color.WHITE);
-        aPntr.setStroke(new Stroke(1)); //, BasicStroke.CAP_BUTT, 0));
-        aPntr.drawLine(rect.getMidX(), rect.y + 2, rect.getMidX(), rect.getMaxY() - 2);
-        aPntr.drawLine(rect.x + 2, rect.getMidY(), rect.getMaxX() - 2, rect.getMidY());
-
-        // Turn on antialiasing
-        aPntr.setAntialiasing(true);
-    }
-
-    /**
      * Editor method - returns handle count.
      */
-    public int getHandleCount(T aText)  { return isStructured(aText)? 2 : super.getHandleCount(aText); }
+    public int getHandleCount(T aText)
+    {
+        return isStructured(aText)? 2 : super.getHandleCount(aText);
+    }
 
     /**
      * Editor method - returns handle rect in editor coords.
@@ -782,14 +856,14 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     public Rect getHandleRect(T aTextShape, int handle, boolean isSuperSelected)
     {
         // If structured, return special handles (tall & thin)
-        if(isStructured(aTextShape)) {
+        if (isStructured(aTextShape)) {
 
             // Get handle point in text bounds, convert to table row bounds
             Point cp = getHandlePoint(aTextShape, handle, true);
             cp = aTextShape.localToParent(cp);
 
             // If point outside of parent, return bogus rect
-            if(cp.getX()<0 || cp.getX()>aTextShape.getParent().getWidth())
+            if (cp.getX()<0 || cp.getX()>aTextShape.getParent().getWidth())
                return new Rect(-9999,-9999,0,0);
 
             // Get handle point in text coords
@@ -802,7 +876,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
             Rect hr = new Rect(cp.getX()-3, cp.getY(), 6, aTextShape.height() * getEditor().getZoomFactor());
 
             // If super selected, offset
-            if(isSuperSelected)
+            if (isSuperSelected)
                 hr.offset(handle==0? -2 : 2, 0);
 
             // Return handle rect
@@ -857,90 +931,11 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
     public String getWindowTitle()  { return "Text Inspector"; }
 
     /**
-     * Returns whether text tool should convert to text.
-     */
-    public boolean shouldConvertToText(RMShape aShape)
-    {
-        if(aShape.isLocked()) return false;
-        return aShape.getClass()==RMRectShape.class || aShape instanceof RMOvalShape ||
-            aShape instanceof RMPolygonShape;
-    }
-
-    /**
      * Converts a shape to a text shape.
      */
     public void convertToText(RMShape aShape, String aString)
     {
-        // If shape is null, just return
-        if(aShape==null) return;
-
-        // Get text shape for given shape (if given shape is text, just use it)
-        RMTextShape text = aShape instanceof RMTextShape? (RMTextShape)aShape : new RMTextShape();
-
-        // Copy attributes of given shape
-        if(text!=aShape)
-            text.copyShape(aShape);
-
-        // Copy path of given shape
-        if(text!=aShape)
-            text.setPathShape(aShape);
-
-        // Swap this shape in for original
-        if(text!=aShape) {
-            aShape.getParent().addChild(text, aShape.indexOf());
-            aShape.getParent().removeChild(aShape);
-        }
-
-        // Install a bogus string for testing
-        if(aString!=null && aString.equals("test"))
-            aString = getTestString();
-
-        // If aString is non-null, install in text
-        if(aString!=null)
-            text.setText(aString);
-
-        // Select new shape
-        getEditor().setSuperSelectedShape(text);
-    }
-
-    /**
-     * Returns a rect suitable for the default bounds of a given text at a given point. This takes into account the font
-     * and margins of the given text.
-     */
-    private static Rect getDefaultBounds(RMTextShape aText, Point aPoint)
-    {
-        // Get text font (or default font, if not available) and margin
-        Font font = aText.getFont();
-        if(font==null) font = Font.getDefaultFont();
-        Insets margin = aText.getMargin();
-
-        // Default width is a standard char plus margin, default height is font line height plus margin
-        double w = Math.round(font.charAdvance('x') + margin.getWidth());
-        double h = Math.round(font.getLineHeight() + margin.getHeight());
-
-        // Get bounds x/y from given (cursor) point and size
-        double x = Math.round(aPoint.x - w/2) + 1;
-        double y = Math.round(aPoint.y - h/2) - 1;
-
-        // Return integral bounds rect
-        Rect rect = new Rect(x, y, w, h); rect.snap();
-        return rect;
-    }
-
-    /**
-     * Returns a test string.
-     */
-    private static String getTestString()
-    {
-        return "Leo vitae diam est luctus, ornare massa mauris urna, vitae sodales et ut facilisis dignissim, " +
-        "imperdiet in diam, quis que ad ipiscing nec posuere feugiat ante velit. Viva mus leo quisque. Neque mi vitae, " +
-        "nulla cras diam fusce lacus, nibh pellentesque libero. " +
-        "Dolor at venenatis in, ac in quam purus diam mauris massa, dolor leo vehicula at commodo. Turpis condimentum " +
-        "varius aliquet accumsan, sit nullam eget in turpis augue, vel tristique, fusce metus id consequat orci " +
-        "penatibus. Ipsum vehicula euismod aliquet, pharetra. " +
-        "Fusce lectus proin, neque cr as eget, integer quam facilisi a adipiscing posuere. Imper diet sem sapien. " +
-        "Pretium natoque nibh, tristique odio eligendi odio molestie mas sa. Volutpat justo fringilla rut rum augue. " +
-        "Lao reet ulla mcorper molestie.";
+        TextToolUtils.convertToText(getEditor(), aShape, aString);
     }
 
     /** Sets the character spacing for the currently selected shapes. */
@@ -1002,6 +997,20 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
      * Returns the image used to represent shapes that this tool represents.
      */
     protected Image getImageImpl()  { return Image.get(TextTool.class, "TextTool.png"); }
+
+    /**
+     * A TextEditor subclass to repaint super-selected SGTextView when text selection changes.
+     */
+    private class TextShapeTextEditor extends TextEditor {
+        @Override
+        protected void repaintSel()
+        {
+            super.repaintSel();
+            RMTextShape text = getSelectedShape();
+            if (text!=null)
+                text.repaint();
+        }
+    }
 
     /**
      * A CopyPaster for TextTool.

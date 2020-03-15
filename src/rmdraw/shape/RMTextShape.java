@@ -4,7 +4,6 @@
 package rmdraw.shape;
 import java.util.*;
 import java.util.List;
-
 import snap.geom.*;
 import snap.gfx.*;
 import snap.text.*;
@@ -33,35 +32,35 @@ public class RMTextShape extends RMRectShape {
     private VPos _alignY = VPos.TOP;
     
     // Specifies how text should handle overflow during RPG (ignore it, shrink it or paginate it)
-    byte                   _wraps;
+    private byte  _wraps;
     
     // Whether to fit text on layout
-    boolean                _fitText;
+    private boolean  _fitText;
     
     // Whether text should wrap around other shapes that cause wrap
-    boolean                _performsWrap = false;
+    private boolean  _performsWrap = false;
 
     // Whether text should eliminate empty lines during RPG
-    boolean                _coalesceNewlines;
+    private boolean  _coalesceNewlines;
     
     // Whether text should draw box around itself even if there's no stroke
-    boolean                _drawsSelectionRect;
+    private boolean _drawSelRect;
     
     // PDF option: Whether text box is editable in PDF
-    boolean                _editable;
+    private boolean  _editable;
     
     // PDF option: Whether text is multiline when editable in PDF
-    boolean                _multiline;
+    private boolean  _multiline;
 
     // The linked text shape for rendering overflow, if there is one
-    RMLinkedText           _linkedText;
+    private RMLinkedText  _linkedText;
     
     // A text box to manage RichText in shape bounds
-    TextBox _textBox;
+    private TextBox  _textBox;
 
-    // The text editor, if one has been set
-    TextEditor _textEdtr;
-    
+    // The view that provides the path for this text to wrap text to
+    private RMShape  _pathShape;
+
     // The default text margin (top=1, left=2, bottom=0, right=2)
     static Insets          _marginDefault = new Insets(1, 2, 0, 2);
     
@@ -117,7 +116,7 @@ public void setRichText(RichText aRT)
 
     // Set value and fire property change, and reset cached HeightToFit
     firePropChange("XString", _rtext, _rtext = aRT);
-    _textBox = null; _textEdtr = null;
+    _textBox = null;
     revalidate(); repaint();
 }
 
@@ -291,12 +290,12 @@ public void setCoalesceNewlines(boolean aFlag)  { _coalesceNewlines = aFlag; }
 /**
  * Returns whether text should always draw at least a light gray border (useful when editing).
  */
-public boolean getDrawsSelectionRect()  { return _drawsSelectionRect; }
+public boolean getDrawsSelectionRect()  { return _drawSelRect; }
 
 /**
  * Sets whether text should always draw at least a light-gray border (useful when editing).
  */
-public void setDrawsSelectionRect(boolean aValue)  { _drawsSelectionRect = aValue; }
+public void setDrawsSelectionRect(boolean aValue)  { _drawSelRect = aValue; }
 
 /**
  * Returns whether text box is editable in PDF.
@@ -434,9 +433,11 @@ private List <RMShape> getPeersWhoCauseWrap()
 {
     // Iterate over children and add any that intersect frame
     List list = null;
-    for(int i=0, iMax=getParent().getChildCount(); i<iMax; i++) { RMShape child = getParent().getChild(i);
-        if(child!=this && child.getFrame().intersects(getFrame())) {
-            if(list==null) list = new ArrayList(); list.add(child); } }
+    for (int i=0, iMax=getParent().getChildCount(); i<iMax; i++) { RMShape child = getParent().getChild(i);
+        if (child!=this && child.getFrame().intersects(getFrame())) {
+            if (list==null)
+                list = new ArrayList(); list.add(child); }
+    }
     return list;
 }
 
@@ -446,21 +447,21 @@ private List <RMShape> getPeersWhoCauseWrap()
 public void peerDidChange(RMShape aShape)
 {
     // If this text respects neighbors and shape intersects it, register for redraw
-    if(getPerformsWrap() && aShape.getFrame().intersectsRect(getFrame())) {
+    if (getPerformsWrap() && aShape.getFrame().intersectsRect(getFrame())) {
         revalidate(); repaint(); }
 }
 
 /**
  * Returns the shape that provides the path for this text to wrap text to.
  */
-public RMShape getPathShape()  { return _pathShape; } RMShape _pathShape;
+public RMShape getPathShape()  { return _pathShape; }
 
 /**
  * Sets the shape that provides the path for this text to wrap text to.
  */
 public void setPathShape(RMShape aShape)
 {
-    if(SnapUtils.equals(aShape, _pathShape)) return;
+    if (SnapUtils.equals(aShape, _pathShape)) return;
     firePropChange("PathShape", _pathShape, _pathShape = aShape);
     revalidate(); repaint();
 }
@@ -492,8 +493,13 @@ public void setLinkedText(RMLinkedText aLinkedText)
  */
 public TextBox getTextBox()
 {
-    if(_textBox!=null) return _textBox;
-    _textBox = new TextBox(); _textBox.setWrapLines(true); updateTextBox();
+    // If already set, just return
+    if (_textBox!=null) return _textBox;
+
+    // Create, configure, update and return
+    _textBox = new TextBox();
+    _textBox.setWrapLines(true);
+    updateTextBox();
     return _textBox;
 }
 
@@ -502,50 +508,26 @@ public TextBox getTextBox()
  */
 protected void updateTextBox()
 {
+    // Update RichText
     _textBox.setRichText(getRichText());
-    Insets pad = getMargin(); double pl = pad.left, pr = pad.right, pt = pad.top, pb = pad.bottom;
-    double w = getWidth() - pl - pr, h = getHeight() - pt - pb; if(w<0) w = 0; if(h<0) h = 0;
+
+    // Update bounds
+    Insets pad = getMargin();
+    double pl = pad.left, pr = pad.right, pt = pad.top, pb = pad.bottom;
+    double w = getWidth() - pl - pr; if (w<0) w = 0;
+    double h = getHeight() - pt - pb; if (h<0) h = 0;
     _textBox.setBounds(pl, pt, w, h);
+
+    // Update Start, Linked, Align
     _textBox.setStart(getVisibleStart());
     _textBox.setLinked(getLinkedText()!=null);
     _textBox.setAlignY(getAlignmentY());
     _textBox.setBoundsPath(!(getPath() instanceof Rect) || getPerformsWrap()? getPath() : null);
     _textBox.setHyphenate(TextEditor.isHyphenating());
+
+    // Update FontScale, ScaleTextToFit
     _textBox.setFontScale(1);
-    if(_fitText) _textBox.scaleTextToFit();
-}
-
-/**
- * Returns whether there is a text editor.
- */
-public boolean isTextEditorSet()  { return _textEdtr!=null; }
-
-/**
- * Returns the text editor.
- */
-public TextEditor getTextEditor()
-{
-    if(_textEdtr!=null) return _textEdtr;
-    _textEdtr = new TextShapeTextEditor();
-    _textEdtr.setTextBox(getTextBox());
-    return _textEdtr;
-}
-
-/**
- * Clears the text editor.
- */
-public void clearTextEditor()  { _textEdtr = null; }
-
-/**
- * A TextEditor subclass to repaint TextShape when selection changes.
- */
-private class TextShapeTextEditor extends TextEditor {
-    @Override
-    protected void repaintSel()
-    {
-        super.repaintSel();
-        RMTextShape.this.repaint();
-    }
+    if (_fitText) _textBox.scaleTextToFit();
 }
 
 /**
@@ -604,56 +586,20 @@ protected void paintShape(Painter aPntr)
 {
     // Paint normal background
     super.paintShape(aPntr);
-    
+
+    // If SuperSelected, just return (TextTool will do painting instead)
+    if(SceneGraph.isSuperSelected(this))
+        return;
+
     // Clip to shape bounds (cache clip)
     aPntr.save();
     aPntr.clip(getBoundsInside());
 
-    // Paint TextEditor (if editing text)
-    if(isTextEditorSet())
-        paintTextEditor(aPntr, getTextEditor());
-    
     // Paint TextBox
     getTextBox().paint(aPntr);
     
     // Restore
     aPntr.restore();
-}
-
-/**
- * Paints a given TextEditor.
- */
-protected void paintTextEditor(Painter aPntr, TextEditor aTE)
-{
-    // Get selection path
-    Shape path = aTE.getSelPath();
-
-    // If empty selection, draw caret
-    if(aTE.isSelEmpty() && path!=null) {
-        if (aTE.isShowCaret()) {
-            aPntr.setColor(Color.BLACK);
-            aPntr.setStroke(Stroke.Stroke1); // Set color and stroke of cursor
-            aPntr.setAntialiasing(false);
-            aPntr.draw(path);
-            aPntr.setAntialiasing(true); // Draw cursor
-        }
-    }
-
-    // If selection, get selection path and fill
-    else {
-        aPntr.setColor(new Color(128, 128, 128, 128));
-        aPntr.fill(path);
-    }
-
-    // If spell checking, get path for misspelled words and draw
-    if (aTE.isSpellChecking() && aTE.length()>0) {
-        Shape spath = aTE.getSpellingPath();
-        if(spath!=null) {
-            aPntr.setColor(Color.RED); aPntr.setStroke(Stroke.StrokeDash1);
-            aPntr.draw(spath);
-            aPntr.setColor(Color.BLACK); aPntr.setStroke(Stroke.Stroke1);
-        }
-    }
 }
 
 /**
@@ -681,9 +627,9 @@ public RMTextShape clone()
 {
     // Get normal shape clone, clone XString, clear layout and return
     RMTextShape clone = (RMTextShape)super.clone();
-    clone._rtext = null; clone._textBox = null; clone._textEdtr = null;
+    clone._rtext = null; clone._textBox = null;
     clone._richTextLsnr = pc -> richTextDidPropChange(pc);
-    if(_rtext!=null) clone.setRichText(_rtext.clone());
+    if (_rtext!=null) clone.setRichText(_rtext.clone());
     return clone;
 }
 
@@ -693,7 +639,7 @@ public RMTextShape clone()
 public void copyShape(RMShape aShape)
 {
     super.copyShape(aShape);
-    RMTextShape other = aShape instanceof RMTextShape? (RMTextShape)aShape : null; if(other==null) return;
+    RMTextShape other = aShape instanceof RMTextShape? (RMTextShape)aShape : null; if (other==null) return;
     setMargin(other.getMargin());
 }
 
@@ -715,7 +661,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     
     // Archive CoalesceNewlines, DrawsSelectionRect
     if(_coalesceNewlines) e.add("coalesce-newlines", true);
-    if(_drawsSelectionRect) e.add("draw-border", true);
+    if(_drawSelRect) e.add("draw-border", true);
     
     // Archive xstring
     if(!(this instanceof RMLinkedText)) {
