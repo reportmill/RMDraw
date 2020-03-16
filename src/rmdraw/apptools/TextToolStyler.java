@@ -114,7 +114,7 @@ public class TextToolStyler<T extends RMTextShape> extends ToolStyler<T> {
     {
         if(isTextEditorSet())
             return getTextEditor().isUnderlined();
-        return super.isUnderlined();
+        return getRichText().getRunAt(0).isUnderlined();
     }
 
     /**
@@ -125,7 +125,7 @@ public class TextToolStyler<T extends RMTextShape> extends ToolStyler<T> {
         setUndoTitle("Make Underlined");
         if(isTextEditorSet())
             getTextEditor().setUnderlined(aValue);
-        else super.setUnderlined(aValue);
+        else getRichText().setStyleValue(TextStyle.UNDERLINE_KEY, aValue ? 1 : 0);
     }
 
     /**

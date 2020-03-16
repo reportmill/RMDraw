@@ -741,16 +741,6 @@ public Font getFont()  { return getParent()!=null ? getParent().getFont() : null
 public void setFont(Font aFont)  { }
 
 /**
- * Returns whether the shape is underlined.
- */
-public boolean isUnderlined()  { return false; }
-
-/**
- * Sets the shape to underline.
- */
-public void setUnderlined(boolean aFlag)  { }
-
-/**
  * Returns the alignment.
  */
 public Pos getAlign()

@@ -384,19 +384,12 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Returns whether the currently selected shape is underlined.
      */
-    public boolean isUnderlined()
-    {
-        return _shape.isUnderlined();
-    }
+    public boolean isUnderlined()  { return false; }
 
     /**
      * Sets the currently selected shapes to be underlined.
      */
-    public void setUnderlined(boolean aValue)
-    {
-        setUndoTitle("Change Underline");
-        _shape.setUnderlined(aValue);
-    }
+    public void setUnderlined(boolean aValue)  { }
 
     /**
      * Returns the outline state of the currently selected shape (null if none).

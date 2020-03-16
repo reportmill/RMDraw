@@ -196,22 +196,6 @@ public void setTextColor(Color aColor)
 }
 
 /**
- * Returns if char 0 is underlined.
- */
-public boolean isUnderlined()
-{
-    return getRichText().getRunAt(0).isUnderlined();
-}
-
-/**
- * Sets all chars to be underlined.
- */
-public void setUnderlined(boolean aFlag)
-{
-    getRichText().setStyleValue(TextStyle.UNDERLINE_KEY, aFlag? 1 : 0);
-}
-
-/**
  * Returns the border for char 0.
  */
 public Border getTextBorder()
