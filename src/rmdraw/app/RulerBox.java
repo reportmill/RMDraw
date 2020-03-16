@@ -283,7 +283,7 @@ private static class RulerView extends View {
     {
         RMShape shape = _editor.getSelectedOrSuperSelectedShape();
         if(shape==null || shape instanceof RMDocument || shape instanceof RMPage) return null;
-        return shape.localToParent(shape.getBoundsInside(), null).getBounds();
+        return shape.localToParent(shape.getBoundsLocal(), null).getBounds();
     }
 }
 

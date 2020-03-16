@@ -443,7 +443,7 @@ public int getHandleCount(T aShape)  { return 8; }
 public Point getHandlePoint(T aShape, int aHandle, boolean isSuperSelected)
 {
     // Get bounds of given shape
-    Rect bounds = isSuperSelected? getBoundsSuperSelected(aShape).getInsetRect(-HandleWidth/2):aShape.getBoundsInside();
+    Rect bounds = isSuperSelected? getBoundsSuperSelected(aShape).getInsetRect(-HandleWidth/2):aShape.getBoundsLocal();
     
     // Get minx and miny of given shape
     double minX = aShape.width()>=0? bounds.x : bounds.getMaxX();

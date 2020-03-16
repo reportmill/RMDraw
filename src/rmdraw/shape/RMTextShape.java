@@ -230,7 +230,7 @@ public void setTextBorder(Border aBorder)
 /**
  * Returns the alignment for char 0.
  */
-public HPos getAlignmentX()
+public HPos getAlignX()
 {
     return getRichText().getLineStyleAt(0).getAlign();
 }
@@ -238,7 +238,7 @@ public HPos getAlignmentX()
 /**
  * Sets the align for all chars.
  */
-public void setAlignmentX(HPos anAlignX)
+public void setAlignX(HPos anAlignX)
 {
     getRichText().setAlignX(anAlignX);
 }
@@ -246,12 +246,12 @@ public void setAlignmentX(HPos anAlignX)
 /**
  * Returns the vertical alignment.
  */
-public VPos getAlignmentY()  { return _alignY; }
+public VPos getAlignY()  { return _alignY; }
 
 /**
  * Sets the vertical alignment.
  */
-public void setAlignmentY(VPos anAlignY)
+public void setAlignY(VPos anAlignY)
 {
     firePropChange("AlignmentY", _alignY, _alignY = anAlignY);
     revalidate(); repaint();
@@ -407,12 +407,12 @@ public Shape getPath()
 {
     // If text doesn't perform wrap or parent is null, return normal path in bounds
     if(!getPerformsWrap() || getParent()==null)
-        return getPathShape()!=null? getPathShape().getPath().copyFor(getBoundsInside()) : super.getPath();
+        return getPathShape()!=null? getPathShape().getPath().copyFor(getBoundsLocal()) : super.getPath();
     
     // Get peers who cause wrap (if none, just return super path in bounds)
     List peersWhoCauseWrap = getPeersWhoCauseWrap();
     if(peersWhoCauseWrap==null)
-        return getPathShape()!=null? getPathShape().getPath().copyFor(getBoundsInside()) : super.getPath();
+        return getPathShape()!=null? getPathShape().getPath().copyFor(getBoundsLocal()) : super.getPath();
     
     // Add this text to list
     peersWhoCauseWrap.add(0, this);
@@ -422,7 +422,7 @@ public Shape getPath()
     Shape path = RMShapeUtils.getSubtractedPath(peersWhoCauseWrap, -3);  // INSET NAILED TO -3
     _performsWrap = true;
     path = parentToLocal(path);
-    path = path.copyFor(getBoundsInside());
+    path = path.copyFor(getBoundsLocal());
     return path;
 }
 
@@ -521,7 +521,7 @@ protected void updateTextBox()
     // Update Start, Linked, Align
     _textBox.setStart(getVisibleStart());
     _textBox.setLinked(getLinkedText()!=null);
-    _textBox.setAlignY(getAlignmentY());
+    _textBox.setAlignY(getAlignY());
     _textBox.setBoundsPath(!(getPath() instanceof Rect) || getPerformsWrap()? getPath() : null);
     _textBox.setHyphenate(TextEditor.isHyphenating());
 
@@ -593,7 +593,7 @@ protected void paintShape(Painter aPntr)
 
     // Clip to shape bounds (cache clip)
     aPntr.save();
-    aPntr.clip(getBoundsInside());
+    aPntr.clip(getBoundsLocal());
 
     // Paint TextBox
     getTextBox().paint(aPntr);
@@ -653,7 +653,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     
     // Archive Margin, AlignmentY
     if(getMargin()!=getMarginDefault()) e.add("margin", getMarginString());
-    if(_alignY!=VPos.TOP) e.add("valign", getAlignmentY().toString().toLowerCase());
+    if(_alignY!=VPos.TOP) e.add("valign", getAlignY().toString().toLowerCase());
     
     // Archive Wraps, PerformsWrap
     if(_wraps!=0) e.add("wrap", _wraps==WRAP_BASIC? "wrap" : "shrink");
@@ -710,7 +710,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     // Unarchive Margin, AlignmentY
     if(anElement.hasAttribute("margin")) setMarginString(anElement.getAttributeValue("margin"));
     if(anElement.hasAttribute("valign"))
-        setAlignmentY(VPos.get(anElement.getAttributeValue("valign")));
+        setAlignY(VPos.get(anElement.getAttributeValue("valign")));
     
     // Unarchive Wraps, PerformsWrap
     String wrap = anElement.getAttributeValue("wrap", "none");

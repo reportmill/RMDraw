@@ -108,7 +108,7 @@ public static Rect getBoundsOfChildren(RMShape aShape, List <? extends RMShape> 
 {
     // If list is null or empty, return this shape's bounds inside
     if(aList==null || aList.size()==0)
-        return aShape.getBoundsInside();
+        return aShape.getBoundsLocal();
     
     // Declare and initialize a rect to frame of first shape in list
     Rect rect = aList.get(0).getFrame();
@@ -198,7 +198,7 @@ private static List <Shape> getPathsFromShapes(List <RMShape> theShapes, int anI
     // Iterate over shapes, get bounds of each (inset), path of each (in parent coords) and add to list
     List paths = new ArrayList(theShapes.size());
     for(int i=0, iMax=theShapes.size(); i<iMax; i++) { RMShape shape = theShapes.get(i);
-        Rect bounds = shape.getBoundsInside(); if(anInset!=0 && i>0) bounds.inset(anInset);
+        Rect bounds = shape.getBoundsLocal(); if(anInset!=0 && i>0) bounds.inset(anInset);
         Shape path = shape.getPath().copyFor(bounds);
         path = shape.localToParent(path);
         paths.add(path);

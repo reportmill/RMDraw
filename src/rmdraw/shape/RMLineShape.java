@@ -68,7 +68,7 @@ public void setBorder(Border aBorder)
     
     // If stroke, set arrow head to stroke color and scale to line width
     if (aBorder!=null) {
-        arrowHead.setColor(aBorder.getColor());
+        arrowHead.setFillColor(aBorder.getColor());
         arrowHead.setScaleXY(aBorder.getWidth(), aBorder.getWidth());
     }
     
@@ -79,18 +79,18 @@ public void setBorder(Border aBorder)
 /**
  * Override to handle arrow heads special.
  */
-public void setStrokeColor(Color aColor)
+public void setBorderColor(Color aColor)
 {
-    super.setStrokeColor(aColor);
-    if(getArrowHead()!=null) getArrowHead().setColor(aColor);
+    super.setBorderColor(aColor);
+    if(getArrowHead()!=null) getArrowHead().setFillColor(aColor);
 }
 
 /**
  * Override to handle arrow heads special.
  */
-public void setStrokeWidth(double aValue)
+public void setBorderWidth(double aValue)
 {
-    super.setStrokeWidth(aValue);
+    super.setBorderWidth(aValue);
     if (getArrowHead()!=null)
         getArrowHead().setScaleXY(aValue, aValue);
 }
@@ -178,7 +178,7 @@ public static class ArrowHead extends RMPolygonShape {
         _originInPath = new Point(x,y);
         
         // Get origin in shape coords from origin in path coords
-        _originInShape = Transform.getTrans(_path.getBounds(), getBoundsInside()).transform(x, y);
+        _originInShape = Transform.getTrans(_path.getBounds(), getBoundsLocal()).transform(x, y);
     }
 }
 

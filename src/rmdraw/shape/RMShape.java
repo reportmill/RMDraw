@@ -118,11 +118,6 @@ public double width()  { return _width; }
 public double height()  { return _height; }
 
 /**
- * Returns raw x, y, width and height of shape as rect (preserves possible negative sizes).
- */
-public Rect bounds()  { return new Rect(x(), y(), width(), height()); }
-
-/**
  * Returns the X location of the shape.
  */
 public double getX()  { return _width<0? _x + _width : _x; }
@@ -234,26 +229,29 @@ public Rect getBounds()  { return new Rect(getX(), getY(), getWidth(), getHeight
 /**
  * Sets X, Y, width and height of shape to dimensions in given rect.
  */
-public void setBounds(Rect aRect) { setBounds(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight()); }
+public void setBounds(Rect aRect) { setBounds(aRect.x, aRect.y, aRect.width, aRect.height); }
 
 /**
  * Sets X, Y, width and height of shape to given dimensions.
  */
-public void setBounds(double anX, double aY, double aW, double aH) { setX(anX); setY(aY); setWidth(aW); setHeight(aH); }
+public void setBounds(double anX, double aY, double aW, double aH)
+{
+    setX(anX); setY(aY); setWidth(aW); setHeight(aH);
+}
 
 /**
  * Returns the rect in parent coords that fully encloses the shape.
  */
 public Rect getFrame()
 {
-    if(isRSS()) return localToParent(getBoundsInside()).getBounds();
+    if(isRSS()) return localToParent(getBoundsLocal()).getBounds();
     return getBounds();
 }
 
 /**
  * Sets the bounds of the shape such that it exactly fits in the given parent coord rect.
  */
-public void setFrame(Rect aRect)  { setFrame(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight()); }
+public void setFrame(Rect aRect)  { setFrame(aRect.x, aRect.y, aRect.width, aRect.height); }
 
 /**
  * Sets the bounds of the shape such that it exactly fits in the given parent coord rect.
@@ -396,12 +394,7 @@ public void setXYP(double anX, double aY)
 public void offsetXY(double dx, double dy)  { setXY(_x + dx, _y + dy); }
 
 /**
- * Returns the bounds of the shape in the shape's own coords.
- */
-public Rect getBoundsInside()  { return new Rect(0, 0, getWidth(), getHeight()); }
-
-/**
- * Returns the bounds of the shape in the shape's own coords.
+ * Returns the bounds local coords.
  */
 public Rect getBoundsLocal()  { return new Rect(0, 0, getWidth(), getHeight()); }
 
@@ -410,7 +403,7 @@ public Rect getBoundsLocal()  { return new Rect(0, 0, getWidth(), getHeight()); 
  */
 public Rect getBoundsStroked()
 {
-    Rect bnds = getBoundsInside();
+    Rect bnds = getBoundsLocal();
     Border border = getBorder();
     if (border==null) return bnds;
     bnds.inset(-border.getWidth()/2);
@@ -565,9 +558,41 @@ public Border getBorder()  { return _stroke; }
  */
 public void setBorder(Border aBorder)
 {
-    if(SnapUtils.equals(getBorder(), aBorder)) return;
+    if (SnapUtils.equals(getBorder(), aBorder)) return;
     repaint();
     firePropChange(Border_Prop, _stroke, _stroke = aBorder);
+}
+
+/**
+ * Returns the stroke color of the shape.
+ */
+public Color getBorderColor()  { return getBorder()==null? Color.BLACK : getBorder().getColor(); }
+
+/**
+ * Sets the stroke color of the shape.
+ */
+public void setBorderColor(Color aColor)
+{
+    if (aColor==null) setBorder(null);
+    else if (getBorder()==null) setBorder(Border.createLineBorder(aColor, 1));
+    else setBorder(getBorder().copyForColor(aColor));
+}
+
+/**
+ * Returns the stroke width of the shape's stroke in printer points.
+ */
+public double getBorderWidth()
+{
+    return getBorder()==null? 0 : getBorder().getWidth();
+}
+
+/**
+ * Sets the stroke width of the shape's stroke in printer points.
+ */
+public void setBorderWidth(double aValue)
+{
+    if (getBorder()==null) setBorder(Border.createLineBorder(Color.BLACK, aValue));
+    else setBorder(getBorder().copyForStrokeWidth(aValue));
 }
 
 /**
@@ -589,9 +614,25 @@ public Paint getFill()  { return _fill; }
 public void setFill(Paint aFill)
 {
     aFill = aFill!=null ? aFill.snap() : null; // this can go when RMFill is gone
-    if(SnapUtils.equals(getFill(), aFill)) return;
+    if (SnapUtils.equals(getFill(), aFill)) return;
     repaint();
     firePropChange(Fill_Prop, _fill, _fill = aFill);
+}
+
+/**
+ * Returns the color of the shape.
+ */
+public Color getFillColor()  { return getFill()==null? Color.BLACK : getFill().getColor(); }
+
+/**
+ * Sets the color of the shape.
+ */
+public void setFillColor(Color aColor)
+{
+    // Set color
+    if (aColor==null) setFill(null);
+    else if (getFill()==null) setFill(aColor);
+    else setFill(getFill().copyForColor(aColor));
 }
 
 /**
@@ -604,59 +645,9 @@ public Effect getEffect()  { return _effect; }
  */
 public void setEffect(Effect anEffect)
 {
-    if(SnapUtils.equals(getEffect(), anEffect)) return;
+    if (SnapUtils.equals(getEffect(), anEffect)) return;
     repaint();
     firePropChange(Effect_Prop, _effect, _effect = anEffect); _pdvr1 = _pdvr2 = null;
-}
-
-/**
- * Returns the color of the shape.
- */
-public Color getColor()  { return getFill()==null? Color.BLACK : getFill().getColor(); }
-
-/**
- * Sets the color of the shape.
- */
-public void setColor(Color aColor)
-{
-    // Set color
-    if(aColor==null) setFill(null);
-    else if(getFill()==null) setFill(aColor);
-    else setFill(getFill().copyForColor(aColor));
-}
-
-/**
- * Returns the stroke color of the shape.
- */
-public Color getStrokeColor()  { return getBorder()==null? Color.BLACK : getBorder().getColor(); }
-
-/**
- * Sets the stroke color of the shape.
- */
-public void setStrokeColor(Color aColor)
-{
-    if (aColor==null) setBorder(null);
-    else if (getBorder()==null)
-        setBorder(Border.createLineBorder(aColor, 1));
-    else setBorder(getBorder().copyForColor(aColor));
-}
-
-/**
- * Returns the stroke width of the shape's stroke in printer points.
- */
-public double getStrokeWidth()
-{
-    return getBorder()==null? 0 : getBorder().getWidth();
-}
-
-/**
- * Sets the stroke width of the shape's stroke in printer points.
- */
-public void setStrokeWidth(double aValue)
-{
-    if (getBorder()==null)
-        setBorder(Border.createLineBorder(Color.BLACK, aValue));
-    else setBorder(getBorder().copyForStrokeWidth(aValue));
 }
 
 /**
@@ -669,7 +660,7 @@ public double getOpacity()  { return _opacity; }
  */
 public void setOpacity(double aValue)
 {
-    if(aValue==getOpacity()) return; // If value already set, just return
+    if (aValue==getOpacity()) return; // If value already set, just return
     repaint(); // Register repaint
     firePropChange(Opacity_Prop, _opacity, _opacity = aValue);
 }
@@ -680,7 +671,7 @@ public void setOpacity(double aValue)
 public double getOpacityDeep()
 {
     double op = getOpacity();
-    for(RMShape s=_parent; s!=null; s=s._parent) op *= s.getOpacity();
+    for (RMShape s=_parent; s!=null; s=s._parent) op *= s.getOpacity();
     return op;
 }
 
@@ -694,7 +685,7 @@ public boolean isVisible()  { return _visible; }
  */
 public void setVisible(boolean aValue)
 {
-    if(isVisible()==aValue) return;
+    if (isVisible()==aValue) return;
     firePropChange(Visible_Prop, _visible, _visible = aValue);
 }
 
@@ -708,9 +699,9 @@ public String getAutosizing()  { return _asize!=null? _asize : getAutosizingDefa
  */
 public void setAutosizing(String aValue)
 {
-    if(aValue!=null && (aValue.length()<7 || !(aValue.charAt(0)=='-' || aValue.charAt(0)=='~'))) {
+    if (aValue!=null && (aValue.length()<7 || !(aValue.charAt(0)=='-' || aValue.charAt(0)=='~'))) {
         System.err.println("RMShape.setAutosizing: Invalid string: " + aValue); return; }
-    if(SnapUtils.equals(aValue, _asize)) return;
+    if (SnapUtils.equals(aValue, _asize)) return;
     firePropChange("Autosizing", _asize, _asize = aValue);
 }
 
@@ -742,7 +733,7 @@ public boolean isFontSet()  { return false; }
 /**
  * Returns the font for the shape (defaults to parent font).
  */
-public Font getFont()  { return getParent()!=null? getParent().getFont() : null; }
+public Font getFont()  { return getParent()!=null ? getParent().getFont() : null; }
 
 /**
  * Sets the font for the shape.
@@ -762,39 +753,39 @@ public void setUnderlined(boolean aFlag)  { }
 /**
  * Returns the alignment.
  */
-public Pos getAlignment()
+public Pos getAlign()
 {
-    return Pos.get(getAlignmentX(), getAlignmentY());
+    return Pos.get(getAlignX(), getAlignY());
 }
 
 /**
  * Sets the alignment.
  */
-public void setAlignment(Pos aPos)
+public void setAlign(Pos aPos)
 {
-    setAlignmentX(aPos.getHPos());
-    setAlignmentY(aPos.getVPos());
+    setAlignX(aPos.getHPos());
+    setAlignY(aPos.getVPos());
 }
 
 /**
  * Returns the horizontal alignment.
  */
-public HPos getAlignmentX()  { return HPos.LEFT; }
+public HPos getAlignX()  { return HPos.LEFT; }
 
 /**
  * Sets the horizontal alignment.
  */
-public void setAlignmentX(HPos anAlignX)  { }
+public void setAlignX(HPos anAlignX)  { }
 
 /**
  * Returns the vertical alignment.
  */
-public VPos getAlignmentY()  { return VPos.TOP; }
+public VPos getAlignY()  { return VPos.TOP; }
 
 /**
  * Sets the vertical alignment.
  */
-public void setAlignmentY(VPos anAlignX)  { }
+public void setAlignY(VPos anAlignX)  { }
 
 /**
  * Returns the format for the shape.
@@ -939,19 +930,14 @@ public List <RMShape> getChildren()  { return Collections.emptyList(); }
 public SceneGraph getSceneGraph()  { return _parent!=null? _parent.getSceneGraph() : null; }
 
 /**
- * Returns the RMDocument ancestor of this shape.
+ * Returns the Document ancestor of this shape.
  */
 public RMDocument getDoc()  { return _parent!=null? _parent.getDoc() : null; }
 
 /**
- * Returns the RMDocument ancestor of this shape.
+ * Returns the Page ancestor of this shape (or null if not there).
  */
-public RMDocument getDocument()  { return getDoc(); }
-
-/**
- * Returns the RMPage ancestor of this shape (or null if not there).
- */
-public RMParentShape getPageShape()  { return _parent!=null? _parent.getPageShape() : (RMParentShape)this; }
+public RMParentShape getPage()  { return _parent!=null? _parent.getPage() : (RMParentShape)this; }
 
 /**
  * Returns the undoer for this shape (or null if not there).
@@ -989,29 +975,35 @@ public boolean isRoot()  { return getAncestorCount()<2; }
 /**
  * Returns the number of ancestors (from this shape's parent up to the document).
  */
-public int getAncestorCount()  { return _parent!=null? getParent().getAncestorCount() + 1 : 0; }
-
-/**
- * Returns the ancestor at the given index (parent is ancestor 0).
- */
-public RMShape getAncestor(int anIndex)  { return anIndex==0? getParent() : getParent().getAncestor(anIndex-1); }
+public int getAncestorCount()
+{
+    int count = 0;
+    for (RMShape p=getParent(); p!=null; p=p.getParent()) count++;
+    return count;
+}
 
 /**
  * Returns true if given shape is one of this shape's ancestors.
  */
-public boolean isAncestor(RMShape aShape)  { return aShape==_parent || (_parent!=null && _parent.isAncestor(aShape)); }
+public boolean isAncestor(RMShape aShape)
+{
+    return aShape==_parent || (_parent!=null && _parent.isAncestor(aShape));
+}
 
 /**
  * Returns true if given shape is one of this shape's descendants.
  */
-public boolean isDescendant(RMShape aShape)  { return aShape!=null && aShape.isAncestor(this); }
+public boolean isDescendant(RMShape aShape)
+{
+    return aShape!=null && aShape.isAncestor(this);
+}
 
 /**
  * Converts a point from local to parent.
  */
 public Point localToParent(double aX, double aY)
 {
-    if(isTransformSimple()) return new Point(aX+getX(),aY+getY());
+    if (isTransformSimple()) return new Point(aX+getX(),aY+getY());
     return getLocalToParent().transform(aX, aY);
 }
 
@@ -1021,9 +1013,10 @@ public Point localToParent(double aX, double aY)
 public Point localToParent(double aX, double aY, RMShape aPar)
 {
     Point point = new Point(aX,aY);
-    for(RMShape n=this;n!=aPar&&n!=null;n=n.getParent()) {
-        if(n.isTransformSimple()) point.offset(n.getX(),n.getY());
-        else point = n.localToParent(point.x,point.y); }
+    for (RMShape n=this; n!=aPar && n!=null; n=n.getParent()) {
+        if (n.isTransformSimple()) point.offset(n.getX(),n.getY());
+        else point = n.localToParent(point.x,point.y);
+    }
     return point;
 }
 
@@ -1040,19 +1033,27 @@ public Point localToParent(Point aPoint, RMShape aPar)  { return localToParent(a
 /**
  * Converts a shape from local to parent.
  */
-public Shape localToParent(Shape aShape)  { return aShape.copyFor(getLocalToParent()); }
+public Shape localToParent(Shape aShape)
+{
+    Transform xfm = getLocalToParent();
+    return aShape.copyFor(xfm);
+}
 
 /**
  * Converts a point from local to given parent.
  */
-public Shape localToParent(Shape aShape, RMShape aPar)  { return aShape.copyFor(getLocalToParent(aPar)); }
+public Shape localToParent(Shape aShape, RMShape aPar)
+{
+    Transform xfm = getLocalToParent(aPar);
+    return aShape.copyFor(xfm);
+}
 
 /**
  * Converts a point from parent to local.
  */
 public Point parentToLocal(double aX, double aY)
 {
-    if(isTransformSimple()) return new Point(aX-getX(),aY-getY());
+    if (isTransformSimple()) return new Point(aX-getX(),aY-getY());
     return getParentToLocal().transform(aX, aY);
 }
 
@@ -1074,12 +1075,20 @@ public Point parentToLocal(Point aPoint, RMShape aPar)  { return parentToLocal(a
 /**
  * Converts a shape from parent to local.
  */
-public Shape parentToLocal(Shape aShape)  { return aShape.copyFor(getParentToLocal()); }
+public Shape parentToLocal(Shape aShape)
+{
+    Transform xfm = getParentToLocal();
+    return aShape.copyFor(xfm);
+}
 
 /**
  * Converts a shape from parent to local.
  */
-public Shape parentToLocal(Shape aShape, RMShape aPar)  { return aShape.copyFor(getParentToLocal(aPar)); }
+public Shape parentToLocal(Shape aShape, RMShape aPar)
+{
+    Transform xfm = getParentToLocal(aPar);
+    return aShape.copyFor(xfm);
+}
 
 /**
  * Returns the transform.
@@ -1092,8 +1101,8 @@ public Transform getLocalToParent()  { return getTransform(); }
 public Transform getLocalToParent(RMShape aPar)
 {
     Transform tfm = getLocalToParent();
-    for(RMShape shp=getParent(); shp!=aPar && shp!=null; shp=shp.getParent()) {
-        if(shp.isTransformSimple()) tfm.preTranslate(shp.getX(),shp.getY());
+    for (RMShape shp=getParent(); shp!=aPar && shp!=null; shp=shp.getParent()) {
+        if (shp.isTransformSimple()) tfm.preTranslate(shp.getX(),shp.getY());
         else tfm.multiply(shp.getLocalToParent());
     }
     return tfm;
@@ -1104,14 +1113,19 @@ public Transform getLocalToParent(RMShape aPar)
  */
 public Transform getParentToLocal()
 {
-    if(isTransformSimple()) return new Transform(-getX(), -getY());
-    Transform tfm = getLocalToParent(); tfm.invert(); return tfm;
+    if (isTransformSimple()) return new Transform(-getX(), -getY());
+    Transform tfm = getLocalToParent(); tfm.invert();
+    return tfm;
 }
 
 /**
  * Returns the transform from parent to local coords.
  */
-public Transform getParentToLocal(RMShape aPar)  { Transform tfm = getLocalToParent(aPar); tfm.invert(); return tfm; }
+public Transform getParentToLocal(RMShape aPar)
+{
+    Transform tfm = getLocalToParent(aPar); tfm.invert();
+    return tfm;
+}
 
 /**
  * Returns whether transform to parent is simple (contains no rotate, scale, skew).
@@ -1124,17 +1138,20 @@ public boolean isTransformSimple()  { return !isRSS(); }
 public Transform getTransform()
 {
     // Create transform (if not rotated/scaled/skewed, just translate and return)
-    Transform t = new Transform(getX(),getY()); if(!isRSS()) return t;
+    Transform t = new Transform(getX(), getY()); if(!isRSS()) return t;
     
     // Get location, size, point of rotation, rotation, scale, skew
-    double w = getWidth(), h = getHeight(), prx = w/2, pry = h/2;
-    double roll = getRoll(), sx = getScaleX(), sy = getScaleY(), skx = getSkewX(), sky = getSkewY();
+    double w = getWidth(), h = getHeight();
+    double prx = w/2, pry = h/2;
+    double roll = getRoll();
+    double sx = getScaleX(), sy = getScaleY();
+    double skx = getSkewX(), sky = getSkewY();
     
     // Transform about point of rotation and return
     t.translate(prx, pry);
-    if(roll!=0) t.rotate(roll);
-    if(sx!=1 || sy!=1) t.scale(sx, sy);
-    if(skx!=0 || sky!=0) t.skew(skx, sky);
+    if (roll!=0) t.rotate(roll);
+    if (sx!=1 || sy!=1) t.scale(sx, sy);
+    if (skx!=0 || sky!=0) t.skew(skx, sky);
     t.translate(-prx, -pry); return t;
 }
 
@@ -1153,7 +1170,7 @@ public double getMinWidth()  { Double w = (Double)get(MinWidth_Prop); return w!=
  */
 public void setMinWidth(double aWidth)
 {
-    double w = aWidth<=0? 0 : aWidth; if(w==getMinWidth()) return;
+    double w = aWidth<=0? 0 : aWidth; if (w==getMinWidth()) return;
     firePropChange(MinWidth_Prop, put(MinWidth_Prop, w), w);
 }
 
@@ -1191,7 +1208,7 @@ public boolean isPrefWidthSet()  { return get(PrefWidth_Prop)!=null; }
  */
 public double getPrefWidth()
 {
-    Double v = (Double)get(PrefWidth_Prop); if(v!=null) return v;
+    Double v = (Double)get(PrefWidth_Prop); if (v!=null) return v;
     return getPrefWidthImpl(-1);
 }
 
@@ -1200,7 +1217,7 @@ public double getPrefWidth()
  */
 public void setPrefWidth(double aWidth)
 {
-    double w = aWidth<=0? 0 : aWidth; if(w==getPrefWidth()) return;
+    double w = aWidth<=0? 0 : aWidth; if (w==getPrefWidth()) return;
     firePropChange(PrefWidth_Prop, put(PrefWidth_Prop, w), w);
 }
 
@@ -1214,7 +1231,7 @@ public boolean isPrefHeightSet()  { return get(PrefHeight_Prop)!=null; }
  */
 public double getPrefHeight()
 {
-    Double v = (Double)get(PrefHeight_Prop); if(v!=null) return v;
+    Double v = (Double)get(PrefHeight_Prop); if (v!=null) return v;
     return getPrefHeightImpl(-1);
 }
 
@@ -1223,7 +1240,7 @@ public double getPrefHeight()
  */
 public void setPrefHeight(double aHeight)
 {
-    double h = aHeight<=0? 0 : aHeight; if(h==getPrefHeight()) return;
+    double h = aHeight<=0? 0 : aHeight; if (h==getPrefHeight()) return;
     firePropChange(PrefHeight_Prop, put(PrefHeight_Prop, h), h);
 }
 
@@ -1271,10 +1288,13 @@ public RMShape divideShapeFromTop(double anAmt)
 
     // Get bounds for this shape and remainder bounds (split by amount from top)
     Rect bnds0 = getFrame();
-    Rect bnds1 = bnds0.clone(); bnds0.height = anAmt; bnds1.y += anAmt; bnds1.height -= anAmt;
+    Rect bnds1 = bnds0.clone();
+    bnds0.height = anAmt;
+    bnds1.y += anAmt; bnds1.height -= anAmt;
     
     // Set this shape's new bounds and NewShape bounds as remainder
-    setFrame(bnds0); newShape.setFrame(bnds1);
+    setFrame(bnds0);
+    newShape.setFrame(bnds1);
     return newShape;
 }
 
@@ -1288,10 +1308,13 @@ public RMShape divideShapeFromLeft(double anAmt)
 
     // Get bounds for this shape and remainder bounds (split by amount from left)
     Rect bnds0 = getFrame();
-    Rect bnds1 = bnds0.clone(); bnds0.width = anAmt; bnds1.x += anAmt; bnds1.width -= anAmt;
+    Rect bnds1 = bnds0.clone();
+    bnds0.width = anAmt;
+    bnds1.x += anAmt; bnds1.width -= anAmt;
     
     // Set this shape's new bounds and NewShape bounds as remainder
-    setFrame(bnds0); newShape.setFrame(bnds1);
+    setFrame(bnds0);
+    newShape.setFrame(bnds1);
     return newShape;
 }
 
@@ -1316,18 +1339,18 @@ public void processEvent(ViewEvent anEvent)  { }
 public boolean contains(Point aPoint)
 {
     // Get line width to be used in contain test
-    double lineWidth = getStrokeWidth();
+    double lineWidth = getBorderWidth();
     
     // If polygon or line, make line width effectively at least 8, so users will have a better shot of selecting it
-    if(this instanceof RMPolygonShape || this instanceof RMLineShape)
-        lineWidth = Math.max(8, getStrokeWidth());
+    if (this instanceof RMPolygonShape || this instanceof RMLineShape)
+        lineWidth = Math.max(8, getBorderWidth());
     
     // Get bounds, adjusted for line width
-    Rect bounds = getBoundsInside();
+    Rect bounds = getBoundsLocal();
     bounds.inset(-lineWidth/2, -lineWidth/2);
 
     // If point isn't even in bounds rect, just return false
-    if(!bounds.contains(aPoint.getX(), aPoint.getY()))
+    if (!bounds.contains(aPoint.getX(), aPoint.getY()))
         return false;
     
     // Get shape in bounds rect and return whether shape intersects point
@@ -1341,14 +1364,14 @@ public boolean contains(Point aPoint)
 public boolean intersects(Shape aPath)
 {
     // Get line width to be used in intersects test
-    double lineWidth = getStrokeWidth();
+    double lineWidth = getBorderWidth();
     
     // Get bounds, adjusted for line width
-    Rect bounds = getBoundsInside();
+    Rect bounds = getBoundsLocal();
     bounds.inset(-lineWidth/2, -lineWidth/2);
 
     // If paths don't even intersect bounds, just return false
-    if(!aPath.getBounds().intersectsRect(bounds))
+    if (!aPath.getBounds().intersectsRect(bounds))
         return false;
     
     // Get shape in bounds and return whether shape intersects given path
@@ -1373,7 +1396,11 @@ public String[] getPropNames()
 /**
  * Returns the number of bindings associated with shape.
  */
-public int getBindingCount()  { List bindings = getBindings(false); return bindings!=null? bindings.size() : 0; }
+public int getBindingCount()
+{
+    List bindings = getBindings(false);
+    return bindings!=null ? bindings.size() : 0;
+}
 
 /**
  * Returns the individual binding at the given index.
@@ -1386,7 +1413,7 @@ public Binding getBinding(int anIndex)  { return getBindings(true).get(anIndex);
 protected List <Binding> getBindings(boolean doCreate)
 {
     List <Binding> bindings = (List)get("RMBindings");
-    if(bindings==null && doCreate) put("RMBindings", bindings = new ArrayList());
+    if (bindings==null && doCreate) put("RMBindings", bindings = new ArrayList());
     return bindings;
 }
 
@@ -1412,8 +1439,8 @@ public Binding removeBinding(int anIndex)  { return getBindings(true).remove(anI
 public Binding getBinding(String aPropertyName)
 {
     // Iterate over bindings and return the first that matches given property name
-    for(int i=0, iMax=getBindingCount(); i<iMax; i++)
-        if(getBinding(i).getPropertyName().equals(aPropertyName))
+    for (int i=0, iMax=getBindingCount(); i<iMax; i++)
+        if (getBinding(i).getPropertyName().equals(aPropertyName))
             return getBinding(i);
     return null; // Return null since binding not found
 }
@@ -1424,8 +1451,8 @@ public Binding getBinding(String aPropertyName)
 public boolean removeBinding(String aPropertyName)
 {
     // Iterate over binding and remove given binding
-    for(int i=0, iMax=getBindingCount(); i<iMax; i++)
-        if(getBinding(i).getPropertyName().equals(aPropertyName)) {
+    for (int i=0, iMax=getBindingCount(); i<iMax; i++)
+        if (getBinding(i).getPropertyName().equals(aPropertyName)) {
             removeBinding(i); return true; }
     return false; // Return false since binding not found
 }
@@ -1449,14 +1476,14 @@ public RMShape clone()
     clone._pcs = PropChangeSupport.EMPTY;
     
     // Clone Rotate/Scale/Skew array
-    if(_rss!=null) clone._rss = Arrays.copyOf(_rss,_rss.length);
+    if (_rss!=null) clone._rss = Arrays.copyOf(_rss,_rss.length);
     
     // Copy attributes map
     clone._attrMap = _attrMap.clone();
     
     // Clone bindings and add to clone (with hack to make sure clone has it's own, non-shared, attr map)
-    for(int i=0, iMax=getBindingCount(); i<iMax; i++) {
-        if(i==0) clone.put("RMBindings", null);
+    for (int i=0, iMax=getBindingCount(); i<iMax; i++) {
+        if (i==0) clone.put("RMBindings", null);
         clone.addBinding(getBinding(i).clone());
     }
     
@@ -1478,7 +1505,7 @@ public void copyShape(RMShape aShape)
     setBounds(aShape._x, aShape._y, aShape._width, aShape._height);
     
     // Copy roll, scale, skew
-    if(aShape.isRSS()) {
+    if (aShape.isRSS()) {
         setRoll(aShape.getRoll());
         setScaleXY(aShape.getScaleX(), aShape.getScaleY());
         setSkewXY(aShape.getSkewX(), aShape.getSkewY());
@@ -1499,8 +1526,8 @@ public void copyShape(RMShape aShape)
     setAutosizing(aShape.getAutosizing());
     
     // Copy bindings
-    while(getBindingCount()>0) removeBinding(0);
-    for(int i=0, iMax=aShape.getBindingCount(); i<iMax; i++)
+    while (getBindingCount()>0) removeBinding(0);
+    for (int i=0, iMax=aShape.getBindingCount(); i<iMax; i++)
         addBinding(aShape.getBinding(i).clone());
 }
 
@@ -1623,7 +1650,7 @@ public void paintShapeAll(Painter aPntr)
     boolean didGsave = false;
     
     // If clipping, clip to shape
-    if(getClipShape()!=null) {
+    if (getClipShape()!=null) {
         aPntr.save(); didGsave = true;
         aPntr.clip(getClipShape());
     }
@@ -1635,7 +1662,7 @@ public void paintShapeAll(Painter aPntr)
     paintShapeChildren(aPntr);
     
     // If graphics copied, dispose
-    if(didGsave) aPntr.restore();
+    if (didGsave) aPntr.restore();
         
     // Have shape paint over
     paintShapeOver(aPntr);
@@ -1652,7 +1679,7 @@ protected void paintShape(Painter aPntr)
     
     // Paint fill
     if (fill!=null) { //getFill().paint(aPntr, this);
-        Paint fill2 = fill.copyForRect(getBoundsInside());
+        Paint fill2 = fill.copyForRect(getBoundsLocal());
         aPntr.setPaint(fill2);
         Shape path = getPath();
         aPntr.fill(path);
@@ -1717,7 +1744,7 @@ public void removePropChangeListener(PropChangeListener aLsnr)  { _pcs.removePro
  */
 public void addDeepChangeListener(DeepChangeListener aLsnr)
 {
-    if(_pcs==PropChangeSupport.EMPTY) _pcs = new PropChangeSupport(this);
+    if (_pcs==PropChangeSupport.EMPTY) _pcs = new PropChangeSupport(this);
     _pcs.addDeepChangeListener(aLsnr);
 }
 
@@ -1731,7 +1758,7 @@ public void removeDeepChangeListener(DeepChangeListener aLsnr)  { _pcs.removeDee
  */
 protected void firePropChange(String aProp, Object oldVal, Object newVal)
 {
-    if(!_pcs.hasListener(aProp)) return;
+    if (!_pcs.hasListener(aProp)) return;
     PropChange pc = new PropChange(this, aProp, oldVal, newVal);
     firePropChange(pc);
 }
@@ -1741,7 +1768,7 @@ protected void firePropChange(String aProp, Object oldVal, Object newVal)
  */
 protected void firePropChange(String aProp, Object oldVal, Object newVal, int anIndex)
 {
-    if(!_pcs.hasListener(aProp)) return;
+    if (!_pcs.hasListener(aProp)) return;
     PropChange pc = new PropChange(this, aProp, oldVal, newVal, anIndex);
     firePropChange(pc);
 }
@@ -1825,50 +1852,50 @@ public XMLElement toXML(XMLArchiver anArchiver)
     XMLElement e = new XMLElement("shape");
     
     // Archive name
-    if(getName()!=null && getName().length()>0) e.add("name", getName());
+    if (getName()!=null && getName().length()>0) e.add("name", getName());
     
     // Archive X, Y, Width, Height
-    if(_x!=0) e.add("x", _x);
-    if(_y!=0) e.add("y", _y);
-    if(_width!=0) e.add("width", _width);
-    if(_height!=0) e.add("height", _height);
+    if (_x!=0) e.add("x", _x);
+    if (_y!=0) e.add("y", _y);
+    if (_width!=0) e.add("width", _width);
+    if (_height!=0) e.add("height", _height);
     
     // Archive Roll, ScaleX, ScaleY, SkewX, SkewY
-    if(getRoll()!=0) e.add("roll", getRoll());
-    if(getScaleX()!=1) e.add("scalex", getScaleX());
-    if(getScaleY()!=1) e.add("scaley", getScaleY());
-    if(getSkewX()!=0) e.add("skewx", getSkewX());
-    if(getSkewY()!=0) e.add("skewy", getSkewY());
+    if (getRoll()!=0) e.add("roll", getRoll());
+    if (getScaleX()!=1) e.add("scalex", getScaleX());
+    if (getScaleY()!=1) e.add("scaley", getScaleY());
+    if (getSkewX()!=0) e.add("skewx", getSkewX());
+    if (getSkewY()!=0) e.add("skewy", getSkewY());
 
     // Archive Border, Fill, Effect
-    if(getBorder()!=null) e.add(anArchiver.toXML(getBorder(), this));
-    if(getFill()!=null) e.add(anArchiver.toXML(getFill(), this));
-    if(getEffect()!=null) e.add(anArchiver.toXML(getEffect(), this));
+    if (getBorder()!=null) e.add(anArchiver.toXML(getBorder(), this));
+    if (getFill()!=null) e.add(anArchiver.toXML(getFill(), this));
+    if (getEffect()!=null) e.add(anArchiver.toXML(getEffect(), this));
     
     // Archive font
-    if(isFontSet()) e.add(getFont().toXML(anArchiver));
+    if (isFontSet()) e.add(getFont().toXML(anArchiver));
     
     // Archive Opacity, Visible
-    if(getOpacity()<1) e.add("opacity", getOpacity());
-    if(!isVisible()) e.add("visible", false);
+    if (getOpacity()<1) e.add("opacity", getOpacity());
+    if (!isVisible()) e.add("visible", false);
     
     // Archive URL
-    if(getURL()!=null && getURL().length()>0) e.add("url", getURL());
+    if (getURL()!=null && getURL().length()>0) e.add("url", getURL());
     
     // Archive MinWidth, MinHeight, PrefWidth, PrefHeight
-    if(isMinWidthSet()) e.add(MinWidth_Prop, getMinWidth());
-    if(isMinHeightSet()) e.add(MinHeight_Prop, getMinHeight());
-    if(isPrefWidthSet()) e.add(PrefWidth_Prop, getPrefWidth());
-    if(isPrefHeightSet()) e.add(PrefHeight_Prop, getPrefHeight());
+    if (isMinWidthSet()) e.add(MinWidth_Prop, getMinWidth());
+    if (isMinHeightSet()) e.add(MinHeight_Prop, getMinHeight());
+    if (isPrefWidthSet()) e.add(PrefWidth_Prop, getPrefWidth());
+    if (isPrefHeightSet()) e.add(PrefHeight_Prop, getPrefHeight());
     
     // Archive Autosizing
-    if(!getAutosizing().equals(getAutosizingDefault())) e.add("asize", getAutosizing());
+    if (!getAutosizing().equals(getAutosizingDefault())) e.add("asize", getAutosizing());
     
     // Archive Locked
-    if(isLocked()) e.add("locked", true);
+    if (isLocked()) e.add("locked", true);
     
     // Archive bindings
-    for(int i=0, iMax=getBindingCount(); i<iMax; i++)
+    for (int i=0, iMax=getBindingCount(); i<iMax; i++)
         e.add(getBinding(i).toXML(anArchiver));
 
     // Return the element
@@ -1897,58 +1924,58 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     setSkewY(anElement.getAttributeFloatValue("skewy", 0));
 
     // Unarchive Border
-    for(int i=anArchiver.indexOf(anElement, Border.class); i>=0; i=-1) {
+    for (int i=anArchiver.indexOf(anElement, Border.class); i>=0; i=-1) {
         Border border = (Border)anArchiver.fromXML(anElement.get(i), this);
         setBorder(border);
     }
     
     // Unarchive Fill 
-    for(int i=anArchiver.indexOf(anElement, Paint.class); i>=0; i=-1) { XMLElement e = anElement.get(i);
+    for (int i=anArchiver.indexOf(anElement, Paint.class); i>=0; i=-1) { XMLElement e = anElement.get(i);
         if (e.getName().equals("color") && this instanceof RMTextShape) continue; // Bogus till we figure out RMFill to Paint stuff!
         Paint fill = (Paint)anArchiver.fromXML(e, this);
         setFill(fill);
     }
     
     // Unarchive Effect
-    for(int i=anArchiver.indexOf(anElement, Effect.class); i>=0; i=-1) {
+    for (int i=anArchiver.indexOf(anElement, Effect.class); i>=0; i=-1) {
         Effect fill = (Effect)anArchiver.fromXML(anElement.get(i), this);
         setEffect(fill);
     }
     
     // Unarchive font
     XMLElement fontXML = anElement.getElement("font");
-    if(fontXML!=null)
+    if (fontXML!=null)
         setFont((Font)anArchiver.fromXML(fontXML, this));
     
     // Unarchive Opacity, Visible
     setOpacity(anElement.getAttributeFloatValue("opacity", 1));
-    if(anElement.hasAttribute("visible")) _visible = anElement.getAttributeBoolValue("visible");
+    if (anElement.hasAttribute("visible")) _visible = anElement.getAttributeBoolValue("visible");
     
     // Unarchive URL
     setURL(anElement.getAttributeValue("url"));
     
     // Unarchive MinWidth, MinHeight, PrefWidth, PrefHeight
-    if(anElement.hasAttribute(MinWidth_Prop)) setMinWidth(anElement.getAttributeFloatValue(MinWidth_Prop));
-    if(anElement.hasAttribute(MinHeight_Prop)) setMinHeight(anElement.getAttributeFloatValue(MinHeight_Prop));
-    if(anElement.hasAttribute(PrefWidth_Prop)) setPrefWidth(anElement.getAttributeFloatValue(PrefWidth_Prop));
-    if(anElement.hasAttribute(PrefHeight_Prop)) setPrefHeight(anElement.getAttributeFloatValue(PrefHeight_Prop));
+    if (anElement.hasAttribute(MinWidth_Prop)) setMinWidth(anElement.getAttributeFloatValue(MinWidth_Prop));
+    if (anElement.hasAttribute(MinHeight_Prop)) setMinHeight(anElement.getAttributeFloatValue(MinHeight_Prop));
+    if (anElement.hasAttribute(PrefWidth_Prop)) setPrefWidth(anElement.getAttributeFloatValue(PrefWidth_Prop));
+    if (anElement.hasAttribute(PrefHeight_Prop)) setPrefHeight(anElement.getAttributeFloatValue(PrefHeight_Prop));
     
     // Unarchive Autosizing
     String asize = anElement.getAttributeValue("asize");
-    if(asize==null) asize = anElement.getAttributeValue("LayoutInfo");
-    if(asize!=null) setAutosizing(asize);
+    if (asize==null) asize = anElement.getAttributeValue("LayoutInfo");
+    if (asize!=null) setAutosizing(asize);
     
     // Unarchive Locked
     setLocked(anElement.getAttributeBoolValue("locked"));
     
     // Unarchive bindings
-    for(int i=anElement.indexOf("binding"); i>=0; i=anElement.indexOf("binding",i+1)) { XMLElement bxml=anElement.get(i);
+    for (int i=anElement.indexOf("binding"); i>=0; i=anElement.indexOf("binding",i+1)) { XMLElement bxml=anElement.get(i);
         addBinding(new Binding().fromXML(anArchiver, bxml)); }
 
     // Unarchive property keys (legacy)
-    for(int i=anElement.indexOf("property-key"); i>=0; i=anElement.indexOf("property-key", i+1)) {
+    for (int i=anElement.indexOf("property-key"); i>=0; i=anElement.indexOf("property-key", i+1)) {
         XMLElement prop = anElement.get(i); String name = prop.getAttributeValue("name");
-        if(name.equals("FontColor")) name = "TextColor"; if(name.equals("IsVisible")) name = "Visible";
+        if (name.equals("FontColor")) name = "TextColor"; if(name.equals("IsVisible")) name = "Visible";
         String key = prop.getAttributeValue("key"); addBinding(new Binding(name, key));
     }
 
@@ -1962,7 +1989,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
 public String toString()
 {
     StringBuilder sb = new StringBuilder(getClass().getSimpleName()).append(' ');
-    if(getName()!=null) sb.append(getName()).append(' ');
+    if (getName()!=null) sb.append(getName()).append(' ');
     sb.append(getFrame().toString());
     return sb.toString();
 }

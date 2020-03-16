@@ -8,7 +8,6 @@ import java.util.List;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.geom.Shape;
-import snap.gfx.*;
 import snap.util.*;
 
 /**
@@ -143,7 +142,7 @@ public Rect getBoundsOfChildren()
     }
     
     // Return frame (or bounds inside if null)
-    return rect!=null? rect : getBoundsInside();
+    return rect!=null? rect : getBoundsLocal();
 }
 
 /**

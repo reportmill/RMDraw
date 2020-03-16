@@ -468,7 +468,7 @@ public static void moveRightOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Right One Point");
     RMDocument doc = anEditor.getDoc();
-    double offset = doc.getSnapGrid()? doc.getGridSpacing() : 1;
+    double offset = doc.isSnapGrid()? doc.getGridSpacing() : 1;
     for(RMShape shape : anEditor.getSelectedShapes())
         shape.setFrameX(shape.getFrameX() + offset);
 }
@@ -480,7 +480,7 @@ public static void moveLeftOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Left One Point");
     RMDocument doc = anEditor.getDoc();
-    double offset = doc.getSnapGrid()? doc.getGridSpacing() : 1;
+    double offset = doc.isSnapGrid()? doc.getGridSpacing() : 1;
     for(RMShape shape : anEditor.getSelectedShapes())
         shape.setFrameX(shape.getFrameX() - offset);
 }
@@ -492,7 +492,7 @@ public static void moveUpOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Up One Point");
     RMDocument doc = anEditor.getDoc();
-    double offset = doc.getSnapGrid()? doc.getGridSpacing() : 1;
+    double offset = doc.isSnapGrid()? doc.getGridSpacing() : 1;
     for(RMShape shape : anEditor.getSelectedShapes())
         shape.setFrameY(shape.getFrameY() - offset);
 }
@@ -504,7 +504,7 @@ public static void moveDownOnePoint(Editor anEditor)
 {
     anEditor.undoerSetUndoTitle("Move Down One Point");
     RMDocument doc = anEditor.getDoc();
-    double offset = doc.getSnapGrid()? doc.getGridSpacing() : 1;
+    double offset = doc.isSnapGrid()? doc.getGridSpacing() : 1;
     for(RMShape shape : anEditor.getSelectedShapes())
         shape.setFrameY(shape.getFrameY() + offset);
 }

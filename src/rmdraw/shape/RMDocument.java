@@ -301,7 +301,7 @@ public float getUnitsMultiplier()
 /**
  * Returns whether the document should show an alignment grid.
  */
-public boolean getShowGrid()  { return _showGrid; }
+public boolean isShowGrid()  { return _showGrid; }
 
 /**
  * Sets whether the document should show an alignment grid.
@@ -311,7 +311,7 @@ public void setShowGrid(boolean aValue)  { repaint(); _showGrid = aValue; }
 /**
  * Returns whether the document should snap to an alignment grid.
  */
-public boolean getSnapGrid()  { return _snapGrid; }
+public boolean isSnapGrid()  { return _snapGrid; }
 
 /**
  * Sets whether the document should snap to an alignment grid.
@@ -331,7 +331,7 @@ public void setGridSpacing(double aValue)  { repaint(); if(aValue>0) _gridSpacin
 /**
  * Returns whether the document should show a margin rect.
  */
-public boolean getShowMargin()  { return _showMargin; }
+public boolean isShowMargin()  { return _showMargin; }
 
 /**
  * Sets whether the document should show a margin rect.
@@ -341,7 +341,7 @@ public void setShowMargin(boolean aValue)  { repaint(); _showMargin = aValue; }
 /**
  * Returns whether the document should snap to a margin rect.
  */
-public boolean getSnapMargin()  { return _snapMargin; }
+public boolean isSnapMargin()  { return _snapMargin; }
 
 /**
  * Sets whether the document should snap to a margin rect.

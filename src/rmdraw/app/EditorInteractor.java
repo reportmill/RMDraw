@@ -313,7 +313,7 @@ public class EditorInteractor extends ViewerInteractor {
         double x = point.getX(), y = point.getY();
 
         // If doc snaps to grid, adjust for snap
-        if (doc.getSnapGrid())
+        if (doc.isSnapGrid())
             point = pointSnappedToGrid(point, snapEdges);
 
         // If doc has guides, adjust for guides
@@ -339,7 +339,7 @@ public class EditorInteractor extends ViewerInteractor {
 
         // Get document frame
         RMShape spage = editor.getSelPage();
-        Rect docFrame = editor.convertFromShape(spage.getBoundsInside(), spage).getBounds();
+        Rect docFrame = editor.convertFromShape(spage.getBoundsLocal(), spage).getBounds();
         double docFrameX = docFrame.getX(), docFrameY = docFrame.getY();
 
         // Get grid spacing
@@ -369,7 +369,7 @@ public class EditorInteractor extends ViewerInteractor {
             for (int i=0, iMax=editor.getSelectedShapeCount(); i<iMax; i++) { RMShape shape = editor.getSelectedShape(i);
 
                 // Get shape bounds in editor coords
-                Rect rect = editor.convertFromShape(shape.getBoundsInside(), shape).getBounds();
+                Rect rect = editor.convertFromShape(shape.getBoundsLocal(), shape).getBounds();
                 double rectx = rect.getX(), recty = rect.getY();
 
                 // Find dx/dy to nearest grid
@@ -414,7 +414,7 @@ public class EditorInteractor extends ViewerInteractor {
         Editor editor = getEditor();
         RMDocument doc = editor.getDoc(); if(doc==null) return aPoint;
         RMShape spage = editor.getSelPage();
-        Rect docFrame = editor.convertFromShape(spage.getBoundsInside(), spage).getBounds();
+        Rect docFrame = editor.convertFromShape(spage.getBoundsLocal(), spage).getBounds();
 
         // Get grid spacing and dx/dy for maximum offsets
         double gridSpacing = doc.getGridSpacing()*editor.getZoomFactor();
@@ -449,7 +449,7 @@ public class EditorInteractor extends ViewerInteractor {
             for (int i=0, iMax=editor.getSelectedShapeCount(); i<iMax; i++) { RMShape shape = editor.getSelectedShape(i);
 
                 // Get shape bounds in editor coords
-                Rect rect = editor.convertFromShape(shape.getBoundsInside(), shape).getBounds();
+                Rect rect = editor.convertFromShape(shape.getBoundsLocal(), shape).getBounds();
 
                 // Iterate over guides to find dx/dy to nearest guide
                 for (int j=0, jMax=getGuideCount(doc); j<jMax; j++) {
@@ -500,7 +500,7 @@ public class EditorInteractor extends ViewerInteractor {
     /**
      * Returns the number of guides (4 if snapping to margin, otherwise zero).
      */
-    public static int getGuideCount(RMDocument aDoc)  { return aDoc.getSnapMargin()? 4 : 0; }
+    public static int getGuideCount(RMDocument aDoc)  { return aDoc.isSnapMargin()? 4 : 0; }
 
     /**
      * Returns the guide location for the given index.

@@ -342,7 +342,7 @@ public class ViewerInteractor {
     {
         // Get first selected text (just return if none)
         RMTextShape stext = _selectedTexts.size()>0? _selectedTexts.get(0) : null; if(stext==null) return;
-        RMDocument sdoc = stext.getDocument();
+        RMDocument sdoc = stext.getDoc();
 
         // Create new document and add clone of SelectedTexts to new document
         RMDocument doc = new RMDocument(sdoc.getPageSize().width, sdoc.getPageSize().height);

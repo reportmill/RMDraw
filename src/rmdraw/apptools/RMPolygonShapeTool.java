@@ -465,7 +465,7 @@ public void runContextMenu(RMPolygonShape aPolyShape, ViewEvent anEvent)
         _newPoint = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), aPolyShape);
         
         // linewidth is probably in shape coords, and might need to get transformed to path coords here
-        if(path.intersects(_newPoint.x, _newPoint.y, Math.max(aPolyShape.getStrokeWidth(),8))) {
+        if(path.intersects(_newPoint.x, _newPoint.y, Math.max(aPolyShape.getBorderWidth(),8))) {
             mtitle = "Add Anchor Point"; mname = "AddPointMenuItem"; }
     }
     

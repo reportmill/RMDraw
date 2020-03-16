@@ -370,7 +370,7 @@ public boolean isHittable(RMShape aChild)
 /**
  * Overrides shape implementation to return this page, since it is the page shape.
  */
-public RMParentShape getPageShape()  { return this; }
+public RMParentShape getPage()  { return this; }
 
 
 /**
@@ -378,14 +378,14 @@ public RMParentShape getPageShape()  { return this; }
  */
 public int page()
 {
-    if(getDocument()==null) return 0;
-    return ListUtils.indexOfId(getDocument().getPages(), this) + 1;
+    if (getDoc()==null) return 0;
+    return ListUtils.indexOfId(getDoc().getPages(), this) + 1;
 }
 
 /**
  * Returns the "PageMax" of the document associated with this page (used to resolve @PageMax@ key references).
  */
-public int pageMax()  { return getDocument()==null? 0 : getDocument().getPageCount(); }
+public int pageMax()  { return getDoc()==null ? 0 : getDoc().getPageCount(); }
 
 /**
  * Top-level generic shape painting (sets transform, recurses to children, paints this).
@@ -393,21 +393,21 @@ public int pageMax()  { return getDocument()==null? 0 : getDocument().getPageCou
 protected void paintShape(Painter aPntr)
 {
     // If printing, do normal shape painting and return
-    if(aPntr.isPrinting()) { super.paintShape(aPntr); return; }
+    if (aPntr.isPrinting()) { super.paintShape(aPntr); return; }
 
     // Get page bounds, clip bounds and intersection of those
-    Rect bounds = getBoundsInside();
+    Rect bounds = getBoundsLocal();
     Rect clipBounds = aPntr.getClipBounds();
     Rect drawBounds = bounds.getIntersectRect(clipBounds);
 
     // If clip extends outside page bounds, draw page drop-shadow
-    if(getPaintBackground() && (clipBounds.getMaxX()>getWidth() || clipBounds.getMaxY()>getHeight())) {
+    if (getPaintBackground() && (clipBounds.getMaxX()>getWidth() || clipBounds.getMaxY()>getHeight())) {
         aPntr.setColor(Color.DARKGRAY);
         aPntr.fillRect(3, 3, getWidth(), getHeight());
     }
     
     // If no explicit page fill, draw page background white
-    if(getPaintBackground() && getFill()==null) {
+    if (getPaintBackground() && getFill()==null) {
         aPntr.setColor(Color.WHITE);
         aPntr.fill(drawBounds);
     }
@@ -425,10 +425,10 @@ protected void paintShape(Painter aPntr)
     }
     
     // Draw grid if needed
-    if(getDocument().getShowGrid() && SceneGraph.isEditing(this)) {
+    if(getDoc().isShowGrid() && SceneGraph.isEditing(this)) {
         
         // Get grid spacing (corrected for zoom factor) and document's min x and y
-        double gs = getDocument().getGridSpacing();
+        double gs = getDoc().getGridSpacing();
 
         // Set color to grid color
         aPntr.setColor(new Color(13/15f)); // gridColor = new Color(13/15f, 13/15f, 13/15f)
@@ -443,9 +443,9 @@ protected void paintShape(Painter aPntr)
     }
 
     // If Draw Margin is requested and editing, draw margin
-    if(getDocument().getShowMargin() && SceneGraph.isEditing(this)) {
+    if(getDoc().isShowMargin() && SceneGraph.isEditing(this)) {
         aPntr.setColor(new Color(9/15f)); // marginColor = new Color(9/15f, 9/15f, 9/15f)
-        aPntr.draw(getDocument().getMarginRect());
+        aPntr.draw(getDoc().getMarginRect());
     }
     
     // Turn on antialiasing for shape stuff

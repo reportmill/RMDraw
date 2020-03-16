@@ -106,7 +106,7 @@ public class EditorDragDropper implements DragDropper {
             getTool(overShape).dragEnter(overShape, anEvent);
 
             // Get bounds of over shape in editor coords
-            Rect bounds = overShape.getBoundsInside();
+            Rect bounds = overShape.getBoundsLocal();
             _dragShape = _editor.convertFromShape(bounds, overShape);
             _editor.repaint();
 

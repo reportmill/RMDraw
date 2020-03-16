@@ -6,7 +6,6 @@ import snap.geom.Path;
 import snap.geom.Rect;
 import snap.geom.Shape;
 import snap.geom.Transform;
-import snap.gfx.*;
 import snap.util.*;
 
 /**
@@ -30,7 +29,7 @@ public RMPolygonShape(Shape aShape)  { this(); _path = new Path(aShape); }
 /**
  * Returns the path for this polygon shape.
  */
-public Path getPath()  { return _path.copyFor(getBoundsInside()); }
+public Path getPath()  { return _path.copyFor(getBoundsLocal()); }
 
 /**
  * Sets the path for this polygon shape.

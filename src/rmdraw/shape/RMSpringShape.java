@@ -309,7 +309,7 @@ protected void paintShape(Painter aPntr)
         aPntr.setColor(Color.LIGHTGRAY);
         aPntr.setStroke(Stroke.Stroke1.copyForDashes(3,2));
         aPntr.setAntialiasing(false);
-        aPntr.draw(getBoundsInside());
+        aPntr.draw(getBoundsLocal());
         aPntr.setAntialiasing(true);
     }
 }

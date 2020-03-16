@@ -291,7 +291,7 @@ public class EditorCopyPaster implements CopyPaster {
 
             // Smart paste
             if (withCorrection) {
-                Rect parentShapeRect = aShape.getBoundsInside();
+                Rect parentShapeRect = aShape.getBoundsLocal();
                 shape.setXY(shape.x() + dx, shape.y() + dy);
                 shape.setRoll(shape.getRoll() + dr);
                 Rect rect = shape.getFrame();

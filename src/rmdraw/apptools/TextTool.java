@@ -103,9 +103,9 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         setViewValue("AlignFullButton", pgraph.isJustify());
 
         // Update AlignTopButton, AlignMiddleButton, AlignBottomButton
-        setViewValue("AlignTopButton", text.getAlignmentY()== VPos.TOP);
-        setViewValue("AlignMiddleButton", text.getAlignmentY()==VPos.CENTER);
-        setViewValue("AlignBottomButton", text.getAlignmentY()==VPos.BOTTOM);
+        setViewValue("AlignTopButton", text.getAlignY()== VPos.TOP);
+        setViewValue("AlignMiddleButton", text.getAlignY()==VPos.CENTER);
+        setViewValue("AlignBottomButton", text.getAlignY()==VPos.BOTTOM);
 
         // Set TextView RichText and selection
         _textArea.setRichText(text.getRichText());
@@ -171,9 +171,9 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         if (anEvent.equals("AlignCenterButton")) editor.getStyler().setAlignX(HPos.CENTER);
         if (anEvent.equals("AlignRightButton")) editor.getStyler().setAlignX(HPos.RIGHT);
         if (anEvent.equals("AlignFullButton")) editor.getStyler().setJustify(true);
-        if (anEvent.equals("AlignTopButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.TOP);
-        if (anEvent.equals("AlignMiddleButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.CENTER);
-        if (anEvent.equals("AlignBottomButton")) for(RMTextShape txt : texts) txt.setAlignmentY(VPos.BOTTOM);
+        if (anEvent.equals("AlignTopButton")) for(RMTextShape txt : texts) txt.setAlignY(VPos.TOP);
+        if (anEvent.equals("AlignMiddleButton")) for(RMTextShape txt : texts) txt.setAlignY(VPos.CENTER);
+        if (anEvent.equals("AlignBottomButton")) for(RMTextShape txt : texts) txt.setAlignY(VPos.BOTTOM);
 
         // If RoundingThumb or RoundingText, make sure shapes have stroke
         if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText"))
@@ -312,7 +312,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         aPntr.setStroke(Stroke.Stroke1.copyForDashes(3, 2));
 
         // Get bounds path
-        Shape path = aText.getPath().copyFor(aText.getBoundsInside());
+        Shape path = aText.getPath().copyFor(aText.getBoundsLocal());
         path = getEditor().convertFromShape(path, aText);
 
         // Draw bounds rect with no Antialiasing
@@ -335,7 +335,7 @@ public class TextTool<T extends RMTextShape> extends Tool<T> {
         aPntr.transform(xfm);
 
         // Clip to bounds
-        aPntr.clip(aText.getBoundsInside());
+        aPntr.clip(aText.getBoundsLocal());
 
         // Have TextEditor paint active text
         TextEditor ted = getTextEditor();

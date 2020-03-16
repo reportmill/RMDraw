@@ -70,12 +70,12 @@ public void resetUI()
     setViewValue("RightMarginText", getUnitsFromPointsStr(doc.getMarginRight()));
     setViewValue("TopMarginText", getUnitsFromPointsStr(doc.getMarginTop()));
     setViewValue("BottomMarginText", getUnitsFromPointsStr(doc.getMarginBottom()));
-    setViewValue("DrawMarginCheckBox", doc.getShowMargin());
-    setViewValue("SnapMarginCheckBox", doc.getSnapMargin());
+    setViewValue("DrawMarginCheckBox", doc.isShowMargin());
+    setViewValue("SnapMarginCheckBox", doc.isSnapMargin());
     
     // Reset Grid controls
-    setViewValue("ShowGridCheckBox", doc.getShowGrid());
-    setViewValue("SnapGridCheckBox", doc.getSnapGrid());
+    setViewValue("ShowGridCheckBox", doc.isShowGrid());
+    setViewValue("SnapGridCheckBox", doc.isSnapGrid());
     setViewValue("GridSpacingText", getUnitsFromPointsStr(doc.getGridSpacing()));
     
     // Reset Page Layout controls and null string text

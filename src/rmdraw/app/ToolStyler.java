@@ -146,7 +146,7 @@ public class ToolStyler <T extends RMShape> {
             return Color.WHITE;
 
         // Return shape color
-        return _shape.getColor();
+        return _shape.getFillColor();
     }
 
     /**
@@ -159,12 +159,12 @@ public class ToolStyler <T extends RMShape> {
 
         // If command-click, set gradient fill
         if(ViewUtils.isShortcutDown()) {
-            Color c1 = _shape.getFill()!=null? _shape.getColor() : Color.CLEARWHITE;
+            Color c1 = _shape.getFill()!=null? _shape.getFillColor() : Color.CLEARWHITE;
             _shape.setFill(new GradientPaint(c1, aColor, 0));
         }
 
         // Set color
-        else _shape.setColor(aColor);
+        else _shape.setFillColor(aColor);
     }
 
     /**
@@ -172,7 +172,7 @@ public class ToolStyler <T extends RMShape> {
      */
     public void setStrokeColor(Color aColor)
     {
-        _shape.setStrokeColor(aColor);
+        _shape.setBorderColor(aColor);
     }
 
     /**
@@ -413,7 +413,7 @@ public class ToolStyler <T extends RMShape> {
      */
     public HPos getAlignX()
     {
-        return _shape.getAlignmentX();
+        return _shape.getAlignX();
     }
 
     /**
@@ -422,7 +422,7 @@ public class ToolStyler <T extends RMShape> {
     public void setAlignX(HPos anAlign)
     {
         setUndoTitle("Alignment Change");
-        _shape.setAlignmentX(anAlign);
+        _shape.setAlignX(anAlign);
     }
 
     /**

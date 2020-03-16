@@ -154,7 +154,7 @@ public void pageBack()  { setSelPageIndex(getSelPageIndex()-1); }
 /**
  * Returns the bounds of the viewer document.
  */
-public Rect getDocBounds()  { return convertFromShape(getDoc().getBoundsInside(), null).getBounds(); }
+public Rect getDocBounds()  { return convertFromShape(getDoc().getBoundsLocal(), null).getBounds(); }
 
 /**
  * Returns the first shape hit by the given point.
