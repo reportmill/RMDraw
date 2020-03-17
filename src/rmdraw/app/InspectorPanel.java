@@ -2,6 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
+import rmdraw.gfx.PlacerTool;
 import rmdraw.gfx.StylerPane;
 import rmdraw.shape.*;
 import snap.geom.Polygon;
@@ -33,7 +34,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     private StylerPane  _stylerPane;
     
     // The inspector for view placement attributes (location, size, roll, scale, skew, autosizing)
-    private ShapePlacement  _placementInsp;
+    private PlacerTool _placementInsp;
     
     // The inspector for view general attributes (name, url, text wrap around)
     private ShapeGeneral  _generalInsp;
@@ -64,12 +65,13 @@ public class InspectorPanel extends EditorPane.SupportPane {
     public void initUI()
     {
         // Create StylerPane
-        EditorStyler styler = getEditor().getStyler();
+        Editor editor = getEditor();
+        EditorStyler styler = editor.getStyler();
         _stylerPane = new StylerPane(styler);
 
         // Create other inspectors
         EditorPane epane = getEditorPane();
-        _placementInsp = new ShapePlacement(epane);
+        _placementInsp = new PlacerTool(editor.getPlacer());
         _generalInsp = new ShapeGeneral(epane);
         _viewTree = new ShapeTree(epane);
 

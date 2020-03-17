@@ -3,6 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
+import rmdraw.gfx.Placer;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.geom.Shape;
@@ -515,6 +516,14 @@ public RMShape firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
 
     // Return shape
     return parent;
+}
+
+/**
+ * Returns a Placer to handle setting placement attributes for editor selection.
+ */
+public Placer getPlacer()
+{
+    return new EditorPlacer(this);
 }
 
 /**

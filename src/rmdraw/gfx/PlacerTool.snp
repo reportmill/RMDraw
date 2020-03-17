@@ -86,7 +86,7 @@
           </ColView>
         </RowView>
         <ColView Padding="1" Spacing="5" Align="TOP_CENTER">
-          <View Name="AutosizingPanel" PrefWidth="100" PrefHeight="100" Class="rmdraw.app.ShapePlacement$AutosizingPanel" />
+          <View Name="AutosizingPanel" PrefWidth="100" PrefHeight="100" Class="rmdraw.gfx.PlacerTool$AutosizingPanel" />
           <Button Name="ResetAutosizingButton" PrefWidth="80" PrefHeight="20" text="Default" />
         </ColView>
       </ColView>
