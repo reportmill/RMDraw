@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.gfx.FontPanel;
+import rmdraw.editors.FontPanel;
 import snap.gfx.*;
 import snap.view.*;
 import snap.viewx.ColorPanel;

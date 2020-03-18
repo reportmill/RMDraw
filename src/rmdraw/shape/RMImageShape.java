@@ -2,7 +2,6 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.shape;
-import rmdraw.gfx.*;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.util.*;

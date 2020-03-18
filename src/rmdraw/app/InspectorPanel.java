@@ -2,8 +2,8 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.gfx.PlacerTool;
-import rmdraw.gfx.StylerPane;
+import rmdraw.editors.PlacerTool;
+import rmdraw.editors.StylerPane;
 import rmdraw.shape.*;
 import snap.geom.Polygon;
 import snap.gfx.*;

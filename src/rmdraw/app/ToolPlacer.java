@@ -1,5 +1,5 @@
 package rmdraw.app;
-import rmdraw.gfx.Placer;
+import rmdraw.editors.Placer;
 import rmdraw.shape.RMShape;
 
 /**

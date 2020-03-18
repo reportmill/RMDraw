@@ -1,11 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.gfx;
-import rmdraw.gfx.BorderTool;
-import rmdraw.gfx.EffectTool;
-import rmdraw.gfx.PaintTool;
-import rmdraw.gfx.Styler;
+package rmdraw.editors;
 import snap.gfx.*;
 import snap.view.*;
 

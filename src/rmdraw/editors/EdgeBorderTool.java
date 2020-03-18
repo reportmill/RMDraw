@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.gfx;
+package rmdraw.editors;
 import snap.geom.Pos;
 import snap.gfx.Border;
 import snap.gfx.Borders;

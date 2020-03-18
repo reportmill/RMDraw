@@ -3,7 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.gfx.Placer;
+import rmdraw.editors.Placer;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.geom.Shape;

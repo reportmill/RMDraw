@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.gfx;
+package rmdraw.editors;
 import snap.gfx.Color;
 import snap.gfx.GradientPaint;
 import snap.gfx.Paint;

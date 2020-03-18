@@ -1,7 +1,4 @@
-package rmdraw.gfx;
-
-import rmdraw.app.Editor;
-import rmdraw.shape.RMDocument;
+package rmdraw.editors;
 
 /**
  * An interface for editing placement attributes: bounds, transform, etc.

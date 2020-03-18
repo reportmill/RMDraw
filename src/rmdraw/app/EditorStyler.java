@@ -1,5 +1,5 @@
 package rmdraw.app;
-import rmdraw.gfx.Styler;
+import rmdraw.editors.Styler;
 import rmdraw.shape.RMShape;
 import snap.geom.HPos;
 import snap.geom.Pos;

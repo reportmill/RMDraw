@@ -1,4 +1,4 @@
-package rmdraw.gfx;
+package rmdraw.editors;
 import snap.geom.Pos;
 import snap.gfx.*;
 import snap.view.View;

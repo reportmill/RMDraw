@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.gfx;
+package rmdraw.editors;
 import java.util.*;
 import snap.gfx.*;
 import snap.view.*;
