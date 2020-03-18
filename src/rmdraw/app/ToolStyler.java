@@ -178,18 +178,12 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Returns the text color current text.
      */
-    public Color getTextColor()
-    {
-        return _shape.getTextColor();
-    }
+    public Color getTextColor()  { return Color.BLACK; }
 
     /**
      * Sets the text color of the editor's selected shapes.
      */
-    public void setTextColor(Color aColor)
-    {
-        _shape.setTextColor(aColor);
-    }
+    public void setTextColor(Color aColor)  { }
 
     /**
      * Returns the font of editor's selected shape.

@@ -716,16 +716,6 @@ public String getAutosizingDefault()  { return "--~,--~"; }
 public boolean isHittable()  { return isVisible() && (_parent==null || _parent.isHittable(this)); }
 
 /**
- * Returns the text color for the shape.
- */
-public Color getTextColor()  { return Color.BLACK; }
-
-/**
- * Sets the text color for the shape.
- */
-public void setTextColor(Color aColor) { }
-
-/**
  * Returns whether font has been set.
  */
 public boolean isFontSet()  { return false; }
