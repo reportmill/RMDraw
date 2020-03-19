@@ -80,7 +80,7 @@ public class SelectTool extends Tool {
             // Register shape handle shape for repaint
             _shapeHandle.view.repaint();
 
-            // If _selectedShape is superSelected, select it instead
+            // If selected view is superSelected, select it instead
             if(isSuperSelected(_shapeHandle.view))
                 editor.setSelView(_shapeHandle.view);
 

@@ -678,18 +678,18 @@ public class Editor extends Viewer {
      */
     protected Tool createToolForClass(Class aClass)
     {
-        if (aClass== SGDoc.class) return new RMDocumentTool();
-        if (aClass== SGImage.class) return new RMImageTool();
-        if (aClass== SGLine.class) return new RMLineShapeTool();
+        if (aClass== SGDoc.class) return new SGDocTool();
+        if (aClass== SGImage.class) return new SGImageTool();
+        if (aClass== SGLine.class) return new SGLineTool();
         if (aClass== SGLinkedText.class) return new TextTool();
-        if (aClass== SGOval.class) return new RMOvalShapeTool();
-        if (aClass== SGPage.class) return new RMPageTool();
-        if (aClass== SGParent.class) return new RMParentShapeTool();
-        if (aClass== SGPolygon.class) return new RMPolygonShapeTool();
-        if (aClass== SGRect.class) return new RMRectShapeTool();
-        if (aClass== SGScene3D.class) return new RMScene3DTool();
+        if (aClass== SGOval.class) return new SGOvalTool();
+        if (aClass== SGPage.class) return new SGPageTool();
+        if (aClass== SGParent.class) return new SGParentTool();
+        if (aClass== SGPolygon.class) return new SGPolygonTool();
+        if (aClass== SGRect.class) return new SGRectTool();
+        if (aClass== SGScene3D.class) return new SGScene3DTool();
         if (aClass== SGView.class) return new Tool();
-        if (aClass== SGSpringsView.class) return new RMSpringShapeTool();
+        if (aClass== SGSpringsView.class) return new SGSpringsTool();
         if (aClass== SGText.class) return new TextTool();
         if (aClass== SceneGraph.class) return new Tool();
         System.out.println("RMTool.createTool: " + aClass.getName());
@@ -970,7 +970,7 @@ public class Editor extends Viewer {
         if (pname.equals("StyleProxy")) { // For RMGraph
             resetEditorPaneOnMouseUp(); return; }
 
-        // If no undos and change is RMDocument.SelectedPage or RMTableGroup.MainTable, just return
+        // If no undos and change is Doc.SelectedPage or RMTableGroup.MainTable, just return
         if (!undoer.hasUndos()) {
             if (pname== SGDoc.SelPageIndex_Prop) return;
             if (pname=="MainTable") return;

@@ -19,7 +19,7 @@ import snap.web.WebURL;
  * </pre></blockquote><p>
  * Or you might want to allocate one and add it to a Swing component hierarchy:
  * <p><blockquote><pre>
- *   ViewerPane viewer = new ViewerPane(); viewer.getViewer().setContent(new RMDocument(aSource));
+ *   ViewerPane viewer = new ViewerPane(); viewer.getViewer().setContent(new SGDoc(aSource));
  *   JComponent vcomp = viewer.getRootView().getNative(JComponent.class);
  *   myFrame.setContentPane(viewer);
  * </pre></blockquote>

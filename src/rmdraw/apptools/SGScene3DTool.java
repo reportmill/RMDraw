@@ -10,7 +10,7 @@ import snap.view.ViewEvent;
 /**
  * Tool for visual editing RMScene3D.
  */
-public class RMScene3DTool <T extends SGScene3D> extends Tool<T> {
+public class SGScene3DTool<T extends SGScene3D> extends Tool<T> {
     
     // The Trackball control for rotating selected scene3d
     Trackball  _trackball;

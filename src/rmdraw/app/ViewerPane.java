@@ -14,7 +14,7 @@ import snap.web.WebURL;
  * 
  * You might use it like this to view in a Swing component hierarchy:
  * <p><blockquote><pre>
- *   RMViewerPane viewer = new RMViewerPane(); viewer.getViewer().setDoc(new RMDocument(aSource));
+ *   RMViewerPane viewer = new RMViewerPane(); viewer.getViewer().setDoc(new SGDoc(aSource));
  *   JComponent vcomp = viewer.getRootView().getNative(JComponent.class);
  *   myFrame.setContentPane(viewer);
  * </pre></blockquote>

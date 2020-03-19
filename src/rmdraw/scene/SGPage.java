@@ -9,23 +9,23 @@ import snap.gfx.*;
 import snap.util.*;
 
 /**
- * The RMPage class represents an individual page in an RMDocument. For the most part, it's like every other RMShape,
+ * The Page class represents an individual page in Document. For the most part, it's like every other Scene view,
  * except that it has the ability to break children into "layers" for more convenient editing. Layers are sub-ranges of
  * children that can be set to be invisible or locked.
  *
- * It's not common for developers to use much or RMPage's unique functionality programmatically, however, you might use
+ * It's not common for developers to use much of page's unique functionality programmatically, however, you might use
  * it briefly when disecting a template like this:
  * <p><blockquote><pre>
- *   RMDocument template = new RMDocument(aSource);
- *   RMPage page = template.getPage(0);
+ *   SGDoc template = new SGDoc(aSource);
+ *   SGPage page = template.getPage(0);
  *   RMTable table = page.getChildWithName("MyTable");
  *   ...
  * </pre></blockquote><p>
  * Or you might use it briefly when adding pages to a document (which comes with one by default):
  * <p><blockquote><pre>
- *   RMDocument template = new RMDocument(612, 792);
+ *   RMDoc template = new RMDoc(612, 792);
  *   template.getPage(0).addChild(new RMText(new RXString("Hello Page 1!", RMFont("Arial", 100))));
- *   template.addPage(new RMPage());
+ *   template.addPage(new SGPage());
  *   template.getPage(1).addChild(new RMText(new RXString("Hello Page 2!", RMFont("Arial", 100))));
  * </pre></blockquote>
  */
@@ -227,7 +227,7 @@ public class SGPage extends SGParent {
     }
 
     /**
-     * Add the given child at the given index (over-rides RMShape version to propogate to RMPageLayer).
+     * Add the given child at the given index (overrides to propagate to PageLayer).
      */
     public void addChild(SGView aChild, int anIndex)
     {
@@ -242,7 +242,7 @@ public class SGPage extends SGParent {
     }
 
     /**
-     * Removes the child at the given index (over-rides RMShape version to propogate to RMPageLayer).
+     * Removes the child at the given index (overrides to propagate to PageLayer).
      */
     public SGView removeChild(int anIndex)
     {

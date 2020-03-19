@@ -22,37 +22,37 @@ import snap.view.*;
 public class ViewerInteractor {
 
     // The viewer
-    Viewer _viewer;
+    private Viewer  _viewer;
     
     // The mode
-    int                 _mode = 1;
+    private int  _mode = 1;
     
     // The last shape that was hit by a mouse press (PLAYER)
-    SGView _shapePressed;
+    private SGView  _shapePressed;
     
     // The stack of shapes under the mouse for mouse moves (PLAYER)
-    Stack               _shapeUnderStack = new Stack();
+    private Stack  _shapeUnderStack = new Stack();
     
     // The stack of cursors (one for each shape in shape stack) for mouse moves (PLAYER)
-    Stack <Cursor>      _shapeUnderCursorStack = new Stack();
+    private Stack <Cursor>  _shapeUnderCursorStack = new Stack();
 
     // The list of text shapes selected (SELECT_TEXT)
-    List <SGText>  _selectedTexts = new ArrayList();
+    private List <SGText>  _selTexts = new ArrayList();
     
     // The down point for the last mouse loop (SELECT_TEXT/SELECT_IMAGE)
-    Point _downPoint;
+    private Point  _downPoint;
 
     // The drag point for the last mouse loop (SELECT_TEXT/SELECT_IMAGE)
-    Point               _dragPoint;
+    private Point  _dragPoint;
 
     // The paint area (SELECT_TEXT)
-    Shape _paintArea = new Rect();
+    private Shape  _paintArea = new Rect();
     
     // The selection rect (SELECT_IMAGE)
-    Rect                _rect = new Rect();
+    private Rect  _rect = new Rect();
     
     // The selected sides (a mask of sides) (SELECT_IMAGE)
-    int                 _selectedSides;
+    private int  _selSides;
     
     // Constants for mode
     public static final int NONE = 0;
@@ -314,7 +314,7 @@ public class ViewerInteractor {
         Rect rect = viewer.convertToSceneView(new Rect(x,y,w,h), viewer.getSelPage()).getBounds();
 
         // Get path for rect and find/set text shapes
-        findTextShapes(viewer.getSelPage(), rect, _selectedTexts = new ArrayList());
+        findTextShapes(viewer.getSelPage(), rect, _selTexts = new ArrayList());
 
         // Get selection paint area and repaint
         _paintArea = getTextSelectionArea();
@@ -341,12 +341,12 @@ public class ViewerInteractor {
     private void copySelText()
     {
         // Get first selected text (just return if none)
-        SGText stext = _selectedTexts.size()>0? _selectedTexts.get(0) : null; if(stext==null) return;
+        SGText stext = _selTexts.size()>0? _selTexts.get(0) : null; if(stext==null) return;
         SGDoc sdoc = stext.getDoc();
 
         // Create new document and add clone of SelectedTexts to new document
         SGDoc doc = new SGDoc(sdoc.getPageSize().width, sdoc.getPageSize().height);
-        for (SGText text : _selectedTexts) {
+        for (SGText text : _selTexts) {
             SGText clone = text.clone();
             doc.getPage(0).addChild(clone);
         }
@@ -387,7 +387,7 @@ public class ViewerInteractor {
     {
         // Iterate over texts and create composite shape
         TextBox tbox = new TextBox(); Shape area = new Rect();
-        for(int i=0, iMax=_selectedTexts.size(); i<iMax; i++) { SGText text = _selectedTexts.get(i);
+        for(int i = 0, iMax = _selTexts.size(); i<iMax; i++) { SGText text = _selTexts.get(i);
 
             // Convert points to text
             Point p1 = getViewer().convertToSceneView(_downPoint.x, _downPoint.y, text);
@@ -428,14 +428,14 @@ public class ViewerInteractor {
 
         // Reset selected sides to edges hit by point
         Point point = new Point(anEvent.getX(), anEvent.getY());
-        _selectedSides = rect.isEmpty()? 0 : getHitEdges(rect, point, 5);
+        _selSides = rect.isEmpty()? 0 : getHitEdges(rect, point, 5);
 
         // Set drag rect
-        _dragPoint = _selectedSides>0 || !rect.contains(anEvent.getX(),anEvent.getY())? null :
+        _dragPoint = _selSides >0 || !rect.contains(anEvent.getX(),anEvent.getY())? null :
             new Point(anEvent.getX(), anEvent.getY());
 
         // If no selected sides, reset rect
-        if (_selectedSides==0 && _dragPoint==null)
+        if (_selSides ==0 && _dragPoint==null)
             _rect = new Rect();
     }
 
@@ -451,8 +451,8 @@ public class ViewerInteractor {
         getViewer().repaint(rect.isEmpty()? getViewer().getBounds() : rect.getInsetRect(-5));
 
         // If there are selected sides, move them
-        if (_selectedSides>0)
-            setHitEdges(rect, new Point(anEvent.getX(), anEvent.getY()), _selectedSides);
+        if (_selSides >0)
+            setHitEdges(rect, new Point(anEvent.getX(), anEvent.getY()), _selSides);
 
         // Otherwise, if point is in rect, move rect
         else if (_dragPoint!=null) {
