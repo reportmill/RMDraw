@@ -293,7 +293,7 @@ public class EditorStyler extends Styler {
      */
     public boolean isJustify()
     {
-        return false; //anEditor.getSelectedOrSuperSelectedShape().getAlignmentX();
+        return false; //anEditor.getSelOrSuperSelView().getAlignmentX();
     }
 
     /**
@@ -302,8 +302,7 @@ public class EditorStyler extends Styler {
     public void setJustify(boolean aValue)
     {
         setUndoTitle("Jusify Change");
-        //for (RMShape shape : anEditor.getSelectedOrSuperSelectedShapes())
-        //    shape.setJustify(anAlign);
+        //for (SGView view : anEditor.getSelOrSuperSelViews()) view.setJustify(anAlign);
     }
 
     /**

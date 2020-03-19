@@ -22,25 +22,25 @@ public class InspectorPanel extends EditorPane.SupportPane {
     private Label  _titleLabel;
     
     // The view SpecificButton
-    private ToggleButton _specificBtn;
+    private ToggleButton  _specificBtn;
     
     // The ScrollView that holds UI for child inspectors
     private ScrollView  _inspBox;
     
     // The child inspector current installed in inspector panel
-    private ViewOwner  _childInspector;
+    private ViewOwner  _childInsp;
     
     // The inspector for paint/fill attributes
     private StylerPane  _stylerPane;
     
     // The inspector for view placement attributes (location, size, roll, scale, skew, autosizing)
-    private PlacerTool _placementInsp;
+    private PlacerTool _placerInsp;
     
     // The inspector for view general attributes (name, url, text wrap around)
-    private ShapeGeneral  _generalInsp;
+    private ViewGeneral _generalInsp;
     
     // The inspector for view hierarchy
-    private ShapeTree  _viewTree;
+    private ViewTreePane _viewTree;
     
     // The inspector for Undo
     private UndoInspector  _undoInspector;
@@ -71,9 +71,9 @@ public class InspectorPanel extends EditorPane.SupportPane {
 
         // Create other inspectors
         EditorPane epane = getEditorPane();
-        _placementInsp = new PlacerTool(editor.getPlacer());
-        _generalInsp = new ShapeGeneral(epane);
-        _viewTree = new ShapeTree(epane);
+        _placerInsp = new PlacerTool(editor.getPlacer());
+        _generalInsp = new ViewGeneral(epane);
+        _viewTree = new ViewTreePane(epane);
 
         // Get/configure TitleLabel
         _titleLabel = getView("TitleLabel", Label.class);
@@ -137,7 +137,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         // Handle PlacementButton
         if (anEvent.equals("PlacementButton"))
-            setInspector(_placementInsp);
+            setInspector(_placerInsp);
 
         // Handle GeneralButton
         if (anEvent.equals("GeneralButton"))
@@ -207,7 +207,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         if (!isVisible()) return false;
         if (!ViewUtils.isMouseDrag()) return true;
-        return getInspector()== _placementInsp;
+        return getInspector()== _placerInsp;
     }
 
     /**
@@ -221,7 +221,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     /**
      * Returns the inspector (owner) of the inspector pane.
      */
-    protected ViewOwner getInspector()  { return _childInspector; }
+    protected ViewOwner getInspector()  { return _childInsp; }
 
     /**
      * Sets the inspector in the inspector pane.
@@ -229,7 +229,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     protected void setInspector(ViewOwner anOwner)
     {
         // Set new inspector
-        _childInspector = anOwner;
+        _childInsp = anOwner;
 
         // Get content and it grows height
         View content = anOwner.getUI();

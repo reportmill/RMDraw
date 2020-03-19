@@ -48,11 +48,11 @@ public void resetUI()
     setViewEnabled("AddButton", page.getLayerCount()>0);
     setViewEnabled("RemoveButton", page.getLayerCount()>1);
     setViewEnabled("RenameButton", page.getLayerCount()>0);
-    setViewEnabled("MergeButton", page.getLayerCount()>1 && page.getSelectedLayerIndex()>0);
+    setViewEnabled("MergeButton", page.getLayerCount()>1 && page.getSelLayerIndex()>0);
     
     // Update layers table selection
     _layersTable.setItems(page.getLayers());
-    _layersTable.setSelIndex(page.getSelectedLayerIndex());
+    _layersTable.setSelIndex(page.getSelLayerIndex());
 }
 
 /**
@@ -83,8 +83,8 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("MergeButton")) {
         
         // Get selected layer and index
-        SGPageLayer layer = page.getSelectedLayer();
-        int index = page.getSelectedLayerIndex();
+        SGPageLayer layer = page.getSelLayer();
+        int index = page.getSelLayerIndex();
         
         // If index is less than layer count
         if(index<page.getLayerCount()) {

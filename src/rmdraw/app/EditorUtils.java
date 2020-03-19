@@ -581,18 +581,18 @@ public static void checkSpelling(Editor anEditor)
 //    @Override
 //    protected String getText()
 //    {
-//        // Get editor and selected shape
-//        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
+//        // Get editor and selected view
+//        SGView view = _editor.getSelOrSuperSelView();
 //
-//        // If shape has changed do the right thing
-//        if(shape!=_workingText) {
+//        // If view has changed do the right thing
+//        if(view!=_workingText) {
 //
 //            // If new shape is text, make it the working text
-//            if(shape instanceof RMTextShape)
-//                _workingText = (RMTextShape)shape;
+//            if(view instanceof SGText)
+//                _workingText = (SGText)view;
 //
 //            // If new shape isn't text, but is on same page as previous workingText, select previous working text
-//            else if(_workingText!=null && shape.getPageShape()==_workingText.getPageShape()) {
+//            else if(_workingText!=null && view.getPage()==_workingText.getPage()) {
 //            }
 //
 //            // Otherwise, set workingText to null
@@ -600,8 +600,8 @@ public static void checkSpelling(Editor anEditor)
 //        }
 //
 //        // Make sure working text is superselected
-//        if(_workingText!=null && _workingText!=_editor.getSuperSelectedShape()) {
-//            _editor.setSuperSelectedShape(_workingText);
+//        if(_workingText!=null && _workingText!=_editor.getSuperSelView()) {
+//            _editor.setSuperSelView(_workingText);
 //            _editor.getTextEditor().setSel(0);
 //        }
 //

@@ -189,12 +189,12 @@ public class SGPage extends SGParent {
     /**
      * Returns the index of the selected layer.
      */
-    public int getSelectedLayerIndex()  { return _layerIndex; }
+    public int getSelLayerIndex()  { return _layerIndex; }
 
     /**
      * Returns the selected layer.
      */
-    public SGPageLayer getSelectedLayer()  { return _layerIndex<getLayerCount()? getLayer(_layerIndex) : null; }
+    public SGPageLayer getSelLayer()  { return _layerIndex<getLayerCount()? getLayer(_layerIndex) : null; }
 
     /**
      * Selects the given layer.
@@ -235,8 +235,8 @@ public class SGPage extends SGParent {
         super.addChild(aChild, anIndex);
 
         // If there is a selected layer, add child to layer and reorder children
-        if (getChildLayer(aChild)==null && getSelectedLayer()!=null) {
-            getSelectedLayer().addChild(aChild, Math.min(anIndex, getSelectedLayer().getChildCount()));
+        if (getChildLayer(aChild)==null && getSelLayer()!=null) {
+            getSelLayer().addChild(aChild, Math.min(anIndex, getSelLayer().getChildCount()));
             orderChildrenFromLayers();
         }
     }
@@ -299,13 +299,13 @@ public class SGPage extends SGParent {
         repaint();
 
         // Remove children from selected layer
-        getSelectedLayer().removeChildren(shapes);
+        getSelLayer().removeChildren(shapes);
 
         // Add new layer
         addLayerNamed("Layer " + (getLayerCount() + 1));
 
         // Add children to new layer
-        getSelectedLayer().addChildren(shapes);
+        getSelLayer().addChildren(shapes);
 
         // Re-order page children from layers
         orderChildrenFromLayers();
@@ -343,7 +343,7 @@ public class SGPage extends SGParent {
         // Iterate over layers and if layer contains child, return whether layer is visible
         for (SGPageLayer layer : getLayers())
             if (ListUtils.contains(layer.getChildren(), aChild))
-                return layer.isVisible() || layer==getSelectedLayer();
+                return layer.isVisible() || layer== getSelLayer();
 
         // Return true since layer not found (shouldn't ever get here)
         return true;
@@ -361,7 +361,7 @@ public class SGPage extends SGParent {
         // Iterate over layers and if layer contains child, return whether layer is not locked and visible
         for (SGPageLayer layer : getLayers())
             if (ListUtils.contains(layer.getChildren(), aChild))
-                return !layer.isLocked() && (layer.isVisible() || layer==getSelectedLayer());
+                return !layer.isLocked() && (layer.isVisible() || layer== getSelLayer());
 
         // Return false since layer not found (shouldn't ever get here)
         return false;
