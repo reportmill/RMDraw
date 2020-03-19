@@ -19,7 +19,7 @@ public class RMImageTool <T extends SGImage> extends Tool<T> {
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return SGImage.class; }
+public Class getViewClass()  { return SGImage.class; }
 
 /**
  * Returns the string used for the inspector window title.
@@ -37,7 +37,7 @@ protected void initUI()  { enableEvents("KeyText", DragDrop); }
 public void resetUI()
 {    
     // Get selected image shape and image (just return if null)
-    SGImage imgShp = getSelectedShape(); if(imgShp==null) return;
+    SGImage imgShp = getSelView(); if(imgShp==null) return;
     Image img = imgShp.getImage();
     
     // Reset KeyText, MarginsText, GrowToFitCheckBox, PreserveRatioCheckBox
@@ -66,8 +66,8 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get selected image shape and image shapes (just return if null)
-    SGImage imgShp = getSelectedShape(); if(imgShp==null) return;
-    List <SGImage> images = (List)getSelectedShapes();
+    SGImage imgShp = getSelView(); if(imgShp==null) return;
+    List <SGImage> images = (List) getSelViews();
 
     // Handle KeyText
     if(anEvent.equals("KeyText"))

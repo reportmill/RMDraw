@@ -29,7 +29,7 @@ public class SelectTool extends Tool {
     Point _lastMousePoint;
     
     // A construct representing a shape whose handle was hit and the handle
-    RMShapeHandle   _shapeHandle;
+    ViewHandle _shapeHandle;
     
     // The shape handling mouse events
     SGView _eventShape;
@@ -69,7 +69,7 @@ public class SelectTool extends Tool {
         _downPoint = getEditorEvents().getEventPointInDoc();
 
         // Get shape handle for event point
-        _shapeHandle = getShapeHandleAtPoint(anEvent.getPoint());
+        _shapeHandle = getHandleAtPoint(anEvent.getPoint());
 
         // If shape handle was found for event point, set mode to resize.
         if(_shapeHandle!=null) {
@@ -78,11 +78,11 @@ public class SelectTool extends Tool {
             _dragMode = DragMode.Resize;
 
             // Register shape handle shape for repaint
-            _shapeHandle.shape.repaint();
+            _shapeHandle.view.repaint();
 
             // If _selectedShape is superSelected, select it instead
-            if(isSuperSelected(_shapeHandle.shape))
-                editor.setSelView(_shapeHandle.shape);
+            if(isSuperSelected(_shapeHandle.view))
+                editor.setSelView(_shapeHandle.view);
 
             // Just return
             return;
@@ -128,7 +128,7 @@ public class SelectTool extends Tool {
         }
 
         // Set last point to event point in super selected shape coords
-        _lastMousePoint = getEditorEvents().getEventPointInShape(false);
+        _lastMousePoint = getEditorEvents().getEventPointInView(false);
 
         // Get editor super selected shape and call mouse pressed for superSelectedShape's tool
         SGView superSelShape = editor.getSuperSelView();
@@ -185,13 +185,13 @@ public class SelectTool extends Tool {
                 SGParent parent = editor.getSuperSelParentView();
 
                 // Get event point in super selected shape coords
-                Point point = getEditorEvents().getEventPointInShape(false);
+                Point point = getEditorEvents().getEventPointInView(false);
 
                 // Move shapes once to event point without SnapToGrid
                 moveShapes(_lastMousePoint, point);
 
                 // Get event point snapped to grid & edges, since SnapEdges will now be valid
-                Point pointSnapped = getEditorEvents().getEventPointInShape(shouldSnap, shouldSnap);
+                Point pointSnapped = getEditorEvents().getEventPointInView(shouldSnap, shouldSnap);
                 Point pointSnappedDoc = parent.localToParent(pointSnapped, null);
 
                 // Move shapes again to snapped point
@@ -206,7 +206,7 @@ public class SelectTool extends Tool {
 
                 // Set Undo title
                 setUndoTitle("Rotate");
-                Point point2 = getEditorEvents().getEventPointInShape(false);
+                Point point2 = getEditorEvents().getEventPointInView(false);
 
                 // Iterate over selected shapes and update roll
                 for(SGView shape : editor.getSelViews()) { if(shape.isLocked()) continue;
@@ -223,10 +223,10 @@ public class SelectTool extends Tool {
                 setUndoTitle("Resize");
 
                 // Get event point in super selected shape coords snapped to grid
-                Point resizePoint = getEditorEvents().getEventPointInShape(shouldSnap);
+                Point resizePoint = getEditorEvents().getEventPointInView(shouldSnap);
 
                 // Move handle to current point and break
-                _shapeHandle.tool.moveShapeHandle(_shapeHandle.shape, _shapeHandle.handle, resizePoint);
+                _shapeHandle.tool.moveHandle(_shapeHandle.view, _shapeHandle.handle, resizePoint);
                 break;
 
             // Handle DragModeSelect
@@ -362,7 +362,7 @@ public class SelectTool extends Tool {
 
         // If selection rect is outside super selected shape, move up shape hierarchy
         while(superShape!=editor.getDoc() &&
-            !path.getBounds().intersectsRect(getTool(superShape).getBoundsSuperSelected(superShape))) {
+            !path.getBounds().intersectsRect(getTool(superShape).getBoundsSuperSel(superShape))) {
             SGParent parent = superShape.getParent();
             editor.setSuperSelView(parent);
             path = superShape.localToParent(path);
@@ -417,7 +417,7 @@ public class SelectTool extends Tool {
         }
 
         // Paint handles for selecting shapes
-        paintHandlesForShapes(aPntr, _newSelShapes);
+        paintHandlesForViews(aPntr, _newSelShapes);
 
         // Paint SelRect: light transparent rect with darker transparent border
         Rect rect = editor.convertFromSceneView(_selRect, null).getBounds();

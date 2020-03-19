@@ -33,7 +33,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get the selected scene
-    SGScene3D scene = getSelectedShape(); if(scene==null) return;
+    SGScene3D scene = getSelView(); if(scene==null) return;
     
     // Reset Rendering radio buttons
     setViewSelIndex("RenderingComboBox", scene.isPseudo3D()? 1 : 0);
@@ -61,7 +61,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get the currently selected scene3d
-    SGScene3D scene = getSelectedShape(); if(scene==null) return;
+    SGScene3D scene = getSelView(); if(scene==null) return;
     
     // Handle RenderingComboBox
     if(anEvent.equals("RenderingComboBox"))
@@ -91,7 +91,7 @@ public void respondUI(ViewEvent anEvent)
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return SGScene3D.class; }
+public Class getViewClass()  { return SGScene3D.class; }
 
 /**
  * Returns the name of this tool for the inspector window.
@@ -111,33 +111,33 @@ public boolean isUngroupable(SGView aShape)  { return false; }
 /**
  * Event handler for editing.
  */    
-public void mousePressed(T aScene3D, ViewEvent anEvent)
+public void mousePressed(T aView, ViewEvent anEvent)
 {
     // If shape isn't super selected, just return
-    if(!isSuperSelected(aScene3D)) return;
+    if(!isSuperSelected(aView)) return;
     
     // Forward mouse pressed to scene and consume event
-    aScene3D.processEvent(createShapeEvent(aScene3D, anEvent));
+    aView.processEvent(createSceneEvent(aView, anEvent));
     anEvent.consume();
 }
 
 /**
  * Event handler for editing.
  */
-public void mouseDragged(T aScene3D, ViewEvent anEvent)
+public void mouseDragged(T aView, ViewEvent anEvent)
 {
     // Forward mouse pressed to scene and consume event
-    aScene3D.processEvent(createShapeEvent(aScene3D, anEvent));
+    aView.processEvent(createSceneEvent(aView, anEvent));
     anEvent.consume();
 }
 
 /**
  * Event handler for editing.
  */
-public void mouseReleased(T aScene3D, ViewEvent anEvent)
+public void mouseReleased(T aView, ViewEvent anEvent)
 {
     // Forward mouse pressed to scene and consume event
-    aScene3D.processEvent(createShapeEvent(aScene3D, anEvent));
+    aView.processEvent(createSceneEvent(aView, anEvent));
     anEvent.consume();
 }
 

@@ -29,7 +29,7 @@ protected T newInstance()
 public void resetUI()
 {
     // Get selected rectangle (just return if null)
-    SGRect rect = getSelectedShape(); if(rect==null) return;
+    SGRect rect = getSelView(); if(rect==null) return;
     
     // Update RoundingThumb and RoundingText
     setViewValue("RoundingThumb", rect.getRadius());
@@ -42,8 +42,8 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get the current rect shape and list of rectshapes (just return if null)
-    SGRect rect = getSelectedShape(); if(rect==null) return;
-    List <SGRect> rects = (List)getSelectedShapes();
+    SGRect rect = getSelView(); if(rect==null) return;
+    List <SGRect> rects = (List) getSelViews();
 
     // Handle Rounding Radius Thumb & Text
     if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText")) {
@@ -65,7 +65,7 @@ public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.CROSSH
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return SGRect.class; }
+public Class getViewClass()  { return SGRect.class; }
 
 /**
  * Returns the name to be presented to user.

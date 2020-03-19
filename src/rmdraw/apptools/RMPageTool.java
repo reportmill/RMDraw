@@ -38,7 +38,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get currently selected page (just return if null)
-    SGPage page = getSelectedShape(); if(page==null) return;
+    SGPage page = getSelView(); if(page==null) return;
     
     // Update DatasetKeyText, PaintBackCheckBox
     setViewValue("DatasetKeyText", page.getDatasetKey());
@@ -61,7 +61,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected page (just return if null)
-    SGPage page = getSelectedShape(); if(page==null) return;
+    SGPage page = getSelView(); if(page==null) return;
 
     // Handle DatasetKeyText, PaintBackCheckBox
     if(anEvent.equals("DatasetKeyText"))
@@ -169,7 +169,7 @@ public void configureLayersTable(ListCell <SGPageLayer> aCell)
 /**
  * Returns the shape class that this tool is responsible for.
  */
-public Class getShapeClass()  { return SGPage.class; }
+public Class getViewClass()  { return SGPage.class; }
 
 /**
  * Returns the name to be used for this tool in the inspector window title.
@@ -179,6 +179,6 @@ public String getWindowTitle()  { return "Page Inspector"; }
 /**
  * Overrides tool method to declare that pages have no handles.
  */
-public int getHandleCount(T aShape)  { return 0; }
+public int getHandleCount(T aView)  { return 0; }
 
 }

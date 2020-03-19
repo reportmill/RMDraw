@@ -29,7 +29,7 @@ protected T newInstance()
 public void resetUI()
 {
     // Get current oval shape
-    SGOval oval = getSelectedShape(); if(oval==null) return;
+    SGOval oval = getSelView(); if(oval==null) return;
     
     // Update StartThumb, StartText
     setViewValue("StartThumb", oval.getStartAngle());
@@ -49,8 +49,8 @@ public void resetUI()
  */
 public void respondUI(ViewEvent anEvent)
 {
-    SGOval oval = getSelectedShape(); if(oval==null) return;
-    List <SGOval> ovals = (List)getSelectedShapes();
+    SGOval oval = getSelView(); if(oval==null) return;
+    List <SGOval> ovals = (List) getSelViews();
     
     // Handle StartThumb, StartText
     if(anEvent.equals("StartThumb") || anEvent.equals("StartText")) {
@@ -83,7 +83,7 @@ public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.CROSSH
 /**
  * Returns the shape class this tool is responsible for.
  */
-public Class <T> getShapeClass()  { return (Class<T>) SGOval.class; }
+public Class <T> getViewClass()  { return (Class<T>) SGOval.class; }
 
 /**
  * Returns the string used for the inspector window title.

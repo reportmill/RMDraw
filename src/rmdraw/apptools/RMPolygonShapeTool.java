@@ -43,7 +43,7 @@ protected void initUI()
 protected void resetUI()
 {
     // Get current PathView and path
-    SGPolygon pshape = getSelectedShape();
+    SGPolygon pshape = getSelView();
     Path path = pshape.getPath();
     
     // Update PathText
@@ -56,7 +56,7 @@ protected void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get current PathView and path
-    SGPolygon pshape = getSelectedShape();
+    SGPolygon pshape = getSelView();
     
     // Handle PathText
     if(anEvent.equals("PathText")) {
@@ -77,7 +77,7 @@ public void respondUI(ViewEvent anEvent)
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return SGPolygon.class; }
+public Class getViewClass()  { return SGPolygon.class; }
 
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
@@ -186,45 +186,45 @@ public void mouseReleased(ViewEvent anEvent)
 /**
  * Event handling - overridden to maintain default cursor.
  */
-public void mouseMoved(T aPolygon, ViewEvent anEvent)
+public void mouseMoved(T aView, ViewEvent anEvent)
 {
     // Get the mouse down point in shape coords
-    Point point = getEditor().convertToSceneView(anEvent.getX(), anEvent.getY(), aPolygon);
+    Point point = getEditor().convertToSceneView(anEvent.getX(), anEvent.getY(), aView);
     
     // If control point is hit, change cursor to move
-    if(handleAtPoint(aPolygon.getPath(), point, _selectedPointIndex)>=0) {
+    if(handleAtPoint(aView.getPath(), point, _selectedPointIndex)>=0) {
         getEditor().setCursor(Cursor.MOVE); anEvent.consume(); }
     
     // Otherwise, do normal mouse moved
-    else super.mouseMoved(aPolygon, anEvent);
+    else super.mouseMoved(aView, anEvent);
 }
 
 /**
  * Event handling for shape editing.
  */
-public void mousePressed(T aPolygon, ViewEvent anEvent)
+public void mousePressed(T aView, ViewEvent anEvent)
 {
     // If shape isn't super selected, just return
-    if(!isSuperSelected(aPolygon)) return;
+    if(!isSuperSelected(aView)) return;
     
     // Get mouse down point in shape coords (but don't snap to the grid)
-    Point point = getEditorEvents().getEventPointInShape(false);
+    Point point = getEditorEvents().getEventPointInView(false);
     
     // Register shape for repaint
-    aPolygon.repaint();
+    aView.repaint();
     
     // check for degenerate path
-    if(aPolygon.getPath().getPointCount() < 2) 
+    if(aView.getPath().getPointCount() < 2)
         _selectedPointIndex = -1;
     
     // Otherwise, figure out the size of a handle in path coordinates and set index of path point hit by mouse down
     else {
         int oldSelectedPt = _selectedPointIndex;
-        int hp = handleAtPoint(aPolygon.getPath(), point, oldSelectedPt);
+        int hp = handleAtPoint(aView.getPath(), point, oldSelectedPt);
         _selectedPointIndex = hp;
     
         if(anEvent.isPopupTrigger()) {
-            runContextMenu(aPolygon, anEvent); anEvent.consume(); }
+            runContextMenu(aView, anEvent); anEvent.consume(); }
     }
     
     // Consume event
@@ -234,17 +234,17 @@ public void mousePressed(T aPolygon, ViewEvent anEvent)
 /**
  * Event handling for shape editing.
  */
-public void mouseDragged(T aPolygon, ViewEvent anEvent)
+public void mouseDragged(T aView, ViewEvent anEvent)
 {
     // If not dragging a point, just return
     if(_selectedPointIndex<0) return;
     
     // Repaint, create path with moved point and set new path
-    aPolygon.repaint();
-    Point point = getEditorEvents().getEventPointInShape(true);
-    Path path = aPolygon.getPath(), newPath = path.clone();
+    aView.repaint();
+    Point point = getEditorEvents().getEventPointInView(true);
+    Path path = aView.getPath(), newPath = path.clone();
     setPointStructured(newPath, _selectedPointIndex, point);
-    aPolygon.resetPath(newPath);
+    aView.resetPath(newPath);
 }
 
 /**
@@ -284,9 +284,9 @@ public void reactivateTool()  { createPoly(); }
 /**
  * Editor method - called when an instance of this tool's shape in de-super-selected.
  */
-public void willLoseSuperSelected(T aShape)
+public void willLoseSuperSel(T aShape)
 {
-    super.willLoseSuperSelected(aShape);
+    super.willLoseSuperSel(aShape);
     _selectedPointIndex = -1;
 }
 
@@ -302,14 +302,14 @@ public void paintTool(Painter aPntr)
 /**
  * Handles painting a polygon shape.
  */
-public void paintHandles(T aPoly, Painter aPntr, boolean isSuperSelected)
+public void paintHandles(T aView, Painter aPntr, boolean isSuperSelected)
 {
     // Do normal version (and just return if not super-selected)
-    super.paintHandles(aPoly, aPntr, isSuperSelected); if(!isSuperSelected) return;
+    super.paintHandles(aView, aPntr, isSuperSelected); if(!isSuperSelected) return;
     
     // Get plygon path
-    Path pathInLocal = aPoly.getPath();
-    Shape shapeInEditor = aPoly.localToParent(pathInLocal, null);
+    Path pathInLocal = aView.getPath();
+    Shape shapeInEditor = aView.localToParent(pathInLocal, null);
     Path path = shapeInEditor instanceof Path? (Path)shapeInEditor : new Path(shapeInEditor);
     
     // Declare some path iteration variables
@@ -389,7 +389,7 @@ public void paintHandles(T aPoly, Painter aPntr, boolean isSuperSelected)
 /**
  * Returns the bounds for this shape when it's super-selected.
  */
-public Rect getBoundsSuperSelected(T aShape) 
+public Rect getBoundsSuperSel(T aShape)
 {
     Rect bnds = getControlPointBounds(aShape.getPath()); bnds.inset(-3, -3); return bnds;
 }
@@ -485,7 +485,7 @@ public void runContextMenu(SGPolygon aPolyShape, ViewEvent anEvent)
 public void deleteSelectedPoint()
 {
     // Make changes to a clone of the path so deletions can be undone
-    SGPolygon p = getSelectedShape();
+    SGPolygon p = getSelView();
     Path path = new Path(p.getPath());
 
     // get the index of the path segment corresponding to the selected control point
@@ -519,7 +519,7 @@ public void deleteSelectedPoint()
 public void addNewPointAt(Point aPoint)
 {
     // Get old path and new path
-    SGPolygon poly = getSelectedShape();
+    SGPolygon poly = getSelView();
     Path path = poly.getPath();
     Path path2 = new Path();
     

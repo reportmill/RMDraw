@@ -30,7 +30,7 @@ public class RMLineShapeTool <T extends SGLine> extends Tool<T> {
 /**
  * Returns the shape class that this tool is responsible for.
  */
-public Class getShapeClass()  { return SGLine.class; }
+public Class getViewClass()  { return SGLine.class; }
 
 /**
  * Returns the name of this tool to be displayed by inspector.
@@ -56,7 +56,7 @@ public void mousePressed(ViewEvent anEvent)
  */
 public void mouseDragged(ViewEvent anEvent)
 {
-    Point currentPoint = getEditorEvents().getEventPointInShape(true);
+    Point currentPoint = getEditorEvents().getEventPointInView(true);
     double dx = currentPoint.getX() - _downPoint.getX();
     double dy = currentPoint.getY() - _downPoint.getY();
     double breakingPoint = 20f;
@@ -72,31 +72,31 @@ public void mouseDragged(ViewEvent anEvent)
     }
     
     // Register shape for repaint
-    _shape.repaint();
+    _newView.repaint();
     
     // Set adjusted bounds
-    _shape.setBounds(_downPoint.getX(), _downPoint.getY(), dx, dy);
+    _newView.setBounds(_downPoint.getX(), _downPoint.getY(), dx, dy);
 }
 
 /**
  * Editor method (returns the number of handles).
  */
-public int getHandleCount(T aShape)  { return 2; }
+public int getHandleCount(T aView)  { return 2; }
 
 /**
  * Editor method.
  */
-public Point getHandlePoint(T aShape, int anIndex, boolean isSuperSel)
+public Point getHandlePoint(T aView, int anIndex, boolean isSuperSel)
 {
-    return super.getHandlePoint(aShape, anIndex==HandleEndPoint? HandleSE : anIndex, isSuperSel);
+    return super.getHandlePoint(aView, anIndex==HandleEndPoint? HandleSE : anIndex, isSuperSel);
 }
 
 /**
  * Editor method.
  */
-public void moveShapeHandle(T aShape, int aHandle, Point aPoint)
+public void moveHandle(T aView, int aHandle, Point aPoint)
 {
-    super.moveShapeHandle(aShape, aHandle==HandleEndPoint? HandleSE : aHandle, aPoint);
+    super.moveHandle(aView, aHandle==HandleEndPoint? HandleSE : aHandle, aPoint);
 }
 
 /**
@@ -144,7 +144,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get selected line and arrow head
-    SGLine line = getSelectedShape(); if(line==null) return;
+    SGLine line = getSelView(); if(line==null) return;
     SGLine.ArrowHead ahead = line.getArrowHead();
     
     // Update ArrowsMenuButton
@@ -164,7 +164,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get selected shape and arrow head
-    SGLine line = getSelectedShape();
+    SGLine line = getSelView();
     SGLine.ArrowHead arrowHead = line.getArrowHead();
 
     // Handle ScaleText and ScaleThumbWheel

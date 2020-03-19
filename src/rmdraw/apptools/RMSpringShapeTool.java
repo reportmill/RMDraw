@@ -12,7 +12,7 @@ public class RMSpringShapeTool <T extends SGSpringsView> extends RMParentShapeTo
 /**
  * Override to return shape class.
  */
-public Class <T> getShapeClass()  { return (Class<T>) SGSpringsView.class; }
+public Class <T> getViewClass()  { return (Class<T>) SGSpringsView.class; }
 
 /**
  * Returns whether a given shape is super-selectable.

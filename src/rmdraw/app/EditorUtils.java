@@ -33,7 +33,7 @@ public static void groupShapes(Editor anEditor, List <SGView> theShapes, SGParen
     anEditor.undoerSetUndoTitle("Group");
 
     // Get copy of shapes, sorted by their original index in parent
-    List <SGView> shapes = SGViewUtils.getShapesSortedByIndex(theShapes);
+    List <SGView> shapes = SGViewUtils.getViewsSortedByIndex(theShapes);
     
     // Get parent
     SGParent parent = shapes.get(0).getParent();
@@ -149,7 +149,7 @@ public static void bringToFront(Editor anEditor)
     SGParent parent = anEditor.getSuperSelParentView();
     if(parent==null || anEditor.getSelViewCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Bring to Front");
-    parent.bringShapesToFront(anEditor.getSelViews());
+    parent.bringViewsToFront(anEditor.getSelViews());
 }
 
 /**
@@ -160,7 +160,7 @@ public static void sendToBack(Editor anEditor)
     SGParent parent = anEditor.getSuperSelParentView();
     if(parent==null || anEditor.getSelViewCount()==0) { anEditor.beep(); return; }
     anEditor.undoerSetUndoTitle("Send to Back");
-    parent.sendShapesToBack(anEditor.getSelViews());
+    parent.sendViewsToBack(anEditor.getSelViews());
 }
 
 /**
@@ -310,7 +310,7 @@ public static void equallySpaceRow(Editor anEditor)
     if(anEditor.getSelViewCount()==0) { anEditor.beep(); return; }
     
     // Get selectedShapes sorted by minXInParentBounds
-    List <SGView> shapes = SGViewUtils.getShapesSortedByFrameX(anEditor.getSelViews());
+    List <SGView> shapes = SGViewUtils.getViewsSortedByFrameX(anEditor.getSelViews());
     float spaceBetweenShapes = 0;
 
     // Calculate average space between shapes
@@ -338,7 +338,7 @@ public static void equallySpaceColumn(Editor anEditor)
     if(anEditor.getSelViewCount()==0) { anEditor.beep(); return; }
     
     // Get selectedShapes sorted by minXInParentBounds
-    List <SGView> shapes = SGViewUtils.getShapesSortedByFrameY(anEditor.getSelViews());
+    List <SGView> shapes = SGViewUtils.getViewsSortedByFrameY(anEditor.getSelViews());
     float spaceBetweenShapes = 0;
 
     // Calculate average space between shapes
@@ -405,7 +405,7 @@ public static void combinePaths(Editor anEditor)
     
     // Get selected shapes and create CombinedShape
     List <SGView> selectedShapes = ListUtils.clone(anEditor.getSelViews());
-    SGPolygon combinedShape = SGViewUtils.getCombinedPathsShape(selectedShapes);
+    SGPolygon combinedShape = SGViewUtils.getCombinedPathForViews(selectedShapes);
     
     // Remove original children and replace with CombinedShape
     anEditor.undoerSetUndoTitle("Add Paths");
@@ -542,7 +542,7 @@ public static void addImagePlaceholder(Editor anEditor)
     SGImage imageShape = new SGImage(null);
     
     // Get parent and move image shape to center
-    SGParent parent = anEditor.firstSuperSelectedShapeThatAcceptsChildren();
+    SGParent parent = anEditor.firstSuperSelViewThatAcceptsChildren();
     imageShape.setFrame((int)(parent.getWidth()/2 - 24), (int)(parent.getHeight()/2 - 24), 48, 48);
 
     // Set image in image shape and add imageShape to mainShape

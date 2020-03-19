@@ -76,7 +76,7 @@ public class EditorInteractor extends ViewerInteractor {
 
         // If current tool isn't select tool, see if super selected shape needs to be updated
         if (!editor.isCurrentToolSelectTool()) {
-            SGView shape = editor.firstSuperSelectedShapeThatAcceptsChildrenAtPoint(_downPoint);
+            SGView shape = editor.firstSuperSelViewThatAcceptsChildrenAtPoint(_downPoint);
             if(shape!=editor.getSuperSelView())
                 editor.setSuperSelView(shape);
         }
@@ -281,12 +281,12 @@ public class EditorInteractor extends ViewerInteractor {
     /**
      * Returns the current event point in super-selected shape coords, optionally snapped to grid.
      */
-    public Point getEventPointInShape(boolean snapToGrid)  { return getEventPointInShape(snapToGrid, false); }
+    public Point getEventPointInView(boolean snapToGrid)  { return getEventPointInView(snapToGrid, false); }
 
     /**
      * Returns the current event point in super-selected shape coords with an option to adjust to conform to grid.
      */
-    public Point getEventPointInShape(boolean snapToGrid, boolean snapEdges)
+    public Point getEventPointInView(boolean snapToGrid, boolean snapEdges)
     {
         // Get event point in doc coords
         Point point = getEventPointInDoc();

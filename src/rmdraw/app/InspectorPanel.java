@@ -350,7 +350,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
             // If SupportPane
         else if (owner instanceof EditorPane.SupportPane) {
             String title = ((EditorPane.SupportPane)owner).getWindowTitle();
-            String cname = tool.getShapeClass().getSimpleName();
+            String cname = tool.getViewClass().getSimpleName();
             String shpName = cname.replace("RM", "").replace("Shape", "");
             title += " (" + shpName + ')';
             return title;

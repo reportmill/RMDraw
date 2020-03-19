@@ -13,7 +13,7 @@ public class RMParentShapeTool <T extends SGParent> extends Tool<T> {
 /**
  * Override to return shape class.
  */
-public Class<T> getShapeClass()  { return (Class<T>) SGParent.class; }
+public Class<T> getViewClass()  { return (Class<T>) SGParent.class; }
 
 /**
  * Returns the string to be used for the inspector window title.

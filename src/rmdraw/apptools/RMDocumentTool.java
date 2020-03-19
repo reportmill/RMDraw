@@ -25,7 +25,7 @@ public class RMDocumentTool <T extends SGDoc> extends Tool<T> {
 /**
  * Returns the class that tool edits.
  */
-public Class getShapeClass()  { return SGDoc.class; }
+public Class getViewClass()  { return SGDoc.class; }
 
 /**
  * Returns the name to be show in inspector window.
@@ -48,7 +48,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get currently selected document and its page size
-    SGDoc doc = getSelectedShape(); if(doc==null) return;
+    SGDoc doc = getSelView(); if(doc==null) return;
     SGPage page = doc.getSelPage();
     
     // Set PageWidthText and PageHeightText
@@ -100,7 +100,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get current document and page (just return if null)
-    SGDoc doc = getSelectedShape(); if(doc==null) return;
+    SGDoc doc = getSelView(); if(doc==null) return;
     SGPage page = doc.getSelPage();
     
     // Set boolean for whether we need to resize window
@@ -183,7 +183,7 @@ public void respondUI(ViewEvent anEvent)
 /**
  * Overrides tool method to declare that documents have no handles.
  */
-public int getHandleCount(T aShape)  { return 0; }
+public int getHandleCount(T aView)  { return 0; }
 
 // Initialize page sizes and paper size names
 static {

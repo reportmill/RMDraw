@@ -4,7 +4,7 @@
 package rmdraw.editors;
 import java.util.ArrayList;
 import java.util.List;
-import rmdraw.app.FontPicker;
+
 import snap.gfx.*;
 import snap.util.*;
 import snap.view.*;

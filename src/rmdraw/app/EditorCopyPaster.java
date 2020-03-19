@@ -85,7 +85,7 @@ public class EditorCopyPaster implements CopyPaster {
     public void paste()
     {
         // If not text editing, do paste for system clipboard
-        SGParent parent = _editor.firstSuperSelectedShapeThatAcceptsChildren();
+        SGParent parent = _editor.firstSuperSelViewThatAcceptsChildren();
         paste(Clipboard.get(), parent, null);
     }
 
