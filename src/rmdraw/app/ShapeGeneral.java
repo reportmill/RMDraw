@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 import snap.view.*;
 
@@ -36,7 +36,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get currently selected shape
-    RMShape shape = getSelectedShape();
+    SGView shape = getSelectedShape();
     
     // Reset NameText, UrlText
     setViewValue("NameText", shape.getName());
@@ -59,14 +59,14 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get the current editor and selected shape (just return if null) and selected shapes
-    RMShape shape = getSelectedShape(); if(shape==null) return;
-    List <? extends RMShape> shapes = getEditor().getSelectedOrSuperSelectedShapes();
+    SGView shape = getSelectedShape(); if(shape==null) return;
+    List <? extends SGView> shapes = getEditor().getSelOrSuperSelViews();
     
     // Handle NameText, UrlText
     if(anEvent.equals("NameText")) { String value = anEvent.getStringValue();
-        for(RMShape shp : shapes) shp.setName(value); }
+        for(SGView shp : shapes) shp.setName(value); }
     if(anEvent.equals("UrlText")) { String value = anEvent.getStringValue();
-        for(RMShape shp : shapes) shp.setURL(value); }
+        for(SGView shp : shapes) shp.setURL(value); }
     
     // Handle BindingsTable
     if(anEvent.equals("BindingsTable")) {
@@ -99,7 +99,7 @@ public void respondUI(ViewEvent anEvent)
         String key = getViewStringValue("BindingsText"); if(key!=null && key.length()==0) key = null;
         
         // Remove previous binding and add new one (if valid)
-        for(RMShape shp : shapes)
+        for(SGView shp : shapes)
             if(key!=null) shp.addBinding(pname, key);
             else shp.removeBinding(pname);
     }
@@ -108,19 +108,19 @@ public void respondUI(ViewEvent anEvent)
 /**
  * Returns the current selected shape for the current editor.
  */
-public RMShape getSelectedShape()
+public SGView getSelectedShape()
 {
     Editor e = getEditor(); if(e==null) return null;
-    return e.getSelectedOrSuperSelectedShape();
+    return e.getSelOrSuperSelView();
 }
 
 /**
  * Returns the current selected shape for the current editor.
  */
-public List <? extends RMShape> getSelectedShapes()
+public List <? extends SGView> getSelectedShapes()
 {
     Editor e = getEditor(); if(e==null) return Collections.EMPTY_LIST;
-    return e.getSelectedOrSuperSelectedShapes();
+    return e.getSelOrSuperSelViews();
 }
 
 /**
@@ -130,7 +130,7 @@ private void configureBindingsTable(ListCell <String> aCell)
 {
     if(aCell.getCol()==0) return;
     String pname = aCell.getItem();
-    RMShape shape = getSelectedShape(); if(shape==null) return;
+    SGView shape = getSelectedShape(); if(shape==null) return;
     Binding binding = getSelectedShape().getBinding(pname);
     aCell.setText(binding!=null? binding.getKey() : null);
 }

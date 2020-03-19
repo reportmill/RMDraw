@@ -1,8 +1,8 @@
 package rmdraw.app;
 import rmdraw.editors.Placer;
-import rmdraw.shape.RMDocument;
-import rmdraw.shape.RMPage;
-import rmdraw.shape.RMShape;
+import rmdraw.scene.SGDoc;
+import rmdraw.scene.SGPage;
+import rmdraw.scene.SGView;
 import java.util.List;
 
 /**
@@ -254,8 +254,8 @@ public class EditorPlacer implements Placer {
      */
     public boolean isEditable()
     {
-        RMShape view = _editor.getSuperSelectedShape();
-        return !(view instanceof RMDocument || view instanceof RMPage);
+        SGView view = _editor.getSuperSelView();
+        return !(view instanceof SGDoc || view instanceof SGPage);
     }
 
     /**
@@ -263,7 +263,7 @@ public class EditorPlacer implements Placer {
      */
     public double getUnitsFromPoints(double aValue)
     {
-        RMDocument doc = _editor.getDoc();
+        SGDoc doc = _editor.getDoc();
         return doc!=null ? doc.getUnitsFromPoints(aValue) : aValue;
     }
 
@@ -272,7 +272,7 @@ public class EditorPlacer implements Placer {
      */
     public double getPointsFromUnits(double aValue)
     {
-        RMDocument doc = _editor.getDoc();
+        SGDoc doc = _editor.getDoc();
         return doc!=null ? doc.getPointsFromUnits(aValue) : aValue;
     }
 
@@ -281,7 +281,7 @@ public class EditorPlacer implements Placer {
      */
     private Placer getSelOrSuperSelPlacer()
     {
-        RMShape view = _editor.getSelectedOrSuperSelectedShape();
+        SGView view = _editor.getSelOrSuperSelView();
         return getPlacer(view);
     }
 
@@ -290,7 +290,7 @@ public class EditorPlacer implements Placer {
      */
     private Placer[] getSelOrSuperSelPlacers()
     {
-        List<RMShape> views = _editor.getSelectedOrSuperSelectedShapes();
+        List<SGView> views = _editor.getSelOrSuperSelViews();
         Placer placers[] = new Placer[views.size()];
         for (int i=0, iMax=views.size(); i<iMax; i++) placers[i] = getPlacer(views.get(i));
         return placers;
@@ -299,7 +299,7 @@ public class EditorPlacer implements Placer {
     /**
      * Returns the currently selected shape or, if none, the super-selected shape.
      */
-    private Placer getPlacer(RMShape aView)
+    private Placer getPlacer(SGView aView)
     {
         return new ToolPlacer(aView);
     }

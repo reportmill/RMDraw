@@ -4,7 +4,7 @@
 package rmdraw.apptools;
 import rmdraw.app.Editor;
 import rmdraw.app.Tool;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.view.*;
@@ -12,7 +12,7 @@ import snap.view.*;
 /**
  * This class manages creation and editing of polygon shapes.
  */
-public class RMPolygonShapeTool <T extends RMPolygonShape> extends Tool<T> {
+public class RMPolygonShapeTool <T extends SGPolygon> extends Tool<T> {
     
     // The current path being added
     Path         _path;
@@ -43,7 +43,7 @@ protected void initUI()
 protected void resetUI()
 {
     // Get current PathView and path
-    RMPolygonShape pshape = getSelectedShape();
+    SGPolygon pshape = getSelectedShape();
     Path path = pshape.getPath();
     
     // Update PathText
@@ -56,7 +56,7 @@ protected void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get current PathView and path
-    RMPolygonShape pshape = getSelectedShape();
+    SGPolygon pshape = getSelectedShape();
     
     // Handle PathText
     if(anEvent.equals("PathText")) {
@@ -77,7 +77,7 @@ public void respondUI(ViewEvent anEvent)
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return RMPolygonShape.class; }
+public Class getShapeClass()  { return SGPolygon.class; }
 
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
@@ -92,7 +92,7 @@ protected T newInstance()
 /**
  * Returns whether a given shape is super-selectable.
  */
-public boolean isSuperSelectable(RMShape aShape)  { return true; }
+public boolean isSuperSelectable(SGView aShape)  { return true; }
 
 /**
  * Returns whether tool should smooth path segments during creation.
@@ -108,7 +108,7 @@ public void mousePressed(ViewEvent anEvent)
     Point point = getEditorEvents().getEventPointInDoc(!smoothPath);
 
     // Register all selectedShapes dirty because their handles will probably need to be wiped out
-    for(RMShape shp : getEditor().getSelectedShapes()) shp.repaint(); // Was shapes.forEach(i -> i.repaint())
+    for(SGView shp : getEditor().getSelViews()) shp.repaint(); // Was shapes.forEach(i -> i.repaint())
 
     // If this is the first mouseDown of a new path, create path and add moveTo. Otherwise add lineTo to current path
     if(_path==null) { _path = new Path(); _path.moveTo(point.x, point.y); }
@@ -119,7 +119,7 @@ public void mousePressed(ViewEvent anEvent)
     _pointCountOnMouseDown = _path.getPointCount();
 
     Rect rect = _path.getBounds().getInsetRect(-10);
-    rect = getEditor().convertFromShape(rect, null).getBounds();
+    rect = getEditor().convertFromSceneView(rect, null).getBounds();
     getEditor().repaint(rect);
 }
 
@@ -135,7 +135,7 @@ public void mouseDragged(ViewEvent anEvent)
     else _path.setPoint(_path.getPointCount()-1, point.x, point.y);
 
     rect.union(_path.getBounds()); rect.inset(-10, -10);
-    rect = getEditor().convertFromShape(rect, null).getBounds();
+    rect = getEditor().convertFromSceneView(rect, null).getBounds();
     getEditor().repaint(rect);
 }
 
@@ -189,7 +189,7 @@ public void mouseReleased(ViewEvent anEvent)
 public void mouseMoved(T aPolygon, ViewEvent anEvent)
 {
     // Get the mouse down point in shape coords
-    Point point = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), aPolygon);
+    Point point = getEditor().convertToSceneView(anEvent.getX(), anEvent.getY(), aPolygon);
     
     // If control point is hit, change cursor to move
     if(handleAtPoint(aPolygon.getPath(), point, _selectedPointIndex)>=0) {
@@ -253,18 +253,18 @@ public void mouseDragged(T aPolygon, ViewEvent anEvent)
 private void createPoly()
 {
     if(_path!=null && _path.getPointCount()>2) {
-        RMPolygonShape poly = new RMPolygonShape();
-        Rect polyFrame = getEditor().getSuperSelectedShape().parentToLocal(_path.getBounds(), null).getBounds();
+        SGPolygon poly = new SGPolygon();
+        Rect polyFrame = getEditor().getSuperSelView().parentToLocal(_path.getBounds(), null).getBounds();
         poly.setFrame(polyFrame);
         poly.setBorder(Border.blackBorder());
         poly.setPath(_path);
 
         // Add shape to superSelectedShape (within an undo grouping).
         setUndoTitle("Add Polygon");
-        getEditor().getSuperSelectedParentShape().addChild(poly);
+        getEditor().getSuperSelParentView().addChild(poly);
 
         // Select Shape
-        getEditor().setSelectedShape(poly);
+        getEditor().setSelView(poly);
     }
 
     // Reset path
@@ -446,7 +446,7 @@ private Rect getControlPointBounds(Path aPath)
 /**
  * Runs a context menu for the given event.
  */
-public void runContextMenu(RMPolygonShape aPolyShape, ViewEvent anEvent)
+public void runContextMenu(SGPolygon aPolyShape, ViewEvent anEvent)
 {
     // Get the handle that was clicked on
     Path path = aPolyShape.getPath();
@@ -462,7 +462,7 @@ public void runContextMenu(RMPolygonShape aPolyShape, ViewEvent anEvent)
     // Otherwise if the path itself was hit, use 'add point'
     else {
         // Convert event point to shape coords
-        _newPoint = getEditor().convertToShape(anEvent.getX(), anEvent.getY(), aPolyShape);
+        _newPoint = getEditor().convertToSceneView(anEvent.getX(), anEvent.getY(), aPolyShape);
         
         // linewidth is probably in shape coords, and might need to get transformed to path coords here
         if(path.intersects(_newPoint.x, _newPoint.y, Math.max(aPolyShape.getBorderWidth(),8))) {
@@ -485,7 +485,7 @@ public void runContextMenu(RMPolygonShape aPolyShape, ViewEvent anEvent)
 public void deleteSelectedPoint()
 {
     // Make changes to a clone of the path so deletions can be undone
-    RMPolygonShape p = getSelectedShape();
+    SGPolygon p = getSelectedShape();
     Path path = new Path(p.getPath());
 
     // get the index of the path segment corresponding to the selected control point
@@ -502,7 +502,7 @@ public void deleteSelectedPoint()
         setUndoTitle("Delete Shape");
         p.getParent().repaint();
         p.removeFromParent();
-        getEditor().setSelectedShape(null);
+        getEditor().setSelView(null);
     }
     
     // otherwise update path and bounds and deselect the deleted point
@@ -519,7 +519,7 @@ public void deleteSelectedPoint()
 public void addNewPointAt(Point aPoint)
 {
     // Get old path and new path
-    RMPolygonShape poly = getSelectedShape();
+    SGPolygon poly = getSelectedShape();
     Path path = poly.getPath();
     Path path2 = new Path();
     

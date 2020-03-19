@@ -1,6 +1,6 @@
 package rmdraw.app;
 import rmdraw.editors.Styler;
-import rmdraw.shape.RMShape;
+import rmdraw.scene.SGView;
 import snap.geom.HPos;
 import snap.geom.Pos;
 import snap.gfx.*;
@@ -153,11 +153,11 @@ public class EditorStyler extends Styler {
     {
         Font font = null;
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
+            SGView shape = getSelOrSuperSelShape(i);
             font = getStyler(shape).getFont();
         }
         for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
-            RMShape shape = getSelOrSuperSelShape(i);
+            SGView shape = getSelOrSuperSelShape(i);
             font = getStyler(shape).getFontDeep();
         }
         return font!=null ? font : Font.getDefaultFont();
@@ -386,7 +386,7 @@ public class EditorStyler extends Styler {
      */
     private ToolStyler getSelOrSuperSelStyler()
     {
-        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
+        SGView shape = _editor.getSelOrSuperSelView();
         return getStyler(shape);
     }
 
@@ -395,7 +395,7 @@ public class EditorStyler extends Styler {
      */
     private ToolStyler[] getSelOrSuperSelStylers()
     {
-        List<RMShape> shapes = getSelOrSuperSelShapes();
+        List<SGView> shapes = getSelOrSuperSelShapes();
         ToolStyler stylers[] = new ToolStyler[shapes.size()];
         for (int i=0, iMax=shapes.size(); i<iMax; i++) stylers[i] = getStyler(shapes.get(i));
         return stylers;
@@ -404,27 +404,27 @@ public class EditorStyler extends Styler {
     /**
      * Returns the currently selected shapes or, if none, the super-selected shape in a list.
      */
-    private List<RMShape> getSelOrSuperSelShapes()  { return _editor.getSelectedOrSuperSelectedShapes(); }
+    private List<SGView> getSelOrSuperSelShapes()  { return _editor.getSelOrSuperSelViews(); }
 
     /**
      * Returns the number of currently selected shapes or simply 1, if a shape is super-selected.
      */
-    private int getSelOrSuperSelShapeCount()  { return _editor.getSelectedOrSuperSelectedShapeCount(); }
+    private int getSelOrSuperSelShapeCount()  { return _editor.getSelOrSuperSelViewCount(); }
 
     /**
      * Returns the currently selected shape at the given index, or the super-selected shape.
      */
-    private RMShape getSelOrSuperSelShape(int anIndex)  { return _editor.getSelectedOrSuperSelectedShape(anIndex); }
+    private SGView getSelOrSuperSelShape(int anIndex)  { return _editor.getSelOrSuperSelView(anIndex); }
 
     /**
      * Returns the specific tool for a given shape.
      */
-    private Tool getTool(RMShape aShape)  { return _editor.getToolForView(aShape); }
+    private Tool getTool(SGView aShape)  { return _editor.getToolForView(aShape); }
 
     /**
      * Returns the currently selected shape or, if none, the super-selected shape.
      */
-    private ToolStyler getStyler(RMShape aShape)
+    private ToolStyler getStyler(SGView aShape)
     {
         Tool tool = getTool(aShape);
         return tool.getStyler(aShape);

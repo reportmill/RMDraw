@@ -1,16 +1,15 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.geom.Arc;
 import snap.geom.Shape;
-import snap.gfx.*;
 import snap.util.*;
 
 /**
  * This class represents a simple oval, with a setable start angle and sweep angle.
  */
-public class RMOvalShape extends RMShape {
+public class SGOval extends SGView {
     
     // The oval start angle
     float         _start = 0;

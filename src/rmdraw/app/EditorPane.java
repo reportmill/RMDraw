@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 import snap.gfx.*;
 import snap.view.*;
@@ -238,7 +238,7 @@ public String getWindowTitle()
  */
 public EditorPane newDocument()
 {
-    return open(new RMDocument(612, 792));
+    return open(new SGDoc(612, 792));
 }
 
 /**
@@ -271,7 +271,7 @@ public EditorPane open(Object aSource)
     }
     
     // Load document
-    RMDocument doc = null; try { doc = RMDocument.getDocFromSource(aSource); }
+    SGDoc doc = null; try { doc = SGDoc.getDocFromSource(aSource); }
     
     // If there was an XML parse error loading aSource, show error dialog
     catch(Exception e) {
@@ -428,11 +428,11 @@ public void runPopupMenu(ViewEvent anEvent)
 {
     // Get selected shape (just return if page is selected)
     Menu pmenu = new Menu();
-    RMShape shape = getEditor().getSelectedOrSuperSelectedShape();
-    if(shape instanceof RMPage) return;
+    SGView shape = getEditor().getSelOrSuperSelView();
+    if(shape instanceof SGPage) return;
 
     // If RMTextShape, get copy of Format menu
-    if(shape instanceof RMTextShape) { RMTextShape text = (RMTextShape)shape;
+    if(shape instanceof SGText) { SGText text = (SGText)shape;
 
         // Get editor pane format menu and add menu items to popup
         Menu formatMenu = getMenuBar().getView("FormatMenu", Menu.class);
@@ -464,8 +464,8 @@ private void editorDidPropChange(PropChange aPC)
 {
     String pname = aPC.getPropName();
     switch(pname) {
-        case Editor.SelShapes_Prop:
-        case Editor.SuperSelShape_Prop: resetLater(); break;
+        case Editor.SelViews_Prop:
+        case Editor.SuperSelView_Prop: resetLater(); break;
     }
 }
 

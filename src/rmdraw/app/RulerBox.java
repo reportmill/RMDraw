@@ -4,7 +4,7 @@ import snap.geom.Rect;
 import snap.gfx.*;
 import snap.util.MathUtils;
 import snap.view.*;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 
 /**
  * A View subclass to add rulers to a given content view.
@@ -120,7 +120,7 @@ private static class RulerView extends View {
 
     // The ruler editor and document
     Editor _editor;
-    RMDocument                _doc;
+    SGDoc _doc;
 
     // Zoom Factor
     double                    _zoomFactor;
@@ -188,7 +188,7 @@ private static class RulerView extends View {
         // Get ruler bounds in doc coords
         Rect vrect = _editor.getVisRect();
         Rect bnds = new Rect(vrect.x - RULER_WIDTH, 0, getWidth(), RULER_WIDTH);
-        bnds = _editor.convertToShape(bnds, _doc).getBounds();
+        bnds = _editor.convertToSceneView(bnds, _doc).getBounds();
         
         // Scale and translate ruler to doc coords
         aPntr.save();
@@ -223,7 +223,7 @@ private static class RulerView extends View {
             aPntr.setColor(new Color(1,.5)); aPntr.fillRect(selBnds.x, 0, selBnds.width, getHeight()); }
             
         // Paint mouse position
-        Point mp = _editor.convertToShape(_mouse.x, _mouse.y, _doc);
+        Point mp = _editor.convertToSceneView(_mouse.x, _mouse.y, _doc);
         aPntr.setColor(Color.BLACK); aPntr.setStroke(MOUSE_STROKE);
         aPntr.drawLine(mp.getX(), 0, mp.getX(), getHeight());
         aPntr.restore();
@@ -237,7 +237,7 @@ private static class RulerView extends View {
         // Get ruler bounds in doc coords
         Rect vrect = _editor.getVisRect();
         Rect bnds = new Rect(0, vrect.y, RULER_WIDTH, getHeight());
-        bnds = _editor.convertToShape(bnds, _doc).getBounds();
+        bnds = _editor.convertToSceneView(bnds, _doc).getBounds();
         
         // Scale ruler to doc coords
         aPntr.save();
@@ -272,7 +272,7 @@ private static class RulerView extends View {
             aPntr.setColor(new Color(1,.5)); aPntr.fillRect(0, selBnds.y, getWidth(), selBnds.height); }
             
         // Paint mouse position
-        Point mp = _editor.convertToShape(_mouse.x, _mouse.y, _doc);
+        Point mp = _editor.convertToSceneView(_mouse.x, _mouse.y, _doc);
         aPntr.setColor(Color.BLACK); aPntr.setStroke(MOUSE_STROKE);
         aPntr.drawLine(0, mp.getY(), getWidth(), mp.getY());
         aPntr.restore();
@@ -281,8 +281,8 @@ private static class RulerView extends View {
     /** Returns the current shape bounds. */
     private Rect getShapeBounds()
     {
-        RMShape shape = _editor.getSelectedOrSuperSelectedShape();
-        if(shape==null || shape instanceof RMDocument || shape instanceof RMPage) return null;
+        SGView shape = _editor.getSelOrSuperSelView();
+        if(shape==null || shape instanceof SGDoc || shape instanceof SGPage) return null;
         return shape.localToParent(shape.getBoundsLocal(), null).getBounds();
     }
 }

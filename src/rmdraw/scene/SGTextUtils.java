@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.geom.Shape;
@@ -14,12 +14,12 @@ import snap.text.TextBoxRun;
 /**
  * Utility methods for some esoteric text functionality.
  */
-public class RMTextShapeUtils {
+public class SGTextUtils {
 
 /**
  * Returns a path for all text chars.
  */
-public static Shape getTextPath(RMTextShape aText)
+public static Shape getTextPath(SGText aText)
 {
     // Create path and establish bounds of text
     Path path = new Path(); path.moveTo(0,0); path.moveTo(aText.getWidth(), aText.getHeight());
@@ -37,13 +37,13 @@ public static Shape getTextPath(RMTextShape aText)
 }
 
 /**
- * Returns an RMPolygon shape with the glyph path for the chars in this text. Assumes all runs have same visual attrs.
+ * Returns an SGPolygon with the glyph path for the chars in this text. Assumes all runs have same visual attrs.
  */
-public static RMPolygonShape getTextPathShape(RMTextShape aText)
+public static SGPolygon getTextPathView(SGText aText)
 {
     // Create polygon for text path with attributes from text shape
-    RMPolygonShape polygon = new RMPolygonShape(getTextPath(aText));
-    polygon.copyShape(aText);
+    SGPolygon polygon = new SGPolygon(getTextPath(aText));
+    polygon.copyView(aText);
     
     // Set polygon color to run or outline color and stroke and return
     polygon.setFillColor(aText.getTextColor());
@@ -54,33 +54,34 @@ public static RMPolygonShape getTextPathShape(RMTextShape aText)
 /**
  * Returns a group shape with a text shape for each individual character in this text shape.
  */
-public static RMShape getTextCharsShape(RMTextShape aText)
+public static SGView getTextCharsView(SGText aText)
 {
-    // Get shape for chars
-    RMParentShape charsShape = new RMSpringShape(); charsShape.copyShape(aText);
+    // Get view for chars
+    SGParent charsView = new SGSpringsView();
+    charsView.copyView(aText);
     
     // Iterate over runs
     TextBox tbox = aText.getTextBox();
-    for(TextBoxLine line : tbox.getLines())
-    for(TextBoxRun run : line.getRuns()) { //if(run.length()==0 || run.isTab()) continue;
+    for (TextBoxLine line : tbox.getLines())
+    for (TextBoxRun run : line.getRuns()) { //if(run.length()==0 || run.isTab()) continue;
     
         // Get run font and run bounds
         Font font = run.getFont();
         Rect runBounds = new Rect(run.getX(), line.getY(), 0, line.getHeight()); // run y/height instead?
         
         // Iterate over run chars
-        for(int i=0, iMax=run.length(); i<iMax; i++) { char c = run.charAt(i);
+        for (int i=0, iMax=run.length(); i<iMax; i++) { char c = run.charAt(i);
             
             // Get char advance (just continue if zero)
             double advance = font.charAdvance(c); if(advance<=0) continue;
             
-            // If non-space character, create glyph shape
-            if(c != ' ') {
+            // If non-space character, create glyph view
+            if (c != ' ') {
                 Rect glyphBounds = font.getCharBounds(c);
                 RichText rtext = aText.getRichText().subtext(run.getStart() + i, run.getStart() + i + 1);
-                RMTextShape glyph = new RMTextShape(rtext); glyph.setAutosizing("~-~,~-~");
+                SGText glyph = new SGText(rtext); glyph.setAutosizing("~-~,~-~");
 
-                charsShape.addChild(glyph);
+                charsView.addChild(glyph);
                 runBounds.width = Math.ceil(Math.max(advance, glyphBounds.getMaxX()));
                 glyph.setFrame(getBoundsFromTextBounds(aText, runBounds));
             }
@@ -90,14 +91,14 @@ public static RMShape getTextCharsShape(RMTextShape aText)
         }
     }
 
-    // Return chars shape
-    return charsShape;
+    // Return chars view
+    return charsView;
 }
 
 /**
  * Returns bounds from given text bounds, adjusted to account for text margins.
  */
-private static Rect getBoundsFromTextBounds(RMTextShape aText, Rect aRect)
+private static Rect getBoundsFromTextBounds(SGText aText, Rect aRect)
 {
     double rx = aRect.getX(), ry = aRect.getY(), rw = aRect.getWidth(), rh = aRect.getHeight();
     rx -= aText.getMarginLeft(); rw += (aText.getMarginLeft() + aText.getMarginRight());

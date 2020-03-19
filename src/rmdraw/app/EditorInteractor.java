@@ -3,7 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.util.MathUtils;
@@ -46,7 +46,7 @@ public class EditorInteractor extends ViewerInteractor {
         Editor editor = getEditor();
         boolean isKey = anEvent.isKeyEvent() && !anEvent.isConsumed();
         if (isKey && (!editor.isPreview() || getOverridePreview())) {
-            RMShape superSelectedShape = editor.getSuperSelectedShape();
+            SGView superSelectedShape = editor.getSuperSelView();
             Tool tool = editor.getToolForView(superSelectedShape);
             tool.processKeyEvent(superSelectedShape, anEvent);
         }
@@ -72,13 +72,13 @@ public class EditorInteractor extends ViewerInteractor {
         _currentEvent = anEvent;
 
         // Set downpoint and last point to current event point in document coords
-        _downPoint = editor.convertToShape(anEvent.getX(), anEvent.getY(), null);
+        _downPoint = editor.convertToSceneView(anEvent.getX(), anEvent.getY(), null);
 
         // If current tool isn't select tool, see if super selected shape needs to be updated
         if (!editor.isCurrentToolSelectTool()) {
-            RMShape shape = editor.firstSuperSelectedShapeThatAcceptsChildrenAtPoint(_downPoint);
-            if(shape!=editor.getSuperSelectedShape())
-                editor.setSuperSelectedShape(shape);
+            SGView shape = editor.firstSuperSelectedShapeThatAcceptsChildrenAtPoint(_downPoint);
+            if(shape!=editor.getSuperSelView())
+                editor.setSuperSelView(shape);
         }
 
         // Forward mouse pressed to current tool
@@ -210,7 +210,7 @@ public class EditorInteractor extends ViewerInteractor {
 
         // If T key, swap in linked text
         else if (keyChar=='t')
-            TextToolUtils.convertToText(editor, editor.getSelectedShape(), "test");
+            TextToolUtils.convertToText(editor, editor.getSelView(), "test");
 
         // Otherwise, set consume to false
         else return;
@@ -243,7 +243,7 @@ public class EditorInteractor extends ViewerInteractor {
         Editor editor = getEditor();
 
         // Get current event point in doc coords, rounded to integers
-        Point point = editor.convertToShape(_currentEvent.getX(), _currentEvent.getY(), null);
+        Point point = editor.convertToSceneView(_currentEvent.getX(), _currentEvent.getY(), null);
         point.snap();
 
         // If shift key is down, constrain values to increments of 45 degrees from _downPoint
@@ -296,7 +296,7 @@ public class EditorInteractor extends ViewerInteractor {
             point = pointSnapped(point, snapEdges);
 
         // Return point converted to super selected point
-        return getEditor().getSuperSelectedShape().parentToLocal(point, null);
+        return getEditor().getSuperSelView().parentToLocal(point, null);
     }
 
     /**
@@ -306,7 +306,7 @@ public class EditorInteractor extends ViewerInteractor {
     {
         // Get the editor and editor shape
         Editor editor = getEditor();
-        RMDocument doc = editor.getDoc(); if (doc==null) return aPoint;
+        SGDoc doc = editor.getDoc(); if (doc==null) return aPoint;
 
         // Get local copy of point
         Point point = aPoint;
@@ -335,11 +335,11 @@ public class EditorInteractor extends ViewerInteractor {
     {
         // Get the editor and editor shape
         Editor editor = getEditor();
-        RMDocument doc = editor.getDoc(); if (doc==null) return aPoint;
+        SGDoc doc = editor.getDoc(); if (doc==null) return aPoint;
 
         // Get document frame
-        RMShape spage = editor.getSelPage();
-        Rect docFrame = editor.convertFromShape(spage.getBoundsLocal(), spage).getBounds();
+        SGView spage = editor.getSelPage();
+        Rect docFrame = editor.convertFromSceneView(spage.getBoundsLocal(), spage).getBounds();
         double docFrameX = docFrame.getX(), docFrameY = docFrame.getY();
 
         // Get grid spacing
@@ -353,7 +353,7 @@ public class EditorInteractor extends ViewerInteractor {
         if (!snapEdges) {
 
             // Get point in editor coords
-            aPoint = editor.convertFromShape(aPoint.getX(),aPoint.getY(), null);
+            aPoint = editor.convertFromSceneView(aPoint.getX(),aPoint.getY(), null);
 
             // Get dx/dy to nearest grid
             double px = MathUtils.round(aPoint.getX() - docFrameX, gridSpacing) + docFrameX;
@@ -366,10 +366,10 @@ public class EditorInteractor extends ViewerInteractor {
         else {
 
             // Iterate over selected shapes
-            for (int i=0, iMax=editor.getSelectedShapeCount(); i<iMax; i++) { RMShape shape = editor.getSelectedShape(i);
+            for (int i = 0, iMax = editor.getSelViewCount(); i<iMax; i++) { SGView shape = editor.getSelView(i);
 
                 // Get shape bounds in editor coords
-                Rect rect = editor.convertFromShape(shape.getBoundsLocal(), shape).getBounds();
+                Rect rect = editor.convertFromSceneView(shape.getBoundsLocal(), shape).getBounds();
                 double rectx = rect.getX(), recty = rect.getY();
 
                 // Find dx/dy to nearest grid
@@ -399,7 +399,7 @@ public class EditorInteractor extends ViewerInteractor {
 
         // Covert back to shape if we need to
         if (!snapEdges)
-            aPoint = editor.convertToShape(aPoint.x, aPoint.y, null); // Get aPoint in world coords
+            aPoint = editor.convertToSceneView(aPoint.x, aPoint.y, null); // Get aPoint in world coords
 
         // Return point
         return aPoint;
@@ -412,9 +412,9 @@ public class EditorInteractor extends ViewerInteractor {
     {
         // Get the editor, document and document frame
         Editor editor = getEditor();
-        RMDocument doc = editor.getDoc(); if(doc==null) return aPoint;
-        RMShape spage = editor.getSelPage();
-        Rect docFrame = editor.convertFromShape(spage.getBoundsLocal(), spage).getBounds();
+        SGDoc doc = editor.getDoc(); if(doc==null) return aPoint;
+        SGView spage = editor.getSelPage();
+        Rect docFrame = editor.convertFromSceneView(spage.getBoundsLocal(), spage).getBounds();
 
         // Get grid spacing and dx/dy for maximum offsets
         double gridSpacing = doc.getGridSpacing()*editor.getZoomFactor();
@@ -425,7 +425,7 @@ public class EditorInteractor extends ViewerInteractor {
         if (!snapEdges) {
 
             // Get point in editor coords
-            aPoint = editor.convertFromShape(aPoint.getX(), aPoint.getY(), null);
+            aPoint = editor.convertFromSceneView(aPoint.getX(), aPoint.getY(), null);
 
             // Find min dx/dy to nearest guide
             for (int j=0, jMax=getGuideCount(doc); j<jMax; j++) {
@@ -446,10 +446,10 @@ public class EditorInteractor extends ViewerInteractor {
         else {
 
             // Iterate over selected shapes
-            for (int i=0, iMax=editor.getSelectedShapeCount(); i<iMax; i++) { RMShape shape = editor.getSelectedShape(i);
+            for (int i = 0, iMax = editor.getSelViewCount(); i<iMax; i++) { SGView shape = editor.getSelView(i);
 
                 // Get shape bounds in editor coords
-                Rect rect = editor.convertFromShape(shape.getBoundsLocal(), shape).getBounds();
+                Rect rect = editor.convertFromSceneView(shape.getBoundsLocal(), shape).getBounds();
 
                 // Iterate over guides to find dx/dy to nearest guide
                 for (int j=0, jMax=getGuideCount(doc); j<jMax; j++) {
@@ -491,7 +491,7 @@ public class EditorInteractor extends ViewerInteractor {
 
         // Covert back to shape if we need to
         if (!snapEdges)
-            aPoint = editor.convertToShape(aPoint.x, aPoint.y, null); // Get aPoint in world coords
+            aPoint = editor.convertToSceneView(aPoint.x, aPoint.y, null); // Get aPoint in world coords
 
         // Return point
         return aPoint;
@@ -500,12 +500,12 @@ public class EditorInteractor extends ViewerInteractor {
     /**
      * Returns the number of guides (4 if snapping to margin, otherwise zero).
      */
-    public static int getGuideCount(RMDocument aDoc)  { return aDoc.isSnapMargin()? 4 : 0; }
+    public static int getGuideCount(SGDoc aDoc)  { return aDoc.isSnapMargin()? 4 : 0; }
 
     /**
      * Returns the guide location for the given index.
      */
-    public static double getGuideLocation(RMDocument aDoc, int anIndex)
+    public static double getGuideLocation(SGDoc aDoc, int anIndex)
     {
         switch (anIndex) {
             case 0: return aDoc.getMarginLeft();

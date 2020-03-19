@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.geom.Line;
 import snap.geom.Point;
 import snap.geom.Shape;
@@ -10,19 +10,19 @@ import snap.gfx.*;
 import snap.util.*;
 
 /**
- * This class represents a simple line shape, drawing a line from a start point to an end point.
+ * This class represents a simple line view, drawing a line from a start point to an end point.
  */
-public class RMLineShape extends RMParentShape {
+public class SGLine extends SGParent {
     
 /**
  * Creates a basic line (a point actually at 0,0).
  */
-public RMLineShape()  { setBorder(Border.blackBorder()); }
+public SGLine()  { setBorder(Border.blackBorder()); }
 
 /**
  * Creates a basic black line from the given x1, y1 to the given x2, y2.
  */
-public RMLineShape(double x1, double y1, double x2, double y2)  { this(); setFrame(x1, y1, x2-x1, y2-y1); }
+public SGLine(double x1, double y1, double x2, double y2)  { this(); setFrame(x1, y1, x2-x1, y2-y1); }
 
 /**
  * Returns the line path.
@@ -137,15 +137,15 @@ public void setHeight(double aHeight)
 /**
  * XML archival.
  */
-protected XMLElement toXMLShape(XMLArchiver anArchiver)
+protected XMLElement toXMLView(XMLArchiver anArchiver)
 {
-    XMLElement e = super.toXMLShape(anArchiver); e.setName("line"); return e;
+    XMLElement e = super.toXMLView(anArchiver); e.setName("line"); return e;
 }
 
 /**
  * A shape for RMLineShape arrow head.
  */
-public static class ArrowHead extends RMPolygonShape {
+public static class ArrowHead extends SGPolygon {
 
     // Point, in path coords, that gets attached to end (for arrowheads) or start (for arrow tails) of the line 
     Point     _originInPath, _originInShape;
@@ -161,18 +161,18 @@ public static class ArrowHead extends RMPolygonShape {
     public void setScaleY(double aVal)  { super.setScaleY(aVal); if(getParent()!=null) getParent().relayout(); }
     
     /** XML archival. */
-    public XMLElement toXMLShape(XMLArchiver anArchiver)
+    public XMLElement toXMLView(XMLArchiver anArchiver)
     {
-        XMLElement e = super.toXMLShape(anArchiver); e.setName("arrow-head");
+        XMLElement e = super.toXMLView(anArchiver); e.setName("arrow-head");
         if(_originInPath.x != 0) e.add("xorigin", _originInPath.x);
         if(_originInPath.y != 0) e.add("yorigin", _originInPath.y);
         return e;
     }
     
     /** XML unarchival. */
-    protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
+    protected void fromXMLView(XMLArchiver anArchiver, XMLElement anElement)
     {
-        super.fromXMLShape(anArchiver, anElement);
+        super.fromXMLView(anArchiver, anElement);
         float x = anElement.getAttributeFloatValue("xorigin", 0);
         float y = anElement.getAttributeFloatValue("yorigin", 0);
         _originInPath = new Point(x,y);

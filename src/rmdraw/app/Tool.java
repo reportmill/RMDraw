@@ -3,7 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.TextToolStyler;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import snap.geom.Point;
@@ -15,7 +15,7 @@ import snap.view.*;
 /**
  * This is the base class for tools in RM - the objects that provide GUI editing for RM shapes.
  */
-public class Tool<T extends RMShape> extends ViewOwner {
+public class Tool<T extends SGView> extends ViewOwner {
     
     // The Editor that owns this tool
     private Editor _editor;
@@ -24,7 +24,7 @@ public class Tool<T extends RMShape> extends ViewOwner {
     private EditorPane _editorPane;
 
     // The newly created shape instance
-    protected RMShape _shape;
+    protected SGView _shape;
     
     // The mouse down point that initiated last tool mouse loop
     protected Point _downPoint;
@@ -49,7 +49,7 @@ public class Tool<T extends RMShape> extends ViewOwner {
 /**
  * Returns the shape class that this tool handles.
  */
-public Class <T> getShapeClass()  { return (Class<T>)RMShape.class; }
+public Class <T> getShapeClass()  { return (Class<T>) SGView.class; }
 
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
@@ -105,24 +105,24 @@ protected CopyPaster getCopyPaster()
 public T getSelectedShape()
 {
     Editor e = getEditor(); if(e==null) return null;
-    RMShape s = e.getSelectedOrSuperSelectedShape();
+    SGView s = e.getSelOrSuperSelView();
     return ClassUtils.getInstance(s, getShapeClass());
 }
 
 /**
  * Returns the current selected shapes for the current editor.
  */
-public List <? extends RMShape> getSelectedShapes()  { return getEditor().getSelectedOrSuperSelectedShapes(); }
+public List <? extends SGView> getSelectedShapes()  { return getEditor().getSelOrSuperSelViews(); }
 
 /**
  * Returns the tool for a given shape.
  */
-public Tool getTool(RMShape aShape)  { return _editor.getToolForView(aShape); }
+public Tool getTool(SGView aShape)  { return _editor.getToolForView(aShape); }
 
 /**
  * Returns the tool for a given shape class.
  */
-public Tool getToolForClass(Class <? extends RMShape> aClass)  { return _editor.getToolForClass(aClass); }
+public Tool getToolForClass(Class <? extends SGView> aClass)  { return _editor.getToolForClass(aClass); }
 
 /**
  * Sets undo title.
@@ -150,27 +150,27 @@ public void reactivateTool()  { }
 /**
  * Returns whether a given shape is selected in the editor.
  */
-public boolean isSelected(RMShape aShape)  { return getEditor().isSelected(aShape); }
+public boolean isSelected(SGView aShape)  { return getEditor().isSelected(aShape); }
 
 /**
  * Returns whether a given shape is superselected in the editor.
  */
-public boolean isSuperSelected(RMShape aShape)  { return getEditor().isSuperSelected(aShape); }
+public boolean isSuperSelected(SGView aShape)  { return getEditor().isSuperSelected(aShape); }
 
 /**
  * Returns whether a given shape is super-selectable.
  */
-public boolean isSuperSelectable(RMShape aShape)  { return aShape.superSelectable(); }
+public boolean isSuperSelectable(SGView aShape)  { return aShape.superSelectable(); }
 
 /**
  * Returns whether a given shape accepts children.
  */
-public boolean getAcceptsChildren(RMShape aShape)  { return aShape.acceptsChildren(); }
+public boolean getAcceptsChildren(SGView aShape)  { return aShape.acceptsChildren(); }
 
 /**
  * Returns whether a given shape can be ungrouped.
  */
-public boolean isUngroupable(RMShape aShape)  { return aShape.getChildCount()>0; }
+public boolean isUngroupable(SGView aShape)  { return aShape.getChildCount()>0; }
 
 /**
  * Editor method - called when an instance of this tool's shape is super selected.
@@ -192,7 +192,7 @@ public Rect getBoundsSuperSelected(T aShape)  { return aShape.getBoundsMarkedDee
  */
 public double getUnitsFromPoints(double aValue)
 {
-    Editor editor = getEditor(); RMDocument doc = editor.getDoc();
+    Editor editor = getEditor(); SGDoc doc = editor.getDoc();
     return doc!=null? doc.getUnitsFromPoints(aValue) : aValue;
 }
 
@@ -206,16 +206,16 @@ public String getUnitsFromPointsStr(double aValue)  { return _fmt.format(getUnit
  */
 public double getPointsFromUnits(double aValue)
 {
-    Editor editor = getEditor(); RMDocument doc = editor.getDoc();
+    Editor editor = getEditor(); SGDoc doc = editor.getDoc();
     return doc!=null? doc.getPointsFromUnits(aValue) : aValue;
 }
 
 /**
  * Returns a Styler for tool and shape.
  */
-public ToolStyler getStyler(RMShape aShape)
+public ToolStyler getStyler(SGView aShape)
 {
-    if (aShape instanceof RMTextShape)
+    if (aShape instanceof SGText)
         return new TextToolStyler(this, aShape);
     return new ToolStyler(this, aShape);
 }
@@ -241,8 +241,8 @@ public void mousePressed(ViewEvent anEvent)
     _shape.setXY(_downPoint);
     
     // Add shape to superSelectedShape and select shape
-    getEditor().getSuperSelectedParentShape().addChild(_shape);
-    getEditor().setSelectedShape(_shape);
+    getEditor().getSuperSelParentView().addChild(_shape);
+    getEditor().setSelView(_shape);
 }
 
 /**
@@ -324,14 +324,14 @@ public void mouseMoved(T aShape, ViewEvent anEvent)
     else {
         
         // Get mouse over shape
-        RMShape shape = getEditor().getShapeAtPoint(anEvent.getX(),anEvent.getY());
+        SGView shape = getEditor().getViewAtPoint(anEvent.getX(),anEvent.getY());
         
         // If shape isn't super selected and it's parent doesn't superselect children immediately, choose move cursor
         if(!isSuperSelected(shape) && !shape.getParent().childrenSuperSelectImmediately())
             cursor = Cursor.MOVE;
         
         // If shape is text and either super-selected or child of a super-select-immediately, choose text cursor
-        if(shape instanceof RMTextShape && (isSuperSelected(shape) || shape.getParent().childrenSuperSelectImmediately()))
+        if(shape instanceof SGText && (isSuperSelected(shape) || shape.getParent().childrenSuperSelectImmediately()))
             cursor = Cursor.TEXT;
     }
     
@@ -374,14 +374,14 @@ public void paintTool(Painter aPntr)
 /**
  * Paints handles for given list of shapes (uses Editor.SelectedShapes if null).
  */
-protected void paintHandlesForShapes(Painter aPntr, List <RMShape> theShapes)
+protected void paintHandlesForShapes(Painter aPntr, List <SGView> theShapes)
 {
     // Get editor and shapes
     Editor editor = getEditor();
-    List <RMShape> shapes = theShapes!=null? theShapes : editor.getSelectedShapes();
+    List <SGView> shapes = theShapes!=null? theShapes : editor.getSelViews();
     
     // Iterate over shapes and have tool paintHandles
-    for(RMShape shape : shapes) {
+    for(SGView shape : shapes) {
         Tool tool = getTool(shape);
         tool.paintHandles(shape, aPntr, false);
     }
@@ -394,8 +394,8 @@ protected void paintHandlesForSuperSelectedShapes(Painter aPntr)
 {
     // Iterate over super selected shapes and have tool paint SuperSelected
     Editor editor = getEditor();
-    for (int i=1, iMax=editor.getSuperSelectedShapeCount(); i<iMax; i++) {
-        RMShape shape = editor.getSuperSelectedShape(i);
+    for (int i = 1, iMax = editor.getSuperSelViewCount(); i<iMax; i++) {
+        SGView shape = editor.getSuperSelView(i);
         Tool tool = getTool(shape);
         tool.paintHandles(shape, aPntr, true);
     }
@@ -480,7 +480,7 @@ public Rect getHandleRect(T aShape, int aHandle, boolean isSuperSelected)
 {
     // Get handle point for given handle index in shape coords and editor coords
     Point hp = getHandlePoint(aShape, aHandle, isSuperSelected);
-    Point hpEd = getEditor().convertFromShape(hp.getX(), hp.getY(), aShape);
+    Point hpEd = getEditor().convertFromSceneView(hp.getX(), hp.getY(), aShape);
     
     // Get handle rect at handle point, outset rect by handle width and return
     Rect hr = new Rect(Math.round(hpEd.getX()), Math.round(hpEd.getY()), 0, 0);
@@ -595,12 +595,12 @@ public int getHandleOpposing(int handle)
 public static class RMShapeHandle {
 
     // The shape, handle index and shape tool
-    public RMShape  shape;
+    public SGView shape;
     public int      handle;
     public Tool tool;
     
     /** Creates a new shape-handle. */
-    public RMShapeHandle(RMShape aShape, int aHndl, Tool aTool) { shape = aShape; handle = aHndl; tool = aTool; }
+    public RMShapeHandle(SGView aShape, int aHndl, Tool aTool) { shape = aShape; handle = aHndl; tool = aTool; }
 }
 
 /**
@@ -609,19 +609,19 @@ public static class RMShapeHandle {
 public RMShapeHandle getShapeHandleAtPoint(Point aPoint)
 {
     // Declare variable for shape and handle and shape tool
-    RMShape shape = null; int handle = -1; Tool tool = null;
+    SGView shape = null; int handle = -1; Tool tool = null;
     Editor editor = getEditor();
 
     // Check selected shapes for a selected handle index
-    for(int i=0, iMax=editor.getSelectedShapeCount(); handle==-1 && i<iMax; i++) {
-        shape = editor.getSelectedShape(i);
+    for(int i = 0, iMax = editor.getSelViewCount(); handle==-1 && i<iMax; i++) {
+        shape = editor.getSelView(i);
         tool = getTool(shape);
         handle = tool.getHandleAtPoint(shape, aPoint, false);
     }
 
     // Check super selected shapes for a selected handle index
-    for(int i=0, iMax=editor.getSuperSelectedShapeCount(); handle==-1 && i<iMax; i++) {
-        shape = editor.getSuperSelectedShape(i);
+    for(int i = 0, iMax = editor.getSuperSelViewCount(); handle==-1 && i<iMax; i++) {
+        shape = editor.getSuperSelView(i);
         tool = getTool(shape);
         handle = tool.getHandleAtPoint(shape, aPoint, true);
     }
@@ -638,17 +638,17 @@ public boolean acceptsDrag(T aShape, ViewEvent anEvent)  { return false; }
 /**
  * Notifies tool that a something was dragged into of one of its shapes with drag and drop.
  */
-public void dragEnter(RMShape aShape, ViewEvent anEvent)  { }
+public void dragEnter(SGView aShape, ViewEvent anEvent)  { }
 
 /**
  * Notifies tool that a something was dragged out of one of its shapes with drag and drop.
  */
-public void dragExit(RMShape aShape, ViewEvent anEvent)  { }
+public void dragExit(SGView aShape, ViewEvent anEvent)  { }
 
 /**
  * Notifies tool that something was dragged over one of its shapes with drag and drop.
  */
-public void dragOver(RMShape aShape, ViewEvent anEvent)  { }
+public void dragOver(SGView aShape, ViewEvent anEvent)  { }
 
 /**
  * Notifies tool that something was dropped on one of it's shapes with drag and drop.
@@ -662,7 +662,7 @@ public void dragDrop(T aShape, ViewEvent anEvent)
 /**
  * Creates a shape mouse event.
  */
-protected ViewEvent createShapeEvent(RMShape s, ViewEvent e)  { return getEditor().createShapeEvent(s, e, null); }
+protected ViewEvent createShapeEvent(SGView s, ViewEvent e)  { return getEditor().createSceneViewEvent(s, e, null); }
 
 /**
  * Returns the image used to represent shapes that this tool represents.

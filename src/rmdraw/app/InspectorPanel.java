@@ -4,7 +4,7 @@
 package rmdraw.app;
 import rmdraw.editors.PlacerTool;
 import rmdraw.editors.StylerPane;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.Polygon;
 import snap.gfx.*;
 import snap.util.SnapUtils;
@@ -49,10 +49,10 @@ public class InspectorPanel extends EditorPane.SupportPane {
     //private DataSourcePanel  _dataSource;
     
     // Used for managing selection path
-    private RMShape  _deepView;
+    private SGView _deepView;
     
     // Used for managing selection path
-    private RMShape  _selView;
+    private SGView _selView;
 
     /**
      * Creates a new InspectorPanel for EditorPane.
@@ -101,7 +101,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         // Get editor (and just return if null) and tool for selected views
         Editor editor = getEditor(); if (editor==null) return;
-        Tool tool = editor.getToolForViews(editor.getSelectedOrSuperSelectedShapes());
+        Tool tool = editor.getToolForViews(editor.getSelOrSuperSelViews());
 
         // If ViewSpecificButton is selected, instal inspector for current selection
         if (getViewBoolValue("SpecificButton"))
@@ -247,8 +247,8 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         // Get main editor, Selected/SuperSelected view and view that should be selected in selection path
         Editor editor = getEditor();
-        RMShape selView = editor.getSelectedOrSuperSelectedShape();
-        RMShape view = _deepView!=null && _deepView.isAncestor(selView)? _deepView : selView;
+        SGView selView = editor.getSelOrSuperSelView();
+        SGView view = _deepView!=null && _deepView.isAncestor(selView)? _deepView : selView;
 
         // If the selView has changed because of external forces, reset selectionPath to point to it
         if (selView != _selView)
@@ -266,7 +266,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
         }
 
         // Add buttons for DeepView and its ancestors
-        for (RMShape vue=_deepView; vue!=null; vue=vue.getParent()) {
+        for (SGView vue = _deepView; vue!=null; vue=vue.getParent()) {
 
             // Create new button and configure action
             ToggleButton button = new ToggleButton();
@@ -299,10 +299,10 @@ public class InspectorPanel extends EditorPane.SupportPane {
         Editor editor = getEditor(); if (editor==null || _deepView ==null) return;
 
         // If user selected descendant of current selected view, select on down to it
-        if (selIndex > editor.getSelectedOrSuperSelectedShape().getAncestorCount()) {
+        if (selIndex > editor.getSelOrSuperSelView().getAncestorCount()) {
 
             // Get current deepest view
-            RMShape view = _deepView;
+            SGView view = _deepView;
 
             // Find view that was clicked on
             while (selIndex != view.getAncestorCount())
@@ -310,18 +310,18 @@ public class InspectorPanel extends EditorPane.SupportPane {
 
             // If view parent's childrenSuperSelectImmediately, superSelect view
             if (view.getParent().childrenSuperSelectImmediately())
-                editor.setSuperSelectedShape(view);
+                editor.setSuperSelView(view);
 
             // If view shouldn't superSelect, just select it
-            else editor.setSelectedShape(view);
+            else editor.setSelView(view);
         }
 
         // If user selected ancestor of current view, pop selection up to it
-        else while (selIndex != editor.getSelectedOrSuperSelectedShape().getAncestorCount())
+        else while (selIndex != editor.getSelOrSuperSelView().getAncestorCount())
             editor.popSelection();
 
         // Set selected view to new editor selected view
-        _selView = editor.getSelectedOrSuperSelectedShape();
+        _selView = editor.getSelOrSuperSelView();
 
         // Make sure view specific inspector is selected
         if (!getViewBoolValue("SpecificButton"))

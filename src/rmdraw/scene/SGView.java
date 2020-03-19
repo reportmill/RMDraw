@@ -1,9 +1,8 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.*;
-
 import snap.geom.*;
 import snap.gfx.*;
 import snap.text.TextFormat;
@@ -13,7 +12,7 @@ import snap.view.*;
 
 /**
  * This class is the basis for all graphic elements in a ReportMill document. You'll rarely use this class directly,
- * however, it encapsulates all the basic shape attributes and the most common methods used in template manipulation,
+ * however, it encapsulates all the basic view attributes and the most common methods used in template manipulation,
  * like setX(), setY(), setWidth(), setColor(), etc.
  *
  * Here's an example of programatically adding a watermark to a document:
@@ -21,59 +20,60 @@ import snap.view.*;
  *   Font font = RMFont.getFont("Arial Bold", 72);
  *   Color color = new Color(.9f, .9f, .9f);
  *   RichText string = new RichText("REPORTMILL", font, color);
- *   RMText shape = new RMText(string);
- *   myDocument.getPage(0).addChild(shape);
- *   shape.setBounds(36, 320, 540, 140);
- *   shape.setRoll(45);
- *   shape.setOpacity(.667f);
+ *   SGText text = new SGText(string);
+ *   myDocument.getPage(0).addChild(text);
+ *   text.setBounds(36, 320, 540, 140);
+ *   text.setRoll(45);
+ *   text.setOpacity(.667f);
  * </pre></blockquote>
  */
-public class RMShape implements Cloneable, Archivable, Key.GetSet {
+public class SGView implements Cloneable, Archivable, Key.GetSet {
 
-    // X location of shape
+    // X location of view
     double         _x = 0;
     
-    // Y location of shape
+    // Y location of view
     double         _y = 0;
     
-    // Width of shape
+    // Width of view
     double         _width = 0;
     
-    // Height of shape
+    // Height of view
     double         _height = 0;
     
     // An array to hold optional roll/scale/skew values
-    double         _rss[];
+    protected double  _rss[];
     
-    // The border for this shape
-    Border         _stroke = null;
+    // The border for this view
+    private Border  _border = null;
     
-    // The fill for this shape
-    Paint          _fill = null;
+    // The fill for this view
+    private Paint  _fill = null;
     
-    // The effect for this shape
-    Effect         _effect = null;
+    // The effect for this view
+    private Effect  _effect = null;
     
-    // The opacity of shape
-    double         _opacity = 1;
+    // The opacity of view
+    private double  _opacity = 1;
     
-    // Whether this shape is visible
-    boolean        _visible = true;
+    // Whether this view is visible
+    private boolean  _visible = true;
     
-    // The parent of this shape
-    RMParentShape  _parent = null;
+    // The parent of this view
+    protected SGParent _parent = null;
     
-    // A string describing how this shape should autosize in an RMSpringShape
-    String         _asize; Object _springInfo;
+    // A string describing how this view should autosize in an SGSpringsView
+    private String  _asize;
+    protected Object _springInfo;
     
     // Map to hold less used attributes (name, url, etc.)
-    RMSharedMap    _attrMap = SHARED_MAP;
+    private RMSharedMap  _attrMap = SHARED_MAP;
     
     // The PropChangeSupport
-    PropChangeSupport  _pcs = PropChangeSupport.EMPTY;
+    protected PropChangeSupport  _pcs = PropChangeSupport.EMPTY;
 
     // A shared/root RMSharedMap (cloned to turn on shared flag)
-    static final RMSharedMap SHARED_MAP = new RMSharedMap().clone();
+    private static final RMSharedMap SHARED_MAP = new RMSharedMap().clone();
     
     // Constants for properties
     public static final String X_Prop = "X";
@@ -98,32 +98,32 @@ public class RMShape implements Cloneable, Archivable, Key.GetSet {
     public static final String PrefHeight_Prop = "PrefHeight";
     
 /**
- * Returns raw x location of shape. Developers should use the more common getX, which presents positive x.
+ * Returns raw x location of view. Developers should use the more common getX, which presents positive x.
  */
 public double x()  { return _x; }
 
 /**
- * Returns raw y location of shape. Developers should use the more common getY, which presents positive y.
+ * Returns raw y location of view. Developers should use the more common getY, which presents positive y.
  */
 public double y()  { return _y; }
 
 /**
- * Returns raw width of shape. Developers should use the more common getWidth, which presents positive width.
+ * Returns raw width of view. Developers should use the more common getWidth, which presents positive width.
  */
 public double width()  { return _width; }
 
 /**
- * Returns raw height of shape. Developers should use the more common getHeight, which presents positive height.
+ * Returns raw height of view. Developers should use the more common getHeight, which presents positive height.
  */
 public double height()  { return _height; }
 
 /**
- * Returns the X location of the shape.
+ * Returns the X location of the view.
  */
 public double getX()  { return _width<0? _x + _width : _x; }
 
 /**
- * Sets the X location of the shape.
+ * Sets the X location of the view.
  */
 public void setX(double aValue)
 {
@@ -134,12 +134,12 @@ public void setX(double aValue)
 }
 
 /**
- * Returns the Y location of the shape.
+ * Returns the Y location of the view.
  */
 public double getY()  { return _height<0? _y + _height : _y; }
 
 /**
- * Sets the Y location of the shape.
+ * Sets the Y location of the view.
  */
 public void setY(double aValue)
 {
@@ -150,12 +150,12 @@ public void setY(double aValue)
 }
 
 /**
- * Returns the width of the shape.
+ * Returns the width of the view.
  */
 public double getWidth()  { return _width<0? -_width : _width; }
 
 /**
- * Sets the width of the shape.
+ * Sets the width of the view.
  */
 public void setWidth(double aValue)
 {
@@ -166,12 +166,12 @@ public void setWidth(double aValue)
 }
 
 /**
- * Returns the height of the shape.
+ * Returns the height of the view.
  */
 public double getHeight()  { return _height<0? -_height : _height; }
 
 /**
- * Sets the height of the shape.
+ * Sets the height of the view.
  */
 public void setHeight(double aValue)
 {
@@ -182,57 +182,57 @@ public void setHeight(double aValue)
 }
 
 /**
- * Returns the max X of the shape (assumes not rotated, scaled or skewed).
+ * Returns the max X of the view (assumes not rotated, scaled or skewed).
  */
 public double getMaxX()  { return getX() + getWidth(); }
 
 /**
- * Returns the max Y of the shape (assumes not rotated, scaled or skewed).
+ * Returns the max Y of the view (assumes not rotated, scaled or skewed).
  */
 public double getMaxY()  { return getY() + getHeight(); }
 
 /**
- * Returns the XY location of the shape as a point.
+ * Returns the XY location of the view as a point.
  */
 public Point getXY()  { return new Point(getX(), getY()); }
 
 /**
- * Sets the X and Y location of the shape to the given point (convenience).
+ * Sets the X and Y location of the view to the given point (convenience).
  */
 public void setXY(Point aPoint)  { setXY(aPoint.getX(), aPoint.getY()); }
 
 /**
- * Sets the X and Y location of the shape to the given point (convenience).
+ * Sets the X and Y location of the view to the given point (convenience).
  */
 public void setXY(double anX, double aY)  { setX(anX); setY(aY); }
 
 /**
- * Returns the size of the shape.
+ * Returns the size of the view.
  */
 public Size getSize()  { return new Size(getWidth(), getHeight()); }
 
 /**
- * Sets the size of the shape.
+ * Sets the size of the view.
  */
 public void setSize(Size aSize)  { setSize(aSize.getWidth(), aSize.getHeight()); }
 
 /**
- * Sets the size of the shape.
+ * Sets the size of the view.
  */
 public void setSize(double aWidth, double aHeight)  { setWidth(aWidth); setHeight(aHeight); }
 
 /**
- * Returns the X, Y, width and height of the shape as a rect (use getFrame if shape has roll/scale/skew).
+ * Returns the X, Y, width and height of the view as a rect (use getFrame if view has roll/scale/skew).
  */
 public Rect getBounds()  { return new Rect(getX(), getY(), getWidth(), getHeight()); }
 
 /**
- * Sets X, Y, width and height of shape to dimensions in given rect.
+ * Sets X, Y, width and height of view to dimensions in given rect.
  */
 public void setBounds(Rect aRect) { setBounds(aRect.x, aRect.y, aRect.width, aRect.height); }
 
 /**
- * Sets X, Y, width and height of shape to given dimensions.
+ * Sets X, Y, width and height of view to given dimensions.
  */
 public void setBounds(double anX, double aY, double aW, double aH)
 {
@@ -240,7 +240,7 @@ public void setBounds(double anX, double aY, double aW, double aH)
 }
 
 /**
- * Returns the rect in parent coords that fully encloses the shape.
+ * Returns the rect in parent coords that fully encloses the view.
  */
 public Rect getFrame()
 {
@@ -249,12 +249,12 @@ public Rect getFrame()
 }
 
 /**
- * Sets the bounds of the shape such that it exactly fits in the given parent coord rect.
+ * Sets the bounds of the view such that it exactly fits in the given parent coord rect.
  */
 public void setFrame(Rect aRect)  { setFrame(aRect.x, aRect.y, aRect.width, aRect.height); }
 
 /**
- * Sets the bounds of the shape such that it exactly fits in the given parent coord rect.
+ * Sets the bounds of the view such that it exactly fits in the given parent coord rect.
  */
 public void setFrame(double anX, double aY, double aWidth, double aHeight)
 {
@@ -263,56 +263,56 @@ public void setFrame(double anX, double aY, double aWidth, double aHeight)
 }
 
 /**
- * Returns the X of the rect that fully encloses the shape in parent coords.
+ * Returns the X of the rect that fully encloses the view in parent coords.
  */
 public double getFrameX()  { return isRSS()? getFrameXY().x : getX(); }
 
 /**
- * Sets a shape's X such that its bounds rect (in parent coords) has origin at the given X.
+ * Sets a view's X such that its bounds rect (in parent coords) has origin at the given X.
  */
 public void setFrameX(double anX)  { double x = _x + anX - getFrameX(); setX(x); }
 
 /**
- * Returns the Y of the rect that fully encloses the shape in parent coords.
+ * Returns the Y of the rect that fully encloses the view in parent coords.
  */
 public double getFrameY()  { return isRSS()? getFrameXY().y : getY(); }
 
 /**
- * Sets a shape's Y such that its bounds rect (in parent coords) has origin at the given Y.
+ * Sets a view's Y such that its bounds rect (in parent coords) has origin at the given Y.
  */
 public void setFrameY(double aY)  { double y = _y + aY - getFrameY(); setY(y); }
 
 /**
- * Returns the width of the rect that fully encloses the shape in parent coords.
+ * Returns the width of the rect that fully encloses the view in parent coords.
  */
 public double getFrameWidth()  { return isRSS()? getFrame().width : getWidth(); }
 
 /**
- * Returns the height of the rect that fully encloses the shape in parent coords.
+ * Returns the height of the rect that fully encloses the view in parent coords.
  */
 public double getFrameHeight()  { return isRSS()? getFrame().height : getHeight(); }
 
 /**
- * Returns the origin of the shape's bounds rect in parent coords.
+ * Returns the origin of the view's bounds rect in parent coords.
  */ 
 public Point getFrameXY()  { return isRSS()? new Point(getFrame().getXY()) : getXY(); }
 
 /**
- * Sets a shape's origin such that its bounds rect (in parent coords) has origin at the given point.
+ * Sets a view's origin such that its bounds rect (in parent coords) has origin at the given point.
  */
 public void setFrameXY(Point aPoint)  { setFrameXY(aPoint.getX(), aPoint.getY()); }
 
 /**
- * Sets a shape's origin such that its frame (enclosing rect in parent coords) will have the given X and Y.
+ * Sets a view's origin such that its frame (enclosing rect in parent coords) will have the given X and Y.
  */
 public void setFrameXY(double anX, double aY)  { setFrameX(anX); setFrameY(aY); }
 
 /**
- * Sets the height of the rect that fully encloses the shape in parent coords.
+ * Sets the height of the rect that fully encloses the view in parent coords.
  */
 public void setFrameSize(double aWidth, double aHeight)
 {
-    // If shape not rotated, scaled or skewed, just set and return
+    // If view not rotated, scaled or skewed, just set and return
     if(!isRSS()) {
         if(_width<0) { setX(_x + (aWidth+_width)); aWidth = -aWidth; }
         if(_height<0) { setY(_y + (aHeight+_height)); aHeight = -aHeight; }
@@ -359,22 +359,22 @@ public void setFrameSize(double aWidth, double aHeight)
 }
 
 /**
- * Returns the max X of the shape's frame.
+ * Returns the max X of the view's frame.
  */
 public double getFrameMaxX()  { return isRSS()? getFrame().getMaxX() : getMaxX(); }
 
 /**
- * Returns the max Y of the shape's frame.
+ * Returns the max Y of the view's frame.
  */
 public double getFrameMaxY()  { return isRSS()? getFrame().getMaxY() : getMaxY(); }
 
 /**
- * Returns the origin point of the shape in parent's coords.
+ * Returns the origin point of the view in parent's coords.
  */
 public Point getXYP()  { return localToParent(0,0); }
 
 /**
- * Sets the origin point of the shape to the given X and Y in parent's coords.
+ * Sets the origin point of the view to the given X and Y in parent's coords.
  */
 public void setXYP(double anX, double aY)
 {
@@ -389,7 +389,7 @@ public void setXYP(double anX, double aY)
 }
 
 /**
- * Offsets the X and Y location of the shape by the given dx & dy amount (convenience).
+ * Offsets the X and Y location of the view by the given dx & dy amount (convenience).
  */
 public void offsetXY(double dx, double dy)  { setXY(_x + dx, _y + dy); }
 
@@ -399,7 +399,7 @@ public void offsetXY(double dx, double dy)  { setXY(_x + dx, _y + dy); }
 public Rect getBoundsLocal()  { return new Rect(0, 0, getWidth(), getHeight()); }
 
 /**
- * Returns the bounds of the path associated with this shape in local coords, adjusted to account for stroke width.
+ * Returns the bounds of the path associated with this view in local coords, adjusted to account for stroke width.
  */
 public Rect getBoundsStroked()
 {
@@ -411,13 +411,13 @@ public Rect getBoundsStroked()
 }
 
 /**
- * Returns the marked bounds of this shape and it's children.
+ * Returns the marked bounds of this view and it's children.
  */
 public Rect getBoundsStrokedDeep()
 {
-    // Get normal marked bounds and union with children BoundsStrokedDeep (converted to this shape coords)
+    // Get normal marked bounds and union with children BoundsStrokedDeep (converted to this view coords)
     Rect bounds = getBoundsStroked();
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i); if(!child.isVisible()) continue;
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i); if(!child.isVisible()) continue;
         Rect cbounds = child.getBoundsStrokedDeep();
         cbounds = child.localToParent(cbounds).getBounds();
         bounds.unionEvenIfEmpty(cbounds); }
@@ -425,7 +425,7 @@ public Rect getBoundsStrokedDeep()
 }
 
 /**
- * Returns the bounds of the path associated with this shape in local coords, adjusted to account for stroke width.
+ * Returns the bounds of the path associated with this view in local coords, adjusted to account for stroke width.
  */
 public Rect getBoundsMarked()
 {
@@ -435,13 +435,13 @@ public Rect getBoundsMarked()
 }
 
 /**
- * Returns the marked bounds of this shape and it's children.
+ * Returns the marked bounds of this view and it's children.
  */
 public Rect getBoundsMarkedDeep()
 {
-    // Get normal marked bounds and union with children BoundsMarkedDeep (converted to this shape coords)
+    // Get normal marked bounds and union with children BoundsMarkedDeep (converted to this view coords)
     Rect bounds = getBoundsMarked();
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i); if(!child.isVisible()) continue;
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i); if(!child.isVisible()) continue;
         Rect cbounds = child.getBoundsMarkedDeep();
         cbounds = child.localToParent(cbounds).getBounds();
         bounds.unionEvenIfEmpty(cbounds); }
@@ -449,12 +449,12 @@ public Rect getBoundsMarkedDeep()
 }
 
 /**
- * Returns the roll of the shape.
+ * Returns the roll of the view.
  */
 public double getRoll()  { return _rss==null? 0 : _rss[0]; }
 
 /**
- * Sets the roll of the shape.
+ * Sets the roll of the view.
  */
 public void setRoll(double aValue)
 {
@@ -465,12 +465,12 @@ public void setRoll(double aValue)
 }
 
 /**
- * Returns the scale of the X axis of the shape.
+ * Returns the scale of the X axis of the view.
  */
 public double getScaleX()  { return _rss==null? 1 : _rss[1]; }
 
 /**
- * Sets the scale of the X axis of the shape.
+ * Sets the scale of the X axis of the view.
  */
 public void setScaleX(double aValue)
 {
@@ -481,12 +481,12 @@ public void setScaleX(double aValue)
 }
 
 /**
- * Returns the scale of the Y axis of the shape.
+ * Returns the scale of the Y axis of the view.
  */
 public double getScaleY()  { return _rss==null? 1 : _rss[2]; }
 
 /**
- * Sets the scale of the Y axis of the shape.
+ * Sets the scale of the Y axis of the view.
  */
 public void setScaleY(double aValue)
 {
@@ -502,12 +502,12 @@ public void setScaleY(double aValue)
 public void setScaleXY(double sx, double sy)  { setScaleX(sx); setScaleY(sy); }
 
 /**
- * Returns the skew of the X axis of the shape.
+ * Returns the skew of the X axis of the view.
  */
 public double getSkewX()  { return _rss==null? 0 : _rss[3]; }
 
 /**
- * Sets the skew of the X axis of the shape.
+ * Sets the skew of the X axis of the view.
  */
 public void setSkewX(double aValue)
 {
@@ -518,12 +518,12 @@ public void setSkewX(double aValue)
 }
 
 /**
- * Returns the skew of the Y axis of the shape.
+ * Returns the skew of the Y axis of the view.
  */
 public double getSkewY()  { return _rss==null? 0 : _rss[4]; }
 
 /**
- * Sets the skew of the Y axis of the shape.
+ * Sets the skew of the Y axis of the view.
  */
 public void setSkewY(double aValue)
 {
@@ -539,7 +539,7 @@ public void setSkewY(double aValue)
 public void setSkewXY(double skx, double sky)  { setSkewX(skx); setSkewY(sky); }
 
 /**
- * Returns whether the shape has been rotated, scaled or skewed (for efficiency).
+ * Returns whether the view has been rotated, scaled or skewed (for efficiency).
  */
 public boolean isRSS()  { return _rss!=null; }
 
@@ -549,27 +549,27 @@ public boolean isRSS()  { return _rss!=null; }
 protected double[] getRSS()  { return _rss!=null? _rss : (_rss=new double[] { 0, 1, 1, 0, 0 }); }
 
 /**
- * Returns the border for this shape.
+ * Returns the border for this view.
  */
-public Border getBorder()  { return _stroke; }
+public Border getBorder()  { return _border; }
 
 /**
- * Sets the border for this shape.
+ * Sets the border for this view.
  */
 public void setBorder(Border aBorder)
 {
     if (SnapUtils.equals(getBorder(), aBorder)) return;
     repaint();
-    firePropChange(Border_Prop, _stroke, _stroke = aBorder);
+    firePropChange(Border_Prop, _border, _border = aBorder);
 }
 
 /**
- * Returns the stroke color of the shape.
+ * Returns the stroke color of the view.
  */
 public Color getBorderColor()  { return getBorder()==null? Color.BLACK : getBorder().getColor(); }
 
 /**
- * Sets the stroke color of the shape.
+ * Sets the stroke color of the view.
  */
 public void setBorderColor(Color aColor)
 {
@@ -579,7 +579,7 @@ public void setBorderColor(Color aColor)
 }
 
 /**
- * Returns the stroke width of the shape's stroke in printer points.
+ * Returns the stroke width of the view's stroke in printer points.
  */
 public double getBorderWidth()
 {
@@ -587,7 +587,7 @@ public double getBorderWidth()
 }
 
 /**
- * Sets the stroke width of the shape's stroke in printer points.
+ * Sets the stroke width of the view's stroke in printer points.
  */
 public void setBorderWidth(double aValue)
 {
@@ -596,7 +596,7 @@ public void setBorderWidth(double aValue)
 }
 
 /**
- * Sets the stroke for this shape, with an option to turn on drawsStroke.
+ * Sets the stroke for this view, with an option to turn on drawsStroke.
  */
 public void setBorder(Color aColor, double aWidth)
 {
@@ -604,12 +604,12 @@ public void setBorder(Color aColor, double aWidth)
 }
 
 /**
- * Returns the fill for this shape.
+ * Returns the fill for this view.
  */
 public Paint getFill()  { return _fill; }
 
 /**
- * Sets the fill for this shape.
+ * Sets the fill for this view.
  */
 public void setFill(Paint aFill)
 {
@@ -620,12 +620,12 @@ public void setFill(Paint aFill)
 }
 
 /**
- * Returns the color of the shape.
+ * Returns the color of the view.
  */
 public Color getFillColor()  { return getFill()==null? Color.BLACK : getFill().getColor(); }
 
 /**
- * Sets the color of the shape.
+ * Sets the color of the view.
  */
 public void setFillColor(Color aColor)
 {
@@ -636,12 +636,12 @@ public void setFillColor(Color aColor)
 }
 
 /**
- * Returns the effect for this shape.
+ * Returns the effect for this view.
  */
 public Effect getEffect()  { return _effect; }
 
 /**
- * Sets the effect for this shape.
+ * Sets the effect for this view.
  */
 public void setEffect(Effect anEffect)
 {
@@ -651,12 +651,12 @@ public void setEffect(Effect anEffect)
 }
 
 /**
- * Returns the opacity of the shape (1 for opaque, 0 for transparent).
+ * Returns the opacity of the view (1 for opaque, 0 for transparent).
  */
 public double getOpacity()  { return _opacity; }
 
 /**
- * Sets the opacity of the shape (1 for opaque, 0 for transparent).
+ * Sets the opacity of the view (1 for opaque, 0 for transparent).
  */
 public void setOpacity(double aValue)
 {
@@ -666,22 +666,22 @@ public void setOpacity(double aValue)
 }
 
 /**
- * Returns the combined opacity of this shape and its parent.
+ * Returns the combined opacity of this view and its parent.
  */
 public double getOpacityDeep()
 {
     double op = getOpacity();
-    for (RMShape s=_parent; s!=null; s=s._parent) op *= s.getOpacity();
+    for (SGView s = _parent; s!=null; s=s._parent) op *= s.getOpacity();
     return op;
 }
 
 /**
- * Returns whether this shape is visible.
+ * Returns whether this view is visible.
  */
 public boolean isVisible()  { return _visible; }
 
 /**
- * Sets whether this shape is visible.
+ * Sets whether this view is visible.
  */
 public void setVisible(boolean aValue)
 {
@@ -700,7 +700,7 @@ public String getAutosizing()  { return _asize!=null? _asize : getAutosizingDefa
 public void setAutosizing(String aValue)
 {
     if (aValue!=null && (aValue.length()<7 || !(aValue.charAt(0)=='-' || aValue.charAt(0)=='~'))) {
-        System.err.println("RMShape.setAutosizing: Invalid string: " + aValue); return; }
+        System.err.println("SGView.setAutosizing: Invalid string: " + aValue); return; }
     if (SnapUtils.equals(aValue, _asize)) return;
     firePropChange("Autosizing", _asize, _asize = aValue);
 }
@@ -711,7 +711,7 @@ public void setAutosizing(String aValue)
 public String getAutosizingDefault()  { return "--~,--~"; }
 
 /**
- * Returns whether this shape is hittable in its parent.
+ * Returns whether this view is hittable in its parent.
  */
 public boolean isHittable()  { return isVisible() && (_parent==null || _parent.isHittable(this)); }
 
@@ -721,12 +721,12 @@ public boolean isHittable()  { return isVisible() && (_parent==null || _parent.i
 public boolean isFontSet()  { return false; }
 
 /**
- * Returns the font for the shape (defaults to parent font).
+ * Returns the font for the view (defaults to parent font).
  */
 public Font getFont()  { return getParent()!=null ? getParent().getFont() : null; }
 
 /**
- * Sets the font for the shape.
+ * Sets the font for the view.
  */
 public void setFont(Font aFont)  { }
 
@@ -768,12 +768,12 @@ public VPos getAlignY()  { return VPos.TOP; }
 public void setAlignY(VPos anAlignX)  { }
 
 /**
- * Returns the format for the shape.
+ * Returns the format for the view.
  */
 public TextFormat getFormat()  { return null; } //if(getBindingCount()>0) return (RMFormat)getBinding(0).getFormat();
 
 /**
- * Sets the format for the shape.
+ * Sets the format for the view.
  */
 public void setFormat(TextFormat aFormat)
 {
@@ -786,12 +786,12 @@ public void setFormat(TextFormat aFormat)
 }
     
 /**
- * Returns the name for the shape.
+ * Returns the name for the view.
  */
 public String getName()  { return (String)get("Name"); }
 
 /**
- * Sets the name for the shape.
+ * Sets the name for the view.
  */
 public void setName(String aName)
 {
@@ -801,27 +801,27 @@ public void setName(String aName)
 }
 
 /**
- * Sets the URL for the shape.
+ * Sets the URL for the view.
  */
-public String getURL()  { return (String)get("RMShapeURL"); }
+public String getURL()  { return (String)get("SGViewURL"); }
 
 /**
- * Returns the URL for the shape.
+ * Returns the URL for the view.
  */
 public void setURL(String aURL)
 {
     if(SnapUtils.equals(aURL, getURL())) return;
-    Object oldVal = put("RMShapeURL", StringUtils.min(aURL));
-    firePropChange("RMShapeURL", oldVal, aURL);
+    Object oldVal = put("SGViewURL", StringUtils.min(aURL));
+    firePropChange("SGViewURL", oldVal, aURL);
 }
 
 /**
- * Returns the locked state of the shape (really just to prevent location/size changes in the editor).
+ * Returns the locked state of the view (really just to prevent location/size changes in the editor).
  */
 public boolean isLocked()  { return SnapUtils.boolValue(get("Locked")); }
 
 /**
- * Sets the locked state of the shape (really just to prevent location/size changes in the editor).
+ * Sets the locked state of the view (really just to prevent location/size changes in the editor).
  */
 public void setLocked(boolean aValue)
 {
@@ -831,8 +831,8 @@ public void setLocked(boolean aValue)
 }
 
 /**
- * Returns the Object associated with the given name for the shape.
- * This is a general purpose property facility to allow shapes to hold many less common properties without the overhead
+ * Returns the Object associated with the given name for the view.
+ * This is a general purpose property facility to allow views to hold many less common properties without the overhead
  * of explicitly including ivars for them. The map that holds these properties is shared so that there is only ever one
  * instance of the map for each unique permutation of attributes.
  */
@@ -844,7 +844,7 @@ public Object get(String aName)  { return _attrMap.get(aName); }
 public Object get(String aName, Object aDefault)  { Object val = get(aName); return val!=null? val : aDefault; }
 
 /**
- * Sets a value to be associated with the given name for the shape.
+ * Sets a value to be associated with the given name for the view.
  */
 public Object put(String aName, Object anObj)
 {
@@ -856,31 +856,31 @@ public Object put(String aName, Object anObj)
 }
 
 /**
- * Returns the shape's path.
+ * Returns the view's path.
  */
 public Shape getPath()  { return new Rect(0, 0, getWidth(), getHeight()); }
 
 /**
- * Returns the parent of this shape.
+ * Returns the parent of this view.
  */
-public RMParentShape getParent()  { return _parent; }
+public SGParent getParent()  { return _parent; }
 
 /**
- * Sets the parent of this shape (called automatically by addChild()).
+ * Sets the parent of this view (called automatically by addChild()).
  */
-public void setParent(RMParentShape aShape)  { _parent = aShape; }
+public void setParent(SGParent aView)  { _parent = aView; }
 
 /**
  * Returns the first parent with given class by iterating up parent hierarchy.
  */
-public <T extends RMShape> T getParent(Class<T> aClass)
+public <T extends SGView> T getParent(Class<T> aClass)
 {
-    for(RMShape s=getParent(); s!=null; s=s.getParent()) if(aClass.isInstance(s)) return (T)s;
+    for(SGView s = getParent(); s!=null; s=s.getParent()) if(aClass.isInstance(s)) return (T)s;
     return null; // Return null since parent of class wasn't found
 }
 
 /**
- * Removes this shape from it's parent.
+ * Removes this view from it's parent.
  */
 public void removeFromParent()  { if(_parent!=null) _parent.removeChild(this); }
 
@@ -897,30 +897,30 @@ public int getChildCount()  { return 0; }
 /**
  * Returns the child at given index.
  */
-public RMShape getChild(int anIndex)  { return null; }
+public SGView getChild(int anIndex)  { return null; }
 
 /**
  * Returns the children list.
  */
-public List <RMShape> getChildren()  { return Collections.emptyList(); }
+public List <SGView> getChildren()  { return Collections.emptyList(); }
 
 /**
- * Returns the SceneGraph that owns the whole shape tree.
+ * Returns the SceneGraph that owns the whole view tree.
  */
 public SceneGraph getSceneGraph()  { return _parent!=null? _parent.getSceneGraph() : null; }
 
 /**
- * Returns the Document ancestor of this shape.
+ * Returns the Document ancestor of this view.
  */
-public RMDocument getDoc()  { return _parent!=null? _parent.getDoc() : null; }
+public SGDoc getDoc()  { return _parent!=null? _parent.getDoc() : null; }
 
 /**
- * Returns the Page ancestor of this shape (or null if not there).
+ * Returns the Page ancestor of this view (or null if not there).
  */
-public RMParentShape getPage()  { return _parent!=null? _parent.getPage() : (RMParentShape)this; }
+public SGParent getPage()  { return _parent!=null? _parent.getPage() : (SGParent)this; }
 
 /**
- * Returns the undoer for this shape (or null if not there).
+ * Returns the undoer for this view (or null if not there).
  */
 public Undoer getUndoer()
 {
@@ -948,34 +948,29 @@ public void undoerDisable()  { Undoer u = getUndoer(); if (u!=null) u.disable();
 public void undoerEnable()  { Undoer u = getUndoer(); if (u!=null) u.enable(); }
 
 /**
- * Editor method - returns whether this shape is at the top level (usually RMPage).
- */
-public boolean isRoot()  { return getAncestorCount()<2; }
-
-/**
- * Returns the number of ancestors (from this shape's parent up to the document).
+ * Returns the number of ancestors (from this view's parent up to the document).
  */
 public int getAncestorCount()
 {
     int count = 0;
-    for (RMShape p=getParent(); p!=null; p=p.getParent()) count++;
+    for (SGView p = getParent(); p!=null; p=p.getParent()) count++;
     return count;
 }
 
 /**
- * Returns true if given shape is one of this shape's ancestors.
+ * Returns true if given view is one of this view's ancestors.
  */
-public boolean isAncestor(RMShape aShape)
+public boolean isAncestor(SGView aView)
 {
-    return aShape==_parent || (_parent!=null && _parent.isAncestor(aShape));
+    return aView==_parent || (_parent!=null && _parent.isAncestor(aView));
 }
 
 /**
- * Returns true if given shape is one of this shape's descendants.
+ * Returns true if given view is one of this view's descendants.
  */
-public boolean isDescendant(RMShape aShape)
+public boolean isDescendant(SGView aView)
 {
-    return aShape!=null && aShape.isAncestor(this);
+    return aView!=null && aView.isAncestor(this);
 }
 
 /**
@@ -990,10 +985,10 @@ public Point localToParent(double aX, double aY)
 /**
  * Converts a point from local to given parent.
  */
-public Point localToParent(double aX, double aY, RMShape aPar)
+public Point localToParent(double aX, double aY, SGView aPar)
 {
     Point point = new Point(aX,aY);
-    for (RMShape n=this; n!=aPar && n!=null; n=n.getParent()) {
+    for (SGView n = this; n!=aPar && n!=null; n=n.getParent()) {
         if (n.isTransformSimple()) point.offset(n.getX(),n.getY());
         else point = n.localToParent(point.x,point.y);
     }
@@ -1008,7 +1003,7 @@ public Point localToParent(Point aPoint)  { return localToParent(aPoint.x, aPoin
 /**
  * Converts a point from local to given parent.
  */
-public Point localToParent(Point aPoint, RMShape aPar)  { return localToParent(aPoint.x, aPoint.y, aPar); }
+public Point localToParent(Point aPoint, SGView aPar)  { return localToParent(aPoint.x, aPoint.y, aPar); }
 
 /**
  * Converts a shape from local to parent.
@@ -1022,7 +1017,7 @@ public Shape localToParent(Shape aShape)
 /**
  * Converts a point from local to given parent.
  */
-public Shape localToParent(Shape aShape, RMShape aPar)
+public Shape localToParent(Shape aShape, SGView aPar)
 {
     Transform xfm = getLocalToParent(aPar);
     return aShape.copyFor(xfm);
@@ -1040,7 +1035,7 @@ public Point parentToLocal(double aX, double aY)
 /**
  * Converts a point from given parent to local.
  */
-public Point parentToLocal(double aX, double aY, RMShape aPar)  { return getParentToLocal(aPar).transform(aX,aY); }
+public Point parentToLocal(double aX, double aY, SGView aPar)  { return getParentToLocal(aPar).transform(aX,aY); }
 
 /**
  * Converts a point from parent to local.
@@ -1050,7 +1045,7 @@ public Point parentToLocal(Point aPoint)  { return parentToLocal(aPoint.x, aPoin
 /**
  * Converts a point from given parent to local.
  */
-public Point parentToLocal(Point aPoint, RMShape aPar)  { return parentToLocal(aPoint.x, aPoint.y, aPar); }
+public Point parentToLocal(Point aPoint, SGView aPar)  { return parentToLocal(aPoint.x, aPoint.y, aPar); }
 
 /**
  * Converts a shape from parent to local.
@@ -1064,7 +1059,7 @@ public Shape parentToLocal(Shape aShape)
 /**
  * Converts a shape from parent to local.
  */
-public Shape parentToLocal(Shape aShape, RMShape aPar)
+public Shape parentToLocal(Shape aShape, SGView aPar)
 {
     Transform xfm = getParentToLocal(aPar);
     return aShape.copyFor(xfm);
@@ -1078,10 +1073,10 @@ public Transform getLocalToParent()  { return getTransform(); }
 /**
  * Returns the transform.
  */
-public Transform getLocalToParent(RMShape aPar)
+public Transform getLocalToParent(SGView aPar)
 {
     Transform tfm = getLocalToParent();
-    for (RMShape shp=getParent(); shp!=aPar && shp!=null; shp=shp.getParent()) {
+    for (SGView shp = getParent(); shp!=aPar && shp!=null; shp=shp.getParent()) {
         if (shp.isTransformSimple()) tfm.preTranslate(shp.getX(),shp.getY());
         else tfm.multiply(shp.getLocalToParent());
     }
@@ -1101,7 +1096,7 @@ public Transform getParentToLocal()
 /**
  * Returns the transform from parent to local coords.
  */
-public Transform getParentToLocal(RMShape aPar)
+public Transform getParentToLocal(SGView aPar)
 {
     Transform tfm = getLocalToParent(aPar); tfm.invert();
     return tfm;
@@ -1113,7 +1108,7 @@ public Transform getParentToLocal(RMShape aPar)
 public boolean isTransformSimple()  { return !isRSS(); }
 
 /**
- * Returns the transform to this shape from its parent.
+ * Returns the transform to this view from its parent.
  */
 public Transform getTransform()
 {
@@ -1136,17 +1131,17 @@ public Transform getTransform()
 }
 
 /**
- * Returns whether shape minimum width is set.
+ * Returns whether view minimum width is set.
  */
 public boolean isMinWidthSet()  { return get(MinWidth_Prop)!=null; }
 
 /**
- * Returns the shape minimum width.
+ * Returns the view minimum width.
  */
 public double getMinWidth()  { Double w = (Double)get(MinWidth_Prop); return w!=null? w : 0; }
 
 /**
- * Sets the shape minimum width.
+ * Sets the view minimum width.
  */
 public void setMinWidth(double aWidth)
 {
@@ -1155,17 +1150,17 @@ public void setMinWidth(double aWidth)
 }
 
 /**
- * Returns whether shape minimum height is set.
+ * Returns whether view minimum height is set.
  */
 public boolean isMinHeightSet()  { return get(MinHeight_Prop)!=null; }
 
 /**
- * Returns the shape minimum height.
+ * Returns the view minimum height.
  */
 public double getMinHeight()  { Double h = (Double)get(MinHeight_Prop); return h!=null? h : 0; }
 
 /**
- * Sets the shape minimum height.
+ * Sets the view minimum height.
  */
 public void setMinHeight(double aHeight)
 {
@@ -1174,17 +1169,17 @@ public void setMinHeight(double aHeight)
 }
 
 /**
- * Sets the shape minimum size.
+ * Sets the view minimum size.
  */
 public void setMinSize(double aWidth, double aHeight)  { setMinWidth(aWidth); setMinHeight(aHeight); }
 
 /**
- * Returns whether shape preferred width is set.
+ * Returns whether view preferred width is set.
  */
 public boolean isPrefWidthSet()  { return get(PrefWidth_Prop)!=null; }
 
 /**
- * Returns the shape preferred width.
+ * Returns the view preferred width.
  */
 public double getPrefWidth()
 {
@@ -1193,7 +1188,7 @@ public double getPrefWidth()
 }
 
 /**
- * Sets the shape preferred width.
+ * Sets the view preferred width.
  */
 public void setPrefWidth(double aWidth)
 {
@@ -1202,12 +1197,12 @@ public void setPrefWidth(double aWidth)
 }
 
 /**
- * Returns whether shape preferred height is set.
+ * Returns whether view preferred height is set.
  */
 public boolean isPrefHeightSet()  { return get(PrefHeight_Prop)!=null; }
 
 /**
- * Returns the shape preferred height.
+ * Returns the view preferred height.
  */
 public double getPrefHeight()
 {
@@ -1216,7 +1211,7 @@ public double getPrefHeight()
 }
 
 /**
- * Sets the shape preferred height.
+ * Sets the view preferred height.
  */
 public void setPrefHeight(double aHeight)
 {
@@ -1245,12 +1240,12 @@ public double getBestWidth()  { return Math.max(getMinWidth(), getPrefWidth()); 
 public double getBestHeight()  { return Math.max(getMinHeight(), getPrefHeight()); }
 
 /**
- * Sets the shape to its best height (which is just the current height for most shapes).
+ * Sets the view to its best height (which is just the current height for most views).
  */
 public void setBestHeight()  { setHeight(getBestHeight()); }
 
 /**
- * Sets the shape to its best size.
+ * Sets the view to its best size.
  */
 public void setBestSize()
 {
@@ -1259,62 +1254,62 @@ public void setBestSize()
 }
 
 /**
- * Divides this shape by given amount from top edge. Returns remainder shape with bounds set to the remainder.
+ * Divides this view by given amount from top edge. Returns remainder view with bounds set to the remainder.
  */
-public RMShape divideShapeFromTop(double anAmt)
+public SGView divideViewFromTop(double anAmt)
 {
-    // Create remainder shape
-    RMShape newShape = createDivideShapeRemainder((byte)0);
+    // Create remainder view
+    SGView newView = createDivideViewRemainder((byte)0);
 
-    // Get bounds for this shape and remainder bounds (split by amount from top)
+    // Get bounds for this view and remainder bounds (split by amount from top)
     Rect bnds0 = getFrame();
     Rect bnds1 = bnds0.clone();
     bnds0.height = anAmt;
     bnds1.y += anAmt; bnds1.height -= anAmt;
     
-    // Set this shape's new bounds and NewShape bounds as remainder
+    // Set this view's new bounds and NewView bounds as remainder
     setFrame(bnds0);
-    newShape.setFrame(bnds1);
-    return newShape;
+    newView.setFrame(bnds1);
+    return newView;
 }
 
 /**
- * Divides this shape by given amount from left edge. Returns remainder shape with bounds set to the remainder.
+ * Divides this view by given amount from left edge. Returns remainder view with bounds set to the remainder.
  */
-public RMShape divideShapeFromLeft(double anAmt)
+public SGView divideViewFromLeft(double anAmt)
 {
-    // Create remainder shape
-    RMShape newShape = createDivideShapeRemainder((byte)1);
+    // Create remainder view
+    SGView newView = createDivideViewRemainder((byte)1);
 
-    // Get bounds for this shape and remainder bounds (split by amount from left)
+    // Get bounds for this view and remainder bounds (split by amount from left)
     Rect bnds0 = getFrame();
     Rect bnds1 = bnds0.clone();
     bnds0.width = anAmt;
     bnds1.x += anAmt; bnds1.width -= anAmt;
     
-    // Set this shape's new bounds and NewShape bounds as remainder
+    // Set this view's new bounds and NewView bounds as remainder
     setFrame(bnds0);
-    newShape.setFrame(bnds1);
-    return newShape;
+    newView.setFrame(bnds1);
+    return newView;
 }
 
 /**
- * Creates a shape suitable for the "remainder" portion of a divideShape call (just a clone by default).
+ * Creates a view suitable for the "remainder" portion of a divideView call (just a clone by default).
  */
-protected RMShape createDivideShapeRemainder(byte anEdge)  { return clone(); }
+protected SGView createDivideViewRemainder(byte anEdge)  { return clone(); }
 
 /**
- * Returns whether shape accepts mouse events (true if URL is present).
+ * Returns whether view accepts mouse events (true if URL is present).
  */
 public boolean acceptsMouse()  { return getURL()!=null; }
 
 /**
- * Handle shape events.
+ * Handle view events.
  */
 public void processEvent(ViewEvent anEvent)  { }
 
 /**
- * Returns whether this shape is hit by the point, given in this shape's parent's coords.
+ * Returns whether this view is hit by the point, given in this view's parent's coords.
  */
 public boolean contains(Point aPoint)
 {
@@ -1322,7 +1317,7 @@ public boolean contains(Point aPoint)
     double lineWidth = getBorderWidth();
     
     // If polygon or line, make line width effectively at least 8, so users will have a better shot of selecting it
-    if (this instanceof RMPolygonShape || this instanceof RMLineShape)
+    if (this instanceof SGPolygon || this instanceof SGLine)
         lineWidth = Math.max(8, getBorderWidth());
     
     // Get bounds, adjusted for line width
@@ -1339,7 +1334,7 @@ public boolean contains(Point aPoint)
 }
 
 /**
- * Returns whether this shape is hit by the path, given in this shape's parent's coords.
+ * Returns whether this view is hit by the path, given in this view's parent's coords.
  */
 public boolean intersects(Shape aPath)
 {
@@ -1360,7 +1355,7 @@ public boolean intersects(Shape aPath)
 }
 
 /**
- * Returns the dataset key associated with this shape.
+ * Returns the dataset key associated with this view.
  */
 public String getDatasetKey()  { return null; }
 
@@ -1374,7 +1369,7 @@ public String[] getPropNames()
 }
 
 /**
- * Returns the number of bindings associated with shape.
+ * Returns the number of bindings associated with view.
  */
 public int getBindingCount()
 {
@@ -1398,18 +1393,18 @@ protected List <Binding> getBindings(boolean doCreate)
 }
 
 /**
- * Adds the individual binding to the shape's bindings list.
+ * Adds the individual binding to the view's bindings list.
  */
 public void addBinding(Binding aBinding)
 {
     removeBinding(aBinding.getPropertyName()); // Remove current binding for property name (if it exists)
     List <Binding> bindings = getBindings(true); // Add binding
     bindings.add(aBinding);
-    aBinding.setView(this); // Set binding width to this shape
+    aBinding.setView(this); // Set binding width to this view
 }
 
 /**
- * Removes the binding at the given index from shape's bindings list.
+ * Removes the binding at the given index from view's bindings list.
  */
 public Binding removeBinding(int anIndex)  { return getBindings(true).remove(anIndex); }
 
@@ -1443,12 +1438,12 @@ public boolean removeBinding(String aPropertyName)
 public void addBinding(String aPropName, String aKey)  { addBinding(new Binding(aPropName, aKey)); }
 
 /**
- * Standard implementation of Object clone. Null's out shape's parent and children.
+ * Standard implementation of Object clone. Null's out view's parent and children.
  */
-public RMShape clone()
+public SGView clone()
 {
     // Do normal version
-    RMShape clone; try { clone = (RMShape)super.clone(); }
+    SGView clone; try { clone = (SGView)super.clone(); }
     catch(CloneNotSupportedException e) { throw new RuntimeException(e); }
     
     // Clear Parent and PropChangeSupport
@@ -1472,43 +1467,43 @@ public RMShape clone()
 }
 
 /**
- * Clones all attributes of this shape with complete clones of its children as well.
+ * Clones all attributes of this view with complete clones of its children as well.
  */
-public RMShape cloneDeep()  { return clone(); }
+public SGView cloneDeep()  { return clone(); }
 
 /**
- * Copies basic shape attributes from given RMShape (location, size, fill, stroke, roll, scale, name, url, etc.).
+ * Copies basic view attributes from given View (location, size, fill, stroke, roll, scale, name, url, etc.).
  */
-public void copyShape(RMShape aShape)
+public void copyView(SGView aView)
 {
     // Copy bounds
-    setBounds(aShape._x, aShape._y, aShape._width, aShape._height);
+    setBounds(aView._x, aView._y, aView._width, aView._height);
     
     // Copy roll, scale, skew
-    if (aShape.isRSS()) {
-        setRoll(aShape.getRoll());
-        setScaleXY(aShape.getScaleX(), aShape.getScaleY());
-        setSkewXY(aShape.getSkewX(), aShape.getSkewY());
+    if (aView.isRSS()) {
+        setRoll(aView.getRoll());
+        setScaleXY(aView.getScaleX(), aView.getScaleY());
+        setSkewXY(aView.getSkewX(), aView.getSkewY());
     }
     
     // Copy Stroke, Fill, Effect
-    setBorder(aShape.getBorder());
-    setFill(aShape.getFill());
-    setEffect(aShape.getEffect());
+    setBorder(aView.getBorder());
+    setFill(aView.getFill());
+    setEffect(aView.getEffect());
     
     // Copy Opacity and Visible
-    setOpacity(aShape.getOpacity());
-    setVisible(aShape.isVisible());
+    setOpacity(aView.getOpacity());
+    setVisible(aView.isVisible());
     
     // Copy Name, URL, Autosizing
-    setName(aShape.getName());
-    setURL(aShape.getURL());
-    setAutosizing(aShape.getAutosizing());
+    setName(aView.getName());
+    setURL(aView.getURL());
+    setAutosizing(aView.getAutosizing());
     
     // Copy bindings
     while (getBindingCount()>0) removeBinding(0);
-    for (int i=0, iMax=aShape.getBindingCount(); i<iMax; i++)
-        addBinding(aShape.getBinding(i).clone());
+    for (int i=0, iMax=aView.getBindingCount(); i<iMax; i++)
+        addBinding(aView.getBinding(i).clone());
 }
 
 /**
@@ -1521,7 +1516,7 @@ public void relayout()  { }
  */
 public void relayoutParent()
 {
-    RMParentShape par = getParent(); if(par==null) return;
+    SGParent par = getParent(); if(par==null) return;
     par.relayout(); par.relayoutParent();
 }
 
@@ -1534,11 +1529,11 @@ public void repaint()
     sceneGraph.repaintSceneForView(this);
 }
 
-/** Editor method - indicates whether this shape can be super selected. */
-public boolean superSelectable()  { return getClass()==RMParentShape.class; }
+/** Editor method - indicates whether this view can be super selected. */
+public boolean superSelectable()  { return getClass()== SGParent.class; }
 
 /** Editor method. */
-public boolean acceptsChildren()  { return getClass()==RMParentShape.class; }
+public boolean acceptsChildren()  { return getClass()== SGParent.class; }
 
 /** Editor method. */
 public boolean childrenSuperSelectImmediately()  { return _parent==null; }
@@ -1554,29 +1549,29 @@ public int page()  { return _parent!=null? _parent.page() : 0; }
 public int pageMax()  { return _parent!=null? _parent.pageMax() : 0; }
 
 /**
- * Returns the "PageBreak" for this shape as defined by shapes that define a page break (currently only RMTable).
+ * Returns the "PageBreak" for this view as defined by views that define a page break (currently only RMTable).
  */
 public int getPageBreak()  { return _parent!=null? _parent.getPageBreak() : 0; }
 
 /**
- * Returns the "PageBreakMax" for this shape as defined by shapes that define a page break (currently only RMTable).
+ * Returns the "PageBreakMax" for this view as defined by views that define a page break (currently only RMTable).
  */
 public int getPageBreakMax()  { return _parent!=null? _parent.getPageBreakMax() : 0; }
 
 /**
- * Returns the "PageBreakPage" for this shape, or the page number relative to the last page break,
- * as defined by shapes that define explicit page breaks (currently only RMTable).
+ * Returns the "PageBreakPage" for this view, or the page number relative to the last page break,
+ * as defined by views that define explicit page breaks (currently only RMTable).
  */
 public int getPageBreakPage()  { return _parent!=null? _parent.getPageBreakPage() : 0; }
 
 /**
- * Returns the "PageBreakPageMax" for this shape, or the max page number relative to the last and next page breaks,
- * as defined by shapes that define explicit page breaks (currently only RMTable).
+ * Returns the "PageBreakPageMax" for this view, or the max page number relative to the last and next page breaks,
+ * as defined by views that define explicit page breaks (currently only RMTable).
  */
 public int getPageBreakPageMax()  { return _parent!=null? _parent.getPageBreakPageMax() : 0; }
 
 /**
- * Top-level generic shape painting - sets transform and opacity then does a paintAll.
+ * Top-level generic view painting - sets transform and opacity then does a paintAll.
  * If a effect is present, has it paint instead of doing paintAll.
  */
 public void paint(Painter aPntr)
@@ -1584,26 +1579,26 @@ public void paint(Painter aPntr)
     // Clone graphics
     aPntr.save();
     
-    // Apply transform for shape
+    // Apply transform for view
     if (isRSS()) aPntr.transform(getTransform());
     else aPntr.translate(getX(), getY());
     
-    // If shape bounds don't intersect clip bounds, just return
+    // If view bounds don't intersect clip bounds, just return
     Rect cbounds = aPntr.getClipBounds();
     if (cbounds!=null && !getBoundsMarkedDeep().intersects(cbounds)) {
         aPntr.restore(); return; }
     
-    // If shape is semi-transparent, apply composite
+    // If view is semi-transparent, apply composite
     if (getOpacityDeep()!=1) {
         boolean isEditing = SceneGraph.isEditing(this);
         double op = isEditing ? Math.max(.15, getOpacityDeep()) : getOpacityDeep();
         aPntr.setOpacity(op);
     }
     
-    // If shape has a effect, have it paint
+    // If view has a effect, have it paint
     if (getEffect()!=null) { Effect eff = getEffect();
         PainterDVR pdvr = new PainterDVR(aPntr);
-        paintShapeAll(pdvr);
+        paintAll(pdvr);
         if (!pdvr.equals(_pdvr1)) {
             _pdvr1 = pdvr; _pdvr2 = new PainterDVR();
             eff.applyEffect(pdvr, _pdvr2, getBoundsStrokedDeep());
@@ -1611,8 +1606,8 @@ public void paint(Painter aPntr)
         _pdvr2.exec(aPntr);
     }
     
-    // Otherwise paintShapeAll
-    else paintShapeAll(aPntr);
+    // Otherwise paintAll
+    else paintAll(aPntr);
     
     // Dispose of graphics
     aPntr.restore();
@@ -1622,36 +1617,36 @@ public void paint(Painter aPntr)
 PainterDVR _pdvr1, _pdvr2;
 
 /**
- * Calls paintShape, paintShapeChildren and paintShapeOver.
+ * Calls paintView, paintChildren and paintOver.
  */
-public void paintShapeAll(Painter aPntr)
+public void paintAll(Painter aPntr)
 {
     // Get graphics
     boolean didGsave = false;
     
-    // If clipping, clip to shape
+    // If clipping, clip to view
     if (getClipShape()!=null) {
         aPntr.save(); didGsave = true;
         aPntr.clip(getClipShape());
     }
         
-    // Have shape paint only itself
-    paintShape(aPntr);
+    // Have view paint only itself
+    paintView(aPntr);
     
-    // Have shape paint children
-    paintShapeChildren(aPntr);
+    // Have view paint children
+    paintChildren(aPntr);
     
     // If graphics copied, dispose
     if (didGsave) aPntr.restore();
         
-    // Have shape paint over
-    paintShapeOver(aPntr);
+    // Have view paint over
+    paintOver(aPntr);
 }
 
 /**
- * Basic shape painting - paints shape fill and stroke.
+ * Basic view painting - paints view fill and stroke.
  */
-protected void paintShape(Painter aPntr)
+protected void paintView(Painter aPntr)
 {
     // Get fill/border
     Paint fill = getFill();
@@ -1673,11 +1668,11 @@ protected void paintShape(Painter aPntr)
 }
 
 /**
- * Paints shape children.
+ * Paints children.
  */
-protected void paintShapeChildren(Painter aPntr)
+protected void paintChildren(Painter aPntr)
 {
-    for (int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for (int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         if (child.isVisible())
             child.paint(aPntr);
     }
@@ -1686,7 +1681,7 @@ protected void paintShapeChildren(Painter aPntr)
 /**
  * Paints after (on top) of children.
  */
-protected void paintShapeOver(Painter aPntr)
+protected void paintOver(Painter aPntr)
 {
     Border border = getBorder();
     if (border!=null && isStrokeOnTop()) {
@@ -1701,7 +1696,7 @@ protected void paintShapeOver(Painter aPntr)
 public boolean isStrokeOnTop()  { return false; }
 
 /**
- * Returns clip shape for shape.
+ * Returns clip shape for view.
  */
 public Shape getClipShape()  { return null; }
 
@@ -1720,7 +1715,7 @@ public void addPropChangeListener(PropChangeListener aLsnr)
 public void removePropChangeListener(PropChangeListener aLsnr)  { _pcs.removePropChangeListener(aLsnr); }
 
 /**
- * Adds a deep change listener to shape to listen for shape changes and property changes received by shape.
+ * Adds a deep change listener to view to listen for view changes and property changes received by view.
  */
 public void addDeepChangeListener(DeepChangeListener aLsnr)
 {
@@ -1729,7 +1724,7 @@ public void addDeepChangeListener(DeepChangeListener aLsnr)
 }
 
 /**
- * Removes a deep change listener from shape.
+ * Removes a deep change listener from view.
  */
 public void removeDeepChangeListener(DeepChangeListener aLsnr)  { _pcs.removeDeepChangeListener(aLsnr); }
 
@@ -1911,7 +1906,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     
     // Unarchive Fill 
     for (int i=anArchiver.indexOf(anElement, Paint.class); i>=0; i=-1) { XMLElement e = anElement.get(i);
-        if (e.getName().equals("color") && this instanceof RMTextShape) continue; // Bogus till we figure out RMFill to Paint stuff!
+        if (e.getName().equals("color") && this instanceof SGText) continue; // Bogus till we figure out RMFill to Paint stuff!
         Paint fill = (Paint)anArchiver.fromXML(e, this);
         setFill(fill);
     }
@@ -1959,12 +1954,12 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
         String key = prop.getAttributeValue("key"); addBinding(new Binding(name, key));
     }
 
-    // Return this shape
+    // Return this view
     return this;
 }
 
 /**
- * Standard to string implementation (prints class name and shape bounds).
+ * Standard to string implementation (prints class name and view bounds).
  */
 public String toString()
 {

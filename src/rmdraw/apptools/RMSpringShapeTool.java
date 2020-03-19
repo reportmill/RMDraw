@@ -2,26 +2,26 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 
 /**
  * Tool for RMSpringShape.
  */
-public class RMSpringShapeTool <T extends RMSpringShape> extends RMParentShapeTool <T> {
+public class RMSpringShapeTool <T extends SGSpringsView> extends RMParentShapeTool <T> {
 
 /**
  * Override to return shape class.
  */
-public Class <T> getShapeClass()  { return (Class<T>)RMSpringShape.class; }
+public Class <T> getShapeClass()  { return (Class<T>) SGSpringsView.class; }
 
 /**
  * Returns whether a given shape is super-selectable.
  */
-public boolean isSuperSelectable(RMShape aShape)  { return true; }
+public boolean isSuperSelectable(SGView aShape)  { return true; }
 
 /**
  * Returns whether a given shape accepts children.
  */
-public boolean getAcceptsChildren(RMShape aShape)  { return true; }
+public boolean getAcceptsChildren(SGView aShape)  { return true; }
 
 }

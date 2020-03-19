@@ -1,16 +1,15 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.geom.RoundRect;
 import snap.geom.Shape;
-import snap.gfx.*;
 import snap.util.*;
 
 /**
- * This class represents a simple rectangle shape with a rounding radius.
+ * This class represents a simple rectangle view with a rounding radius.
  */
-public class RMRectShape extends RMShape {
+public class SGRect extends SGView {
     
     // Rounding radius
     float      _radius = 0;
@@ -44,8 +43,8 @@ public Shape getPath()
  */
 public XMLElement toXML(XMLArchiver anArchiver)
 {
-    XMLElement e = super.toXML(anArchiver); e.setName("rect"); // Archive basic shape attributes and reset name
-    if(_radius!=0) e.add("radius", _radius);                   // Archive Radius
+    XMLElement e = super.toXML(anArchiver); e.setName("rect");
+    if(_radius!=0) e.add("radius", _radius);
     return e;
 }
 
@@ -54,8 +53,8 @@ public XMLElement toXML(XMLArchiver anArchiver)
  */
 public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
 {
-    super.fromXML(anArchiver, anElement);                                          // Unarchive basic shape attributes
-    if(anElement.hasAttribute("radius")) setRadius(anElement.getAttributeFloatValue("radius")); // Unarchive Radius
+    super.fromXML(anArchiver, anElement);
+    if(anElement.hasAttribute("radius")) setRadius(anElement.getAttributeFloatValue("radius"));
     return this;
 }
 

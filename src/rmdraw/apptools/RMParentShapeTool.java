@@ -3,17 +3,17 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Tool;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 
 /**
  * A tool class for RMParentShape.
  */
-public class RMParentShapeTool <T extends RMParentShape> extends Tool<T> {
+public class RMParentShapeTool <T extends SGParent> extends Tool<T> {
 
 /**
  * Override to return shape class.
  */
-public Class<T> getShapeClass()  { return (Class<T>)RMParentShape.class; }
+public Class<T> getShapeClass()  { return (Class<T>) SGParent.class; }
 
 /**
  * Returns the string to be used for the inspector window title.

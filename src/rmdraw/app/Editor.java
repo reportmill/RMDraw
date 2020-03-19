@@ -7,7 +7,7 @@ import rmdraw.editors.Placer;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.geom.Shape;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 import snap.gfx.*;
 import snap.util.*;
@@ -22,10 +22,10 @@ public class Editor extends Viewer {
     private boolean _editing = true;
     
     // Current selected shapes
-    private List<RMShape> _selShapes = new ArrayList();
+    private List<SGView> _selViews = new ArrayList();
     
     // Current super selected shapes (all ancestors of selected shapes)
-    private List<RMShape> _superSelShapes = new ArrayList();
+    private List<SGView> _superSelViews = new ArrayList();
 
     // An EditorCellStyler to get/set style attributes of current selection
     private EditorStyler _styler = new EditorStyler(this);
@@ -50,8 +50,8 @@ public class Editor extends Viewer {
 
     // Constants for PropertyChanges
     public static final String CurrentTool_Prop = "CurrentTool";
-    public static final String SelShapes_Prop = "SelShapes";
-    public static final String SuperSelShape_Prop = "SuperSelShape";
+    public static final String SelViews_Prop = "SelShapes";
+    public static final String SuperSelView_Prop = "SuperSelShape";
     
 /**
  * Creates a new editor.
@@ -85,14 +85,14 @@ public void setEditing(boolean aFlag)  { _editing = aFlag; }
  * Override to do editor things.
  */
 @Override
-public void setDoc(RMDocument aSource)
+public void setDoc(SGDoc aSource)
 {
     // Do normal version
     super.setDoc(aSource);
 
     // Super-select new doc page
-    RMPage page = getDoc().getSelPage();
-    setSuperSelectedShape(page);
+    SGPage page = getDoc().getSelPage();
+    setSuperSelView(page);
 
     // Set new undoer
     if (isEditing())
@@ -102,245 +102,245 @@ public void setDoc(RMDocument aSource)
 /**
  * Returns the first selected shape.
  */
-public RMShape getSelectedShape()
+public SGView getSelView()
 {
-    return getSelectedShapeCount()==0 ? null : getSelectedShape(0);
+    return getSelViewCount()==0 ? null : getSelView(0);
 }
 
 /**
  * Selects the given shape.
  */
-public void setSelectedShape(RMShape aShape)
+public void setSelView(SGView aShape)
 {
-    setSelectedShapes(aShape==null? null : Arrays.asList(aShape));
+    setSelViews(aShape==null? null : Arrays.asList(aShape));
 }
 
 /**
  * Returns the number of selected shapes.
  */
-public int getSelectedShapeCount()
+public int getSelViewCount()
 {
-    return _selShapes.size();
+    return _selViews.size();
 }
 
 /**
  * Returns the selected shape at the given index.
  */
-public RMShape getSelectedShape(int anIndex)
+public SGView getSelView(int anIndex)
 {
-    return ListUtils.get(_selShapes, anIndex);
+    return ListUtils.get(_selViews, anIndex);
 }
 
 /**
  * Returns the selected shapes list.
  */
-public List <RMShape> getSelectedShapes()
+public List <SGView> getSelViews()
 {
-    return _selShapes;
+    return _selViews;
 }
 
 /**
  * Selects the shapes in the given list.
  */
-public void setSelectedShapes(List <RMShape> theShapes)
+public void setSelViews(List <SGView> theViews)
 {
-    // If shapes already set, just return
-    if (ListUtils.equalsId(theShapes, _selShapes)) return;
+    // If views already set, just return
+    if (ListUtils.equalsId(theViews, _selViews)) return;
     
     // Request focus in case current focus view has changes
     requestFocus();
     
-    // If shapes is null or empty super-select the selected page and return
-    if(theShapes==null || theShapes.size()==0) {
-        setSuperSelectedShape(getSelPage()); return; }
+    // If views is null or empty super-select the selected page and return
+    if(theViews==null || theViews.size()==0) {
+        setSuperSelView(getSelPage()); return; }
     
-    // Get the first shape in given shapes list
-    RMShape shape = theShapes.get(0);
+    // Get the first view in given views list
+    SGView view = theViews.get(0);
     
-    // If shapes contains superSelectedShapes, superSelect last and return (hidden trick for undoSelectedObjects)
-    if (theShapes.size()>1 && shape==getDoc()) {
-        RMShape last = theShapes.get(theShapes.size()-1);
-        setSuperSelectedShape(last);
+    // If views contains superSelViews, superSelect last and return (hidden trick for undoSelectedObjects)
+    if (theViews.size()>1 && view==getDoc()) {
+        SGView last = theViews.get(theViews.size()-1);
+        setSuperSelView(last);
         return;
     }
     
-    // Get the shape's parent
-    RMShape shapesParent = shape.getParent();
+    // Get the view's parent
+    SGView viewsParent = view.getParent();
     
-    // If shapes parent is the document, super select shape instead
-    if (shapesParent==getDoc()) {
-        setSuperSelectedShape(shape); return; }
+    // If views parent is the document, super select view instead
+    if (viewsParent==getDoc()) {
+        setSuperSelView(view); return; }
     
-    // Super select shapes parent
-    setSuperSelectedShape(shapesParent);
+    // Super select views parent
+    setSuperSelView(viewsParent);
     
-    // Add shapes to selected list
-    _selShapes.addAll(theShapes);
+    // Add views to selected list
+    _selViews.addAll(theViews);
     
     // Fire PropertyChange
-    firePropChange(SelShapes_Prop, null, theShapes);
+    firePropChange(SelViews_Prop, null, theViews);
 }
 
 /**
- * Add a shape to the selected shapes list.
+ * Add a view to the selected views list.
  */
-public void addSelectedShape(RMShape aShape)
+public void addSelView(SGView aView)
 {
-    List list = new ArrayList(getSelectedShapes()); list.add(aShape);
-    setSelectedShapes(list);
+    List list = new ArrayList(getSelViews()); list.add(aView);
+    setSelViews(list);
 }
 
 /**
- * Remove a shape from the selected shapes list.
+ * Remove a view from the selected views list.
  */
-public void removeSelectedShape(RMShape aShape)
+public void removeSelView(SGView aView)
 {
-    List list = new ArrayList(getSelectedShapes()); list.remove(aShape);
-    setSelectedShapes(list);
+    List list = new ArrayList(getSelViews()); list.remove(aView);
+    setSelViews(list);
 }
 
 /**
- * Returns the first super-selected shape.
+ * Returns the first super-selected view.
  */
-public RMShape getSuperSelectedShape()
+public SGView getSuperSelView()
 {
-    int ssc = getSuperSelectedShapeCount();
-    return ssc!=0 ? getSuperSelectedShape(ssc-1) : null;
+    int ssc = getSuperSelViewCount();
+    return ssc!=0 ? getSuperSelView(ssc-1) : null;
 }
 
 /**
- * Super select a shape.
+ * Super select a view.
  */
-public void setSuperSelectedShape(RMShape aShape)
+public void setSuperSelView(SGView aView)
 {
     // Request focus in case current focus view has changes
     requestFocus();
     
-    // If given shape is null, reset to selected page
-    RMShape shape = aShape!=null ? aShape : getSelPage();
+    // If given view is null, reset to selected page
+    SGView view = aView!=null ? aView : getSelPage();
     
-    // Unselect selected shapes
-    _selShapes.clear();
+    // Unselect selected views
+    _selViews.clear();
 
-    // Remove current super-selected shapes that aren't an ancestor of given shape    
-    while (shape!=getSuperSelectedShape() && !shape.isAncestor(getSuperSelectedShape())) {
-        RMShape ssShape = getSuperSelectedShape();
-        getToolForView(ssShape).willLoseSuperSelected(ssShape);
-        ListUtils.removeLast(_superSelShapes);
+    // Remove current super-selected views that aren't an ancestor of given view
+    while (view!= getSuperSelView() && !view.isAncestor(getSuperSelView())) {
+        SGView ssView = getSuperSelView();
+        getToolForView(ssView).willLoseSuperSelected(ssView);
+        ListUtils.removeLast(_superSelViews);
     }
 
-    // Add super selected shape (recursively adds parents if missing)
-    if (shape!=getSuperSelectedShape())
-        addSuperSelectedShape(shape);
+    // Add super selected view (recursively adds parents if missing)
+    if (view!= getSuperSelView())
+        addSuperSelView(view);
     
     // Fire PropertyChange and repaint
-    firePropChange(SuperSelShape_Prop, null, aShape);
+    firePropChange(SuperSelView_Prop, null, aView);
     repaint();
 }
 
 /**
- * Adds a super selected shape.
+ * Adds a super selected view.
  */
-private void addSuperSelectedShape(RMShape aShape)
+private void addSuperSelView(SGView aView)
 {
     // If parent isn't super selected, add parent first
-    if (aShape.getParent()!=null && !isSuperSelected(aShape.getParent()))
-        addSuperSelectedShape(aShape.getParent());
+    if (aView.getParent()!=null && !isSuperSelected(aView.getParent()))
+        addSuperSelView(aView.getParent());
 
     // Add ancestor to super selected list
-    _superSelShapes.add(aShape);
+    _superSelViews.add(aView);
     
     // Notify tool
-    getToolForView(aShape).didBecomeSuperSelected(aShape);
+    getToolForView(aView).didBecomeSuperSelected(aView);
 
     // If ancestor is page but not document's selected page, make it the selected page
-    if (aShape instanceof RMPage && aShape!=getDoc().getSelPage())
-        getDoc().setSelPage((RMPage)aShape);
+    if (aView instanceof SGPage && aView!=getDoc().getSelPage())
+        getDoc().setSelPage((SGPage)aView);
 }
 
 /**
- * Returns the first super selected shape, if parent shape.
+ * Returns the first super selected view, if parent view.
  */
-public RMParentShape getSuperSelectedParentShape()
+public SGParent getSuperSelParentView()
 {
-    RMShape ss = getSuperSelectedShape();
-    return ss instanceof RMParentShape ? (RMParentShape)ss : null;
+    SGView ss = getSuperSelView();
+    return ss instanceof SGParent ? (SGParent)ss : null;
 }
 
 /**
- * Returns whether a given shape is selected in the editor.
+ * Returns whether a given view is selected in the editor.
  */
-public boolean isSelected(RMShape aShape)  { return ListUtils.containsId(_selShapes, aShape); }
+public boolean isSelected(SGView aView)  { return ListUtils.containsId(_selViews, aView); }
 
 /**
- * Returns whether a given shape is super-selected in the editor.
+ * Returns whether a given view is super-selected in the editor.
  */
-public boolean isSuperSelected(RMShape aShape)  { return ListUtils.containsId(_superSelShapes, aShape); }
+public boolean isSuperSelected(SGView aView)  { return ListUtils.containsId(_superSelViews, aView); }
 
 /**
- * Returns the number of super-selected shapes.
+ * Returns the number of super-selected views.
  */
-public int getSuperSelectedShapeCount()  { return _superSelShapes.size(); }
+public int getSuperSelViewCount()  { return _superSelViews.size(); }
 
 /**
- * Returns the super-selected shape at the given index.
+ * Returns the super-selected view at the given index.
  */
-public RMShape getSuperSelectedShape(int anIndex)  { return _superSelShapes.get(anIndex); }
+public SGView getSuperSelView(int anIndex)  { return _superSelViews.get(anIndex); }
 
 /**
- * Returns the super selected shape list.
+ * Returns the super selected view list.
  */
-public List <RMShape> getSuperSelectedShapes()  { return _superSelShapes; }
+public List <SGView> getSuperSelViews()  { return _superSelViews; }
 
 /**
- * Returns the number of currently selected shapes or simply 1, if a shape is super-selected.
+ * Returns the number of currently selected views or simply 1, if a view is super-selected.
  */
-public int getSelectedOrSuperSelectedShapeCount()  { int sc = getSelectedShapeCount(); return sc>0? sc : 1; }
+public int getSelOrSuperSelViewCount()  { int sc = getSelViewCount(); return sc>0? sc : 1; }
 
 /**
- * Returns the currently selected shape at the given index, or the super-selected shape.
+ * Returns the currently selected view at the given index, or the super-selected view.
  */
-public RMShape getSelectedOrSuperSelectedShape(int anIndex)
+public SGView getSelOrSuperSelView(int anIndex)
 {
-    return getSelectedShapeCount()>0? getSelectedShape(anIndex) : getSuperSelectedShape();
+    return getSelViewCount()>0? getSelView(anIndex) : getSuperSelView();
 }
 
 /**
- * Returns the currently selected shape or, if none, the super-selected shape.
+ * Returns the currently selected view or, if none, the super-selected view.
  */
-public RMShape getSelectedOrSuperSelectedShape()
+public SGView getSelOrSuperSelView()
 {
-    return getSelectedShapeCount()>0? getSelectedShape() : getSuperSelectedShape();
+    return getSelViewCount()>0? getSelView() : getSuperSelView();
 }
     
 /**
- * Returns the currently selected shapes or, if none, the super-selected shape in a list.
+ * Returns the currently selected views or, if none, the super-selected view in a list.
  */
-public List <RMShape> getSelectedOrSuperSelectedShapes()
+public List <SGView> getSelOrSuperSelViews()
 {
-    return getSelectedShapeCount()>0? _selShapes : Arrays.asList(getSuperSelectedShape());
+    return getSelViewCount()>0? _selViews : Arrays.asList(getSuperSelView());
 }
     
 /**
- * Un-SuperSelect currently super selected shape.
+ * Un-SuperSelect currently super selected view.
  */
 public void popSelection()
 {
-    // If there is a selected shape, just super-select parent (clear selected shapes)
-    RMShape selShape = getSelectedShape();
-    if (selShape!=null && selShape.getParent()!=null) {
-        setSuperSelectedShape(selShape.getParent());
+    // If there is a selected view, just super-select parent (clear selected views)
+    SGView selView = getSelView();
+    if (selView!=null && selView.getParent()!=null) {
+        setSuperSelView(selView.getParent());
         return;
     }
 
-    // Otherwise select super-selected shape (or its parent if it has childrenSuperSelectImmediately)
-    if (getSuperSelectedShapeCount()>1) {
-        RMShape superSelShape = getSuperSelectedShape();
-        if (superSelShape instanceof RMTextShape)
-            setSelectedShape(superSelShape);
-        else if (superSelShape.getParent().childrenSuperSelectImmediately())
-            setSuperSelectedShape(superSelShape.getParent());
-        else setSelectedShape(superSelShape);
+    // Otherwise select super-selected view (or its parent if it has childrenSuperSelectImmediately)
+    if (getSuperSelViewCount()>1) {
+        SGView superSelView = getSuperSelView();
+        if (superSelView instanceof SGText)
+            setSelView(superSelView);
+        else if (superSelView.getParent().childrenSuperSelectImmediately())
+            setSuperSelView(superSelView.getParent());
+        else setSelView(superSelView);
     }
     
     // Otherwise, beep
@@ -348,20 +348,20 @@ public void popSelection()
 }
 
 /**
- * Override to account for selected shapes potentially having different bounds.
+ * Override to account for selected views potentially having different bounds.
  */
-protected Rect getRepaintBoundsForShape(RMShape aShape)
+protected Rect getRepaintBoundsForSceneView(SGView aView)
 {
     // Do normal version
-    Rect bnds = super.getRepaintBoundsForShape(aShape);
+    Rect bnds = super.getRepaintBoundsForSceneView(aView);
     
-    // If shape is selected, correct for handles
-    if (isSelected(aShape))
+    // If view is selected, correct for handles
+    if (isSelected(aView))
         bnds.inset(-4, -4);
     
-    // If shape is super-selected, correct for handles
-    else if (isSuperSelected(aShape)) {
-        bnds = getToolForView(aShape).getBoundsSuperSelected(aShape);
+    // If view is super-selected, correct for handles
+    else if (isSuperSelected(aView)) {
+        bnds = getToolForView(aView).getBoundsSuperSelected(aView);
         bnds.inset(-16, -16);
     }
     
@@ -370,82 +370,82 @@ protected Rect getRepaintBoundsForShape(RMShape aShape)
 }
 
 /**
- * Returns first shape hit by point given in View coords.
+ * Returns first view hit by point given in View coords.
  */
-public RMShape getShapeAtPoint(double aX, double aY)  { return getShapeAtPoint(new Point(aX,aY)); }
+public SGView getViewAtPoint(double aX, double aY)  { return getViewAtPoint(new Point(aX,aY)); }
 
 /**
- * Returns first shape hit by point given in View coords.
+ * Returns first view hit by point given in View coords.
  */
-public RMShape getShapeAtPoint(Point aPoint)
+public SGView getViewAtPoint(Point aPoint)
 {
-    // Get superSelShape
-    RMShape superSelShape = getSuperSelectedShape();
+    // Get superSelView
+    SGView superSelView = getSuperSelView();
     
-    // If superSelectedShape is document, start with page instead (maybe should go)
-    if(superSelShape==getDoc())
-        superSelShape = getSelPage();
+    // If superSelView is document, start with page instead (maybe should go)
+    if(superSelView==getDoc())
+        superSelView = getSelPage();
 
-    // Get the point in superSelectedShape's coords
-    Point point = convertToShape(aPoint.x, aPoint.y, superSelShape);
+    // Get the point in superSelView's coords
+    Point point = convertToSceneView(aPoint.x, aPoint.y, superSelView);
 
-    // Get child of superSelectedShape hit by point
-    RMShape shapeAtPoint = getChildShapeAtPoint(superSelShape, point);
+    // Get child of superSelView hit by point
+    SGView viewAtPoint = getChildViewAtPoint(superSelView, point);
     
-    // If no superSelectedShape child hit by point, find first superSelectedShape that is hit & set to shapeAtPoint
-    while(superSelShape!=getDoc() && shapeAtPoint==null) {
-        point = superSelShape.localToParent(point);
-        superSelShape = superSelShape.getParent();
-        shapeAtPoint = getChildShapeAtPoint(superSelShape, point);
+    // If no superSelView child hit by point, find first superSelView that is hit & set to viewAtPoint
+    while(superSelView!=getDoc() && viewAtPoint==null) {
+        point = superSelView.localToParent(point);
+        superSelView = superSelView.getParent();
+        viewAtPoint = getChildViewAtPoint(superSelView, point);
     }
 
-    // See if point really hits an upper level shape that overlaps shapeAtPoint
-    if(shapeAtPoint!=null && shapeAtPoint!=getSelPage()) {
+    // See if point really hits an upper level view that overlaps viewAtPoint
+    if(viewAtPoint!=null && viewAtPoint!=getSelPage()) {
         
-        // Declare shape/point variables used to iterate up shape hierarchy
-        RMShape ssShape = shapeAtPoint;
+        // Declare view/point variables used to iterate up view hierarchy
+        SGView ssView = viewAtPoint;
         Point pnt = point;
 
-        // Iterate up shape hierarchy
-        while(ssShape!=getSelPage() && ssShape.getParent()!=null) {
+        // Iterate up view hierarchy
+        while(ssView!=getSelPage() && ssView.getParent()!=null) {
             
             // Get child of parent hit point point
-            RMShape hitChild = getChildShapeAtPoint(ssShape.getParent(), pnt);
+            SGView hitChild = getChildViewAtPoint(ssView.getParent(), pnt);
             
-            // If child not equal to original shape, change shapeAtPoint
-            if(hitChild != ssShape) {
-                shapeAtPoint = hitChild;
+            // If child not equal to original view, change viewAtPoint
+            if(hitChild != ssView) {
+                viewAtPoint = hitChild;
             }
             
-            // Update loop shape/point variables
-            ssShape = ssShape.getParent();
-            pnt = ssShape.localToParent(pnt);
+            // Update loop view/point variables
+            ssView = ssView.getParent();
+            pnt = ssView.localToParent(pnt);
         }
     }
 
     // Make sure page is worst case
-    if(shapeAtPoint==null || shapeAtPoint==getDoc())
-        shapeAtPoint = getSelPage();
+    if(viewAtPoint==null || viewAtPoint==getDoc())
+        viewAtPoint = getSelPage();
         
-    // Return shape at point
-    return shapeAtPoint;
+    // Return view at point
+    return viewAtPoint;
 }
 
 /**
- * Returns the child of the given shape hit by the given point.
+ * Returns the child of the given view hit by the given point.
  */
-public RMShape getChildShapeAtPoint(RMShape aShape, Point aPoint)
+public SGView getChildViewAtPoint(SGView aView, Point aPoint)
 {
-    // If given shape is null, return null
-    if(aShape==null) return null;
+    // If given view is null, return null
+    if(aView==null) return null;
     
-    // Iterate over shape children
-    for(int i=aShape.getChildCount(); i>0; i--) { RMShape child = aShape.getChild(i-1);
+    // Iterate over view children
+    for(int i=aView.getChildCount(); i>0; i--) { SGView child = aView.getChild(i-1);
         
         // If not hittable, continue
         if(!child.isHittable()) continue;
         
-        // Get given point in child shape coords
+        // Get given point in child view coords
         Point point = child.parentToLocal(aPoint);
 
         // If child is super selected and point is in child super selected bounds, return child
@@ -462,13 +462,13 @@ public RMShape getChildShapeAtPoint(RMShape aShape, Point aPoint)
 }
 
 /**
- * Returns the first SuperSelectedShape that accepts children.
+ * Returns the first SuperSelView that accepts children.
  */
-public RMParentShape firstSuperSelectedShapeThatAcceptsChildren()
+public SGParent firstSuperSelectedShapeThatAcceptsChildren()
 {
     // Get super selected shape
-    RMShape shape = getSuperSelectedShape();
-    RMParentShape parent = shape instanceof RMParentShape? (RMParentShape)shape : shape.getParent();
+    SGView shape = getSuperSelView();
+    SGParent parent = shape instanceof SGParent ? (SGParent)shape : shape.getParent();
 
     // Iterate up hierarchy until we find a shape that acceptsChildren
     while(!getToolForView(parent).getAcceptsChildren(parent))
@@ -485,11 +485,11 @@ public RMParentShape firstSuperSelectedShapeThatAcceptsChildren()
 /**
  * Returns the first SuperSelected shape that accepts children at a given point.
  */
-public RMShape firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
+public SGView firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
 {
     // Go up chain of superSelectedShapes until one acceptsChildren and is hit by aPoint
-    RMShape shape = getSuperSelectedShape();
-    RMParentShape parent = shape instanceof RMParentShape? (RMParentShape)shape : shape.getParent();
+    SGView shape = getSuperSelView();
+    SGParent parent = shape instanceof SGParent ? (SGParent)shape : shape.getParent();
 
     // Iterate up shape hierarchy until we find a shape that is hit and accepts children
     while(!getToolForView(parent).getAcceptsChildren(parent) ||
@@ -497,9 +497,9 @@ public RMShape firstSuperSelectedShapeThatAcceptsChildrenAtPoint(Point aPoint)
 
         // If shape childrenSuperSelImmd and shape hitByPt, see if any shape children qualify (otherwise use parent)
         if(parent.childrenSuperSelectImmediately() && parent.contains(parent.parentToLocal(aPoint, null))) {
-            RMShape childShape = parent.getChildContaining(parent.parentToLocal(aPoint, null));
+            SGView childShape = parent.getChildContaining(parent.parentToLocal(aPoint, null));
             if(childShape!=null && getToolForView(childShape).getAcceptsChildren(childShape))
-                parent = (RMParentShape)childShape;
+                parent = (SGParent)childShape;
             else parent = parent.getParent();
         }
 
@@ -536,7 +536,7 @@ public EditorStyler getStyler()  { return _styler; }
  */
 public CopyPaster getCopyPaster()
 {
-    Tool tool = getToolForViews(getSelectedOrSuperSelectedShapes());
+    Tool tool = getToolForViews(getSelOrSuperSelViews());
     return tool.getCopyPaster();
 }
 
@@ -601,10 +601,10 @@ public void addPagePrevious()  { addPage(null, getSelPageIndex()); }
 /**
  * Adds a given page to the current document at the given index.
  */
-public void addPage(RMPage aPage, int anIndex)
+public void addPage(SGPage aPage, int anIndex)
 {
-    RMDocument doc = getDoc(); if(doc==null) { beep(); return; }
-    RMPage page = aPage!=null? aPage : doc.createPage();
+    SGDoc doc = getDoc(); if(doc==null) { beep(); return; }
+    SGPage page = aPage!=null? aPage : doc.createPage();
     doc.addPage(page, anIndex);
     setSelPageIndex(anIndex);
 }
@@ -614,7 +614,7 @@ public void addPage(RMPage aPage, int anIndex)
  */
 public void removePage()
 {
-    RMDocument doc = getDoc();
+    SGDoc doc = getDoc();
     if(doc==null || doc.getPageCount()<=1) { beep(); return; }
     removePage(getSelPageIndex());
 }
@@ -625,7 +625,7 @@ public void removePage()
 public void removePage(int anIndex)
 {
     // Register for Undo, remove page and set page to previous one
-    RMDocument doc = getDoc(); if(doc==null) { beep(); return; }
+    SGDoc doc = getDoc(); if(doc==null) { beep(); return; }
     undoerSetUndoTitle("Remove Page");
     doc.removePage(anIndex);
     setSelPageIndex(Math.min(anIndex, doc.getPageCount()-1));
@@ -644,7 +644,7 @@ public SelectTool getSelectTool()
 /**
  * Returns the specific tool for given view.
  */
-public Tool getToolForView(RMShape aShape)
+public Tool getToolForView(SGView aShape)
 {
     Class cls = aShape.getClass();
     return getToolForClass(cls);
@@ -653,7 +653,7 @@ public Tool getToolForView(RMShape aShape)
 /**
  * Returns the specific tool for a list of views (if they are of common class).
  */
-public Tool getToolForViews(List<RMShape> aList)
+public Tool getToolForViews(List<SGView> aList)
 {
     Class commonClass = ClassUtils.getCommonClass(aList);
     return getToolForClass(commonClass);
@@ -678,19 +678,19 @@ public Tool getToolForClass(Class aClass)
  */
 protected Tool createTool(Class aClass)
 {
-    if (aClass==RMDocument.class) return new RMDocumentTool();
-    if (aClass==RMImageShape.class) return new RMImageTool();
-    if (aClass==RMLineShape.class) return new RMLineShapeTool();
-    if (aClass==RMLinkedText.class) return new TextTool();
-    if (aClass==RMOvalShape.class) return new RMOvalShapeTool();
-    if (aClass==RMPage.class) return new RMPageTool();
-    if (aClass==RMParentShape.class) return new RMParentShapeTool();
-    if (aClass==RMPolygonShape.class) return new RMPolygonShapeTool();
-    if (aClass==RMRectShape.class) return new RMRectShapeTool();
-    if (aClass==RMScene3D.class) return new RMScene3DTool();
-    if (aClass==RMShape.class) return new Tool();
-    if (aClass==RMSpringShape.class) return new RMSpringShapeTool();
-    if (aClass==RMTextShape.class) return new TextTool();
+    if (aClass== SGDoc.class) return new RMDocumentTool();
+    if (aClass== SGImage.class) return new RMImageTool();
+    if (aClass== SGLine.class) return new RMLineShapeTool();
+    if (aClass== SGLinkedText.class) return new TextTool();
+    if (aClass== SGOval.class) return new RMOvalShapeTool();
+    if (aClass== SGPage.class) return new RMPageTool();
+    if (aClass== SGParent.class) return new RMParentShapeTool();
+    if (aClass== SGPolygon.class) return new RMPolygonShapeTool();
+    if (aClass== SGRect.class) return new RMRectShapeTool();
+    if (aClass== SGScene3D.class) return new RMScene3DTool();
+    if (aClass== SGView.class) return new Tool();
+    if (aClass== SGSpringsView.class) return new RMSpringShapeTool();
+    if (aClass== SGText.class) return new TextTool();
     if (aClass== SceneGraph.class) return new Tool();
     System.out.println("RMTool.createTool: " + aClass.getName());
     return new Tool();
@@ -754,7 +754,7 @@ public boolean isCurrentToolSelectToolAndSelecting()
 public void setSelPageIndex(int anIndex)
 {
     super.setSelPageIndex(anIndex); // Do normal version
-    setSuperSelectedShape(getSelPage()); // Super-select new page
+    setSuperSelView(getSelPage()); // Super-select new page
 }
 
 /**
@@ -763,14 +763,14 @@ public void setSelPageIndex(int anIndex)
 public Rect getSelectedShapesBounds()
 {
     // Get selected/super-selected shape(s) and parent (just return if parent is null or document)
-    List <? extends RMShape> shapes = getSelectedOrSuperSelectedShapes();
-    RMShape parent = shapes.get(0).getParent();
-    if (parent==null || parent instanceof RMDocument)
+    List <? extends SGView> shapes = getSelOrSuperSelViews();
+    SGView parent = shapes.get(0).getParent();
+    if (parent==null || parent instanceof SGDoc)
         return getDocBounds();
     
     // Get select shapes rect in viewer coords and return
-    Rect sbounds = RMShapeUtils.getBoundsOfChildren(parent, shapes);
-    sbounds = convertFromShape(sbounds, parent).getBounds();
+    Rect sbounds = SGViewUtils.getBoundsOfChildren(parent, shapes);
+    sbounds = convertFromSceneView(sbounds, parent).getBounds();
     return sbounds;
 }
 
@@ -857,7 +857,7 @@ public String getToolTip(ViewEvent anEvent)
     if(!isEditing()) return super.getToolTip(anEvent);
     
     // Get deepest shape under point (just return if null), get tool and return tool's ToolTip for shape
-    RMShape shape = getShapeAtPoint(anEvent.getX(), anEvent.getY(), true); if(shape==null) return null;
+    SGView shape = getViewAtPoint(anEvent.getX(), anEvent.getY(), true); if(shape==null) return null;
     Tool tool = getToolForView(shape);
     return tool.getToolTip(shape, anEvent);
 }
@@ -919,7 +919,7 @@ protected void setUndoSelection(Object aSelection)
 {
     // Handle List <RMShape>
     if(aSelection instanceof List)
-        setSelectedShapes((List)aSelection);
+        setSelViews((List)aSelection);
 }
 
 /**
@@ -949,13 +949,13 @@ public void sceneViewPropChangedDeep(PropChange aPC)
 public boolean isSceneEditing()  { return isEditing(); }
 
 /** SceneGraph.Client method: Returns whether given view is selected. */
-public boolean isSceneSelected(RMShape aView)  { return isSelected(aView); }
+public boolean isSceneSelected(SGView aView)  { return isSelected(aView); }
 
 /** SceneGraph.Client method: Returns whether given view is super selected. */
-public boolean isSceneSuperSelected(RMShape aView)  { return isSuperSelected(aView); }
+public boolean isSceneSuperSelected(SGView aView)  { return isSuperSelected(aView); }
 
 /** SceneGraph.Client method: Returns whether given view is THE super selected view. */
-public boolean isSceneSuperSelectedLeaf(RMShape aView)  { return getSuperSelectedShape()==aView; }
+public boolean isSceneSuperSelectedLeaf(SGView aView)  { return getSuperSelView()==aView; }
 
 /**
  * Property change.
@@ -972,14 +972,14 @@ protected void addUndoChange(PropChange aPC)
     
     // If no undos and change is RMDocument.SelectedPage or RMTableGroup.MainTable, just return
     if(!undoer.hasUndos()) {
-        if(pname==RMDocument.SelPageIndex_Prop) return;
+        if(pname== SGDoc.SelPageIndex_Prop) return;
         if(pname=="MainTable") return;
         if(pname=="Version") return;
     }
         
     // If no changes yet, set selected objects
     if(undoer.getActiveUndoSet().getChangeCount()==0)
-        undoer.setUndoSelection(new ArrayList(getSelectedOrSuperSelectedShapes()));
+        undoer.setUndoSelection(new ArrayList(getSelOrSuperSelViews()));
     
     // Add property change
     undoer.addPropChange(aPC);
@@ -997,7 +997,7 @@ protected void saveUndoerChanges()
     Undoer undoer = getUndoer(); if(undoer==null || !undoer.isEnabled()) return;
     
     // Set undo selected-shapes
-    List shapes = getSelectedShapeCount()>0? getSelectedShapes() : getSuperSelectedShapes();
+    List shapes = getSelViewCount()>0? getSelViews() : getSuperSelViews();
     if(undoer.getRedoSelection()==null)
         undoer.setRedoSelection(new ArrayList(shapes));
     

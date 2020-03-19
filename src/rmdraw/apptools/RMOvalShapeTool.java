@@ -3,7 +3,7 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Tool;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 import snap.gfx.Border;
 import snap.view.*;
@@ -11,7 +11,7 @@ import snap.view.*;
 /**
  * A tool subclass for editing RMOval.
  */
-public class RMOvalShapeTool <T extends RMOvalShape> extends Tool<T> {
+public class RMOvalShapeTool <T extends SGOval> extends Tool<T> {
     
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
@@ -29,7 +29,7 @@ protected T newInstance()
 public void resetUI()
 {
     // Get current oval shape
-    RMOvalShape oval = getSelectedShape(); if(oval==null) return;
+    SGOval oval = getSelectedShape(); if(oval==null) return;
     
     // Update StartThumb, StartText
     setViewValue("StartThumb", oval.getStartAngle());
@@ -49,20 +49,20 @@ public void resetUI()
  */
 public void respondUI(ViewEvent anEvent)
 {
-    RMOvalShape oval = getSelectedShape(); if(oval==null) return;
-    List <RMOvalShape> ovals = (List)getSelectedShapes();
+    SGOval oval = getSelectedShape(); if(oval==null) return;
+    List <SGOval> ovals = (List)getSelectedShapes();
     
     // Handle StartThumb, StartText
     if(anEvent.equals("StartThumb") || anEvent.equals("StartText")) {
         oval.undoerSetUndoTitle("Start Angle Change");
-        for(RMOvalShape o : ovals)
+        for(SGOval o : ovals)
             o.setStartAngle(anEvent.getFloatValue());
     }
 
     // Handle SweepThumb, SweepText
     if(anEvent.equals("SweepThumb") || anEvent.equals("SweepText")) {
         oval.undoerSetUndoTitle("Sweep Angle Change");
-        for(RMOvalShape o : ovals)
+        for(SGOval o : ovals)
             o.setSweepAngle(anEvent.getFloatValue());
     }
     
@@ -70,7 +70,7 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("HoleRatioSlider") || anEvent.equals("HoleRatioText")) {
         oval.undoerSetUndoTitle("Hole Ratio Change");
         double hratio = anEvent.getFloatValue()/100;
-        for(RMOvalShape o : ovals)
+        for(SGOval o : ovals)
             o.setHoleRatio(hratio);
     }
 }
@@ -83,7 +83,7 @@ public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.CROSSH
 /**
  * Returns the shape class this tool is responsible for.
  */
-public Class <T> getShapeClass()  { return (Class<T>)RMOvalShape.class; }
+public Class <T> getShapeClass()  { return (Class<T>) SGOval.class; }
 
 /**
  * Returns the string used for the inspector window title.

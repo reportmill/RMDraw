@@ -1,5 +1,5 @@
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.text.RichText;
@@ -21,10 +21,10 @@ public class EditorCopyPaster implements CopyPaster {
     private Editor _editor;
 
     // The last shape that was copied to the clipboard (used for smart paste)
-    private RMShape _lastCopyShape;
+    private SGView _lastCopyShape;
 
     // The last shape that was pasted from the clipboard (used for smart paste)
-    private RMShape _lastPasteShape;
+    private SGView _lastPasteShape;
 
     // The MIME type for Draw archival format
     public static final String DRAW_XML_FORMAT = "snapdraw/xml";
@@ -58,11 +58,11 @@ public class EditorCopyPaster implements CopyPaster {
     public void copy()
     {
         // If not text editing, add selected shapes (serialized) to pasteboard for DrawPboardType
-        if(!(_editor.getSelectedOrSuperSelectedShape() instanceof RMDocument) &&
-                !(_editor.getSelectedOrSuperSelectedShape() instanceof RMPage)) {
+        if(!(_editor.getSelOrSuperSelView() instanceof SGDoc) &&
+                !(_editor.getSelOrSuperSelView() instanceof SGPage)) {
 
             // Get xml for selected shapes
-            XMLElement xml = new RMArchiver().writeToXML(_editor.getSelectedOrSuperSelectedShapes());
+            XMLElement xml = new RMArchiver().writeToXML(_editor.getSelOrSuperSelViews());
             String xmlStr = xml.toString();
 
             // Get System clipboard and add data as RMData and String (text/plain)
@@ -71,7 +71,7 @@ public class EditorCopyPaster implements CopyPaster {
             cb.addData(xmlStr);
 
             // Reset Editor.LastCopyShape/LastPasteShape
-            _lastCopyShape = _editor.getSelectedShape(0);
+            _lastCopyShape = _editor.getSelView(0);
             _lastPasteShape = null;
         }
 
@@ -85,17 +85,17 @@ public class EditorCopyPaster implements CopyPaster {
     public void paste()
     {
         // If not text editing, do paste for system clipboard
-        RMParentShape parent = _editor.firstSuperSelectedShapeThatAcceptsChildren();
+        SGParent parent = _editor.firstSuperSelectedShapeThatAcceptsChildren();
         paste(Clipboard.get(), parent, null);
     }
 
     /**
      * Handles editor paste operation for given transferable, parent shape and location.
      */
-    public void paste(Clipboard aCB, RMParentShape aParent, Point aPoint)
+    public void paste(Clipboard aCB, SGParent aParent, Point aPoint)
     {
         // Declare variable for pasted shape
-        RMShape pastedShape = null;
+        SGView pastedShape = null;
 
         // If PasteBoard has ReportMill Data, paste it
         if(aCB.hasData(DRAW_XML_FORMAT)) {
@@ -112,7 +112,7 @@ public class EditorCopyPaster implements CopyPaster {
 
             // If data is text, create text object and add it
             else if(object instanceof RichText) {
-                RMTextShape text = new RMTextShape((RichText)object);
+                SGText text = new SGText((RichText)object);
                 double width = Math.min(text.getPrefWidth(), aParent.getWidth());
                 double height = Math.min(text.getPrefHeight(), aParent.getHeight());
                 text.setSize(width, height);
@@ -123,7 +123,7 @@ public class EditorCopyPaster implements CopyPaster {
             // Promote _smartPastedShape to anchor and set new _smartPastedShape
             if(_lastPasteShape!=null)
                 _lastCopyShape = _lastPasteShape;
-            _lastPasteShape = _editor.getSelectedShape(0);
+            _lastPasteShape = _editor.getSelView(0);
 
         }
 
@@ -131,7 +131,7 @@ public class EditorCopyPaster implements CopyPaster {
         else if(aCB.hasImage()) {
             ClipboardData idata = aCB.getImageData();
             byte bytes[] = idata.getBytes();
-            pastedShape = new RMImageShape(bytes);
+            pastedShape = new SGImage(bytes);
         }
 
         // last one - plain text
@@ -152,7 +152,7 @@ public class EditorCopyPaster implements CopyPaster {
             // Resize/relocate shape (if point was provided, move pasted shape to that point)
             pastedShape.setBestSize();
             if(aPoint!=null) {
-                aPoint = _editor.convertToShape(aPoint.x, aPoint.y, aParent);
+                aPoint = _editor.convertToSceneView(aPoint.x, aPoint.y, aParent);
                 pastedShape.setXY(aPoint.getX() - pastedShape.getWidth()/2, aPoint.getY() - pastedShape.getHeight()/2);
             }
 
@@ -160,7 +160,7 @@ public class EditorCopyPaster implements CopyPaster {
             aParent.addChild(pastedShape);
 
             // Select imageShape, set selectTool and redisplay
-            _editor.setSelectedShape(pastedShape);
+            _editor.setSelView(pastedShape);
             _editor.setCurrentToolToSelectTool();
             _editor.repaint();
         }
@@ -172,10 +172,10 @@ public class EditorCopyPaster implements CopyPaster {
     public void selectAll()
     {
         // If document selected, select page
-        RMShape superSelShape = _editor.getSuperSelectedShape();
-        if(superSelShape instanceof RMDocument) {
-            _editor.setSuperSelectedShape(((RMDocument)superSelShape).getSelPage());
-            superSelShape = _editor.getSuperSelectedShape();
+        SGView superSelShape = _editor.getSuperSelView();
+        if(superSelShape instanceof SGDoc) {
+            _editor.setSuperSelView(((SGDoc)superSelShape).getSelPage());
+            superSelShape = _editor.getSuperSelView();
         }
 
         // Otherwise, select all children
@@ -183,12 +183,12 @@ public class EditorCopyPaster implements CopyPaster {
 
             // Get list of all hittable children of super-selected shape
             List shapes = new ArrayList();
-            for(RMShape shape : superSelShape.getChildren())
+            for(SGView shape : superSelShape.getChildren())
                 if(shape.isHittable())
                     shapes.add(shape);
 
             // Select shapes
-            _editor.setSelectedShapes(shapes);
+            _editor.setSelViews(shapes);
         }
     }
 
@@ -198,19 +198,19 @@ public class EditorCopyPaster implements CopyPaster {
     public void delete()
     {
         // Get copy of selected shapes (just beep and return if no selected shapes)
-        RMShape shapes[] = _editor.getSelectedShapes().toArray(new RMShape[0]);
+        SGView shapes[] = _editor.getSelViews().toArray(new SGView[0]);
         if (shapes.length==0) {
             ViewUtils.beep(); return; }
 
         // Get/superSelect parent of selected shapes
-        RMParentShape parent = _editor.getSelectedShape().getParent(); if (parent==null) return;
-        _editor.setSuperSelectedShape(parent);
+        SGParent parent = _editor.getSelView().getParent(); if (parent==null) return;
+        _editor.setSuperSelView(parent);
 
         // Set undo title
-        _editor.undoerSetUndoTitle(_editor.getSelectedShapeCount()>1? "Delete Shapes" : "Delete Shape");
+        _editor.undoerSetUndoTitle(_editor.getSelViewCount()>1? "Delete Shapes" : "Delete Shape");
 
         // Remove all shapes from their parent
-        for (RMShape shape : shapes) {
+        for (SGView shape : shapes) {
             parent.removeChild(shape);
             if (_lastPasteShape==shape) _lastPasteShape = null;
             if (_lastCopyShape==shape) _lastCopyShape = null;
@@ -220,12 +220,12 @@ public class EditorCopyPaster implements CopyPaster {
     /**
      * Returns the first Shape read from the system clipboard.
      */
-    public RMShape getShapeFromClipboard()
+    public SGView getShapeFromClipboard()
     {
         Object shapes = getShapesFromClipboard(null);
         if (shapes instanceof List)
             shapes = ListUtils.get((List)shapes, 0);
-        return shapes instanceof RMShape ? (RMShape)shapes : null;
+        return shapes instanceof SGView ? (SGView)shapes : null;
     }
 
     /**
@@ -247,7 +247,7 @@ public class EditorCopyPaster implements CopyPaster {
         // A bit of a hack - remove any non-shapes (plugins for one)
         if(obj instanceof List) { List list = (List)obj;
             for(int i=list.size()-1; i>=0; --i)
-                if(!(list.get(i) instanceof RMShape))
+                if(!(list.get(i) instanceof SGView))
                     list.remove(i);
         }
 
@@ -258,7 +258,7 @@ public class EditorCopyPaster implements CopyPaster {
     /**
      * Adds shapes as children to given shape.
      */
-    private void addShapesToShape(List <RMShape> theShapes, RMParentShape aShape, boolean withCorrection)
+    private void addShapesToShape(List <SGView> theShapes, SGParent aShape, boolean withCorrection)
     {
         // If no shapes, just return
         if(theShapes.size()==0) return;
@@ -273,7 +273,7 @@ public class EditorCopyPaster implements CopyPaster {
             if (_lastCopyShape!=null && _lastCopyShape.getParent()==aShape) {
 
                 if (_lastPasteShape!=null) {
-                    RMShape firstShape = theShapes.get(0);
+                    SGView firstShape = theShapes.get(0);
                     dx = 2*_lastPasteShape.x() - _lastCopyShape.x() - firstShape.x();
                     dy = 2*_lastPasteShape.y() - _lastCopyShape.y() - firstShape.y();
                     dr = 2*_lastPasteShape.getRoll() - _lastCopyShape.getRoll() - firstShape.getRoll();
@@ -284,7 +284,7 @@ public class EditorCopyPaster implements CopyPaster {
         }
 
         // Get each individual shape and add it to the superSelectedShape
-        for (RMShape shape : theShapes) {
+        for (SGView shape : theShapes) {
 
             // Add current loop shape to given parent shape
             aShape.addChild(shape);
@@ -303,16 +303,16 @@ public class EditorCopyPaster implements CopyPaster {
         }
 
         // Select shapes
-        _editor.setSelectedShapes(theShapes);
+        _editor.setSelViews(theShapes);
     }
 
     /**
      * Returns Text with contents if there's a plain text string on clipboard.
      */
-    private static RMShape getTransferText(Clipboard aCB)
+    private static SGView getTransferText(Clipboard aCB)
     {
         if(!aCB.hasString()) return null;
         String str = aCB.getString();
-        return str!=null? new RMTextShape(str) : null;
+        return str!=null? new SGText(str) : null;
     }
 }

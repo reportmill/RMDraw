@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import rmdraw.gfx3d.*;
 import java.util.*;
 import snap.geom.Path;
@@ -13,7 +13,7 @@ import snap.view.ViewEvent;
 /**
  * This encapsulates a Snap Scene3D to render simple 3d.
  */
-public class RMScene3D extends RMParentShape {
+public class SGScene3D extends SGParent {
     
     // A Scene3D to do real scene management
     Scene3D        _scene = new Scene3D();
@@ -22,12 +22,12 @@ public class RMScene3D extends RMParentShape {
     Camera         _camera;
     
     // List of real child shapes
-    List <RMShape> _rmshapes = new ArrayList();
+    List <SGView> _rmshapes = new ArrayList();
 
 /**
  * Creates an RMScene3D.
  */
-public RMScene3D()
+public SGScene3D()
 {
     _camera = _scene.getCamera();
     _camera.addPropChangeListener(pce -> sceneChanged(pce));
@@ -201,7 +201,7 @@ protected void layoutImpl()
     // If RMShapes, recreate Shape list from RMShapes
     if(getShapeRMCount()>0) {
         removeShapes();
-        for(RMShape shp : _rmshapes)
+        for(SGView shp : _rmshapes)
             addShapesForRMShape(shp, 0, getDepth(), false);
     }
 }
@@ -209,13 +209,13 @@ protected void layoutImpl()
 /**
  * Paints shape children.
  */
-protected void paintShapeChildren(Painter aPntr)
+protected void paintChildren(Painter aPntr)
 {
     // Paint Scene paths
     _camera.paintPaths(aPntr);
     
     // Do normal version
-    super.paintShapeChildren(aPntr);
+    super.paintChildren(aPntr);
 }
 
 /**
@@ -264,12 +264,12 @@ public int getShapeRMCount()  { return _rmshapes.size(); }
 /**
  * Returns the specific shape at the given index from the shape list.
  */
-public RMShape getShapeRM(int anIndex)  { return _rmshapes.get(anIndex); }
+public SGView getShapeRM(int anIndex)  { return _rmshapes.get(anIndex); }
 
 /**
  * Adds a shape to the end of the shape list.
  */
-public void addShapeRM(RMShape aShape)
+public void addShapeRM(SGView aShape)
 {
     _rmshapes.add(aShape);
     relayout();
@@ -279,20 +279,20 @@ public void addShapeRM(RMShape aShape)
  * Adds Shape3D objects for given RMShape.
  * FixEdges flag indicates wheter to stroke polygons created during extrusion, to try to make them mesh better.
  */
-protected void addShapesForRMShape(RMShape aShape, double z1, double z2, boolean fixEdges)
+protected void addShapesForRMShape(SGView aShape, double z1, double z2, boolean fixEdges)
 {
     // If aShape is text, add shape3d for background and add shape3d for char path shape
-    if (aShape instanceof RMTextShape) { RMTextShape text = (RMTextShape)aShape;
+    if (aShape instanceof SGText) { SGText text = (SGText)aShape;
         
         // If text draws fill or stroke, add child for background
         if (text.getFill()!=null || text.getBorder()!=null) {
-            RMShape background = new RMPolygonShape(aShape.getPath()); // Create background shape from text
-            background.copyShape(aShape);
+            SGView background = new SGPolygon(aShape.getPath()); // Create background shape from text
+            background.copyView(aShape);
             addShapesForRMShape(background, z1+.1f, z2, fixEdges); // Add background shape
         }
         
         // Get shape for char paths and add shape3d for char path shape
-        RMShape charsShape = RMTextShapeUtils.getTextPathShape(text);
+        SGView charsShape = SGTextUtils.getTextPathView(text);
         addShapesForRMShape(charsShape, z1, z1, fixEdges);
         return;
     }
@@ -317,7 +317,7 @@ protected void addShapesForRMShape(RMShape aShape, double z1, double z2, boolean
 }
 
 /** Override to indicate that scene children are unhittable. */
-public boolean isHittable(RMShape aChild)  { return false; }
+public boolean isHittable(SGView aChild)  { return false; }
 
 /** Viewer method. */
 public boolean acceptsMouse()  { return true; }
@@ -325,15 +325,15 @@ public boolean acceptsMouse()  { return true; }
 /**
  * Copy 3D attributes only.
  */
-public void copy3D(RMScene3D aScene3D)  { getCamera().copy3D(aScene3D.getCamera()); }
+public void copy3D(SGScene3D aScene3D)  { getCamera().copy3D(aScene3D.getCamera()); }
 
 /**
  * XML archival.
  */
-protected XMLElement toXMLShape(XMLArchiver anArchiver)
+protected XMLElement toXMLView(XMLArchiver anArchiver)
 {
     // Archive basic shape attributes and reset element name
-    XMLElement e = super.toXMLShape(anArchiver); e.setName("scene3d");
+    XMLElement e = super.toXMLView(anArchiver); e.setName("scene3d");
     
     // Archive the RMShape children: create element for shape, iterate over shapes and add
     if(getShapeRMCount()>0) {
@@ -370,10 +370,10 @@ protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement) { }
 /**
  * XML unarchival.
  */
-protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
+protected void fromXMLView(XMLArchiver anArchiver, XMLElement anElement)
 {
     // Unarchive basic shape attributes
-    super.fromXMLShape(anArchiver, anElement);
+    super.fromXMLView(anArchiver, anElement);
     
     // Fix scene width/height
     _camera.setWidth(getWidth()); _camera.setHeight(getHeight());
@@ -395,7 +395,7 @@ protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
     XMLElement shapesXML = anElement.get("shapes");
     if(shapesXML!=null)
         for(int i=0, iMax=shapesXML.size(); i<iMax; i++)
-            addShapeRM((RMShape)anArchiver.fromXML(shapesXML.get(i), this));
+            addShapeRM((SGView)anArchiver.fromXML(shapesXML.get(i), this));
 }
 
 }

@@ -1,6 +1,6 @@
 package rmdraw.app;
 import rmdraw.editors.Placer;
-import rmdraw.shape.RMShape;
+import rmdraw.scene.SGView;
 
 /**
  * A Placer implementation to edit placement attributes.
@@ -8,12 +8,12 @@ import rmdraw.shape.RMShape;
 public class ToolPlacer implements Placer {
 
     // The View
-    private RMShape  _view;
+    private SGView _view;
 
     /**
      * Creates ToolPlacer.
      */
-    public ToolPlacer(RMShape aView)
+    public ToolPlacer(SGView aView)
     {
         _view = aView;
     }

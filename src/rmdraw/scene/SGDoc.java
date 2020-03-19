@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.*;
 import java.io.File;
 
@@ -12,18 +12,18 @@ import snap.util.*;
 import snap.web.WebURL;
 
 /**
- * The RMDocument class represents a ReportMill document and is also an RMShape subclass, so it can be a real part of
- * the document/shape hierarchy.
+ * The SGDoc class represents an SnapDraw document and is also an SGView subclass, so it can be a real part of
+ * the document/view hierarchy.
  * On rare occasions, you may also want to create a document programmatically. Here's an example:
  * <p><blockquote><pre>
- *   RMDocument doc = new RMDocument(612, 792); // Standard US Letter size (8.5" x 11"), in points
+ *   SGDoc doc = new SGDoc(612, 792); // Standard US Letter size (8.5" x 11"), in points
  *   RMTable table = new RMTable(); // Create new table ...
  *   doc.getPage(0).addChild(table); // ... and add to first page
  *   table.setBounds(36, 36, 540, 680); // Position and size table
  *   table.getRow("Objects Details").getColumn(0).setText("Title: @getTitle@"); // Configure first text
  * </pre></blockquote><p>
  */
-public class RMDocument extends RMParentShape {
+public class SGDoc extends SGParent {
 
     // The SceneGraph that owns this doc
     private SceneGraph  _sceneGraph;
@@ -82,12 +82,12 @@ public class RMDocument extends RMParentShape {
 /**
  * Creates a plain empty document. It's really only used by the archiver.
  */
-public RMDocument() { addPage(); }
+public SGDoc() { addPage(); }
 
 /**
  * Creates a document with the given width and height (in printer points).
  */
-public RMDocument(double aWidth, double aHeight)
+public SGDoc(double aWidth, double aHeight)
 {
     addPage();
     setPageSize(aWidth, aHeight);
@@ -96,7 +96,7 @@ public RMDocument(double aWidth, double aHeight)
 /**
  * Creates a new document from aSource using RMArchiver.
  */
-public static RMDocument getDocFromSource(Object aSource)
+public static SGDoc getDocFromSource(Object aSource)
 {
     RMArchiver arch = new RMArchiver();
     return arch.getDocFromSource(aSource);
@@ -140,52 +140,52 @@ public int getPageCount()  { return getChildCount(); }
 /**
  * Returns the page at the given index.
  */
-public RMPage getPage(int anIndex)  { return (RMPage)getChild(anIndex); }
+public SGPage getPage(int anIndex)  { return (SGPage)getChild(anIndex); }
 
 /**
  * Returns the last page (convenience).
  */
-public RMPage getPageLast()  { return getPage(getPageCount()-1); }
+public SGPage getPageLast()  { return getPage(getPageCount()-1); }
 
 /**
  * Returns the list of pages associated with this document.
  */
-public List <RMPage> getPages()  { return (List)_children; }
+public List <SGPage> getPages()  { return (List)_children; }
 
 /**
  * Adds a new page to this document.
  */
-public RMPage addPage()  { addPage(createPage()); return getPageLast(); }
+public SGPage addPage()  { addPage(createPage()); return getPageLast(); }
 
 /**
  * Adds a given page to this document.
  */
-public void addPage(RMPage aPage)  { addPage(aPage, getPageCount()); }
+public void addPage(SGPage aPage)  { addPage(aPage, getPageCount()); }
 
 /**
  * Adds a given page to this document at the given index.
  */
-public void addPage(RMPage aPage, int anIndex)  { addChild(aPage, anIndex); }
+public void addPage(SGPage aPage, int anIndex)  { addChild(aPage, anIndex); }
 
 /**
  * Removes a page from this document.
  */
-public RMPage removePage(int anIndex)  { return (RMPage)removeChild(anIndex); }
+public SGPage removePage(int anIndex)  { return (SGPage)removeChild(anIndex); }
 
 /**
  * Removes the given page.
  */
-public int removePage(RMPage aPage)  { return removeChild(aPage); }
+public int removePage(SGPage aPage)  { return removeChild(aPage); }
 
 /**
  * Creates a new page.
  */
-public RMPage createPage()  { RMPage page = new RMPage(); page.setSize(getPageSize()); return page; }
+public SGPage createPage()  { SGPage page = new SGPage(); page.setSize(getPageSize()); return page; }
 
 /**
  * Override to make sure document has size.
  */
-public void addChild(RMShape aChild, int anIndex)
+public void addChild(SGView aChild, int anIndex)
 {
     super.addChild(aChild, anIndex);
     if(getWidth()==0) setBestSize();
@@ -194,22 +194,22 @@ public void addChild(RMShape aChild, int anIndex)
 /**
  * Add the pages in the given document to this document (at end) and clears the pages list in the given document.
  */
-public void addPages(RMDocument aDoc)
+public void addPages(SGDoc aDoc)
 {
     // Add pages from given document
-    for(RMShape page : aDoc.getChildArray())
-        addPage((RMPage)page);
+    for(SGView page : aDoc.getChildArray())
+        addPage((SGPage)page);
 }
 
 /**
  * Returns the selected page of document.
  */
-public RMPage getSelPage()  { return _selIndex>=0 && _selIndex<getPageCount()? getPage(_selIndex) : null; }
+public SGPage getSelPage()  { return _selIndex>=0 && _selIndex<getPageCount()? getPage(_selIndex) : null; }
 
 /**
  * Selects the selected page.
  */
-public void setSelPage(RMPage aPage)  { setSelPageIndex(aPage.indexOf()); }
+public void setSelPage(SGPage aPage)  { setSelPageIndex(aPage.indexOf()); }
 
 /**
  * Returns the selected page index of this document.
@@ -446,12 +446,12 @@ public byte[] getBytes()  { return getXML().getBytes(); }
 /**
  * Returns the document as byte array of a JPEG file.
  */
-public byte[] getBytesJPEG()  { return RMShapeUtils.createImage(getPage(0), Color.WHITE).getBytesJPEG(); }
+public byte[] getBytesJPEG()  { return SGViewUtils.createImage(getPage(0), Color.WHITE).getBytesJPEG(); }
 
 /**
  * Returns the document as byte array of PNG file.
  */
-public byte[] getBytesPNG()  { return RMShapeUtils.createImage(getPage(0), null).getBytesPNG(); }
+public byte[] getBytesPNG()  { return SGViewUtils.createImage(getPage(0), null).getBytesPNG(); }
 
 /**
  * Writes the document out to the given path String (it extracts type from path extension).
@@ -475,12 +475,12 @@ public void write(File aFile)  { write(aFile.getAbsolutePath()); }
 /**
  * Override to returns this document.
  */
-public RMDocument getDoc()  { return this; }
+public SGDoc getDoc()  { return this; }
 
 /**
  * Overrides paint shape, because document should never really paint itself.
  */
-public void paintShape(Painter aPntr) { }
+public void paintView(Painter aPntr) { }
 
 /**
  * Performs page substitutions on any text fields that were identified as containing @Page@ keys.
@@ -500,17 +500,17 @@ protected void layoutImpl()
     if(getPageCount()==0 || getSelPage()==null) return;
     
     // Handle PageLayout Single: Iterate over pages, set location to zero and set current page to visible
-    if(getPageLayout()==RMDocument.PageLayout.Single) {
-        for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMPage page = getPage(i);
+    if(getPageLayout()== SGDoc.PageLayout.Single) {
+        for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGPage page = getPage(i);
             boolean showing = i==selIndex;
             page.setXY(showing? 0 : offscreen, 0);
         }
     }
     
     // Handle PageLayout Double: Iterate over pages, set location of alternating pages to zero/page-width
-    else if(getPageLayout()==RMDocument.PageLayout.Double) {
+    else if(getPageLayout()== SGDoc.PageLayout.Double) {
         for(int i=0, iMax=getChildCount(); i<iMax; i+=2) {
-            RMPage page1 = getPage(i), page2 = i+1<iMax? getPage(i+1) : null;
+            SGPage page1 = getPage(i), page2 = i+1<iMax? getPage(i+1) : null;
             boolean showing = i==selIndex || i+1==selIndex;
             page1.setXY(showing? 0 : offscreen, 0);
             if(page2!=null)
@@ -519,15 +519,15 @@ protected void layoutImpl()
     }
     
     // Handle PageLayout Facing
-    else if(getPageLayout()==RMDocument.PageLayout.Facing) {
+    else if(getPageLayout()== SGDoc.PageLayout.Facing) {
         
         // Set location of page 1
-        RMPage page = getPage(0);
+        SGPage page = getPage(0);
         page.setXY(selIndex==0? getPageSize().width : offscreen, 0);
         
         // Iterate over pages, set location of alternating pages to zero/page-width, set current pages to visible
         for(int i=1, iMax=getChildCount(); i<iMax; i+=2) {
-            RMPage page1 = getPage(i), page2 = i+1<iMax? getPage(i+1) : null;
+            SGPage page1 = getPage(i), page2 = i+1<iMax? getPage(i+1) : null;
             boolean showing = i==selIndex || i+1==selIndex;
             page1.setXY(showing? 0 : offscreen, 0);
             if(page2!=null)
@@ -536,9 +536,9 @@ protected void layoutImpl()
     }
     
     // Handle PageLayout Continuous: Add all pages and set appropriate xy
-    else if(getPageLayout()==RMDocument.PageLayout.Continuous) {
+    else if(getPageLayout()== SGDoc.PageLayout.Continuous) {
         float y = 0;
-        for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMPage page = getPage(i);
+        for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGPage page = getPage(i);
             page.setXY(0, y); y += page.getHeight() + 10; }
     }
 }
@@ -550,7 +550,7 @@ protected double getPrefWidthImpl(double aHeight)
 {
     double pw = getPageSize().width;
     switch(getPageLayout()) { case Double: case Facing: pw *= 2; break; }
-    if(getPageLayout()!=RMDocument.PageLayout.Single) pw += 8;
+    if(getPageLayout()!= SGDoc.PageLayout.Single) pw += 8;
     return pw;
 }
 
@@ -562,7 +562,7 @@ protected double getPrefHeightImpl(double aWidth)
     double ph = getPageSize().height;
     if(getPageLayout()==PageLayout.Continuous && getPageCount()>0) {
         ph *= getPageCount(); ph += (getPageCount()-1)*10; }
-    if(getPageLayout()!=RMDocument.PageLayout.Single) ph += 8;
+    if(getPageLayout()!= SGDoc.PageLayout.Single) ph += 8;
     return ph;
 }
 
@@ -579,19 +579,19 @@ public XMLElement getXML()
 /**
  * Copies basic document attributes (shallow copy only - no children or pages).
  */
-public RMDocument clone()
+public SGDoc clone()
 {
-    RMDocument clone = (RMDocument)super.clone();
+    SGDoc clone = (SGDoc)super.clone();
     return clone;
 }
 
 /**
  * XML archival.
  */
-protected XMLElement toXMLShape(XMLArchiver anArchiver)
+protected XMLElement toXMLView(XMLArchiver anArchiver)
 {
     // Archive basic shape attributes and reset element name
-    XMLElement e = super.toXMLShape(anArchiver); e.setName("document");
+    XMLElement e = super.toXMLView(anArchiver); e.setName("document");
     
     // Remove questionable document/shape attributes
     e.removeAttribute("x"); e.removeAttribute("y");
@@ -635,11 +635,11 @@ protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
 /**
  * XML unarchival.
  */
-protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
+protected void fromXMLView(XMLArchiver anArchiver, XMLElement anElement)
 {
     // Remove default page and unarchive basic shape attributes
     while(getPageCount()>0) removePage(0);
-    super.fromXMLShape(anArchiver, anElement);
+    super.fromXMLView(anArchiver, anElement);
     setSourceURL(anArchiver.getSourceURL());
     
     // Unarchive PageLayout, Unit

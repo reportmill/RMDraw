@@ -3,7 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.*;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 
 import snap.geom.HPos;
@@ -284,11 +284,11 @@ protected Tool[] createToolBarTools()
     List <Tool> tools = new ArrayList();
     Editor editor = getEditor();
     tools.add(editor.getSelectTool());
-    tools.add(editor.getToolForClass(RMLineShape.class));
-    tools.add(editor.getToolForClass(RMRectShape.class));
-    tools.add(editor.getToolForClass(RMOvalShape.class));
-    tools.add(editor.getToolForClass(RMTextShape.class));
-    tools.add(editor.getToolForClass(RMPolygonShape.class));
+    tools.add(editor.getToolForClass(SGLine.class));
+    tools.add(editor.getToolForClass(SGRect.class));
+    tools.add(editor.getToolForClass(SGOval.class));
+    tools.add(editor.getToolForClass(SGText.class));
+    tools.add(editor.getToolForClass(SGPolygon.class));
     tools.add(new RMPolygonShapeTool.PencilTool(editor));
     return tools.toArray(new Tool[0]);
 }

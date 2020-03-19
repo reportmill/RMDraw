@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.gfx.Font;
 import snap.text.RichText;
 import snap.util.*;
@@ -9,35 +9,35 @@ import snap.util.*;
 /**
  * This class is a shape used to render text that didn't fit in a referenced text shape.
  */
-public class RMLinkedText extends RMTextShape {
+public class SGLinkedText extends SGText {
     
     // Points to previous text
-    RMTextShape _previousText;
+    SGText _previousText;
     
 /**
  * Creates a new linked text.
  */
-public RMLinkedText() { }
+public SGLinkedText() { }
 
 /**
  * Creates a new overfloat text for the given text shape.
  */
-public RMLinkedText(RMTextShape aText)
+public SGLinkedText(SGText aText)
 {
     // Copy basic attributes of previous text and set linked text
-    copyShape(aText);
+    copyView(aText);
     aText.setLinkedText(this);
 }
 
 /**
  * Returns the text that this text is linked from.
  */
-public RMTextShape getPreviousText()  { return _previousText; }
+public SGText getPreviousText()  { return _previousText; }
 
 /**
  * Sets the text that this text is linked from.
  */
-public void setPreviousText(RMTextShape aText)  { _previousText = aText; }
+public void setPreviousText(SGText aText)  { _previousText = aText; }
 
 /**
  * Returns the same xstring as previoust text.
@@ -61,7 +61,7 @@ public int getVisibleStart()  { return getPreviousText()!=null? getPreviousText(
 /**
  * Overrides shape method to rewire linked text linked list.
  */
-public void setParent(RMParentShape aShape)
+public void setParent(SGParent aShape)
 {
     // Do normal set parent
     super.setParent(aShape);

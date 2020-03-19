@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.apptools;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.gfx.Image;
 import snap.view.*;
 import snap.viewx.DialogBox;
@@ -10,10 +10,10 @@ import snap.viewx.DialogBox;
 /**
  * This class provides UI editing for RMPage shapes.
  */
-public class RMPageTool <T extends RMPage> extends RMParentShapeTool <T> {
+public class RMPageTool <T extends SGPage> extends RMParentShapeTool <T> {
     
     // The Layers table
-    TableView <RMPageLayer>  _layersTable;
+    TableView <SGPageLayer>  _layersTable;
 
     // Icons
     Image                    _visibleIcon = getImage("LayerVisible.png");
@@ -38,7 +38,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get currently selected page (just return if null)
-    RMPage page = getSelectedShape(); if(page==null) return;
+    SGPage page = getSelectedShape(); if(page==null) return;
     
     // Update DatasetKeyText, PaintBackCheckBox
     setViewValue("DatasetKeyText", page.getDatasetKey());
@@ -61,7 +61,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected page (just return if null)
-    RMPage page = getSelectedShape(); if(page==null) return;
+    SGPage page = getSelectedShape(); if(page==null) return;
 
     // Handle DatasetKeyText, PaintBackCheckBox
     if(anEvent.equals("DatasetKeyText"))
@@ -83,12 +83,12 @@ public void respondUI(ViewEvent anEvent)
     if(anEvent.equals("MergeButton")) {
         
         // Get selected layer and index
-        RMPageLayer layer = page.getSelectedLayer();
+        SGPageLayer layer = page.getSelectedLayer();
         int index = page.getSelectedLayerIndex();
         
         // If index is less than layer count
         if(index<page.getLayerCount()) {
-            RMPageLayer resultingLayer = page.getLayer(index - 1);
+            SGPageLayer resultingLayer = page.getLayer(index - 1);
             resultingLayer.addChildren(layer.getChildren());
             layer.removeChildren();
             page.removeLayer(layer);
@@ -98,7 +98,7 @@ public void respondUI(ViewEvent anEvent)
     // Handle RenameButton
     if(anEvent.equals("RenameButton")) {
         int srow = getViewSelIndex("LayersTable");
-        RMPageLayer layer = page.getLayer(srow);
+        SGPageLayer layer = page.getLayer(srow);
         DialogBox dbox = new DialogBox("Rename Layer"); dbox.setQuestionMessage("Layer Name:");
         String newName = dbox.showInputDialog(getUI(), layer.getName());
         if(newName!=null && newName.length()>0)
@@ -110,16 +110,16 @@ public void respondUI(ViewEvent anEvent)
         
         // Handle MouseClick event - have page select new table row
         int row = _layersTable.getSelIndex(); if(row<0) return;
-        RMPageLayer layer = page.getLayer(row);
+        SGPageLayer layer = page.getLayer(row);
         page.selectLayer(layer);
         
         // If column one was selected, cycle through layer states
         int col = _layersTable.getSelCol();
         if(anEvent.isMouseClick() && col==1) {
             int state = layer.getLayerState();
-            if(state==RMPageLayer.StateVisible) layer.setLayerState(RMPageLayer.StateInvisible);
-            else if(state==RMPageLayer.StateInvisible) layer.setLayerState(RMPageLayer.StateLocked);
-            else layer.setLayerState(RMPageLayer.StateVisible);
+            if(state== SGPageLayer.StateVisible) layer.setLayerState(SGPageLayer.StateInvisible);
+            else if(state== SGPageLayer.StateInvisible) layer.setLayerState(SGPageLayer.StateLocked);
+            else layer.setLayerState(SGPageLayer.StateVisible);
             _layersTable.updateItems();
         }
     }
@@ -127,28 +127,28 @@ public void respondUI(ViewEvent anEvent)
     // Handle AllVisibleButton
     if(anEvent.equals("AllVisibleButton"))
         for(int i=0, iMax=page.getLayerCount(); i<iMax; i++)
-            page.getLayer(i).setLayerState(RMPageLayer.StateVisible);
+            page.getLayer(i).setLayerState(SGPageLayer.StateVisible);
     
     // Handle AllVisibleButton
     if(anEvent.equals("AllInvisibleButton"))
         for(int i=0, iMax=page.getLayerCount(); i<iMax; i++)
-            page.getLayer(i).setLayerState(RMPageLayer.StateInvisible);
+            page.getLayer(i).setLayerState(SGPageLayer.StateInvisible);
     
     // Handle AllLockedButton
     if(anEvent.equals("AllLockedButton"))
         for(int i=0, iMax=page.getLayerCount(); i<iMax; i++)
-            page.getLayer(i).setLayerState(RMPageLayer.StateLocked);
+            page.getLayer(i).setLayerState(SGPageLayer.StateLocked);
 }
 
 /**
  * Configure LayersTable: Set image for second column.
  */
-public void configureLayersTable(ListCell <RMPageLayer> aCell)
+public void configureLayersTable(ListCell <SGPageLayer> aCell)
 {
     // Get page, cell row/col, page layer
     //RMPage page = getSelectedShape(); if(page==null) return;
     //int row = aCell.getRow(), col = aCell.getCol(); if(row<0 || row>=page.getLayerCount()) return;
-    RMPageLayer layer = aCell.getItem(); if(layer==null) return; //page.getLayer(row);
+    SGPageLayer layer = aCell.getItem(); if(layer==null) return; //page.getLayer(row);
     int col = aCell.getCol();
 
     // Handle column 0 (layer name)
@@ -159,9 +159,9 @@ public void configureLayersTable(ListCell <RMPageLayer> aCell)
     // Handle column 1 (layer state image)
     if(col==1) {
         int state = layer!=null? layer.getLayerState() : -1;
-        if(state==RMPageLayer.StateVisible) aCell.setImage(_visibleIcon);
-        else if(state==RMPageLayer.StateInvisible) aCell.setImage(_invisibleIcon);
-        else if(state==RMPageLayer.StateLocked) aCell.setImage(_lockedIcon);
+        if(state== SGPageLayer.StateVisible) aCell.setImage(_visibleIcon);
+        else if(state== SGPageLayer.StateInvisible) aCell.setImage(_invisibleIcon);
+        else if(state== SGPageLayer.StateLocked) aCell.setImage(_lockedIcon);
         aCell.setText(null);
     }
 }
@@ -169,7 +169,7 @@ public void configureLayersTable(ListCell <RMPageLayer> aCell)
 /**
  * Returns the shape class that this tool is responsible for.
  */
-public Class getShapeClass()  { return RMPage.class; }
+public Class getShapeClass()  { return SGPage.class; }
 
 /**
  * Returns the name to be used for this tool in the inspector window title.

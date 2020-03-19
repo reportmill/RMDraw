@@ -1,8 +1,8 @@
 package rmdraw.apptools;
 import rmdraw.app.Tool;
 import rmdraw.app.ToolStyler;
-import rmdraw.shape.RMShape;
-import rmdraw.shape.RMTextShape;
+import rmdraw.scene.SGView;
+import rmdraw.scene.SGText;
 import snap.geom.HPos;
 import snap.gfx.Border;
 import snap.gfx.Color;
@@ -13,12 +13,12 @@ import snap.view.ViewUtils;
 /**
  * Sets shape style attributes for shape.
  */
-public class TextToolStyler<T extends RMTextShape> extends ToolStyler<T> {
+public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
 
     /**
      * Creates ToolStylerText for given shape.
      */
-    public TextToolStyler(Tool aTool, RMShape aShape)
+    public TextToolStyler(Tool aTool, SGView aShape)
     {
         super(aTool, aShape);
     }

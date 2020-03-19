@@ -3,7 +3,7 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Tool;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 
 import snap.geom.Point;
@@ -15,13 +15,13 @@ import snap.web.WebURL;
 /**
  * This class handles creation of lines.
  */
-public class RMLineShapeTool <T extends RMLineShape> extends Tool<T> {
+public class RMLineShapeTool <T extends SGLine> extends Tool<T> {
     
     // Indicates whether line should try to be strictly horizontal or vertical
     boolean             _hysteresis = false;
     
     // The list of arrow head shapes
-    static RMShape      _arrowHeads[];
+    static SGView _arrowHeads[];
 
     // Constants for line segment points
     public static final byte HandleStartPoint = 0;
@@ -30,7 +30,7 @@ public class RMLineShapeTool <T extends RMLineShape> extends Tool<T> {
 /**
  * Returns the shape class that this tool is responsible for.
  */
-public Class getShapeClass()  { return RMLineShape.class; }
+public Class getShapeClass()  { return SGLine.class; }
 
 /**
  * Returns the name of this tool to be displayed by inspector.
@@ -102,19 +102,19 @@ public void moveShapeHandle(T aShape, int aHandle, Point aPoint)
 /**
  * Loads the list of arrow shapes from a .rpt file.
  */
-private RMShape[] getArrowHeads()
+private SGView[] getArrowHeads()
 {
     // If already set, just return
     if(_arrowHeads!=null) return _arrowHeads;
     
     // Load document with defined arrow heads
     WebURL url = WebURL.getURL(RMLineShapeTool.class, "RMLineShapeToolArrowHeads.rpt");
-    RMDocument doc = RMDocument.getDocFromSource(url);
+    SGDoc doc = SGDoc.getDocFromSource(url);
     
     // Extract lines and heads and return array of heads
-    List <RMLineShape> lines = doc.getChildrenWithClass(RMLineShape.class);
-    List <RMShape> heads = new ArrayList(lines.size()); for(RMLineShape ln : lines) heads.add(ln.getArrowHead());
-    return _arrowHeads = heads.toArray(new RMShape[lines.size()]);
+    List <SGLine> lines = doc.getChildrenWithClass(SGLine.class);
+    List <SGView> heads = new ArrayList(lines.size()); for(SGLine ln : lines) heads.add(ln.getArrowHead());
+    return _arrowHeads = heads.toArray(new SGView[lines.size()]);
 }
 
 /**
@@ -126,9 +126,9 @@ protected void initUI()
     MenuButton menuButton = getView("ArrowsMenuButton", MenuButton.class);
         
     // Add arrows menu button
-    RMShape arrowHeads[] = getArrowHeads();
-    for(int i=0; i<arrowHeads.length; i++) { RMShape ahead = arrowHeads[i];
-        Image image = RMShapeUtils.createImage(ahead, null);
+    SGView arrowHeads[] = getArrowHeads();
+    for(int i=0; i<arrowHeads.length; i++) { SGView ahead = arrowHeads[i];
+        Image image = SGViewUtils.createImage(ahead, null);
         MenuItem mi = new MenuItem(); mi.setImage(image); mi.setName("ArrowsMenuButtonMenuItem" + i);
         menuButton.addItem(mi);
     }
@@ -144,11 +144,11 @@ protected void initUI()
 public void resetUI()
 {
     // Get selected line and arrow head
-    RMLineShape line = getSelectedShape(); if(line==null) return;
-    RMLineShape.ArrowHead ahead = line.getArrowHead();
+    SGLine line = getSelectedShape(); if(line==null) return;
+    SGLine.ArrowHead ahead = line.getArrowHead();
     
     // Update ArrowsMenuButton
-    Image image = ahead!=null? RMShapeUtils.createImage(line.getArrowHead(), null) : null;
+    Image image = ahead!=null? SGViewUtils.createImage(line.getArrowHead(), null) : null;
     getView("ArrowsMenuButton", MenuButton.class).setImage(image);
 
     // Update ScaleText and ScaleThumbWheel
@@ -164,8 +164,8 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get selected shape and arrow head
-    RMLineShape line = getSelectedShape();
-    RMLineShape.ArrowHead arrowHead = line.getArrowHead();
+    SGLine line = getSelectedShape();
+    SGLine.ArrowHead arrowHead = line.getArrowHead();
 
     // Handle ScaleText and ScaleThumbWheel
     if(anEvent.equals("ScaleText") || anEvent.equals("ScaleThumbWheel"))
@@ -174,8 +174,8 @@ public void respondUI(ViewEvent anEvent)
     // Handle ArrowsMenuButtonMenuItem
     if(anEvent.getName().startsWith("ArrowsMenuButtonMenuItem")) {
         int ind = SnapUtils.intValue(anEvent.getName());
-        RMShape ahead = ind<getArrowHeads().length? getArrowHeads()[ind] : null;
-        line.setArrowHead(ahead!=null? (RMLineShape.ArrowHead)ahead.clone() : null);
+        SGView ahead = ind<getArrowHeads().length? getArrowHeads()[ind] : null;
+        line.setArrowHead(ahead!=null? (SGLine.ArrowHead)ahead.clone() : null);
     }
 }
 

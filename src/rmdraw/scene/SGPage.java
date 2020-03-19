@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.*;
 
 import snap.geom.Rect;
@@ -29,7 +29,7 @@ import snap.util.*;
  *   template.getPage(1).addChild(new RMText(new RXString("Hello Page 2!", RMFont("Arial", 100))));
  * </pre></blockquote>
  */
-public class RMPage extends RMParentShape {
+public class SGPage extends SGParent {
 
     // The key chain used to get a list of objects from document's datasource
     String              _datasetKey;
@@ -41,12 +41,12 @@ public class RMPage extends RMParentShape {
     int                 _layerIndex = 0;
 
     // The list of layers for this page
-    List <RMPageLayer>  _layers = new Vector();
+    List <SGPageLayer>  _layers = new Vector();
     
 /**
  * Creates a plain empty page.
  */
-public RMPage()  { resetLayers(); }
+public SGPage()  { resetLayers(); }
 
 /**
  * Returns the dataset key associated with the table.
@@ -85,22 +85,22 @@ public int getLayerCount()  { return _layers==null? 0 : _layers.size(); }
 /**
  * Returns the layer at the given index.
  */
-public RMPageLayer getLayer(int anIndex)  { return _layers.get(anIndex); }
+public SGPageLayer getLayer(int anIndex)  { return _layers.get(anIndex); }
 
 /**
  * Returns the list of page layers.
  */
-public List <RMPageLayer> getLayers()  { return _layers; }
+public List <SGPageLayer> getLayers()  { return _layers; }
 
 /**
  * Adds a layer to page.
  */
-public void addLayer(RMPageLayer aLayer)  { addLayer(aLayer, getLayerCount()); }
+public void addLayer(SGPageLayer aLayer)  { addLayer(aLayer, getLayerCount()); }
 
 /**
  * Adds a layer to page.
  */
-public void addLayer(RMPageLayer aLayer, int anIndex)
+public void addLayer(SGPageLayer aLayer, int anIndex)
 {
     // If value already present, just return
     if(ListUtils.containsId(_layers, aLayer)) return;
@@ -126,7 +126,7 @@ public void addLayer(RMPageLayer aLayer, int anIndex)
 /**
  * Removes the layer at given index (and its children).
  */
-public RMPageLayer removeLayer(int anIndex)
+public SGPageLayer removeLayer(int anIndex)
 {
     // If last layer, bail (shouldn't need this)
     if(getLayerCount()<2) return null;
@@ -135,13 +135,13 @@ public RMPageLayer removeLayer(int anIndex)
     repaint();
         
     // Remove layer
-    RMPageLayer layer = _layers.remove(anIndex);
+    SGPageLayer layer = _layers.remove(anIndex);
     
     // Fire property change
     firePropChange("Layer", layer, null, anIndex);
     
     // Remove layer children
-    for(RMShape child : layer.getChildren())
+    for(SGView child : layer.getChildren())
         removeChild(child);
     
     // Ensure selected layer index is valid
@@ -154,7 +154,7 @@ public RMPageLayer removeLayer(int anIndex)
 /**
  * Removes the given layer.
  */
-public int removeLayer(RMPageLayer aLayer) 
+public int removeLayer(SGPageLayer aLayer)
 {
     int index = ListUtils.indexOfId(_layers, aLayer);
     if(index>=0)
@@ -168,7 +168,7 @@ public int removeLayer(RMPageLayer aLayer)
 public void addLayerNamed(String aString) 
 {
     // Create and add new layer
-    addLayer(new RMPageLayer(this, aString));
+    addLayer(new SGPageLayer(this, aString));
     
     // Reset selected layer index to last layer
     _layerIndex = getLayerCount() - 1;
@@ -177,10 +177,10 @@ public void addLayerNamed(String aString)
 /**
  * Returns the layer for a given child.
  */
-public RMPageLayer getChildLayer(RMShape aChild)
+public SGPageLayer getChildLayer(SGView aChild)
 {
     if(getLayers()!=null)
-        for(RMPageLayer layer : getLayers())
+        for(SGPageLayer layer : getLayers())
             if(layer.getChildIndex(aChild)>=0)
                 return layer;
     return null;
@@ -194,12 +194,12 @@ public int getSelectedLayerIndex()  { return _layerIndex; }
 /**
  * Returns the selected layer.
  */
-public RMPageLayer getSelectedLayer()  { return _layerIndex<getLayerCount()? getLayer(_layerIndex) : null; }
+public SGPageLayer getSelectedLayer()  { return _layerIndex<getLayerCount()? getLayer(_layerIndex) : null; }
 
 /**
  * Selects the given layer.
  */
-public void selectLayer(RMPageLayer aLayer) 
+public void selectLayer(SGPageLayer aLayer)
 {
     repaint();
     _layerIndex = aLayer.getIndex();
@@ -214,7 +214,7 @@ public void resetLayers()
     _layers.clear();
     
     // Create new layer 1
-    RMPageLayer layer = new RMPageLayer(this, "Layer 1");
+    SGPageLayer layer = new SGPageLayer(this, "Layer 1");
     
     // Add all children
     layer.addChildren(_children);
@@ -229,7 +229,7 @@ public void resetLayers()
 /**
  * Add the given child at the given index (over-rides RMShape version to propogate to RMPageLayer).
  */
-public void addChild(RMShape aChild, int anIndex)
+public void addChild(SGView aChild, int anIndex)
 {
     // Add child normally
     super.addChild(aChild, anIndex);
@@ -244,13 +244,13 @@ public void addChild(RMShape aChild, int anIndex)
 /**
  * Removes the child at the given index (over-rides RMShape version to propogate to RMPageLayer).
  */
-public RMShape removeChild(int anIndex) 
+public SGView removeChild(int anIndex)
 {
     // Do normal remove child
-    RMShape child = super.removeChild(anIndex);
+    SGView child = super.removeChild(anIndex);
 
     // Get child layer and remove child from it
-    RMPageLayer layer = getChildLayer(child);
+    SGPageLayer layer = getChildLayer(child);
     if(layer!=null)
         layer.removeChild(child);
 
@@ -334,14 +334,14 @@ private void orderChildrenFromLayers()
 /**
  * Override so page layers can make children not visible.
  */
-protected boolean isShowing(RMShape aChild)
+protected boolean isShowing(SGView aChild)
 {
     // If no separate layers, just return whether child is visible
     if(getLayerCount()<2 || !aChild.isVisible())
         return aChild.isVisible();
     
     // Iterate over layers and if layer contains child, return whether layer is visible
-    for(RMPageLayer layer : getLayers())
+    for(SGPageLayer layer : getLayers())
         if(ListUtils.contains(layer.getChildren(), aChild))
             return layer.isVisible() || layer==getSelectedLayer();
     
@@ -352,14 +352,14 @@ protected boolean isShowing(RMShape aChild)
 /**
  * Override so page layers can make children unhittable.
  */
-public boolean isHittable(RMShape aChild)
+public boolean isHittable(SGView aChild)
 {
     // If no separate layers, just return whether child is visible
     if(getLayerCount()<2 || !aChild.isVisible())
         return aChild.isVisible();
     
     // Iterate over layers and if layer contains child, return whether layer is not locked and visible
-    for(RMPageLayer layer : getLayers())
+    for(SGPageLayer layer : getLayers())
         if(ListUtils.contains(layer.getChildren(), aChild))
             return !layer.isLocked() && (layer.isVisible() || layer==getSelectedLayer());
     
@@ -370,7 +370,7 @@ public boolean isHittable(RMShape aChild)
 /**
  * Overrides shape implementation to return this page, since it is the page shape.
  */
-public RMParentShape getPage()  { return this; }
+public SGParent getPage()  { return this; }
 
 
 /**
@@ -390,10 +390,10 @@ public int pageMax()  { return getDoc()==null ? 0 : getDoc().getPageCount(); }
 /**
  * Top-level generic shape painting (sets transform, recurses to children, paints this).
  */
-protected void paintShape(Painter aPntr)
+protected void paintView(Painter aPntr)
 {
     // If printing, do normal shape painting and return
-    if (aPntr.isPrinting()) { super.paintShape(aPntr); return; }
+    if (aPntr.isPrinting()) { super.paintView(aPntr); return; }
 
     // Get page bounds, clip bounds and intersection of those
     Rect bounds = getBoundsLocal();
@@ -413,7 +413,7 @@ protected void paintShape(Painter aPntr)
     }
     
     // do normal shape painting
-    super.paintShape(aPntr);
+    super.paintView(aPntr);
     
     // Turn off antialiasing for page stuff
     aPntr.setAntialiasing(false);
@@ -455,9 +455,9 @@ protected void paintShape(Painter aPntr)
 /**
  * Paints shape children.
  */
-protected void paintShapeChildren(Painter aPntr)
+protected void paintChildren(Painter aPntr)
 {
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         if(child.isVisible() && isShowing(child))
             child.paint(aPntr); }
 }
@@ -465,9 +465,9 @@ protected void paintShapeChildren(Painter aPntr)
 /**
  * Standard clone method.
  */
-public RMPage clone()
+public SGPage clone()
 {
-    RMPage clone = (RMPage)super.clone(); // Do normal shape clone
+    SGPage clone = (SGPage)super.clone(); // Do normal shape clone
     clone._layerIndex = 0; clone._layers = null; // Clear LayerIndex and Layers
     return clone;
 }
@@ -475,10 +475,10 @@ public RMPage clone()
 /**
  * XML archival.
  */
-protected XMLElement toXMLShape(XMLArchiver anArchiver)
+protected XMLElement toXMLView(XMLArchiver anArchiver)
 {
     // Archive basic shape attributes and reset name
-    XMLElement e = super.toXMLShape(anArchiver); e.setName("page");
+    XMLElement e = super.toXMLView(anArchiver); e.setName("page");
     
     // Archive DatasetKey, PaintBackground, ClipChildren
     if(getDatasetKey()!=null && getDatasetKey().length()>0) e.add("dataset-key", getDatasetKey());
@@ -498,7 +498,7 @@ protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
         super.toXMLChildren(anArchiver, anElement);
     
     // Otherwise, iterate over layers and archive
-    else for(int i=0, iMax=getLayerCount(); i<iMax; i++) { RMPageLayer layer = getLayer(i);
+    else for(int i=0, iMax=getLayerCount(); i<iMax; i++) { SGPageLayer layer = getLayer(i);
         
         // Create layer xml element
         XMLElement layerXML = new XMLElement("layer");
@@ -520,10 +520,10 @@ protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
 /**
  * XML unarchival.
  */
-protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)
+protected void fromXMLView(XMLArchiver anArchiver, XMLElement anElement)
 {
     // Unarchive basic shape attributes
-    super.fromXMLShape(anArchiver, anElement);
+    super.fromXMLView(anArchiver, anElement);
     
     // Unarchive DatasetKey, PaintBackground, ClipChildren
     if(anElement.hasAttribute("dataset-key")) setDatasetKey(anElement.getAttributeValue("dataset-key"));
@@ -552,14 +552,14 @@ protected void fromXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
             
             // Get layer xml element and create layer
             XMLElement layerXML = anElement.get(i);
-            RMPageLayer layer = new RMPageLayer(this, layerXML.getAttributeValue("name"));
+            SGPageLayer layer = new SGPageLayer(this, layerXML.getAttributeValue("name"));
             
             // Unarchive Layer Visible, Locked
             if(layerXML.hasAttribute("visible")) layer.setVisible(layerXML.getAttributeBoolValue("visible"));
             if(layerXML.hasAttribute("locked")) layer.setLocked(layerXML.getAttributeBoolValue("locked"));
             
             // Unarchive children, add to layer and add layer to page
-            List children = anArchiver.fromXMLList(layerXML, null, RMShape.class, this);
+            List children = anArchiver.fromXMLList(layerXML, null, SGView.class, this);
             layer.addChildren(children);
             addLayer(layer);
         }

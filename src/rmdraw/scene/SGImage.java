@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.util.*;
 
 /**
- * This class is a shape representation of an image.
+ * This class is a view representation of an image.
  */
-public class RMImageShape extends RMRectShape {
+public class SGImage extends SGRect {
     
     // The key used to get image during RPG
     String             _key;
@@ -20,7 +20,7 @@ public class RMImageShape extends RMRectShape {
     // The padding
     int                _padding;
     
-    // Whether to grow image to fit available area if shape larger than image.
+    // Whether to grow image to fit available area if view larger than image.
     boolean            _growToFit = true;
     
     // Whether to preserve the natural width to height ratio of image
@@ -30,14 +30,14 @@ public class RMImageShape extends RMRectShape {
     String             _iname;
 
 /**
- * Creates RMImageShape.
+ * Creates SGImage.
  */
-public RMImageShape()  { }
+public SGImage()  { }
 
 /**
- * Creates an RMImageShape from the image source provided.
+ * Creates an SGImage from the image source provided.
  */
-public RMImageShape(Object aSource)  { setImageForSource(aSource); setBestSize(); }
+public SGImage(Object aSource)  { setImageForSource(aSource); setBestSize(); }
 
 /**
  * Returns the report key used to load an image if none is provided.
@@ -116,12 +116,12 @@ public VPos getAlignY()  { return _alignY; } VPos _alignY = VPos.CENTER;
 public void setAlignY(VPos anAlignY)  { _alignY = anAlignY; }
 
 /**
- * Returns whether to grow image to fit available area if shape larger than image.
+ * Returns whether to grow image to fit available area if view larger than image.
  */
 public boolean isGrowToFit()  { return _growToFit; }
 
 /**
- * Sets whether to grow image to fit available area if shape larger than image.
+ * Sets whether to grow image to fit available area if view larger than image.
  */
 public void setGrowToFit(boolean aValue)
 {
@@ -166,12 +166,12 @@ protected double getPrefHeightImpl(double aWidth)
 }
 
 /**
- * Override to paint shape.
+ * Override to paint view.
  */
-protected void paintShape(Painter aPntr)
+protected void paintView(Painter aPntr)
 {
     // Do normal version
-    super.paintShape(aPntr);
+    super.paintView(aPntr);
     
     // Get image (use empty placeholder image if null and editing)
     Image img = getImage();
@@ -197,7 +197,7 @@ public Rect getImageBounds()
     Image img = getImage(); if(img==null) img = ImageUtils.getEmptyImage();
     int pd = getPadding();
     
-    // Get width/height for shape, image and padded area
+    // Get width/height for view, image and padded area
     double sw = getWidth(), sh = getHeight();
     double iw = img.getWidth(), ih = img.getHeight();
     double pw = sw - pd*2, ph = sh - pd*2; if(pw<0) pw = 0; if(ph<0) ph = 0;
@@ -220,7 +220,7 @@ public Rect getImageBounds()
  */
 public XMLElement toXML(XMLArchiver anArchiver)
 {
-    // Archive basic shape attributes and reset element name to image-shape
+    // Archive basic view attributes and reset element name to image-shape
     XMLElement e = super.toXML(anArchiver); e.setName("image-shape");
     
     // Archive ImageName, if image read from external file
@@ -248,7 +248,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
  */
 public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
 {
-    // Unarchive basic shape attributes
+    // Unarchive basic attributes
     super.fromXML(anArchiver, anElement);
     
     // Unarchive Image resource: get resource bytes and set Image (if PDF - swap out RMPDFShape)

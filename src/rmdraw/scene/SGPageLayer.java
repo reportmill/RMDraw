@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.*;
 import snap.util.*;
 
@@ -10,10 +10,10 @@ import snap.util.*;
  * manage the children of a page as separate groups, so that some can be made unselectable or invisible
  * to ease template editing.
  */
-public class RMPageLayer implements Cloneable {
+public class SGPageLayer implements Cloneable {
     
     // The parent page
-    RMPage          _page;
+    SGPage _page;
     
     // The name of the layer
     String          _name;
@@ -25,7 +25,7 @@ public class RMPageLayer implements Cloneable {
     boolean         _locked = false;
     
     // The children in this layer
-    List <RMShape>  _children = new ArrayList();
+    List <SGView>  _children = new ArrayList();
     
     // Constants defining the state of the layer
     public static final int StateVisible = 0;
@@ -35,17 +35,17 @@ public class RMPageLayer implements Cloneable {
 /**
  * Creates a plain layer.
  */
-public RMPageLayer() { }
+public SGPageLayer() { }
 
 /**
  * Creates a page layer for a given page and name.
  */
-public RMPageLayer(RMPage aPage, String aName)  { _page = aPage; _name = aName; }
+public SGPageLayer(SGPage aPage, String aName)  { _page = aPage; _name = aName; }
 
 /**
  * Returns the page associated with this layer.
  */
-public RMPage getPage()  { return _page; }
+public SGPage getPage()  { return _page; }
 
 /**
  * Returns the layer's name.
@@ -115,22 +115,22 @@ public int getChildCount()  { return _children.size(); }
 /**
  * Returns the specific child of this layer at the given index.
  */ 
-public RMShape getChild(int anIndex)  { return _children.get(anIndex); }
+public SGView getChild(int anIndex)  { return _children.get(anIndex); }
 
 /**
  * Returns the list of children for this layer.
  */
-public List <RMShape> getChildren()  { return _children; }
+public List <SGView> getChildren()  { return _children; }
 
 /**
  * Adds a child to this layer.
  */
-public void addChild(RMShape aChild)  { _children.add(aChild); }
+public void addChild(SGView aChild)  { _children.add(aChild); }
 
 /**
  * Adds a child to this layer at the given index.
  */
-public void addChild(RMShape aChild, int anIndex)  { _children.add(anIndex, aChild); }
+public void addChild(SGView aChild, int anIndex)  { _children.add(anIndex, aChild); }
 
 /**
  * Removes a child from this layer.
@@ -140,24 +140,24 @@ public Object removeChild(int anIndex)  { return _children.remove(anIndex); }
 /**
  * Removes a child from this layer.
  */
-public int removeChild(RMShape aChild)  { return ListUtils.removeId(_children, aChild); }
+public int removeChild(SGView aChild)  { return ListUtils.removeId(_children, aChild); }
 
 /**
  * Adds a list of children to this layer.
  */
-public void addChildren(List <RMShape> theShapes)
+public void addChildren(List <SGView> theShapes)
 {
     if(theShapes!=null)
-        for(RMShape shape : theShapes)
+        for(SGView shape : theShapes)
             addChild(shape);
 }
 
 /**
  * Removes a list of children from this layer.
  */
-public void removeChildren(List <RMShape> theShapes)
+public void removeChildren(List <SGView> theShapes)
 {
-    for(RMShape shape : theShapes)
+    for(SGView shape : theShapes)
         removeChild(shape);
 }
 
@@ -181,7 +181,7 @@ public int getIndex()
 /**
  * Returns the index of a given child.
  */
-public int getChildIndex(RMShape aChild)  { return ListUtils.indexOfId(getChildren(), aChild); }
+public int getChildIndex(SGView aChild)  { return ListUtils.indexOfId(getChildren(), aChild); }
 
 /**
  * Returns the index of this layer's first child in the page.
@@ -192,7 +192,7 @@ public int getPageChildIndex()
     int index = getIndex(); if(index==0) return 0;
     
     // Get previous layer
-    RMPageLayer layer = getPage().getLayer(index-1);
+    SGPageLayer layer = getPage().getLayer(index-1);
     return layer.getPageChildIndex() + layer.getChildCount();
 }
 
@@ -203,7 +203,7 @@ public void bringShapesToFront(List shapes)
 {
     // Iterate over given shapes and move each to front of this layer
     for(int i=0, iMax=shapes.size(); i<iMax; i++) {
-        RMShape child = (RMShape)shapes.get(i);
+        SGView child = (SGView)shapes.get(i);
         if(ListUtils.removeId(_children, child)>=0)
             _children.add(child);
     }
@@ -216,7 +216,7 @@ public void sendShapesToBack(List shapes)
 {
     // Iterate over given shapes and move each to back of this layer
     for(int i=0, iMax=shapes.size(); i<iMax; i++) {
-        RMShape child = (RMShape)shapes.get(i);
+        SGView child = (SGView)shapes.get(i);
         if(ListUtils.removeId(_children, child)>=0)
             _children.add(i, child);
     }
@@ -228,12 +228,12 @@ public void sendShapesToBack(List shapes)
 public Object clone()
 {
     // Do normal clone
-    RMPageLayer clone; try { clone = (RMPageLayer)super.clone(); }
+    SGPageLayer clone; try { clone = (SGPageLayer)super.clone(); }
     catch(CloneNotSupportedException e) { throw new RuntimeException(e); }
     
     // Clone children
     clone._children = new ArrayList(_children.size());
-    for(RMShape shp : _children) {
+    for(SGView shp : _children) {
         clone._children.add(shp);
     }
     

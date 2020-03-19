@@ -1,25 +1,25 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.geom.Point;
 import snap.view.*;
 
 /**
- * A ViewEvent subclass which is sent to an RMShape's event listeners.
+ * A ViewEvent subclass which is sent to an SGView's event listeners.
  */
-public class RMShapeEvent extends ViewEvent {
+public class SGViewEvent extends ViewEvent {
 
     // The original event
     ViewEvent           _event;
     
-    // The point in shape coords
+    // The point in view coords
     Point               _point;
     
 /**
- * Creates a new RMShapeEvent.
+ * Creates SGViewEvent.
  */
-public RMShapeEvent(RMShape aShape, ViewEvent anEvent, Point aPoint, ViewEvent.Type aType)
+public SGViewEvent(SGView aView, ViewEvent anEvent, Point aPoint, ViewEvent.Type aType)
 {
     setView(anEvent.getView()); setEvent(_event = anEvent); _point = aPoint; setType(aType);
 }
@@ -42,13 +42,13 @@ public boolean isShortcutDown()  { return _event.isShortcutDown(); }
 /** Returns whether popup trigger is down. */
 public boolean isPopupTrigger()  { return _event.isPopupTrigger(); }
 
-/** Override to return point in shape coords. */
+/** Override to return point in view coords. */
 public double getX()  { return _point.getX(); }
 
-/** Override to return point in shape coords. */
+/** Override to return point in view coords. */
 public double getY()  { return _point.getY(); }
 
-/** Overrides to return point in shape coords. */
+/** Overrides to return point in view coords. */
 public Point getPoint()  { return _point; }
 
 /** Override to forward to encapsulated event. */

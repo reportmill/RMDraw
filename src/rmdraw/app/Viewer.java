@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.*;
 import snap.gfx.*;
 import snap.util.*;
@@ -26,7 +26,7 @@ import snap.web.WebURL;
  */
 public class Viewer extends ParentView implements SceneGraph.Client {
 
-    // The shape viewer uses to manage real root of shapes
+    // The SceneGraph used to manage real root of views
     private SceneGraph _sceneGraph = new SceneGraph(this);
     
     // The Zoom mode
@@ -67,15 +67,15 @@ public SceneGraph getSceneGraph()  { return _sceneGraph; }
 /**
  * Returns the document associated with this viewer.
  */
-public RMDocument getDoc()  { return getSceneGraph().getDoc(); }
+public SGDoc getDoc()  { return getSceneGraph().getDoc(); }
 
 /**
  * Sets the document associated with this viewer.
  */
-public void setDoc(RMDocument aDoc)
+public void setDoc(SGDoc aDoc)
 {
     // If already set, just return
-    RMDocument doc = getDoc(); if (aDoc==doc) return;
+    SGDoc doc = getDoc(); if (aDoc==doc) return;
     
     // Set new document in SceneGraph
     _sceneGraph.setRootView(aDoc);
@@ -94,14 +94,14 @@ public void setDoc(RMDocument aDoc)
 public void setDocFromSource(Object aSource)
 {
     RMArchiver archiver = createArchiver();
-    RMDocument doc = archiver.getDocFromSource(aSource);
+    SGDoc doc = archiver.getDocFromSource(aSource);
     setDoc(doc);
 }
 
 /**
  * Returns the source URL.
  */
-public WebURL getSourceURL()  { RMDocument d = getDoc(); return d!=null? d.getSourceURL() : null; }
+public WebURL getSourceURL()  { SGDoc d = getDoc(); return d!=null? d.getSourceURL() : null; }
 
 /**
  * Creates an archiver.
@@ -127,9 +127,9 @@ public boolean isPreview()  { return !isEditing(); }
 public int getPageCount()  { return getDoc().getPageCount(); }
 
 /**
- * Returns the currently selected page shape.
+ * Returns the currently selected page view.
  */
-public RMPage getSelPage()  { return getDoc().getSelPage(); }
+public SGPage getSelPage()  { return getDoc().getSelPage(); }
 
 /**
  * Returns the index of the current visible document page.
@@ -154,39 +154,39 @@ public void pageBack()  { setSelPageIndex(getSelPageIndex()-1); }
 /**
  * Returns the bounds of the viewer document.
  */
-public Rect getDocBounds()  { return convertFromShape(getDoc().getBoundsLocal(), null).getBounds(); }
+public Rect getDocBounds()  { return convertFromSceneView(getDoc().getBoundsLocal(), null).getBounds(); }
 
 /**
- * Returns the first shape hit by the given point.
+ * Returns the first view hit by given point.
  */
-public RMShape getShapeAtPoint(double aX, double aY, boolean goDeep) { return getShapeAtPoint(new Point(aX,aY),goDeep);}
+public SGView getViewAtPoint(double aX, double aY, boolean goDeep) { return getViewAtPoint(new Point(aX,aY),goDeep);}
 
 /**
- * Returns the first shape hit by the given point.
+ * Returns the first view hit by given point.
  */
-public RMShape getShapeAtPoint(Point aPoint, boolean goDeep)
+public SGView getViewAtPoint(Point aPoint, boolean goDeep)
 {
     // Convert point from viewer to selected page
-    RMParentShape parent = getSelPage();
-    Point point = convertToShape(aPoint.x, aPoint.y, parent);
+    SGParent parent = getSelPage();
+    Point point = convertToSceneView(aPoint.x, aPoint.y, parent);
     
-    // Iterate over children to find shape hit by point
-    RMShape shape = null; Point point2 = null;
-    for (int i=parent.getChildCount(); i>0 && shape==null; i--) { RMShape child = parent.getChild(i-1);
+    // Iterate over children to find view hit by point
+    SGView view = null; Point point2 = null;
+    for (int i=parent.getChildCount(); i>0 && view==null; i--) { SGView child = parent.getChild(i-1);
         point2 = child.parentToLocal(point);
         if (child.contains(point2))
-            shape = child;
+            view = child;
     }
     
-    // If we need to goDeep (and there was a top level hit shape), recurse until shape is found
-    while (goDeep && shape instanceof RMParentShape) { parent = (RMParentShape)shape;
-        RMShape shp = parent.getChildContaining(point2);
-        if (shp!=null) { shape = shp; point2 = shape.parentToLocal(point2); }
+    // If we need to goDeep (and there was a top level hit view), recurse until view is found
+    while (goDeep && view instanceof SGParent) { parent = (SGParent)view;
+        SGView shp = parent.getChildContaining(point2);
+        if (shp!=null) { view = shp; point2 = view.parentToLocal(point2); }
         else break;
     }
     
-    // Return hit shape
-    return shape;
+    // Return hit view
+    return view;
 }
 
 /**
@@ -283,7 +283,7 @@ public double getZoomFactor(ZoomMode aMode)
 public void setZoomToFitFactor()  { setZoomFactorImpl(getZoomFactor(getZoomMode())); }
 
 /**
- * Returns zoom focus rect (just the visible rect by default, but overriden by editor to return selected shapes rect).
+ * Returns zoom focus rect (just the visible rect by default, but overriden by editor to return selected views rect).
  */
 public Rect getZoomFocusRect()  { return getVisRect(); }
 
@@ -308,39 +308,39 @@ public void setWidth(double aValue)  { super.setWidth(aValue); setZoomToFitFacto
 public void setHeight(double aValue)  { super.setHeight(aValue); setZoomToFitFactor(); }
 
 /**
- * Returns a point converted from the coordinate space of the given shape to viewer coords.
+ * Returns a point converted from the coordinate space of the given view to viewer coords.
  */
-public Point convertFromShape(double aX, double aY, RMShape aShape)
+public Point convertFromSceneView(double aX, double aY, SGView aView)
 {
-    return aShape!=null? aShape.localToParent(aX, aY, null) : new Point(aX,aY);
+    return aView!=null ? aView.localToParent(aX, aY, null) : new Point(aX,aY);
 }
 
 /**
- * Returns a point converted from viewer coords to the coordinate space of the given shape.
+ * Returns a point converted from viewer coords to the coordinate space of given Scene view.
  */
-public Point convertToShape(double aX, double aY, RMShape aShape)
+public Point convertToSceneView(double aX, double aY, SGView aView)
 {
-    return aShape!=null? aShape.parentToLocal(aX, aY, null) : new Point(aX,aY);
+    return aView!=null ? aView.parentToLocal(aX, aY, null) : new Point(aX,aY);
 }
 
 /**
- * Returns a rect converted from the coordinate space of the given shape to viewer coords.
+ * Returns a rect converted from the coordinate space of given Scene view to viewer coords.
  */
-public Shape convertFromShape(Shape aShp, RMShape aShape)
+public Shape convertFromSceneView(Shape aShape, SGView aView)
 {
-    return aShape!=null? aShape.localToParent(aShp, null) : new Path(aShp);
+    return aView!=null? aView.localToParent(aShape, null) : new Path(aShape);
 }
 
 /**
- * Returns a shape converted from viewer coords to the coordinate space of the given RMShape.
+ * Returns a shape converted from viewer coords to the coordinate space of the given Scene view.
  */
-public Shape convertToShape(Shape aShp, RMShape aShape)
+public Shape convertToSceneView(Shape aShape, SGView aView)
 {
-    return aShape!=null? aShape.parentToLocal(aShp, null) : new Path(aShp);
+    return aView!=null? aView.parentToLocal(aShape, null) : new Path(aShape);
 }
 
 /**
- * Override to paint viewer shapes and page, margin, grid, etc.
+ * Override to paint viewer views and page, margin, grid, etc.
  */
 public void paintFront(Painter aPntr)
 {
@@ -435,11 +435,11 @@ public void sceneNeedsRelayout()
 /**
  * SceneGraph.Client method: Called when SceneGraph view needs repaint.
  */
-public void sceneNeedsRepaint(RMShape aShape)
+public void sceneNeedsRepaint(SGView aView)
 {
-    // Get shape bounds in viewer coords and repaint
-    Rect bnds0 = getRepaintBoundsForShape(aShape);
-    Rect bnds1 = aShape.localToParent(bnds0, null).getBounds();
+    // Get view bounds in viewer coords and repaint
+    Rect bnds0 = getRepaintBoundsForSceneView(aView);
+    Rect bnds1 = aView.localToParent(bnds0, null).getBounds();
     repaint(bnds1);
 }
 
@@ -450,7 +450,7 @@ public void sceneViewPropChanged(PropChange anEvent)
 {
     // Handle SelectedPageIndex, PageSize, PageLayout
     String pname = anEvent.getPropertyName();
-    if (pname.equals(RMDocument.SelPageIndex_Prop) || pname.equals("PageSize") || pname.equals("PageLayout")) {
+    if (pname.equals(SGDoc.SelPageIndex_Prop) || pname.equals("PageSize") || pname.equals("PageLayout")) {
         setZoomToFitFactor();
         relayout();
         repaint();
@@ -459,23 +459,23 @@ public void sceneViewPropChanged(PropChange anEvent)
 }
 
 /**
- * Returns the bounds for a given shape in the viewer. Editor overrides this to account for handles.
+ * Returns the bounds for a given view in the viewer. Editor overrides this to account for handles.
  */
-protected Rect getRepaintBoundsForShape(RMShape aShape)
+protected Rect getRepaintBoundsForSceneView(SGView aView)
 {
-    //Rect bnds = aShape.getBoundsLocal();
-    //if(aShape.getStroke()!=null) bnds.inset(-aShape.getStroke().getWidth()/2);
-    //if(aShape.getEffect()!=null) bnds = aShape.getEffect().getBounds(bnds); return bnds;
-    return aShape.getBoundsMarkedDeep();
+    //Rect bnds = aView.getBoundsLocal();
+    //if(aView.getStroke()!=null) bnds.inset(-aView.getStroke().getWidth()/2);
+    //if(aView.getEffect()!=null) bnds = aView.getEffect().getBounds(bnds); return bnds;
+    return aView.getBoundsMarkedDeep();
 }
 
 /**
- * Creates a shape mouse event.
+ * Creates a view mouse event.
  */
-public ViewEvent createShapeEvent(RMShape aShape, ViewEvent anEvent, ViewEvent.Type aType)
+public ViewEvent createSceneViewEvent(SGView aView, ViewEvent anEvent, ViewEvent.Type aType)
 {
-    Point point = convertToShape(anEvent.getX(), anEvent.getY(), aShape);
-    return new RMShapeEvent(aShape, anEvent, point, aType); // was ne
+    Point point = convertToSceneView(anEvent.getX(), anEvent.getY(), aView);
+    return new SGViewEvent(aView, anEvent, point, aType); // was ne
 }
 
 /**
@@ -504,16 +504,16 @@ private class RMVPrintable implements Printer.Printable {
     /** Returns the page size for given page index. */
     public Size getPageSize(Printer aPrinter, int anIndex)
     {
-        RMShape page = getDoc().getPage(anIndex);
+        SGView page = getDoc().getPage(anIndex);
         return page.getSize();
     }
     
     /** Executes a print for given printer and page index. */
     public void print(Printer aPrinter, int anIndex)
     {
-        RMShape page = getDoc().getPage(anIndex);
+        SGView page = getDoc().getPage(anIndex);
         Painter pntr = aPrinter.getPainter();
-        RMShapeUtils.paintShape(pntr, page, null, 1);
+        SGViewUtils.paintView(page, pntr, null, 1);
     }
 }
 

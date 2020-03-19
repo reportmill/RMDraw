@@ -1,7 +1,7 @@
 package rmdraw.app;
-import rmdraw.shape.RMDocument;
-import rmdraw.shape.RMPage;
-import rmdraw.shape.RMShape;
+import rmdraw.scene.SGDoc;
+import rmdraw.scene.SGPage;
+import rmdraw.scene.SGView;
 import snap.geom.HPos;
 import snap.geom.Pos;
 import snap.gfx.*;
@@ -12,7 +12,7 @@ import snap.view.ViewUtils;
 /**
  * Sets shape style attributes for shape.
  */
-public class ToolStyler <T extends RMShape> {
+public class ToolStyler <T extends SGView> {
 
     // The Tool
     protected Tool _tool;
@@ -34,7 +34,7 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Creates ToolStyler for given shape.
      */
-    public ToolStyler(Tool aTool, RMShape aShape)
+    public ToolStyler(Tool aTool, SGView aShape)
     {
         _tool = aTool;
         _shape = (T)aShape;
@@ -117,7 +117,7 @@ public class ToolStyler <T extends RMShape> {
     public Paint getFill()
     {
         // If selected or super selected shape is page that doesn't draw color, return "last color" (otherwise, reset it)
-        if((_shape instanceof RMPage || _shape instanceof RMDocument) && _shape.getFill()==null)
+        if((_shape instanceof SGPage || _shape instanceof SGDoc) && _shape.getFill()==null)
             return Color.WHITE;
 
         // Return shape color
@@ -130,7 +130,7 @@ public class ToolStyler <T extends RMShape> {
     public void setFill(Paint aPaint)
     {
         // If Doc or Page, just return
-        if(_shape instanceof RMPage || _shape instanceof RMDocument) return;
+        if(_shape instanceof SGPage || _shape instanceof SGDoc) return;
 
         // Set color fill
         _shape.setFill(aPaint);
@@ -142,7 +142,7 @@ public class ToolStyler <T extends RMShape> {
     public Color getFillColor()
     {
         // If selected or super selected shape is page that doesn't draw color, return "last color" (otherwise, reset it)
-        if((_shape instanceof RMPage || _shape instanceof RMDocument) && _shape.getFill()==null)
+        if((_shape instanceof SGPage || _shape instanceof SGDoc) && _shape.getFill()==null)
             return Color.WHITE;
 
         // Return shape color
@@ -155,7 +155,7 @@ public class ToolStyler <T extends RMShape> {
     public void setFillColor(Color aColor)
     {
         // If Doc or Page, just return
-        if(_shape instanceof RMPage || _shape instanceof RMDocument) return;
+        if(_shape instanceof SGPage || _shape instanceof SGDoc) return;
 
         // If command-click, set gradient fill
         if(ViewUtils.isShortcutDown()) {
@@ -213,7 +213,7 @@ public class ToolStyler <T extends RMShape> {
     /**
      * Returns the font for the given shape.
      */
-    private Font getFontDeep(RMShape aShape)
+    private Font getFontDeep(SGView aShape)
     {
         // Look for font from shape
         Font font = aShape.getFont();
@@ -224,7 +224,7 @@ public class ToolStyler <T extends RMShape> {
 
         // If not found, look for font with child tools (recurse)
         for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++) {
-            RMShape child = aShape.getChild(i);
+            SGView child = aShape.getChild(i);
             font = getFontDeep(child);
         }
 
@@ -369,7 +369,7 @@ public class ToolStyler <T extends RMShape> {
         setFontKey(aKey, aVal);
 
         // Set for children
-        for(int i=0, iMax=_shape.getChildCount(); i<iMax; i++) { RMShape child = _shape.getChild(i);
+        for(int i=0, iMax=_shape.getChildCount(); i<iMax; i++) { SGView child = _shape.getChild(i);
             Tool tool = _editor.getToolForView(child);
             tool.getStyler(child).setFontKeyDeep(aKey, aVal);
         }

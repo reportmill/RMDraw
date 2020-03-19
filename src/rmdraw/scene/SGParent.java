@@ -1,10 +1,9 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.ArrayList;
 import java.util.List;
-
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.geom.Shape;
@@ -13,10 +12,10 @@ import snap.util.*;
 /**
  * A shape implementation that can have children.
  */
-public class RMParentShape extends RMShape implements PropChange.DoChange {
+public class SGParent extends SGView implements PropChange.DoChange {
 
     // The children of this shape
-    List <RMShape> _children = new ArrayList();
+    List <SGView> _children = new ArrayList();
     
     // Whether children need layout
     boolean        _needsLayout, _needsLayoutDeep;
@@ -41,22 +40,22 @@ public int getChildCount()  { return _children.size(); }
 /**
  * Returns the child at the given index.
  */
-public RMShape getChild(int anIndex)  { return _children.get(anIndex); }
+public SGView getChild(int anIndex)  { return _children.get(anIndex); }
 
 /**
  * Returns the list of children associated with this shape.
  */
-public List <RMShape> getChildren()  { return _children; }
+public List <SGView> getChildren()  { return _children; }
 
 /**
  * Adds the given child to the end of this shape's children list.
  */
-public final void addChild(RMShape aChild)  { addChild(aChild, getChildCount()); }
+public final void addChild(SGView aChild)  { addChild(aChild, getChildCount()); }
 
 /**
  * Adds the given child to this shape's children list at the given index.
  */
-public void addChild(RMShape aChild, int anIndex)
+public void addChild(SGView aChild, int anIndex)
 {
     // If child already has parent, remove from parent
     if(aChild._parent!=null && aChild._parent!=this)
@@ -80,10 +79,10 @@ public void addChild(RMShape aChild, int anIndex)
 /**
  * Remove's the child at the given index from this shape's children list.
  */
-public RMShape removeChild(int anIndex)
+public SGView removeChild(int anIndex)
 {
     // Remove child from children list and clear parent
-    RMShape child = _children.remove(anIndex);
+    SGView child = _children.remove(anIndex);
     child.setParent(null);
     
     // If this view has child prop listeners, clear from child
@@ -101,7 +100,7 @@ public RMShape removeChild(int anIndex)
 /**
  * Removes the given child from this shape's children list.
  */
-public int removeChild(RMShape aChild)
+public int removeChild(SGView aChild)
 {
     int index = indexOfChild(aChild);
     if(index>=0) removeChild(index);
@@ -111,17 +110,17 @@ public int removeChild(RMShape aChild)
 /**
  * Returns the index of the given child in this shape's children list.
  */
-public int indexOfChild(RMShape aChild)  { return ListUtils.indexOfId(_children, aChild); }
+public int indexOfChild(SGView aChild)  { return ListUtils.indexOfId(_children, aChild); }
 
 /**
  * Returns the last child of this shape.
  */
-public RMShape getChildLast()  { return getChildCount()>0? getChild(getChildCount()-1) : null; }
+public SGView getChildLast()  { return getChildCount()>0? getChild(getChildCount()-1) : null; }
 
 /**
  * Returns a copy of the children as an array.
  */
-public RMShape[] getChildArray()  { return _children.toArray(new RMShape[getChildCount()]); }
+public SGView[] getChildArray()  { return _children.toArray(new SGView[getChildCount()]); }
 
 /**
  * Removes all children from this shape (in reverse order).
@@ -135,7 +134,7 @@ public Rect getBoundsOfChildren()
 {
     // Iterate over (visible) children and union child frames
     Rect rect = null;
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         if(!child.isVisible()) continue;
         if(rect==null) rect = child.getFrame();
         else rect.unionEvenIfEmpty(child.getFrame());
@@ -148,16 +147,16 @@ public Rect getBoundsOfChildren()
 /**
  * Returns first child found with the given name (called recursively on children if not found at current level).
  */
-public RMShape getChildWithName(String aName)
+public SGView getChildWithName(String aName)
 {
     // Iterate over children to see if any match given name
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         if(aName.equals(child.getName()))
             return child; }
 
     // Iterate over children and forward call to them
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
-        if(child instanceof RMParentShape && ((child = ((RMParentShape)child).getChildWithName(aName)) != null))
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
+        if(child instanceof SGParent && ((child = ((SGParent)child).getChildWithName(aName)) != null))
             return child; }
 
     // Return null since no child of given name was found
@@ -170,13 +169,13 @@ public RMShape getChildWithName(String aName)
 public <T> T getChildWithClass(Class<T> aClass)
 {
     // Iterate over children to see if any match given class
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         if(aClass.isInstance(child))
             return (T)child; }
 
     // Iterate over children and forward call to them
     for(int i=0, iMax=getChildCount(); i<iMax; i++) { Object child = getChild(i);
-        if(child instanceof RMParentShape && ((child=((RMParentShape)child).getChildWithClass(aClass)) != null))
+        if(child instanceof SGParent && ((child=((SGParent)child).getChildWithClass(aClass)) != null))
             return (T)child; }
 
     // Return null since no child of given class was found
@@ -186,7 +185,7 @@ public <T> T getChildWithClass(Class<T> aClass)
 /**
  * Returns all the shapes in the shape hierarchy of a particular class.
  */
-public <T extends RMShape> List<T> getChildrenWithClass(Class<T> aClass)
+public <T extends SGView> List<T> getChildrenWithClass(Class<T> aClass)
 {
     return getChildrenWithClass(aClass, new ArrayList());
 }
@@ -195,14 +194,14 @@ public <T extends RMShape> List<T> getChildrenWithClass(Class<T> aClass)
  * Adds all the shapes in the shape hierarchy of a particular class to the list.
  * Returns the list as a convenience.
  */
-public <T extends RMShape> List<T> getChildrenWithClass(Class<T> aClass, List aList)
+public <T extends SGView> List<T> getChildrenWithClass(Class<T> aClass, List aList)
 {
     // Iterate over children and add children with class 
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) {  RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) {  SGView child = getChild(i);
         if(aClass.isInstance(child))
             aList.add(child);
-        else if(child instanceof RMParentShape)
-            ((RMParentShape)child).getChildrenWithClass(aClass, aList);
+        else if(child instanceof SGParent)
+            ((SGParent)child).getChildrenWithClass(aClass, aList);
     }
             
     // Return list
@@ -220,7 +219,7 @@ public void addDeepChangeListener(DeepChangeListener aLsnr)
     // If child listeners not yet set, create/add for children
     if(_childPCL==null) {
         _childPCL = pc -> childDidPropChange(pc); _childDCL = (lsnr,pc) -> childDidDeepChange(lsnr,pc);
-        for(RMShape child : getChildren()) {
+        for(SGView child : getChildren()) {
             child.addPropChangeListener(_childPCL); child.addDeepChangeListener(_childDCL); }
     }
 }
@@ -235,7 +234,7 @@ public void removeDeepChangeListener(DeepChangeListener aDCL)
     
     // If no more deep listeners, remove 
     if(!_pcs.hasDeepListener() && _childPCL!=null) {
-        for(RMShape child : getChildren()) {
+        for(SGView child : getChildren()) {
             child.removePropChangeListener(_childPCL); child.removeDeepChangeListener(_childDCL); }
         _childPCL = null; _childDCL = null;
     }
@@ -268,7 +267,7 @@ protected void setNeedsLayout(boolean aValue)
 {
     if(aValue==_needsLayout || _inLayout) return;
     _needsLayout = aValue;
-    RMParentShape par = getParent(); if(par!=null) par.setNeedsLayoutDeep(true);
+    SGParent par = getParent(); if(par!=null) par.setNeedsLayoutDeep(true);
 }
 
 /**
@@ -289,7 +288,7 @@ protected void setNeedsLayoutDeep(boolean aVal)
     if (_inLayoutDeep) return;
 
     // If Parent available, forward to it
-    RMParentShape par = getParent();
+    SGParent par = getParent();
     if (par!=null)
         par.setNeedsLayoutDeep(true);
 
@@ -330,8 +329,8 @@ public void layoutDeep()
  */
 protected void layoutDeepImpl()
 {
-    for(RMShape child : getChildren())
-        if(child instanceof RMParentShape) { RMParentShape par = (RMParentShape)child;
+    for(SGView child : getChildren())
+        if(child instanceof SGParent) { SGParent par = (SGParent)child;
             if(par._needsLayout || par._needsLayoutDeep)
                 par.layoutDeep(); }
 }
@@ -355,7 +354,7 @@ protected void layoutImpl()  { }
 /**
  * Returns whether given child shape is hittable.
  */
-protected boolean isHittable(RMShape aChild)  { return aChild.isVisible(); }
+protected boolean isHittable(SGView aChild)  { return aChild.isVisible(); }
 
 /**
  * Override to trigger layout.
@@ -370,10 +369,10 @@ public void setHeight(double aValue)  { super.setHeight(aValue); relayout(); }
 /**
  * Returns the first (top) shape hit by the point given in this shape's coords.
  */
-public RMShape getChildContaining(Point aPoint)
+public SGView getChildContaining(Point aPoint)
 {
     // Iterate over children
-    for(int i=getChildCount()-1; i>=0; i--) { RMShape child = getChild(i);
+    for(int i=getChildCount()-1; i>=0; i--) { SGView child = getChild(i);
         if(!child.isHittable()) continue; // Get current loop child
         Point point = child.parentToLocal(aPoint); // Get point converted to child
         if(child.contains(point)) // If child contains point, return child
@@ -387,13 +386,13 @@ public RMShape getChildContaining(Point aPoint)
 /**
  * Returns the child shapes hit by the path given in this shape's coords.
  */
-public List <RMShape> getChildrenIntersecting(Shape aPath)
+public List <SGView> getChildrenIntersecting(Shape aPath)
 {
     // Create list for intersecting children
     List hit = new ArrayList();
 
     // Iterate over children
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         
         // If not hittable, continue
         if(!child.isHittable()) continue;
@@ -416,18 +415,18 @@ public List <RMShape> getChildrenIntersecting(Shape aPath)
  * Divides the shape by a given amount from the top. Returns a clone of the given shape with bounds 
  * set to the remainder. Divides children among the two shapes (recursively calling divide shape for those straddling).
  */
-public RMShape divideShapeFromTop(double anAmount)
+public SGView divideViewFromTop(double anAmount)
 {
     // Make sure layout is up to date
     layoutDeep();
     
     // Call normal divide from top edge
     double oldHeight = getHeight();
-    RMParentShape bottomShape = (RMParentShape)super.divideShapeFromTop(anAmount);
+    SGParent bottomShape = (SGParent)super.divideViewFromTop(anAmount);
     double bottomHeight = bottomShape.getHeight();
         
     // Iterate over children to see if they belong to self or newShape (or need to be recursively split)
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         
         // Get child min y
         double childMinY = child.getFrameY();
@@ -445,7 +444,7 @@ public RMShape divideShapeFromTop(double anAmount)
             // Get child top/bottom height and divide from top by amount
             double bottomMargin = oldHeight - child.getMaxY();
             double childTopHeight = getHeight() - childMinY; // , cbh = child.getHeight() - childTopHeight;
-            RMShape childBottom = child.divideShapeFromTop(childTopHeight);
+            SGView childBottom = child.divideViewFromTop(childTopHeight);
             
             // Move new child bottom shape to new y in BottomShape
             childBottom._y = 0;
@@ -466,27 +465,27 @@ public RMShape divideShapeFromTop(double anAmount)
 /**
  * Moves the subset of children in the given list to the front of the children list.
  */
-public void bringShapesToFront(List <RMShape> shapes)
+public void bringShapesToFront(List <SGView> shapes)
 {
-    for(RMShape shape : shapes) {
+    for(SGView shape : shapes) {
         removeChild(shape); addChild(shape); }
 }
 
 /**
  * Moves the subset of children in the given list to the back of the children list.
  */
-public void sendShapesToBack(List <RMShape> shapes)
+public void sendShapesToBack(List <SGView> shapes)
 {
-    for(int i=0, iMax=shapes.size(); i<iMax; i++) { RMShape shape = shapes.get(i);
+    for(int i=0, iMax=shapes.size(); i<iMax; i++) { SGView shape = shapes.get(i);
         removeChild(shape); addChild(shape, i); }
 }
 
 /**
  * Standard clone implementation.
  */
-public RMParentShape clone()
+public SGParent clone()
 {
-    RMParentShape clone = (RMParentShape)super.clone();
+    SGParent clone = (SGParent)super.clone();
     clone._children = new ArrayList(); clone._childPCL = null; clone._childDCL = null;
     return clone;
 }
@@ -494,9 +493,9 @@ public RMParentShape clone()
 /**
  * Clones all attributes of this shape with complete clones of its children as well.
  */
-public RMParentShape cloneDeep()
+public SGParent cloneDeep()
 {
-    RMParentShape clone = clone();
+    SGParent clone = clone();
     for(int i=0, iMax=getChildCount(); i<iMax; i++) clone.addChild(getChild(i).cloneDeep());
     return clone;
 }
@@ -517,7 +516,7 @@ public void doChange(PropChange aPC, Object oldVal, Object newVal)
 {
     String pname = aPC.getPropName();
     if(pname==Child_Prop) {
-        RMShape oldC = (RMShape)oldVal, newC = (RMShape)newVal; int ind = aPC.getIndex();
+        SGView oldC = (SGView)oldVal, newC = (SGView)newVal; int ind = aPC.getIndex();
         if(oldC==null) addChild(newC, ind);
         else removeChild(ind);
     }
@@ -529,7 +528,7 @@ public void doChange(PropChange aPC, Object oldVal, Object newVal)
  */
 public XMLElement toXML(XMLArchiver anArchiver)
 {
-    XMLElement e = toXMLShape(anArchiver); // Archive shape
+    XMLElement e = toXMLView(anArchiver); // Archive shape
     toXMLChildren(anArchiver, e); // Archive children
     return e; // Return xml element
 }
@@ -537,7 +536,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
 /**
  * XML Archival of basic shape.
  */
-protected XMLElement toXMLShape(XMLArchiver anArchiver)  { return super.toXML(anArchiver); }
+protected XMLElement toXMLView(XMLArchiver anArchiver)  { return super.toXML(anArchiver); }
 
 /**
  * XML archival of children.
@@ -545,23 +544,23 @@ protected XMLElement toXMLShape(XMLArchiver anArchiver)  { return super.toXML(an
 protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
 {
     // Archive children
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         anElement.add(anArchiver.toXML(child, this)); }    
 }
 
 /**
- * XML unarchival generic - break fromXML into fromXMLShape and fromXMLShapeChildren.
+ * XML unarchival generic - break fromXML into fromXMLView and fromXMLChildren.
  */
-public RMShape fromXML(XMLArchiver anArchiver, XMLElement anElement)
+public SGView fromXML(XMLArchiver anArchiver, XMLElement anElement)
 {
     // Legacy
-    if(getClass()==RMParentShape.class) {
+    if(getClass()== SGParent.class) {
         //if(anElement.getElement("layout")!=null) return new RMFlowShape().fromXML(anArchiver, anElement);
-        if(anElement.getName().equals("shape")) return new RMSpringShape().fromXML(anArchiver, anElement);
+        if(anElement.getName().equals("shape")) return new SGSpringsView().fromXML(anArchiver, anElement);
     }
     
-    // Unarchive shape and children and return
-    fromXMLShape(anArchiver, anElement); // Unarchive shape
+    // Unarchive view and children and return
+    fromXMLView(anArchiver, anElement); // Unarchive shape
     fromXMLChildren(anArchiver, anElement); // Unarchive children
     layoutDeep();
     return this;
@@ -570,21 +569,21 @@ public RMShape fromXML(XMLArchiver anArchiver, XMLElement anElement)
 /**
  * XML unarchival.
  */
-protected void fromXMLShape(XMLArchiver anArchiver, XMLElement anElement)  { super.fromXML(anArchiver,anElement); }
+protected void fromXMLView(XMLArchiver anArchiver, XMLElement anElement)  { super.fromXML(anArchiver,anElement); }
 
 /**
- * XML unarchival for shape children.
+ * XML unarchival for view children.
  */
 protected void fromXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
 {
-    // Iterate over child elements and unarchive shapes
+    // Iterate over child elements and unarchive views
     for(int i=0, iMax=anElement.size(); i<iMax; i++) { XMLElement childXML = anElement.get(i);
         
-        // Get child class - if RMShape, unarchive and add
+        // Get child class - if SGView, unarchive and add
         Class childClass = anArchiver.getClass(childXML.getName());
-        if(childClass!=null && RMShape.class.isAssignableFrom(childClass)) {
-            RMShape shape = (RMShape)anArchiver.fromXML(childXML, this);
-            addChild(shape);
+        if(childClass!=null && SGView.class.isAssignableFrom(childClass)) {
+            SGView view = (SGView)anArchiver.fromXML(childXML, this);
+            addChild(view);
         }
     }
 }

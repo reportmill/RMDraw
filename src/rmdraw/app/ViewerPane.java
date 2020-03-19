@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.util.*;
 import snap.view.*;
 import snap.viewx.DialogBox;
@@ -68,7 +68,7 @@ public RulerBox getRulerBox()  { return _rulerBox; }
 /**
  * Returns the document associated with this viewer.
  */
-public RMDocument getDoc()  { return getViewer().getDoc(); }
+public SGDoc getDoc()  { return getViewer().getDoc(); }
 
 /**
  * Returns the document source.

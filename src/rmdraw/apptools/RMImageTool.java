@@ -3,7 +3,7 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.*;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.List;
 import snap.gfx.Border;
 import snap.gfx.Image;
@@ -14,12 +14,12 @@ import snap.viewx.FilePanel;
 /**
  * Provides UI for RMImage shape editing.
  */
-public class RMImageTool <T extends RMImageShape> extends Tool<T> {
+public class RMImageTool <T extends SGImage> extends Tool<T> {
     
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return RMImageShape.class; }
+public Class getShapeClass()  { return SGImage.class; }
 
 /**
  * Returns the string used for the inspector window title.
@@ -37,7 +37,7 @@ protected void initUI()  { enableEvents("KeyText", DragDrop); }
 public void resetUI()
 {    
     // Get selected image shape and image (just return if null)
-    RMImageShape imgShp = getSelectedShape(); if(imgShp==null) return;
+    SGImage imgShp = getSelectedShape(); if(imgShp==null) return;
     Image img = imgShp.getImage();
     
     // Reset KeyText, MarginsText, GrowToFitCheckBox, PreserveRatioCheckBox
@@ -66,8 +66,8 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get selected image shape and image shapes (just return if null)
-    RMImageShape imgShp = getSelectedShape(); if(imgShp==null) return;
-    List <RMImageShape> images = (List)getSelectedShapes();
+    SGImage imgShp = getSelectedShape(); if(imgShp==null) return;
+    List <SGImage> images = (List)getSelectedShapes();
 
     // Handle KeyText
     if(anEvent.equals("KeyText"))
@@ -79,19 +79,19 @@ public void respondUI(ViewEvent anEvent)
 
     // Handle PaddingText
     if(anEvent.equals("PaddingText"))
-        for(RMImageShape im : images) im.setPadding(anEvent.getIntValue());
+        for(SGImage im : images) im.setPadding(anEvent.getIntValue());
     
     // Handle GrowToFitCheckBox, PreserveRatioCheckBox
     if(anEvent.equals("GrowToFitCheckBox"))
-        for(RMImageShape im : images) im.setGrowToFit(anEvent.getBoolValue());
+        for(SGImage im : images) im.setGrowToFit(anEvent.getBoolValue());
     if(anEvent.equals("PreserveRatioCheckBox"))
-        for(RMImageShape im : images) im.setPreserveRatio(anEvent.getBoolValue());
+        for(SGImage im : images) im.setPreserveRatio(anEvent.getBoolValue());
     
     // Handle Rounding Radius Thumb & Text
     if(anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText")) {
         imgShp.undoerSetUndoTitle("Rounding Change");
         float value = anEvent.getFloatValue();
-        for(RMImageShape im : images) {
+        for(SGImage im : images) {
             im.setRadius(value);
             if(im.getBorder()==null)
                 im.setBorder(Border.blackBorder());

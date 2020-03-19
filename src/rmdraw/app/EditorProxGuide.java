@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 import java.util.List;
 
@@ -93,23 +93,23 @@ public static void setIncludesSuperselectedShape(boolean aFlag)  { _includeSuper
 /**
  * Returns the list of shapes to be included in the proximity check.
  */
-public static List <RMShape> getCandidateShapes(Editor anEditor)
+public static List <SGView> getCandidateShapes(Editor anEditor)
 {
     // Get super selected shape
-    RMShape parent = anEditor.getSuperSelectedShape();
+    SGView parent = anEditor.getSuperSelView();
     if(parent.getChildCount()==0)
         return Collections.emptyList();
     
     // Get all peers of selected shapes
     List candidateShapes = new ArrayList(parent.getChildren());
-    for(int i=0, iMax=anEditor.getSelectedShapeCount(); i<iMax; i++)
-        ListUtils.removeId(candidateShapes, anEditor.getSelectedShape(i));
+    for(int i = 0, iMax = anEditor.getSelViewCount(); i<iMax; i++)
+        ListUtils.removeId(candidateShapes, anEditor.getSelView(i));
     
     // Optionally, also check against the bounds of the parent.
     // The "stepParent" is merely an empty shape whose bounds match the parent, but in the same coordinate
     // system as the other candidate shapes.
     if(_includeSuperSelectedShape) {
-        RMShape stepParent = new RMShape(); stepParent.copyShape(parent);
+        SGView stepParent = new SGView(); stepParent.copyView(parent);
         stepParent.setXY(0f, 0f);
         candidateShapes.add(stepParent);
     }
@@ -129,18 +129,18 @@ public static void createGuidelines(Editor anEditor)
         return;
     
     // If no selected shapes, just return
-    if(anEditor.getSelectedShapeCount()==0)
+    if(anEditor.getSelViewCount()==0)
         return;
     
     // Get parent of selected shapes (just return if structured table row)
-    RMShape parent = anEditor.getSuperSelectedShape();
+    SGView parent = anEditor.getSuperSelView();
     //if(parent instanceof RMTableRow && ((RMTableRow) parent).isStructured()) return;
     
     // Get candidate shapes for editor
     List candidateShapes = getCandidateShapes(anEditor);
     
     // Get bounds
-    Rect bounds = RMShapeUtils.getBoundsOfChildren(parent, anEditor.getSelectedShapes());
+    Rect bounds = SGViewUtils.getBoundsOfChildren(parent, anEditor.getSelViews());
     
     // Create guidelines
     createGuidelines(anEditor, parent, bounds, candidateShapes);
@@ -150,7 +150,7 @@ public static void createGuidelines(Editor anEditor)
  * Recalculates all the proximity guides and marks dirty region in editor for old & new guide regions.
  * Guides are calculated between the bounds rectangle and each of the candidateShapes, within the parent RMShape.
  */
-public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds, List candidateShapes)
+public static void createGuidelines(Editor anEditor, SGView parent, Rect bounds, List candidateShapes)
 {
     // If disabled, just return
     if(!_enabled) return;
@@ -162,8 +162,8 @@ public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds
     if(candidateShapes==null || candidateShapes.isEmpty()) return;
     
     double minDX = 9999, maxDX = 9999, minDY = 9999, maxDY = 9999;
-    RMShape minDXminYShape=null, minDXmaxYShape=null, maxDXminYShape=null, maxDXmaxYShape=null;
-    RMShape minDYminXShape=null, minDYmaxXShape=null, maxDYminXShape=null, maxDYmaxXShape=null;
+    SGView minDXminYShape=null, minDXmaxYShape=null, maxDXminYShape=null, maxDXmaxYShape=null;
+    SGView minDYminXShape=null, minDYmaxXShape=null, maxDYminXShape=null, maxDYmaxXShape=null;
     double delta, x1, y1, x2, y2;
     Point p1, p2;
 
@@ -171,7 +171,7 @@ public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds
     for(int i=0, iMax=candidateShapes.size(); i<iMax; i++) {
 
         // Get current child
-        RMShape child = (RMShape) candidateShapes.get(i);
+        SGView child = (SGView) candidateShapes.get(i);
 
         delta=Math.abs(child.getFrameX() - bounds.x);
         if (delta < minDX) {
@@ -227,8 +227,8 @@ public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds
         x1 = minDXminYShape.getFrameX();
         y1 = Math.min(bounds.y, minDXminYShape.getFrameY());
         y2 = Math.max(bounds.getMaxY(), minDXmaxYShape.getFrameMaxY());
-        p1 = anEditor.convertFromShape(x1, y1, parent);
-        p2 = anEditor.convertFromShape(x1, y2, parent);
+        p1 = anEditor.convertFromSceneView(x1, y1, parent);
+        p2 = anEditor.convertFromSceneView(x1, y2, parent);
         addGuideline(p1, p2);
     }
 
@@ -236,8 +236,8 @@ public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds
         x1 = maxDXminYShape.getFrameMaxX();
         y1 = Math.min(bounds.y, maxDXminYShape.getFrameY());
         y2 = Math.max(bounds.getMaxY(), maxDXmaxYShape.getFrameMaxY());
-        p1 = anEditor.convertFromShape(x1, y1, parent);
-        p2 = anEditor.convertFromShape(x1, y2, parent);
+        p1 = anEditor.convertFromSceneView(x1, y1, parent);
+        p2 = anEditor.convertFromSceneView(x1, y2, parent);
         addGuideline(p1, p2);
     }
 
@@ -245,8 +245,8 @@ public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds
         y1 = minDYminXShape.getFrameY();
         x1 = Math.min(bounds.x, minDYminXShape.getFrameX());
         x2 = Math.max(bounds.getMaxX(), minDYmaxXShape.getFrameMaxX());
-        p1 = anEditor.convertFromShape(x1, y1, parent);
-        p2 = anEditor.convertFromShape(x2, y1, parent);
+        p1 = anEditor.convertFromSceneView(x1, y1, parent);
+        p2 = anEditor.convertFromSceneView(x2, y1, parent);
         addGuideline(p1, p2);
     }
     
@@ -254,8 +254,8 @@ public static void createGuidelines(Editor anEditor, RMShape parent, Rect bounds
         y1 = maxDYminXShape.getFrameMaxY();
         x1 = Math.min(bounds.x, maxDYminXShape.getFrameX());
         x2 = Math.max(bounds.getMaxX(), maxDYmaxXShape.getFrameMaxX());
-        p1 = anEditor.convertFromShape(x1, y1, parent);
-        p2 = anEditor.convertFromShape(x2, y1, parent);
+        p1 = anEditor.convertFromSceneView(x1, y1, parent);
+        p2 = anEditor.convertFromSceneView(x2, y1, parent);
         addGuideline(p1, p2);
     }
 
@@ -289,13 +289,13 @@ public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint,
         return aPoint;
 
     // Get parent
-    RMShape parent = anEditor.getSuperSelectedShape();
+    SGView parent = anEditor.getSuperSelView();
     
     // If parent is structured table row, just return point (wish this wasn't hard coded)
     //if(parent instanceof RMTableRow && ((RMTableRow)parent).isStructured()) return aPoint;
     
     // Get list of selected shapes
-    List selectedShapes = anEditor.getSelectedShapes();
+    List selectedShapes = anEditor.getSelViews();
     
     // Get list of candidate shapes
     List candidateShapes = getCandidateShapes(anEditor);
@@ -305,7 +305,7 @@ public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint,
 
     // If mode is move, set bounds to snap the entire bounding box
     if(aDragMode== SelectTool.DragMode.Move)
-        bounds = RMShapeUtils.getBoundsOfChildren(parent, selectedShapes);
+        bounds = SGViewUtils.getBoundsOfChildren(parent, selectedShapes);
     
     // If mode is resize, set bounds to just snap a handle
     else {
@@ -320,16 +320,16 @@ public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint,
     double maxDY = 9999;
     
     // Declare variables for minDX, maxDX, minDY, maxDY shapes
-    RMShape minDXShape = null;
-    RMShape maxDXShape = null;
-    RMShape minDYShape = null;
-    RMShape maxDYShape = null;
+    SGView minDXShape = null;
+    SGView maxDXShape = null;
+    SGView minDYShape = null;
+    SGView maxDYShape = null;
 
     // Iterate over children to see which is the closest to selectedShapes min/max X
     for (int i=0, iMax=candidateShapes.size(); i < iMax; i++) {
 
         // Get current child
-        RMShape child = (RMShape)candidateShapes.get(i);
+        SGView child = (SGView)candidateShapes.get(i);
 
         double dx1 = Math.abs(child.getFrameX() - bounds.x);
         if(dx1 < minDX) {

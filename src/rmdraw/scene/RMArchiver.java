@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.*;
 import snap.gfx.*;
 import snap.text.RichText;
@@ -25,10 +25,10 @@ public class RMArchiver extends XMLArchiver {
     /**
      * Returns a parent shape for source.
      */
-    public RMDocument getDocFromSource(Object aSource)
+    public SGDoc getDocFromSource(Object aSource)
     {
         // If source is a document, just return it
-        if (aSource instanceof RMDocument) return (RMDocument)aSource;
+        if (aSource instanceof SGDoc) return (SGDoc)aSource;
 
         // Get URL and/or bytes (complain if not found)
         WebURL url = WebURL.getURL(aSource);
@@ -40,7 +40,7 @@ public class RMArchiver extends XMLArchiver {
         //if(RMPDFData.canRead(bytes)) return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
 
         // Read document from source
-        RMDocument doc = (RMDocument) readFromXMLSource(url!=null? url : bytes);
+        SGDoc doc = (SGDoc) readFromXMLSource(url!=null? url : bytes);
 
         // Set Source URL and return
         doc.setSourceURL(getSourceURL());
@@ -67,20 +67,20 @@ public class RMArchiver extends XMLArchiver {
         Map cmap = new HashMap();
 
         // Shape classes
-        cmap.put("arrow-head", RMLineShape.ArrowHead.class);
-        cmap.put("document", RMDocument.class);
-        cmap.put("flow-shape", RMParentShape.class);
-        cmap.put("image-shape", RMImageShape.class);
-        cmap.put("line", RMLineShape.class);
-        cmap.put("oval", RMOvalShape.class);
-        cmap.put("page", RMPage.class);
-        cmap.put("polygon", RMPolygonShape.class);
-        cmap.put("rect", RMRectShape.class);
-        cmap.put("shape", RMParentShape.class);
-        cmap.put("spring-shape", RMSpringShape.class);
-        cmap.put("text", RMTextShape.class);
-        cmap.put("linked-text", RMLinkedText.class);
-        cmap.put("scene3d", RMScene3D.class);
+        cmap.put("arrow-head", SGLine.ArrowHead.class);
+        cmap.put("document", SGDoc.class);
+        cmap.put("flow-shape", SGParent.class);
+        cmap.put("image-shape", SGImage.class);
+        cmap.put("line", SGLine.class);
+        cmap.put("oval", SGOval.class);
+        cmap.put("page", SGPage.class);
+        cmap.put("polygon", SGPolygon.class);
+        cmap.put("rect", SGRect.class);
+        cmap.put("shape", SGParent.class);
+        cmap.put("spring-shape", SGSpringsView.class);
+        cmap.put("text", SGText.class);
+        cmap.put("linked-text", SGLinkedText.class);
+        cmap.put("scene3d", SGScene3D.class);
 
         // Graphics
         cmap.put("color", Color.class);

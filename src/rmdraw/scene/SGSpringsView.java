@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.*;
 
 import snap.geom.Rect;
@@ -11,7 +11,7 @@ import snap.util.*;
 /**
  * A parent shape that does child layout according to autosizing (springs and struts) settings.
  */
-public class RMSpringShape extends RMParentShape {
+public class SGSpringsView extends SGParent {
     
     // Whether springs resizing is disabled
     boolean             _springsDisabled;
@@ -44,7 +44,7 @@ public void setSpringsDisabled(boolean aValue)  { _springsDisabled = aValue; }
 protected void layoutImpl()
 {
     Rect rects[] = getChildBounds();
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i); Rect rect = rects[i];
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i); Rect rect = rects[i];
         child.setFrame(rect.x, rect.y, rect.width, rect.height); }
 }
 
@@ -67,7 +67,7 @@ private Rect[] getChildBounds()
     
     // Iterate over children and calculate new bounds rect for original child bounds and new parent width/height
     Rect rects[] = new Rect[ccount];
-    for(int i=0; i<ccount; i++) { RMShape child = getChild(i); SpringInfo sinfo = getSpringInfo(child);
+    for(int i=0; i<ccount; i++) { SGView child = getChild(i); SpringInfo sinfo = getSpringInfo(child);
     
         // Create rect and update for new width/height
         Rect rect = rects[i] = new Rect(sinfo.x, sinfo.y, sinfo.width, sinfo.height);
@@ -132,7 +132,7 @@ public Box[] getChildBoxes()
     
     // Get boxes
     _cboxes = new Box[getChildCount()];
-    for(int i=0, iMax=getChildCount(); i<iMax; i++) { RMShape child = getChild(i);
+    for(int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
         _cboxes[i] = new Box(child, getSpringInfo(child)); }
     
     // Iterate over children to get list of those that need to grow
@@ -256,12 +256,12 @@ private List <Box> childrenWithPositionRelativeToChild(Position aPos, Box aChild
 /**
  * Returns spring info for child.
  */
-protected SpringInfo getSpringInfo(RMShape aChild)  { return (SpringInfo)aChild._springInfo; }
+protected SpringInfo getSpringInfo(SGView aChild)  { return (SpringInfo)aChild._springInfo; }
 
 /**
  * Adds spring info for child.
  */
-protected void addSpringInfo(RMShape aChild)
+protected void addSpringInfo(SGView aChild)
 {
     double x = aChild.getFrameX(), y = aChild.getFrameY(), w = aChild.getFrameWidth(), h = aChild.getFrameHeight();
     SpringInfo sinfo = new SpringInfo(x,y,w,h,getWidth(),getHeight());
@@ -271,12 +271,12 @@ protected void addSpringInfo(RMShape aChild)
 /**
  * Removes spring info for child.
  */
-protected void removeSpringInfo(RMShape aChild)  { aChild._springInfo = null; }
+protected void removeSpringInfo(SGView aChild)  { aChild._springInfo = null; }
 
 /**
  * Override to initialize child springs.
  */
-public void addChild(RMShape aChild, int anIndex)
+public void addChild(SGView aChild, int anIndex)
 {
     super.addChild(aChild, anIndex); if(_springsDisabled) return;
     aChild.addPropChangeListener(_childLsnr!=null? _childLsnr : (_childLsnr = pc -> childPropChanged(pc)));
@@ -286,9 +286,9 @@ public void addChild(RMShape aChild, int anIndex)
 /**
  * Override to remove child springs.
  */
-public RMShape removeChild(int anIndex)
+public SGView removeChild(int anIndex)
 {
-    RMShape child = super.removeChild(anIndex); if(_springsDisabled) return child;
+    SGView child = super.removeChild(anIndex); if(_springsDisabled) return child;
     child.removePropChangeListener(_childLsnr);
     removeSpringInfo(child); _cboxes = null;
     return child;
@@ -297,10 +297,10 @@ public RMShape removeChild(int anIndex)
 /**
  * Override to paint dashed box around bounds.
  */
-protected void paintShape(Painter aPntr)
+protected void paintView(Painter aPntr)
 {
     // Do normal version
-    super.paintShape(aPntr); if(getClass()!=RMSpringShape.class) return;
+    super.paintView(aPntr); if(getClass()!= SGSpringsView.class) return;
     
     // Paint dashed box around bounds
     boolean isEditing = SceneGraph.isEditing(this);
@@ -319,16 +319,16 @@ protected void paintShape(Painter aPntr)
  */
 protected void resetLayout()
 {
-    for(RMShape child : getChildren()) addSpringInfo(child);
+    for(SGView child : getChildren()) addSpringInfo(child);
     setNeedsLayout(false);
 }
 
 /**
  * Override to reset layout.
  */
-public RMShape divideShapeFromTop(double anAmount)
+public SGView divideViewFromTop(double anAmount)
 {
-    RMShape btmShape = super.divideShapeFromTop(anAmount);
+    SGView btmShape = super.divideViewFromTop(anAmount);
     resetLayout();
     return btmShape;
 }
@@ -344,7 +344,7 @@ protected void childPropChanged(PropChange anEvent)
     // Get property name - if frame changer, do something
     String pname = anEvent.getPropName();
     if(pname=="X" || pname=="Y" || pname=="Width" || pname=="Height" || pname=="Roll" || pname=="Autosizing") {
-        RMShape child = (RMShape)anEvent.getSource();
+        SGView child = (SGView)anEvent.getSource();
         addSpringInfo(child);
     }
 }
@@ -392,7 +392,7 @@ private static class Box extends Rect {
     double       _bh;
     
     /** Creates a new box for a Node. */
-    public Box(RMShape aShape, SpringInfo sinfo)
+    public Box(SGView aShape, SpringInfo sinfo)
     {
         _asize = _asize0 = aShape.getAutosizing();
         _bh = aShape.getBestHeight();

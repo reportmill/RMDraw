@@ -4,13 +4,13 @@
 package rmdraw.apptools;
 import rmdraw.app.Tool;
 import rmdraw.gfx3d.*;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.view.ViewEvent;
 
 /**
  * Tool for visual editing RMScene3D.
  */
-public class RMScene3DTool <T extends RMScene3D> extends Tool<T> {
+public class RMScene3DTool <T extends SGScene3D> extends Tool<T> {
     
     // The Trackball control for rotating selected scene3d
     Trackball  _trackball;
@@ -33,7 +33,7 @@ protected void initUI()
 public void resetUI()
 {
     // Get the selected scene
-    RMScene3D scene = getSelectedShape(); if(scene==null) return;
+    SGScene3D scene = getSelectedShape(); if(scene==null) return;
     
     // Reset Rendering radio buttons
     setViewSelIndex("RenderingComboBox", scene.isPseudo3D()? 1 : 0);
@@ -61,7 +61,7 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get the currently selected scene3d
-    RMScene3D scene = getSelectedShape(); if(scene==null) return;
+    SGScene3D scene = getSelectedShape(); if(scene==null) return;
     
     // Handle RenderingComboBox
     if(anEvent.equals("RenderingComboBox"))
@@ -91,7 +91,7 @@ public void respondUI(ViewEvent anEvent)
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return RMScene3D.class; }
+public Class getShapeClass()  { return SGScene3D.class; }
 
 /**
  * Returns the name of this tool for the inspector window.
@@ -101,12 +101,12 @@ public String getWindowTitle()  { return "Scene3D Inspector"; }
 /**
  * Overridden to make scene3d super-selectable.
  */
-public boolean isSuperSelectable(RMShape aShape)  { return true; }
+public boolean isSuperSelectable(SGView aShape)  { return true; }
 
 /**
  * Overridden to make scene3d not ungroupable.
  */
-public boolean isUngroupable(RMShape aShape)  { return false; }
+public boolean isUngroupable(SGView aShape)  { return false; }
 
 /**
  * Event handler for editing.

@@ -1,5 +1,5 @@
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.gfx.Color;
 import snap.view.*;
 
@@ -46,7 +46,7 @@ protected void resetUI()
 {
     _shapeTree.setItems(getEditor().getDoc());
     _shapeTree.expandAll();
-    _shapeTree.setSelItem(getEditor().getSelectedOrSuperSelectedShape());
+    _shapeTree.setSelItem(getEditor().getSelOrSuperSelView());
 }
 
 /**
@@ -56,46 +56,46 @@ protected void respondUI(ViewEvent anEvent)
 {
     // Handle ShapeTree
     if(anEvent.equals("ShapeTree") && anEvent.isActionEvent())
-        getEditor().setSelectedShape((RMShape)anEvent.getSelItem());
+        getEditor().setSelView((SGView)anEvent.getSelItem());
         
     // Handle MouseClick
     if(anEvent.isMouseClick() && anEvent.getClickCount()==2)
-        getEditor().setSuperSelectedShape((RMShape)anEvent.getSelItem());
+        getEditor().setSuperSelView((SGView)anEvent.getSelItem());
 }
 
 /**
  * A TreeResolver for Document Shapes.
  */
-public class ShapeTreeResolver extends TreeResolver <RMShape> {
+public class ShapeTreeResolver extends TreeResolver <SGView> {
     
     /** Returns the parent of given item. */
-    public RMShape getParent(RMShape anItem)  { return anItem!=getEditor().getDoc()? anItem.getParent() : null; }
+    public SGView getParent(SGView anItem)  { return anItem!=getEditor().getDoc()? anItem.getParent() : null; }
 
     /** Whether given object is a parent (has children). */
-    public boolean isParent(RMShape anItem)
+    public boolean isParent(SGView anItem)
     {
-        return anItem instanceof RMParentShape && anItem.getChildCount()>0;
+        return anItem instanceof SGParent && anItem.getChildCount()>0;
     }
 
     /** Returns the children. */
-    public RMShape[] getChildren(RMShape aParent)
+    public SGView[] getChildren(SGView aParent)
     {
-        RMParentShape par = (RMParentShape)aParent;
+        SGParent par = (SGParent)aParent;
         return par.getChildArray();
     }
 
     /** Returns the text to be used for given item. */
-    public String getText(RMShape anItem)
+    public String getText(SGView anItem)
     {
         String str = anItem.getClass().getSimpleName(); if(str.startsWith("RM")) str = str.substring(2);
         String name = anItem.getName(); if(name!=null) str += " - " + name;
-        if(anItem instanceof RMTextShape) { RMTextShape ts = (RMTextShape)anItem;
+        if(anItem instanceof SGText) { SGText ts = (SGText)anItem;
             String text = ts.getText(); if(text!=null) str += " \"" + text + "\" "; }
         return str;
     }
 
     /** Return the image to be used for given item. */
-    public View getGraphic(RMShape anItem)  { return null; }
+    public View getGraphic(SGView anItem)  { return null; }
 }
 
 }

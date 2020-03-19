@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.geom.Shape;
@@ -19,11 +19,11 @@ public class EditorDragDropper implements DragDropper {
     // The editor that this class is working for
     private Editor  _editor;
 
-    // A shape to be drawn if set to drag-over shape during drag and drop
-    private Shape  _dragShape;
+    // A view to be drawn if set to drag-over view during drag and drop
+    private Shape _dragShape;
 
-    // The last shape that a drag and drop action was over
-    private RMShape  _lastOverShape;
+    // The last view that a drag and drop action was over
+    private SGView _lastOverView;
 
     /**
      * Creates a new editor drop target listener.
@@ -41,17 +41,17 @@ public class EditorDragDropper implements DragDropper {
     public Shape getDragShape()  { return _dragShape; }
 
     /**
-     * Implemented by shapes that can handle drag & drop.
+     * Implemented by views that can handle drag & drop.
      */
-    public boolean acceptsDrag(RMShape aShape, ViewEvent anEvent)
+    public boolean acceptsDrag(SGView aView, ViewEvent anEvent)
     {
         // If Tool acceptsDrag, return true
-        Tool tool = getTool(aShape);
-        if (tool.acceptsDrag(aShape, anEvent))
+        Tool tool = getTool(aView);
+        if (tool.acceptsDrag(aView, anEvent))
             return true;
 
         // Bogus, but currently the page accepts everything
-        if (aShape.isRoot())
+        if (aView instanceof SGPage)
             return true;
 
         // Return true for Color drag or File drag
@@ -63,7 +63,7 @@ public class EditorDragDropper implements DragDropper {
             return true;
 
         // Return true in any case if accepts children
-        return tool.getAcceptsChildren(aShape);
+        return tool.getAcceptsChildren(aView);
     }
 
     /**
@@ -71,7 +71,7 @@ public class EditorDragDropper implements DragDropper {
      */
     public void dragEnter(ViewEvent anEvent)
     {
-        _lastOverShape = null;  // Reset last over shape and last drag point
+        _lastOverView = null;  // Reset last over view and last drag point
         dragOver(anEvent);                             // Do a drag over to get things started
     }
 
@@ -86,37 +86,37 @@ public class EditorDragDropper implements DragDropper {
         // Accept drag
         anEvent.acceptDrag(); //DnDConstants.ACTION_COPY);
 
-        // Get shape at drag point (or the page, if none there)
-        RMShape overShape = _editor.getShapeAtPoint(anEvent.getPoint(), true);
-        if (overShape==null)
-            overShape = _editor.getSelPage();
+        // Get view at drag point (or the page, if none there)
+        SGView overView = _editor.getViewAtPoint(anEvent.getPoint(), true);
+        if (overView==null)
+            overView = _editor.getSelPage();
 
-        // Go up chain until we find a shape that accepts drag
-        while (!acceptsDrag(overShape, anEvent))
-            overShape = overShape.getParent();
+        // Go up chain until we find a view that accepts drag
+        while (!acceptsDrag(overView, anEvent))
+            overView = overView.getParent();
 
-        // If new overShape, do drag exit/enter and reset border
-        if (overShape!=_lastOverShape) {
+        // If new overView, do drag exit/enter and reset border
+        if (overView!= _lastOverView) {
 
             // Send drag exit
-            if(_lastOverShape!=null)
-                getTool(_lastOverShape).dragExit(_lastOverShape, anEvent);
+            if(_lastOverView !=null)
+                getTool(_lastOverView).dragExit(_lastOverView, anEvent);
 
             // Send drag enter
-            getTool(overShape).dragEnter(overShape, anEvent);
+            getTool(overView).dragEnter(overView, anEvent);
 
-            // Get bounds of over shape in editor coords
-            Rect bounds = overShape.getBoundsLocal();
-            _dragShape = _editor.convertFromShape(bounds, overShape);
+            // Get bounds of over view in editor coords
+            Rect bounds = overView.getBoundsLocal();
+            _dragShape = _editor.convertFromSceneView(bounds, overView);
             _editor.repaint();
 
-            // Update last drop shape
-            _lastOverShape = overShape;
+            // Update last drop view
+            _lastOverView = overView;
         }
 
-        // If same OverShape, send dragOver
-        else if (overShape!=null)
-            getTool(overShape).dragOver(overShape, anEvent);
+        // If same OverView, send dragOver
+        else if (overView!=null)
+            getTool(overView).dragOver(overView, anEvent);
     }
 
     /**
@@ -141,9 +141,9 @@ public class EditorDragDropper implements DragDropper {
         // Order window front (for any getMainEditor calls, but really should be true anyway)
         _editor.getWindow().toFront();
 
-        // Forward drop to last over shape
-        Tool tool = getTool(_lastOverShape);
-        tool.dragDrop(_lastOverShape, anEvent);
+        // Forward drop to last over view
+        Tool tool = getTool(_lastOverView);
+        tool.dragDrop(_lastOverView, anEvent);
 
         // Formally complete drop
         anEvent.dropComplete();  //(true);
@@ -156,7 +156,7 @@ public class EditorDragDropper implements DragDropper {
     /**
      * Called to drop string.
      */
-    public void dropForView(RMShape aView, ViewEvent anEvent)
+    public void dropForView(SGView aView, ViewEvent anEvent)
     {
         // Handle String drop
         Clipboard cb = anEvent.getClipboard();
@@ -175,12 +175,12 @@ public class EditorDragDropper implements DragDropper {
     /**
      * Called to handle dropping a string.
      */
-    public void dropStringForView(RMShape aShape, ViewEvent anEvent)
+    public void dropStringForView(SGView aView, ViewEvent anEvent)
     {
-        if (aShape instanceof RMParentShape)
+        if (aView instanceof SGParent)
         {
             Editor editor = getEditor();
-            RMParentShape par = (RMParentShape)aShape;
+            SGParent par = (SGParent)aView;
             Clipboard cb = anEvent.getClipboard(); //Transferable transferable = anEvent.getTransferable();
             editor.undoerSetUndoTitle("Drag and Drop Key");
             editor.getCopyPasterDefault().paste(cb, par, anEvent.getPoint());
@@ -190,31 +190,31 @@ public class EditorDragDropper implements DragDropper {
     /**
      * Called to handle dropping a color.
      */
-    public void dropColorForView(RMShape aShape, ViewEvent anEvent)
+    public void dropColorForView(SGView aView, ViewEvent anEvent)
     {
         Color color = anEvent.getClipboard().getColor();
         getEditor().undoerSetUndoTitle("Set Fill Color");
-        aShape.setFill(color);
+        aView.setFill(color);
     }
 
     /**
      * Called to handle dropping a file.
      */
-    public void dropFilesForView(RMShape aShape, ViewEvent anEvent)
+    public void dropFilesForView(SGView aView, ViewEvent anEvent)
     {
         List<ClipboardData> filesList = anEvent.getClipboard().getFiles();
         for(ClipboardData file : filesList)
-            dropFileForView(aShape, file, anEvent.getPoint());
+            dropFileForView(aView, file, anEvent.getPoint());
     }
 
     /**
      * Called to handle a file drop on the editor.
      */
-    private Point dropFileForView(RMShape aShape, ClipboardData aFile, Point aPoint)
+    private Point dropFileForView(SGView aView, ClipboardData aFile, Point aPoint)
     {
         // If file not loaded, come back when it is
         if (!aFile.isLoaded()) {
-            aFile.addLoadListener(f -> dropFileForView(aShape, aFile, aPoint));
+            aFile.addLoadListener(f -> dropFileForView(aView, aFile, aPoint));
             return aPoint;
         }
 
@@ -226,13 +226,13 @@ public class EditorDragDropper implements DragDropper {
         if (ext.equals("xml"))
             dropXMLFile(aFile, aPoint);
 
-        // If image file, add image shape
+        // If image file, add image view
         else if (Image.canRead(ext))
-            dropImageFile(aShape, aFile, aPoint);
+            dropImageFile(aView, aFile, aPoint);
 
-        // If PDF file, add image shape
+        // If PDF file, add image view
         else if (ext.equals("pdf"))
-            dropPDFFile(aShape, aFile, aPoint);
+            dropPDFFile(aView, aFile, aPoint);
 
         // Return point offset by 10
         aPoint.offset(10, 10); return aPoint;
@@ -249,34 +249,34 @@ public class EditorDragDropper implements DragDropper {
     /**
      * Called to handle an image drop on the editor.
      */
-    private void dropImageFile(RMShape aShape, ClipboardData aFile, Point aPoint)
+    private void dropImageFile(SGView aView, ClipboardData aFile, Point aPoint)
     {
         // Get image source
         Object imgSrc = aFile.getSourceURL()!=null? aFile.getSourceURL() : aFile.getBytes();
 
-        // If image hit a real shape, see if user wants it to be a texture
+        // If image hit a real view, see if user wants it to be a texture
         Editor editor = getEditor();
-        if (aShape!=editor.getSelPage()) {
+        if (aView!=editor.getSelPage()) {
 
             // Create drop image file options array
-            String options[] = { "Image Shape", "Texture", "Cancel" };
+            String options[] = { "Image View", "Texture", "Cancel" };
 
             // Run drop image file options panel
-            String msg = "Image can be either image shape or texture", title = "Image import";
+            String msg = "Image can be either image view or texture", title = "Image import";
             DialogBox dbox = new DialogBox(title); dbox.setQuestionMessage(msg); dbox.setOptions(options);
             switch (dbox.showOptionDialog(null, options[0])) {
 
-                // Handle Create Image Shape
+                // Handle Create Image view
                 case 0:
-                    while(!getTool(aShape).getAcceptsChildren(aShape))
-                        aShape = aShape.getParent();
+                    while(!getTool(aView).getAcceptsChildren(aView))
+                        aView = aView.getParent();
                     break;
 
                 // Handle Create Texture
                 case 1: {
                     Image img = Image.get(imgSrc);
                     ImagePaint imgFill = img!=null ? new ImagePaint(img) : null;
-                    aShape.setFill(imgFill);
+                    aView.setFill(imgFill);
                 }
 
                     // Handle Cancel
@@ -284,54 +284,54 @@ public class EditorDragDropper implements DragDropper {
             }
         }
 
-        // Get parent to add image shape to and drop point in parent coords
-        RMParentShape parent = aShape instanceof RMParentShape? (RMParentShape)aShape : aShape.getParent();
-        Point point = editor.convertToShape(aPoint.x, aPoint.y, parent);
+        // Get parent to add image view to and drop point in parent coords
+        SGParent parent = aView instanceof SGParent ? (SGParent)aView : aView.getParent();
+        Point point = editor.convertToSceneView(aPoint.x, aPoint.y, parent);
 
-        // Create new image shape
-        RMImageShape imgShape = new RMImageShape(imgSrc);
+        // Create new image view
+        SGImage imgView = new SGImage(imgSrc);
 
-        // If image is bigger than hit shape, shrink down
-        if (imgShape.getWidth()>parent.getWidth() || imgShape.getHeight()>parent.getHeight()) {
-            double w = imgShape.getWidth(), h = imgShape.getHeight();
+        // If image is bigger than hit view, shrink down
+        if (imgView.getWidth()>parent.getWidth() || imgView.getHeight()>parent.getHeight()) {
+            double w = imgView.getWidth(), h = imgView.getHeight();
             double w2 = w>h? 320 : 320/h*w, h2 = h>w? 320 : 320/w*h;
-            imgShape.setSize(w2, h2);
+            imgView.setSize(w2, h2);
         }
 
         // Set bounds centered around point (or centered on page if image covers 75% of page or more)
-        imgShape.setXY(point.x - imgShape.getWidth()/2, point.y - imgShape.getHeight()/2);
-        if(imgShape.getWidth()/editor.getWidth()>.75f || imgShape.getHeight()/editor.getHeight()>.75) imgShape.setXY(0, 0);
+        imgView.setXY(point.x - imgView.getWidth()/2, point.y - imgView.getHeight()/2);
+        if(imgView.getWidth()/editor.getWidth()>.75f || imgView.getHeight()/editor.getHeight()>.75) imgView.setXY(0, 0);
 
-        // Add imageShape with undo
+        // Add imageView with undo
         editor.undoerSetUndoTitle("Add Image");
-        parent.addChild(imgShape);
+        parent.addChild(imgView);
 
-        // Select imageShape and SelectTool
-        editor.setSelectedShape(imgShape);
+        // Select imageView and SelectTool
+        editor.setSelView(imgView);
         editor.setCurrentToolToSelectTool();
 
         // If image not loaded, resize when loaded
-        Image img = imgShape.getImage();
+        Image img = imgView.getImage();
         if (!img.isLoaded())
-            img.addLoadListener(() -> repositionDroppedImage(img, imgShape));
+            img.addLoadListener(() -> repositionDroppedImage(img, imgView));
     }
 
     /**
      * Called when dropped image is finished loading to reposition now that we know image size.
      */
-    private void repositionDroppedImage(Image img, RMImageShape imgShape)
+    private void repositionDroppedImage(Image img, SGImage imgView)
     {
-        double dw = img.getWidth() - imgShape.getWidth();
-        double dh = img.getHeight() - imgShape.getHeight();
-        Rect bnds = imgShape.getBounds();
+        double dw = img.getWidth() - imgView.getWidth();
+        double dh = img.getHeight() - imgView.getHeight();
+        Rect bnds = imgView.getBounds();
         bnds.inset(-dw/2, -dh/2); bnds.snap();
-        imgShape.setBounds(bnds);
+        imgView.setBounds(bnds);
     }
 
     /**
      * Called to handle an PDF file drop on the editor.
      */
-    protected void dropPDFFile(RMShape aShape, ClipboardData aFile, Point aPoint)
+    protected void dropPDFFile(SGView aView, ClipboardData aFile, Point aPoint)
     {
         ViewUtils.beep();
     }
@@ -339,6 +339,6 @@ public class EditorDragDropper implements DragDropper {
     /**
      * Helper.
      */
-    private Tool getTool(RMShape aShape)  { return _editor.getToolForView(aShape); }
+    private Tool getTool(SGView aView)  { return _editor.getToolForView(aView); }
 
 }

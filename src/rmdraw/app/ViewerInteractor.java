@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 
 import snap.geom.Ellipse;
@@ -28,7 +28,7 @@ public class ViewerInteractor {
     int                 _mode = 1;
     
     // The last shape that was hit by a mouse press (PLAYER)
-    RMShape             _shapePressed;
+    SGView _shapePressed;
     
     // The stack of shapes under the mouse for mouse moves (PLAYER)
     Stack               _shapeUnderStack = new Stack();
@@ -37,7 +37,7 @@ public class ViewerInteractor {
     Stack <Cursor>      _shapeUnderCursorStack = new Stack();
 
     // The list of text shapes selected (SELECT_TEXT)
-    List <RMTextShape>  _selectedTexts = new ArrayList();
+    List <SGText>  _selectedTexts = new ArrayList();
     
     // The down point for the last mouse loop (SELECT_TEXT/SELECT_IMAGE)
     Point _downPoint;
@@ -165,7 +165,7 @@ public class ViewerInteractor {
     public void mousePressed(ViewEvent anEvent)
     {
         // Get deepest shape hit by that point that has a URL
-        _shapePressed = getViewer().getShapeAtPoint(anEvent.getX(), anEvent.getY(), true);
+        _shapePressed = getViewer().getViewAtPoint(anEvent.getX(), anEvent.getY(), true);
         while (_shapePressed!=null && !_shapePressed.acceptsMouse())
             _shapePressed = _shapePressed.getParent();
 
@@ -180,12 +180,12 @@ public class ViewerInteractor {
     public void mouseDragged(ViewEvent anEvent)
     {
         // Get shape under drag point
-        RMShape shape = getViewer().getShapeAtPoint(anEvent.getX(), anEvent.getY(), true);
+        SGView shape = getViewer().getViewAtPoint(anEvent.getX(), anEvent.getY(), true);
         while (shape!=null && !shape.acceptsMouse())
             shape = shape.getParent();
 
         // If shape under move point is different than that of last last move point, update shape under stack
-        RMShape lastShapeUnder = _shapeUnderStack.isEmpty()? null : (RMShape)_shapeUnderStack.peek();
+        SGView lastShapeUnder = _shapeUnderStack.isEmpty()? null : (SGView)_shapeUnderStack.peek();
         if (shape!=lastShapeUnder)
             updateShapeUnderStack(shape, anEvent);
 
@@ -224,7 +224,7 @@ public class ViewerInteractor {
     public void mouseMoved(ViewEvent anEvent)
     {
         // Get shape under move point
-        RMShape shape = getViewer().getShapeAtPoint(anEvent.getX(), anEvent.getY(), true);
+        SGView shape = getViewer().getViewAtPoint(anEvent.getX(), anEvent.getY(), true);
         while (shape!=null && !shape.acceptsMouse())
             shape = shape.getParent();
 
@@ -239,10 +239,10 @@ public class ViewerInteractor {
     /**
      * The shape under stack should always be a stack of descendants that acceptEvents.
      */
-    protected void updateShapeUnderStack(RMShape aShape, ViewEvent anEvent)
+    protected void updateShapeUnderStack(SGView aShape, ViewEvent anEvent)
     {
         // Get first ancestor that acceptsEvents
-        RMShape parent = aShape==null? null : aShape.getParent();
+        SGView parent = aShape==null? null : aShape.getParent();
         while (parent!=null && !parent.acceptsMouse())
             parent = parent.getParent();
 
@@ -254,7 +254,7 @@ public class ViewerInteractor {
         while (!_shapeUnderStack.isEmpty() && _shapeUnderStack.peek()!=parent && _shapeUnderStack.peek()!=aShape) {
 
             // Pop top shape and send mouse exited
-            RMShape shape = (RMShape)_shapeUnderStack.pop();
+            SGView shape = (SGView)_shapeUnderStack.pop();
 
             // Pop top cursor
             _shapeUnderCursorStack.pop();
@@ -279,7 +279,7 @@ public class ViewerInteractor {
     }
 
     /** Creates a shape mouse event. */
-    ViewEvent createShapeEvent(RMShape s, ViewEvent e, ViewEvent.Type t)  { return getViewer().createShapeEvent(s, e, t); }
+    ViewEvent createShapeEvent(SGView s, ViewEvent e, ViewEvent.Type t)  { return getViewer().createSceneViewEvent(s, e, t); }
 
     /*
      * SELECT_TEXT code.
@@ -311,7 +311,7 @@ public class ViewerInteractor {
         double y = Math.min(_downPoint.getY(), anEvent.getY());
         double w = Math.max(_downPoint.getX(), anEvent.getX()) - x;
         double h = Math.max(_downPoint.getY(), anEvent.getY()) - y;
-        Rect rect = viewer.convertToShape(new Rect(x,y,w,h), viewer.getSelPage()).getBounds();
+        Rect rect = viewer.convertToSceneView(new Rect(x,y,w,h), viewer.getSelPage()).getBounds();
 
         // Get path for rect and find/set text shapes
         findTextShapes(viewer.getSelPage(), rect, _selectedTexts = new ArrayList());
@@ -341,13 +341,13 @@ public class ViewerInteractor {
     private void copySelText()
     {
         // Get first selected text (just return if none)
-        RMTextShape stext = _selectedTexts.size()>0? _selectedTexts.get(0) : null; if(stext==null) return;
-        RMDocument sdoc = stext.getDoc();
+        SGText stext = _selectedTexts.size()>0? _selectedTexts.get(0) : null; if(stext==null) return;
+        SGDoc sdoc = stext.getDoc();
 
         // Create new document and add clone of SelectedTexts to new document
-        RMDocument doc = new RMDocument(sdoc.getPageSize().width, sdoc.getPageSize().height);
-        for (RMTextShape text : _selectedTexts) {
-            RMTextShape clone = text.clone();
+        SGDoc doc = new SGDoc(sdoc.getPageSize().width, sdoc.getPageSize().height);
+        for (SGText text : _selectedTexts) {
+            SGText clone = text.clone();
             doc.getPage(0).addChild(clone);
         }
 
@@ -360,20 +360,20 @@ public class ViewerInteractor {
     /**
      * Finds the text shape children of the given shape in the given rect. Recurses into child shapes.
      */
-    private void findTextShapes(RMParentShape aParent, Shape aPath, List aList)
+    private void findTextShapes(SGParent aParent, Shape aPath, List aList)
     {
         // Get list of hit shapes
-        List <RMShape> shapes = aParent.getChildrenIntersecting(aPath);
+        List <SGView> shapes = aParent.getChildrenIntersecting(aPath);
 
         // Iterate over shapes
-        for(int i=0, iMax=shapes.size(); i<iMax; i++) { RMShape shape = shapes.get(i);
+        for(int i=0, iMax=shapes.size(); i<iMax; i++) { SGView shape = shapes.get(i);
 
             // If shape is text, just add it
-            if(shape instanceof RMTextShape)
+            if(shape instanceof SGText)
                 aList.add(shape);
 
             // Otherwise if shape has children, recurse (with path converted to shape coords)
-            else if(shape instanceof RMParentShape) { RMParentShape parent = (RMParentShape)shape;
+            else if(shape instanceof SGParent) { SGParent parent = (SGParent)shape;
                 Shape path = parent.parentToLocal(aPath);
                 findTextShapes(parent, path, aList);
             }
@@ -387,11 +387,11 @@ public class ViewerInteractor {
     {
         // Iterate over texts and create composite shape
         TextBox tbox = new TextBox(); Shape area = new Rect();
-        for(int i=0, iMax=_selectedTexts.size(); i<iMax; i++) { RMTextShape text = _selectedTexts.get(i);
+        for(int i=0, iMax=_selectedTexts.size(); i<iMax; i++) { SGText text = _selectedTexts.get(i);
 
             // Convert points to text
-            Point p1 = getViewer().convertToShape(_downPoint.x, _downPoint.y, text);
-            Point p2 = getViewer().convertToShape(_dragPoint.x, _dragPoint.y, text);
+            Point p1 = getViewer().convertToSceneView(_downPoint.x, _downPoint.y, text);
+            Point p2 = getViewer().convertToSceneView(_dragPoint.x, _dragPoint.y, text);
 
             // Configure text editor for text
             tbox.setRichText(text.getRichText());
@@ -400,7 +400,7 @@ public class ViewerInteractor {
             // Get text selection for point, path for selection (int viewer coords) and add
             TextSel sel = new TextSel(tbox, p1.getX(), p1.getY(), p2.getX(), p2.getY(), false, false);
             Shape path = sel.getPath();
-            path = getViewer().convertFromShape(path, text);
+            path = getViewer().convertFromSceneView(path, text);
             area = Shape.add(area, path);
         }
 
@@ -424,7 +424,7 @@ public class ViewerInteractor {
         if (!_rect.isEmpty()) getViewer().repaint();
 
         // Get rect in viewer coords
-        Rect rect = getViewer().convertFromShape(_rect, getViewer().getSelPage()).getBounds();
+        Rect rect = getViewer().convertFromSceneView(_rect, getViewer().getSelPage()).getBounds();
 
         // Reset selected sides to edges hit by point
         Point point = new Point(anEvent.getX(), anEvent.getY());
@@ -445,7 +445,7 @@ public class ViewerInteractor {
     public void mouseDraggedSelImage(ViewEvent anEvent)
     {
         // Get rect in viewer coords
-        Rect rect = getViewer().convertFromShape(_rect, getViewer().getSelPage()).getBounds();
+        Rect rect = getViewer().convertFromSceneView(_rect, getViewer().getSelPage()).getBounds();
 
         // Repaint rect
         getViewer().repaint(rect.isEmpty()? getViewer().getBounds() : rect.getInsetRect(-5));
@@ -470,7 +470,7 @@ public class ViewerInteractor {
         }
 
         // Set rect ivar in viewer coords
-        _rect = getViewer().convertToShape(rect, getViewer().getSelPage()).getBounds();
+        _rect = getViewer().convertToSceneView(rect, getViewer().getSelPage()).getBounds();
 
         // Repaint rect
         getViewer().repaint(rect.isEmpty()? getViewer().getBounds() : rect.getInsetRect(-5));
@@ -482,7 +482,7 @@ public class ViewerInteractor {
     public void mouseMovedSelImage(ViewEvent anEvent)
     {
         // Get point in selected page coords
-        Point point = getViewer().convertToShape(anEvent.getX(), anEvent.getY(), getViewer().getSelPage());
+        Point point = getViewer().convertToSceneView(anEvent.getX(), anEvent.getY(), getViewer().getSelPage());
 
         // Get hit edges
         int hitEdges = _rect.isEmpty()? 0 : getHitEdges(_rect, point, 5);
@@ -508,7 +508,7 @@ public class ViewerInteractor {
         if(_rect.isEmpty()) return;
 
         // Get selection rect in viewer coords
-        Rect rect = getViewer().convertFromShape(_rect, getViewer().getSelPage()).getBounds();
+        Rect rect = getViewer().convertFromSceneView(_rect, getViewer().getSelPage()).getBounds();
 
         // Create area for bounds, subtract rect and fill
         Shape shape = Shape.subtract(getViewer().getBounds(), rect);
@@ -534,8 +534,8 @@ public class ViewerInteractor {
     private void copySelImage()
     {
         // Get an image of the current page and sub-image
-        RMShape page = getViewer().getDoc().getSelPage();
-        Image img = RMShapeUtils.createImage(page, Color.WHITE);
+        SGView page = getViewer().getDoc().getSelPage();
+        Image img = SGViewUtils.createImage(page, Color.WHITE);
         Image img2 = img.getSubimage(_rect.getX(), _rect.getY(), _rect.getWidth(), _rect.getHeight());
 
         // Get transferable and add to clipboard

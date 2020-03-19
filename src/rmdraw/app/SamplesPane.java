@@ -1,5 +1,5 @@
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 
 import snap.geom.*;
@@ -246,7 +246,7 @@ private static String getDocName(int anIndex)  { return _docNames[anIndex]; }
 /**
  * Returns the doc at given index.
  */
-private static RMDocument getDoc(int anIndex)
+private static SGDoc getDoc(int anIndex)
 {
     // Get document name, URL string and URL
     String name = getDocName(anIndex);
@@ -258,7 +258,7 @@ private static RMDocument getDoc(int anIndex)
     if(bytes==null) { System.err.println("SamplesPane.getDoc: Couldn't load " + url); return null; }
     
     // Return document
-    RMDocument doc = RMDocument.getDocFromSource(bytes);
+    SGDoc doc = SGDoc.getDocFromSource(bytes);
     return doc;
 }
 
@@ -320,7 +320,7 @@ private void setImage(Image anImg, int anIndex)
 private static void createImages()
 {
     for(int i=0,iMax=getDocCount();i<iMax;i++) {
-        RMDocument doc = getDoc(i); if(doc==null) continue;
+        SGDoc doc = getDoc(i); if(doc==null) continue;
         doc.getPage(0).setPaintBackground(false);
         Size size = getDocSize(i); int index = i;
         Image img = createImage(doc.getPage(0), size.width, size.height);
@@ -334,7 +334,7 @@ private static void createImages()
 /**
  * Returns an image for the given shape, with given background color (null for clear) and scale.
  */
-private static Image createImage(RMShape aShape, double aW, double aH)
+private static Image createImage(SGView aShape, double aW, double aH)
 {
     // Create new image
     int w = (int)Math.round(aW), h = (int)Math.round(aH);
@@ -348,8 +348,8 @@ private static Image createImage(RMShape aShape, double aW, double aH)
     pntr.setColor(Color.GRAY); pntr.drawRect(.5,.5,w-1,h-1);
 
     // Paint shape and return image
-    RMShapeUtils.layoutDeep(aShape);
-    RMShapeUtils.paintShape(pntr, aShape, new Rect(0,0,w,h), 1d/6);
+    SGViewUtils.layoutDeep(aShape);
+    SGViewUtils.paintView(aShape, pntr, new Rect(0,0,w,h), 1d/6);
     pntr.flush();
     return img;
 }

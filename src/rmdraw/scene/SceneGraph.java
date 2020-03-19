@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.gfx.*;
 import snap.util.DeepChangeListener;
 import snap.util.PropChange;
@@ -17,7 +17,7 @@ public class SceneGraph {
     private Client _client;
 
     // The document being viewed
-    private RMDocument _view;
+    private SGDoc _view;
 
     // The size of ScenGraph
     private double _width, _height;
@@ -45,17 +45,17 @@ public class SceneGraph {
     /**
      * Returns the document.
      */
-    public RMDocument getDoc()  { return (RMDocument)getRootView(); }
+    public SGDoc getDoc()  { return (SGDoc)getRootView(); }
 
     /**
      * Returns the RootView of this SceneGraph.
      */
-    public RMParentShape getRootView()  { return _view; }
+    public SGParent getRootView()  { return _view; }
 
     /**
      * Sets the RootView of this SceneGraph.
      */
-    public void setRootView(RMDocument aDoc)
+    public void setRootView(SGDoc aDoc)
     {
         // Resolve page references on document and make sure it has a selected page
         aDoc.resolvePageReferences();
@@ -117,7 +117,7 @@ public class SceneGraph {
      */
     public double getPrefWidth()
     {
-        RMParentShape view = getRootView();
+        SGParent view = getRootView();
         return view!=null ? view.getPrefWidth() : 0;
     }
 
@@ -126,7 +126,7 @@ public class SceneGraph {
      */
     public double getPrefHeight()
     {
-        RMParentShape view = getRootView();
+        SGParent view = getRootView();
         return view!=null ? view.getPrefHeight() : 0;
     }
 
@@ -143,7 +143,7 @@ public class SceneGraph {
         double ph = getHeight();
 
         // Get root view and bounds in center of SceneGraph
-        RMParentShape view = getRootView();
+        SGParent view = getRootView();
         double vw = view.getPrefWidth();
         double vh = view.getPrefHeight();
         double vx = pw>vw ? Math.floor((pw-vw)/2) : 0;
@@ -175,7 +175,7 @@ public class SceneGraph {
     /**
      * Called by views to request paint when they change visual properties.
      */
-    protected void repaintSceneForView(RMShape aView)
+    protected void repaintSceneForView(SGView aView)
     {
         // If painting, complain that someone is calling repaint during paint (should never happen, but good to check)
         if (_ptg)
@@ -234,22 +234,22 @@ public class SceneGraph {
     /**
      * Returns whether given view is selected.
      */
-    public boolean isSelectedView(RMShape aView)  { return _client.isSceneSelected(aView); }
+    public boolean isSelectedView(SGView aView)  { return _client.isSceneSelected(aView); }
 
     /**
      * Returns whether given view is super selected.
      */
-    public boolean isSuperSelectedView(RMShape aView)  { return _client.isSceneSuperSelected(aView); }
+    public boolean isSuperSelectedView(SGView aView)  { return _client.isSceneSuperSelected(aView); }
 
     /**
      * Returns whether given view is THE super selected view.
      */
-    public boolean isSuperSelectedLeafView(RMShape aView)  { return _client.isSceneSuperSelectedLeaf(aView); }
+    public boolean isSuperSelectedLeafView(SGView aView)  { return _client.isSceneSuperSelectedLeaf(aView); }
 
     /**
      * Returns whether painting is for editor.
      */
-    public static boolean isEditing(RMShape aView)
+    public static boolean isEditing(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
         return scene!=null && scene.isEditing();
@@ -258,7 +258,7 @@ public class SceneGraph {
     /**
      * Returns whether given view is selected.
      */
-    public static boolean isSelected(RMShape aView)
+    public static boolean isSelected(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
         return scene!=null && scene.isSelectedView(aView);
@@ -267,7 +267,7 @@ public class SceneGraph {
     /**
      * Returns whether given view is super selected.
      */
-    public static boolean isSuperSelected(RMShape aView)
+    public static boolean isSuperSelected(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
         return scene!=null && scene.isSuperSelectedView(aView);
@@ -276,7 +276,7 @@ public class SceneGraph {
     /**
      * Returns whether given view is THE super selected view.
      */
-    public static boolean isSuperSelectedLeaf(RMShape aView)
+    public static boolean isSuperSelectedLeaf(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
         return scene!=null && scene.isSuperSelectedLeafView(aView);
@@ -294,7 +294,7 @@ public class SceneGraph {
         void sceneNeedsRelayout();
 
         /** Called when SceneGraph view needs repaint. */
-        void sceneNeedsRepaint(RMShape aShape);
+        void sceneNeedsRepaint(SGView aShape);
 
         /** Called when SceneGraph View has prop change. */
         void sceneViewPropChanged(PropChange aPC);
@@ -309,12 +309,12 @@ public class SceneGraph {
         default boolean isSceneEditing()  { return false; }
 
         /** Returns whether given view is selected. */
-        default boolean isSceneSelected(RMShape aView)  { return false; }
+        default boolean isSceneSelected(SGView aView)  { return false; }
 
         /** Returns whether given view is super selected. */
-        default boolean isSceneSuperSelected(RMShape aView)  { return false; }
+        default boolean isSceneSuperSelected(SGView aView)  { return false; }
 
         /** Returns whether given view is THE super selected view. */
-        default boolean isSceneSuperSelectedLeaf(RMShape aView)  { return false; }
+        default boolean isSceneSuperSelectedLeaf(SGView aView)  { return false; }
     }
 }

@@ -1,4 +1,4 @@
-package rmdraw.shape;
+package rmdraw.scene;
 import snap.geom.Rect;
 import snap.gfx.*;
 import snap.util.XMLArchiver;

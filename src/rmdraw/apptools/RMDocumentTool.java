@@ -5,7 +5,7 @@ package rmdraw.apptools;
 import rmdraw.app.Editor;
 import rmdraw.app.EditorProxGuide;
 import rmdraw.app.Tool;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.Size;
 import snap.gfx.*;
 import snap.util.*;
@@ -14,7 +14,7 @@ import snap.view.*;
 /**
  * This class provides UI for configuring an RMDocument.
  */
-public class RMDocumentTool <T extends RMDocument> extends Tool<T> {
+public class RMDocumentTool <T extends SGDoc> extends Tool<T> {
     
     // The array of supported paper sizes
     static Size _paperSizes[];
@@ -25,7 +25,7 @@ public class RMDocumentTool <T extends RMDocument> extends Tool<T> {
 /**
  * Returns the class that tool edits.
  */
-public Class getShapeClass()  { return RMDocument.class; }
+public Class getShapeClass()  { return SGDoc.class; }
 
 /**
  * Returns the name to be show in inspector window.
@@ -39,7 +39,7 @@ protected void initUI()
 {
     // Set PaperSizeComboBox paper size names and UnitComboBox Unit values
     setViewItems("PaperSizeComboBox", _paperSizeNames);
-    setViewItems("UnitComboBox", RMDocument.Unit.values());
+    setViewItems("UnitComboBox", SGDoc.Unit.values());
 }
 
 /**
@@ -48,8 +48,8 @@ protected void initUI()
 public void resetUI()
 {
     // Get currently selected document and its page size
-    RMDocument doc = getSelectedShape(); if(doc==null) return;
-    RMPage page = doc.getSelPage();
+    SGDoc doc = getSelectedShape(); if(doc==null) return;
+    SGPage page = doc.getSelPage();
     
     // Set PageWidthText and PageHeightText
     setViewValue("PageWidthText", getUnitsFromPointsStr(page.getWidth()));
@@ -79,10 +79,10 @@ public void resetUI()
     setViewValue("GridSpacingText", getUnitsFromPointsStr(doc.getGridSpacing()));
     
     // Reset Page Layout controls and null string text
-    setViewValue("SingleRadio", doc.getPageLayout()==RMDocument.PageLayout.Single);
-    setViewValue("DoubleRadio", doc.getPageLayout()==RMDocument.PageLayout.Double);
-    setViewValue("FacingRadio", doc.getPageLayout()==RMDocument.PageLayout.Facing);
-    setViewValue("ContinuousRadio", doc.getPageLayout()==RMDocument.PageLayout.Continuous);
+    setViewValue("SingleRadio", doc.getPageLayout()== SGDoc.PageLayout.Single);
+    setViewValue("DoubleRadio", doc.getPageLayout()== SGDoc.PageLayout.Double);
+    setViewValue("FacingRadio", doc.getPageLayout()== SGDoc.PageLayout.Facing);
+    setViewValue("ContinuousRadio", doc.getPageLayout()== SGDoc.PageLayout.Continuous);
     setViewValue("NullStringText", doc.getNullString());
     
     // Repaint PageSizeView
@@ -100,8 +100,8 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get current document and page (just return if null)
-    RMDocument doc = getSelectedShape(); if(doc==null) return;
-    RMPage page = doc.getSelPage();
+    SGDoc doc = getSelectedShape(); if(doc==null) return;
+    SGPage page = doc.getSelPage();
     
     // Set boolean for whether we need to resize window
     boolean resizeWindow = false;
@@ -128,7 +128,7 @@ public void respondUI(ViewEvent anEvent)
     
     // Handle UnitComboBox
     if(anEvent.equals("UnitComboBox"))
-        doc.setUnit((RMDocument.Unit)anEvent.getValue());
+        doc.setUnit((SGDoc.Unit)anEvent.getValue());
     
     // Handle PortraitRadioButton, LandscapeRadioButton
     if((anEvent.equals("PortraitRadioButton") && page.getWidth()>page.getHeight()) ||

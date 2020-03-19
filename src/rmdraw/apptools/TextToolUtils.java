@@ -1,7 +1,7 @@
 package rmdraw.apptools;
 
 import rmdraw.app.Editor;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import snap.geom.Insets;
 import snap.geom.Point;
 import snap.geom.Rect;
@@ -16,7 +16,7 @@ public class TextToolUtils {
      * Returns a rect suitable for the default bounds of a given text at a given point. This takes into account the font
      * and margins of the given text.
      */
-    public static Rect getDefaultBounds(RMTextShape aText, Point aPoint)
+    public static Rect getDefaultBounds(SGText aText, Point aPoint)
     {
         // Get text font (or default font, if not available) and margin
         Font font = aText.getFont();
@@ -39,31 +39,31 @@ public class TextToolUtils {
     /**
      * Returns whether text tool should convert to text.
      */
-    public static boolean shouldConvertToText(RMShape aShape)
+    public static boolean shouldConvertToText(SGView aShape)
     {
         if(aShape.isLocked()) return false;
-        return aShape.getClass()== RMRectShape.class || aShape instanceof RMOvalShape ||
-                aShape instanceof RMPolygonShape;
+        return aShape.getClass()== SGRect.class || aShape instanceof SGOval ||
+                aShape instanceof SGPolygon;
     }
 
     /**
      * Converts a shape to a text shape.
      */
-    public static void convertToText(Editor anEditor, RMShape aShape, String aString)
+    public static void convertToText(Editor anEditor, SGView aShape, String aString)
     {
         // If shape is null, just return
         if(aShape==null) return;
 
         // Get text shape for given shape (if given shape is text, just use it)
-        RMTextShape text = aShape instanceof RMTextShape? (RMTextShape)aShape : new RMTextShape();
+        SGText text = aShape instanceof SGText ? (SGText)aShape : new SGText();
 
         // Copy attributes of given shape
         if(text!=aShape)
-            text.copyShape(aShape);
+            text.copyView(aShape);
 
         // Copy path of given shape
         if(text!=aShape)
-            text.setPathShape(aShape);
+            text.setPathView(aShape);
 
         // Swap this shape in for original
         if(text!=aShape) {
@@ -80,7 +80,7 @@ public class TextToolUtils {
             text.setText(aString);
 
         // Select new shape
-        anEditor.setSuperSelectedShape(text);
+        anEditor.setSuperSelView(text);
     }
 
     /**

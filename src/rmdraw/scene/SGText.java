@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
-package rmdraw.shape;
+package rmdraw.scene;
 import java.util.*;
 import java.util.List;
 import snap.geom.*;
@@ -10,7 +10,7 @@ import snap.text.*;
 import snap.util.*;
 
 /**
- * This class is an RMShape subclass for handling rich text. Text is probably the most common and useful element in a
+ * This class is an SGView subclass for handling rich text. Text is probably the most common and useful element in a
  * ReportMill template. You might use this class to programmatically build or modify a template, like this:
  * <p><blockquote><pre>
  *   RichText rtext = new RichText("Hello world!", RMFont.getFont("Arial", 12), RMColor.red);
@@ -20,7 +20,7 @@ import snap.util.*;
  *   text.setSizeToFit();
  * </pre></blockquote>
  */
-public class RMTextShape extends RMRectShape {
+public class SGText extends SGRect {
 
     // The RichText to be displayed
     private RichText _rtext;
@@ -37,7 +37,7 @@ public class RMTextShape extends RMRectShape {
     // Whether to fit text on layout
     private boolean  _fitText;
     
-    // Whether text should wrap around other shapes that cause wrap
+    // Whether text should wrap around other views that cause wrap
     private boolean  _performsWrap = false;
 
     // Whether text should eliminate empty lines during RPG
@@ -52,14 +52,14 @@ public class RMTextShape extends RMRectShape {
     // PDF option: Whether text is multiline when editable in PDF
     private boolean  _multiline;
 
-    // The linked text shape for rendering overflow, if there is one
-    private RMLinkedText  _linkedText;
+    // The linked text view for rendering overflow, if there is one
+    private SGLinkedText _linkedText;
     
-    // A text box to manage RichText in shape bounds
+    // A text box to manage RichText in view bounds
     private TextBox  _textBox;
 
     // The view that provides the path for this text to wrap text to
-    private RMShape  _pathShape;
+    private SGView _pathView;
 
     // The default text margin (top=1, left=2, bottom=0, right=2)
     static Insets          _marginDefault = new Insets(1, 2, 0, 2);
@@ -79,17 +79,17 @@ public class RMTextShape extends RMRectShape {
 /**
  * Creates an empty text instance.
  */
-public RMTextShape() { }
+public SGText() { }
 
 /**
  * Creates a text instance initialized with given RichText.
  */
-public RMTextShape(RichText aRichText)  { setRichText(aRichText); }
+public SGText(RichText aRichText)  { setRichText(aRichText); }
 
 /**
  * Creates a text instance initialized with the given plain text String.
  */
-public RMTextShape(String plainText)  { getRichText().addChars(plainText); }
+public SGText(String plainText)  { getRichText().addChars(plainText); }
 
 /**
  * Returns the RichText.
@@ -252,12 +252,12 @@ public byte getWraps()  { return _wraps; }
 public void setWraps(byte aValue)  { _wraps = aValue; }
 
 /**
- * Returns whether text should wrap around other shapes that cause wrap.
+ * Returns whether text should wrap around other views that cause wrap.
  */
 public boolean getPerformsWrap()  { return _performsWrap; }
 
 /**
- * Sets whether text should wrap around other shapes that cause wrap.
+ * Sets whether text should wrap around other views that cause wrap.
  */
 public void setPerformsWrap(boolean aFlag)  { _performsWrap = aFlag; }
 
@@ -385,25 +385,25 @@ public void setWidth(double aValue)  { super.setWidth(aValue); revalidate(); }
 public void setHeight(double aValue)  { super.setHeight(aValue); revalidate(); }
 
 /**
- * Overrides shape implementation to get clip path.
+ * Overrides to get clip path.
  */
 public Shape getPath()
 {
     // If text doesn't perform wrap or parent is null, return normal path in bounds
     if(!getPerformsWrap() || getParent()==null)
-        return getPathShape()!=null? getPathShape().getPath().copyFor(getBoundsLocal()) : super.getPath();
+        return getPathView()!=null? getPathView().getPath().copyFor(getBoundsLocal()) : super.getPath();
     
     // Get peers who cause wrap (if none, just return super path in bounds)
     List peersWhoCauseWrap = getPeersWhoCauseWrap();
     if(peersWhoCauseWrap==null)
-        return getPathShape()!=null? getPathShape().getPath().copyFor(getBoundsLocal()) : super.getPath();
+        return getPathView()!=null? getPathView().getPath().copyFor(getBoundsLocal()) : super.getPath();
     
     // Add this text to list
     peersWhoCauseWrap.add(0, this);
     
-    // Get the path minus the neighbors, convert back to this shape, reset bounds to this shape
+    // Get the path minus the neighbors, convert back to this view, reset bounds to this view
     _performsWrap = false;
-    Shape path = RMShapeUtils.getSubtractedPath(peersWhoCauseWrap, -3);  // INSET NAILED TO -3
+    Shape path = SGViewUtils.getSubtractedPath(peersWhoCauseWrap, -3);  // INSET NAILED TO -3
     _performsWrap = true;
     path = parentToLocal(path);
     path = path.copyFor(getBoundsLocal());
@@ -413,11 +413,11 @@ public Shape getPath()
 /**
  * Returns the subset of children that cause wrap.
  */
-private List <RMShape> getPeersWhoCauseWrap()
+private List <SGView> getPeersWhoCauseWrap()
 {
     // Iterate over children and add any that intersect frame
     List list = null;
-    for (int i=0, iMax=getParent().getChildCount(); i<iMax; i++) { RMShape child = getParent().getChild(i);
+    for (int i=0, iMax=getParent().getChildCount(); i<iMax; i++) { SGView child = getParent().getChild(i);
         if (child!=this && child.getFrame().intersects(getFrame())) {
             if (list==null)
                 list = new ArrayList(); list.add(child); }
@@ -428,42 +428,42 @@ private List <RMShape> getPeersWhoCauseWrap()
 /**
  * This notification method is called when any peer is changed.
  */
-public void peerDidChange(RMShape aShape)
+public void peerDidChange(SGView aView)
 {
-    // If this text respects neighbors and shape intersects it, register for redraw
-    if (getPerformsWrap() && aShape.getFrame().intersectsRect(getFrame())) {
+    // If this text respects neighbors and view intersects it, register for redraw
+    if (getPerformsWrap() && aView.getFrame().intersectsRect(getFrame())) {
         revalidate(); repaint(); }
 }
 
 /**
- * Returns the shape that provides the path for this text to wrap text to.
+ * Returns the view that provides the path for this text to wrap text to.
  */
-public RMShape getPathShape()  { return _pathShape; }
+public SGView getPathView()  { return _pathView; }
 
 /**
- * Sets the shape that provides the path for this text to wrap text to.
+ * Sets the view that provides the path for this text to wrap text to.
  */
-public void setPathShape(RMShape aShape)
+public void setPathView(SGView aView)
 {
-    if (SnapUtils.equals(aShape, _pathShape)) return;
-    firePropChange("PathShape", _pathShape, _pathShape = aShape);
+    if (SnapUtils.equals(aView, _pathView)) return;
+    firePropChange("PathView", _pathView, _pathView = aView);
     revalidate(); repaint();
 }
 
 /**
- * Overrides rectangle implementation to potentially clear path shape.
+ * Overrides rectangle implementation to potentially clear path view.
  */
-public void setRadius(float aValue)  { super.setRadius(aValue); setPathShape(null); }
+public void setRadius(float aValue)  { super.setRadius(aValue); setPathView(null); }
 
 /**
  * Returns the linked text for this text (if any).
  */
-public RMLinkedText getLinkedText()  { return _linkedText; }
+public SGLinkedText getLinkedText()  { return _linkedText; }
 
 /**
  * Sets the linked text for this text (if any).
  */
-public void setLinkedText(RMLinkedText aLinkedText)
+public void setLinkedText(SGLinkedText aLinkedText)
 {
     // Set linked text, and if non-null, set its previous text to this text
     _linkedText = aLinkedText;
@@ -553,29 +553,29 @@ protected double getPrefHeightImpl(double aWidth)
 }
 
 /**
- * Creates a shape suitable for the "remainder" portion of a divideShape call (just a clone by default).
+ * Creates a view suitable for the "remainder" portion of a divideView call (just a clone by default).
  */
-protected RMShape createDivideShapeRemainder(byte anEdge)  { return anEdge==0? new RMLinkedText(this) : clone(); }
+protected SGView createDivideViewRemainder(byte anEdge)  { return anEdge==0? new SGLinkedText(this) : clone(); }
 
-/** Editor method - indicates that this shape can be super selected. */
+/** Editor method - indicates that this view can be super selected. */
 public boolean superSelectable()  { return true; }
 
 /** Editor method. */
 public boolean isStructured()  { return false; }
 
 /**
- * Paints a text shape.
+ * Paints a text.
  */
-protected void paintShape(Painter aPntr)
+protected void paintView(Painter aPntr)
 {
     // Paint normal background
-    super.paintShape(aPntr);
+    super.paintView(aPntr);
 
     // If SuperSelected, just return (TextTool will do painting instead)
     if(SceneGraph.isSuperSelected(this))
         return;
 
-    // Clip to shape bounds (cache clip)
+    // Clip to view bounds (cache clip)
     aPntr.save();
     aPntr.clip(getBoundsLocal());
 
@@ -607,10 +607,10 @@ public void revalidate()
 /**
  * Standard clone implementation.
  */
-public RMTextShape clone()
+public SGText clone()
 {
-    // Get normal shape clone, clone XString, clear layout and return
-    RMTextShape clone = (RMTextShape)super.clone();
+    // Get normal view clone, clone XString, clear layout and return
+    SGText clone = (SGText)super.clone();
     clone._rtext = null; clone._textBox = null;
     clone._richTextLsnr = pc -> richTextDidPropChange(pc);
     if (_rtext!=null) clone.setRichText(_rtext.clone());
@@ -620,10 +620,10 @@ public RMTextShape clone()
 /**
  * Override to support margin copy.
  */
-public void copyShape(RMShape aShape)
+public void copyView(SGView aView)
 {
-    super.copyShape(aShape);
-    RMTextShape other = aShape instanceof RMTextShape? (RMTextShape)aShape : null; if (other==null) return;
+    super.copyView(aView);
+    SGText other = aView instanceof SGText ? (SGText) aView : null; if (other==null) return;
     setMargin(other.getMargin());
 }
 
@@ -632,7 +632,7 @@ public void copyShape(RMShape aShape)
  */
 public XMLElement toXML(XMLArchiver anArchiver)
 {
-    // Archive basic shape attributes and reset element name to text
+    // Archive basic attributes and reset element name to text
     XMLElement e = super.toXML(anArchiver); e.setName("text");
     
     // Archive Margin, AlignmentY
@@ -648,7 +648,7 @@ public XMLElement toXML(XMLArchiver anArchiver)
     if(_drawSelRect) e.add("draw-border", true);
     
     // Archive xstring
-    if(!(this instanceof RMLinkedText)) {
+    if(!(this instanceof SGLinkedText)) {
         
         // Get the xml element for the RichText
         XMLElement xse = anArchiver.toXML(getRichText());
@@ -658,15 +658,15 @@ public XMLElement toXML(XMLArchiver anArchiver)
             e.add(xse.get(i));
     }
     
-    // If linked text present, archive reference to it (it should be archived as normal part of shape hierarchy)
+    // If linked text present, archive reference to it (it should be archived as normal part of view hierarchy)
     if(getLinkedText()!=null)
         e.add("linked-text", anArchiver.getReference(getLinkedText()));
     
-    // If there is a path shape, archive path shape
-    if(getPathShape()!=null) {
+    // If there is a path view, archive path view
+    if(getPathView()!=null) {
         
-        // Get path shape and an element (and add element to master element)
-        RMShape pathShape = getPathShape();
+        // Get path view and an element (and add element to master element)
+        SGView pathShape = getPathView();
         XMLElement pathShapeElement = new XMLElement("path-shape");
         e.add(pathShapeElement);
         
@@ -706,7 +706,7 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
     if(anElement.getAttributeBoolValue("draw-border")) setDrawsSelectionRect(true);
     
     // Unarchive RichText
-    if(!(this instanceof RMLinkedText))
+    if(!(this instanceof SGLinkedText))
         getRichText().fromXML(anArchiver, anElement);
     
     // Register for finish call
@@ -720,8 +720,8 @@ public Object fromXML(XMLArchiver anArchiver, XMLElement anElement)
         XMLElement pathShapeElementZero = pathShapeElement.get(0);
         
         // Unarchive the path shape and set
-        RMShape pathShape = (RMShape)anArchiver.fromXML(pathShapeElementZero, null);
-        setPathShape(pathShape);
+        SGView pathShape = (SGView)anArchiver.fromXML(pathShapeElementZero, null);
+        setPathView(pathShape);
     }
     
     // Unarchive PDF options
@@ -739,7 +739,7 @@ public void fromXMLFinish(XMLArchiver anArchiver, XMLElement anElement)
 {
     // If linked-text, get referenced linked text and set
     if(!anElement.hasAttribute("linked-text")) return;
-    RMLinkedText linkedText = (RMLinkedText)anArchiver.getReference("linked-text", anElement);
+    SGLinkedText linkedText = (SGLinkedText)anArchiver.getReference("linked-text", anElement);
     setLinkedText(linkedText);
 }
 

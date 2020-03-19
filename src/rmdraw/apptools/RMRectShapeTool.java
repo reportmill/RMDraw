@@ -3,7 +3,7 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Tool;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 import snap.gfx.Border;
 import snap.view.*;
@@ -11,7 +11,7 @@ import snap.view.*;
 /**
  * This class handles editing of rectangle shapes.
  */
-public class RMRectShapeTool <T extends RMRectShape> extends Tool<T> {
+public class RMRectShapeTool <T extends SGRect> extends Tool<T> {
     
 /**
  * Returns a new instance of the shape class that this tool is responsible for.
@@ -29,7 +29,7 @@ protected T newInstance()
 public void resetUI()
 {
     // Get selected rectangle (just return if null)
-    RMRectShape rect = getSelectedShape(); if(rect==null) return;
+    SGRect rect = getSelectedShape(); if(rect==null) return;
     
     // Update RoundingThumb and RoundingText
     setViewValue("RoundingThumb", rect.getRadius());
@@ -42,14 +42,14 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get the current rect shape and list of rectshapes (just return if null)
-    RMRectShape rect = getSelectedShape(); if(rect==null) return;
-    List <RMRectShape> rects = (List)getSelectedShapes();
+    SGRect rect = getSelectedShape(); if(rect==null) return;
+    List <SGRect> rects = (List)getSelectedShapes();
 
     // Handle Rounding Radius Thumb & Text
     if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText")) {
         rect.undoerSetUndoTitle("Rounding Change");
         float value = anEvent.getFloatValue();
-        for (RMRectShape r : rects) {
+        for (SGRect r : rects) {
             r.setRadius(value);
             if (r.getBorder()==null)
                 r.setBorder(Border.blackBorder());
@@ -65,7 +65,7 @@ public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.CROSSH
 /**
  * Returns the class that this tool is responsible for.
  */
-public Class getShapeClass()  { return RMRectShape.class; }
+public Class getShapeClass()  { return SGRect.class; }
 
 /**
  * Returns the name to be presented to user.

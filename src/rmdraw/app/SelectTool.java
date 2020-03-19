@@ -3,7 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.apptools.TextTool;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.util.*;
 import snap.geom.Point;
 import snap.geom.Rect;
@@ -32,13 +32,13 @@ public class SelectTool extends Tool {
     RMShapeHandle   _shapeHandle;
     
     // The shape handling mouse events
-    RMShape         _eventShape;
+    SGView _eventShape;
 
     // The current selection rect (during DragModeSelect)
     Rect _selRect = new Rect();
     
     // The list of shapes that will be selected (during DragModeSelect)
-    List <RMShape>  _newSelShapes = new ArrayList();
+    List <SGView>  _newSelShapes = new ArrayList();
     
     // Whether to re-enter mouse pressed
     boolean         _redoMousePressed;
@@ -55,10 +55,10 @@ public class SelectTool extends Tool {
         Editor editor = getEditor();
 
         // Call setNeedsRepaint on superSelectedShapes to wipe out handles
-        for(RMShape shp : editor.getSuperSelectedShapes()) shp.repaint();
+        for(SGView shp : editor.getSuperSelViews()) shp.repaint();
 
         // See if tool wants to handle this one
-        Tool toolShared = editor.getToolForViews(editor.getSelectedOrSuperSelectedShapes());
+        Tool toolShared = editor.getToolForViews(editor.getSelOrSuperSelViews());
         if(toolShared!=null && toolShared.mousePressedSelection(anEvent)) {
             _dragMode = DragMode.None; return; }
 
@@ -82,32 +82,32 @@ public class SelectTool extends Tool {
 
             // If _selectedShape is superSelected, select it instead
             if(isSuperSelected(_shapeHandle.shape))
-                editor.setSelectedShape(_shapeHandle.shape);
+                editor.setSelView(_shapeHandle.shape);
 
             // Just return
             return;
         }
 
         // Get shape hit by event point
-        RMShape hitShape = editor.getShapeAtPoint(anEvent.getX(), anEvent.getY());
+        SGView hitShape = editor.getViewAtPoint(anEvent.getX(), anEvent.getY());
 
         // If HitShape is super-selected, make sure it's main Editor.SuperSelShape and start DragMode.Select
         if(isSuperSelected(hitShape)) {
-            if(hitShape!=editor.getSuperSelectedShape())
-                editor.setSuperSelectedShape(hitShape);
+            if(hitShape!=editor.getSuperSelView())
+                editor.setSuperSelView(hitShape);
             _dragMode = DragMode.Select;
         }
 
         // If HitShape should be super-selected automatically, super-select and re-enter
         else if(hitShape.getParent()!=null && hitShape.getParent().childrenSuperSelectImmediately()) {
-            editor.setSuperSelectedShape(hitShape);
+            editor.setSuperSelView(hitShape);
             mousePressed(anEvent);
             return;
         }
 
         // If Multi-click and HitShape is super-selectable, super-select and re-enter with reduced clicks
         else if(anEvent.getClickCount()>1 && getTool(hitShape).isSuperSelectable(hitShape)) {
-            editor.setSuperSelectedShape(hitShape);
+            editor.setSuperSelView(hitShape);
             ViewEvent event = anEvent.copyForClickCount(anEvent.getClickCount()-1);
             mousePressed(event);
             return;
@@ -115,15 +115,15 @@ public class SelectTool extends Tool {
 
         // If Shift-click, either add or remove HitShape from Editor.SelShapes
         else if(anEvent.isShiftDown()) {
-            if(isSelected(hitShape)) editor.removeSelectedShape(hitShape);
-            else editor.addSelectedShape(hitShape);
+            if(isSelected(hitShape)) editor.removeSelView(hitShape);
+            else editor.addSelView(hitShape);
             _dragMode = DragMode.None;
         }
 
         // Otherwise, make sure HitShape is selected and start move or rotate
         else {
             if(!isSelected(hitShape))
-                editor.setSelectedShape(hitShape);
+                editor.setSelView(hitShape);
             _dragMode = !anEvent.isAltDown()? DragMode.Move : DragMode.Rotate;
         }
 
@@ -131,7 +131,7 @@ public class SelectTool extends Tool {
         _lastMousePoint = getEditorEvents().getEventPointInShape(false);
 
         // Get editor super selected shape and call mouse pressed for superSelectedShape's tool
-        RMShape superSelShape = editor.getSuperSelectedShape();
+        SGView superSelShape = editor.getSuperSelView();
         getTool(superSelShape).processEvent(superSelShape, anEvent);
 
         // If redo mouse pressed was requested, do redo
@@ -182,7 +182,7 @@ public class SelectTool extends Tool {
                 setUndoTitle("Move");
 
                 // Get SuperSelectedShape and disable ParentTracksBoundsOfChildren
-                RMParentShape parent = editor.getSuperSelectedParentShape();
+                SGParent parent = editor.getSuperSelParentView();
 
                 // Get event point in super selected shape coords
                 Point point = getEditorEvents().getEventPointInShape(false);
@@ -209,7 +209,7 @@ public class SelectTool extends Tool {
                 Point point2 = getEditorEvents().getEventPointInShape(false);
 
                 // Iterate over selected shapes and update roll
-                for(RMShape shape : editor.getSelectedShapes()) { if(shape.isLocked()) continue;
+                for(SGView shape : editor.getSelViews()) { if(shape.isLocked()) continue;
                     shape.setRoll(shape.getRoll() + point2.getY() - _lastMousePoint.getY()); }
 
                 // Reset last point and break
@@ -236,16 +236,16 @@ public class SelectTool extends Tool {
                 List newShapes = getHitShapes();
 
                 // Repaint selected shapes and SelectionRect
-                for(RMShape s : _newSelShapes) repaintShape(s);
-                editor.repaint(editor.convertFromShape(_selRect.getInsetRect(-2), null).getBounds());
+                for(SGView s : _newSelShapes) repaintShape(s);
+                editor.repaint(editor.convertFromSceneView(_selRect.getInsetRect(-2), null).getBounds());
 
                 // Get new SelRect and clear NewSelShapes
-                _selRect = Rect.get(_downPoint, editor.convertToShape(anEvent.getX(), anEvent.getY(), null));
+                _selRect = Rect.get(_downPoint, editor.convertToSceneView(anEvent.getX(), anEvent.getY(), null));
                 _newSelShapes.clear();
 
                 // If shift key was down, exclusive OR (xor) newShapes with selectedShapes
                 if(anEvent.isShiftDown()) {
-                    List xor = ListUtils.clone(editor.getSelectedShapes());
+                    List xor = ListUtils.clone(editor.getSelViews());
                     ListUtils.xor(xor, newShapes);
                     _newSelShapes.addAll(xor);
                 }
@@ -254,8 +254,8 @@ public class SelectTool extends Tool {
                 else _newSelShapes.addAll(newShapes);
 
                 // Repaint selected shapes and SelectionRect
-                for(RMShape s : _newSelShapes) repaintShape(s);
-                editor.repaint(editor.convertFromShape(_selRect.getInsetRect(-2), null).getBounds());
+                for(SGView s : _newSelShapes) repaintShape(s);
+                editor.repaint(editor.convertFromSceneView(_selRect.getInsetRect(-2), null).getBounds());
 
                 // break
                 break;
@@ -290,15 +290,15 @@ public class SelectTool extends Tool {
                 // If shift key was down, exclusive OR (xor) newShapes with selectedShapes. Else select new shapes
                 if(newShapes.size()>0) {
                     if(anEvent.isShiftDown()) {
-                        List xor = ListUtils.clone(editor.getSelectedShapes());
+                        List xor = ListUtils.clone(editor.getSelViews());
                         ListUtils.xor(xor, newShapes);
-                        editor.setSelectedShapes(xor);
+                        editor.setSelViews(xor);
                     }
-                    else editor.setSelectedShapes(newShapes);
+                    else editor.setSelViews(newShapes);
                 }
 
                 // If no shapes were selected, clear selectedShapes
-                else editor.setSuperSelectedShape(editor.getSuperSelectedShape());
+                else editor.setSuperSelView(editor.getSuperSelView());
 
                 // Reset NewSelShapes and SelRect since we don't need them anymore
                 _newSelShapes.clear();
@@ -329,8 +329,8 @@ public class SelectTool extends Tool {
     {
         // Iterate over super selected shapes and forward mouseMoved for each shape
         Editor editor = getEditor();
-        for(int i=1, iMax=editor.getSuperSelectedShapeCount(); i<iMax && !anEvent.isConsumed(); i++) {
-            RMShape shape = editor.getSuperSelectedShape(i);
+        for(int i = 1, iMax = editor.getSuperSelViewCount(); i<iMax && !anEvent.isConsumed(); i++) {
+            SGView shape = editor.getSuperSelView(i);
             getTool(shape).mouseMoved(shape, anEvent);
         }
     }
@@ -341,8 +341,8 @@ public class SelectTool extends Tool {
     private void moveShapes(Point fromPoint, Point toPoint)
     {
         // Iterate over selected shapes
-        for(int i=0, iMax=getEditor().getSelectedShapeCount(); i<iMax; i++) {
-            RMShape shape = getEditor().getSelectedShape(i); if(shape.isLocked()) continue;
+        for(int i = 0, iMax = getEditor().getSelViewCount(); i<iMax; i++) {
+            SGView shape = getEditor().getSelView(i); if(shape.isLocked()) continue;
             double fx = fromPoint.getX(), fy = fromPoint.getY(), tx = toPoint.getX(), ty = toPoint.getY();
             shape.setFrameXY(shape.getFrameX() + tx - fx, shape.getFrameY() + ty - fy);
         }
@@ -351,11 +351,11 @@ public class SelectTool extends Tool {
     /**
      * Returns the list of shapes hit by the selection rect formed by the down point and current point.
      */
-    private List <RMShape> getHitShapes()
+    private List <SGView> getHitShapes()
     {
         // Get selection path from rect around currentPoint and _downPoint
         Editor editor = getEditor();
-        RMParentShape superShape = editor.getSuperSelectedParentShape(); if(superShape==null)return Collections.emptyList();
+        SGParent superShape = editor.getSuperSelParentView(); if(superShape==null)return Collections.emptyList();
         Point curPoint = getEditorEvents().getEventPointInDoc();
         Rect selRect = Rect.get(curPoint, _downPoint);
         Shape path = superShape.parentToLocal(selRect, null);
@@ -363,8 +363,8 @@ public class SelectTool extends Tool {
         // If selection rect is outside super selected shape, move up shape hierarchy
         while(superShape!=editor.getDoc() &&
             !path.getBounds().intersectsRect(getTool(superShape).getBoundsSuperSelected(superShape))) {
-            RMParentShape parent = superShape.getParent();
-            editor.setSuperSelectedShape(parent);
+            SGParent parent = superShape.getParent();
+            editor.setSuperSelView(parent);
             path = superShape.localToParent(path);
             superShape = parent;
         }
@@ -373,7 +373,7 @@ public class SelectTool extends Tool {
         if(superShape == editor.getDoc()) {
             superShape = editor.getSelPage();
             path = superShape.parentToLocal(selRect, null);
-            editor.setSuperSelectedShape(superShape);
+            editor.setSuperSelView(superShape);
         }
 
         // Returns the children of the super-selected shape that intersect selection path
@@ -409,18 +409,18 @@ public class SelectTool extends Tool {
             return;
 
         // Make sure that text bounds are drawn?
-        List <RMShape> selectedShapes = editor.getSelectedShapes();
-        for (RMShape shape : selectedShapes) {
-            if (!(shape instanceof RMTextShape)) continue;
+        List <SGView> selectedShapes = editor.getSelViews();
+        for (SGView shape : selectedShapes) {
+            if (!(shape instanceof SGText)) continue;
             TextTool tool = (TextTool)getTool(shape);
-            tool.paintBoundsRect((RMTextShape)shape, aPntr);
+            tool.paintBoundsRect((SGText)shape, aPntr);
         }
 
         // Paint handles for selecting shapes
         paintHandlesForShapes(aPntr, _newSelShapes);
 
         // Paint SelRect: light transparent rect with darker transparent border
-        Rect rect = editor.convertFromShape(_selRect, null).getBounds();
+        Rect rect = editor.convertFromSceneView(_selRect, null).getBounds();
         aPntr.setColor(new Color(.9,.5)); aPntr.fill(rect);
         aPntr.setStroke(Stroke.Stroke1); aPntr.setColor(new Color(.6,.6)); aPntr.draw(rect);
     }
@@ -428,7 +428,7 @@ public class SelectTool extends Tool {
     /**
      * Calls Editor.repaint() for given shape, assuming it might be selected and have handles.
      */
-    void repaintShape(RMShape aShape)
+    void repaintShape(SGView aShape)
     {
         Rect bnds0 = aShape.getBoundsMarkedDeep(); bnds0.inset(-4);
         Rect bnds1 = aShape.localToParent(bnds0, null).getBounds();

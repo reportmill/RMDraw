@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.app;
-import rmdraw.shape.*;
+import rmdraw.scene.*;
 import java.io.File;
 import snap.util.*;
 
@@ -16,7 +16,7 @@ public class EditorPaneUtils {
  */
 public static void previewHTML(EditorPane anEP)
 {
-    RMDocument doc = anEP.getDoc();
+    SGDoc doc = anEP.getDoc();
     doc.write(SnapUtils.getTempDir() + "RMHTMLFile.html");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMHTMLFile.html");
 }
@@ -26,7 +26,7 @@ public static void previewHTML(EditorPane anEP)
  */
 public static void previewJPG(EditorPane anEP)
 {
-    RMDocument doc = anEP.getDoc();
+    SGDoc doc = anEP.getDoc();
     doc.write(SnapUtils.getTempDir() + "RMJPGFile.jpg");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMJPGFile.jpg");
 }
@@ -36,7 +36,7 @@ public static void previewJPG(EditorPane anEP)
  */
 public static void previewPNG(EditorPane anEP)
 {
-    RMDocument doc = anEP.getDoc();
+    SGDoc doc = anEP.getDoc();
     doc.write(SnapUtils.getTempDir() + "RMPNGFile.png");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMPNGFile.png");
 }
@@ -46,7 +46,7 @@ public static void previewPNG(EditorPane anEP)
  */
 public static void previewRTF(EditorPane anEP)
 {
-    RMDocument doc = anEP.getDoc();
+    SGDoc doc = anEP.getDoc();
     doc.write(SnapUtils.getTempDir() + "RMRTFFile.rtf");
     FileUtils.openFile(SnapUtils.getTempDir() + "RMRTFFile.rtf");
 }
