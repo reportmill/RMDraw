@@ -23,7 +23,7 @@ public class Styler {
      */
     public void setBorderStrokeColor(Color aColor)
     {
-        Border b1 = getBorder();
+        Border b1 = getBorder(); if (b1==null) b1 = Border.blackBorder();
         Border b2 = b1.copyForColor(aColor);
         setBorder(b2);
     }
@@ -33,7 +33,7 @@ public class Styler {
      */
     public void setBorderStrokeWidth(double aWidth)
     {
-        Border b1 = getBorder();
+        Border b1 = getBorder(); if (b1==null) b1 = Border.blackBorder();
         Border b2 = b1.copyForStrokeWidth(aWidth);
         setBorder(b2);
     }
