@@ -54,16 +54,36 @@ public class StylerPane extends ViewOwner {
         _effectTool.setStyler(getStyler());
 
         // Get array of known stroke names and initialize StrokeComboBox
-        int scount = _borderTool.getBorderCount();
-        Object snames[] = new String[scount];
-        for (int i=0;i<scount;i++) snames[i] = _borderTool.getBorder(i).getName();
-        setViewItems("StrokeComboBox", snames);
+//        int scount = _borderTool.getBorderCount();
+//        Object snames[] = new String[scount];
+//        for (int i=0;i<scount;i++) snames[i] = _borderTool.getBorder(i).getName();
+//        setViewItems("StrokeComboBox", snames);
 
         // Get array of known fill names and initialize FillComboBox
         int fcount = _fillTool.getFillCount();
         Object fnames[] = new String[fcount];
         for (int i=0;i<fcount;i++) fnames[i] = _fillTool.getFill(i).getName();
         setViewItems("FillComboBox", fnames);
+
+        // Configure Borders
+        Label l1 = getView("LineBdrButton", ButtonBase.class).getLabel();
+        l1.setPrefSize(16,16);
+        l1.setBorder(Color.BLACK,1);
+        Label l2 = getView("LowerBdrButton", ButtonBase.class).getLabel();
+        l2.setPrefSize(16,16);
+        l2.setBorder(new Borders.BevelBorder(0));
+        Label l3 = getView("RaiseBdrButton", ButtonBase.class).getLabel();
+        l3.setPrefSize(16,16);
+        l3.setBorder(new Borders.BevelBorder(1));
+        Label l4 = getView("EtchBdrButton", ButtonBase.class).getLabel();
+        l4.setPrefSize(16,16);
+        l4.setBorder(new Borders.EtchBorder());
+        Label l5 = getView("EdgeBdrButton", ButtonBase.class).getLabel();
+        l5.setPrefSize(16,16);
+        l5.setBorder(new Borders.EdgeBorder());
+        Label l0 = getView("NoBdrButton", ButtonBase.class).getLabel();
+        l0.setPrefSize(16,16);
+        l0.setBorder(Color.LIGHTGRAY,1);
 
         // Get array of known effect names and initialize EffectComboBox
         int ecount = _effectTool.getEffectCount();
@@ -82,9 +102,16 @@ public class StylerPane extends ViewOwner {
         Border border = styler.getBorder();
         if (border==null) border = Border.blackBorder();
 
-        // Update StrokeCheckBox, StrokeComboBox
+        // Update StrokeCheckBox, StrokeComboBox, Border Buttons
         setViewValue("StrokeCheckBox", styler.getBorder()!=null);
-        setViewValue("StrokeComboBox", border.getName());
+        //setViewValue("StrokeComboBox", border.getName());
+        Border bdr = styler.getBorder();
+        setViewValue("NoBdrButton", bdr==null);
+        setViewValue("LineBdrButton", bdr instanceof Borders.LineBorder);
+        setViewValue("LowerBdrButton", bdr instanceof Borders.BevelBorder && ((Borders.BevelBorder)bdr).getType()==0);
+        setViewValue("RaiseBdrButton", bdr instanceof Borders.BevelBorder && ((Borders.BevelBorder)bdr).getType()==1);
+        setViewValue("EtchBdrButton", bdr instanceof Borders.EtchBorder);
+        setViewValue("EdgeBdrButton", bdr instanceof Borders.EdgeBorder);
 
         // Get stroke tool, install tool UI in stroke panel and ResetUI
         BorderTool btool = _borderTool.getTool(border);
@@ -139,10 +166,18 @@ public class StylerPane extends ViewOwner {
         }
 
         // Handle StrokeComboBox: Get selected border and iterate over shapes and set
-        if (anEvent.equals("StrokeComboBox")) {
-            Border border = _borderTool.getBorder(anEvent.getSelIndex());
-            styler.setBorder(border);
-        }
+//        if (anEvent.equals("StrokeComboBox")) {
+//            Border border = _borderTool.getBorder(anEvent.getSelIndex());
+//            styler.setBorder(border);
+//        }
+
+        // Handle NoBdrButton, LineBdrButton, LowerBdrButton, RaiseBdrButton, EtchBdrButton
+        if (anEvent.equals("NoBdrButton")) styler.setBorder(null);
+        if (anEvent.equals("LineBdrButton")) styler.setBorder(Border.blackBorder());
+        if (anEvent.equals("LowerBdrButton")) styler.setBorder(new Borders.BevelBorder(0));
+        if (anEvent.equals("RaiseBdrButton")) styler.setBorder(new Borders.BevelBorder(1));
+        if (anEvent.equals("EtchBdrButton")) styler.setBorder(new Borders.EtchBorder());
+        if (anEvent.equals("EdgeBdrButton")) styler.setBorder(new Borders.EdgeBorder());
 
         // Handle FillCheckBox: Iterate over shapes and add fill if not there or remove if there
         if (anEvent.equals("FillCheckBox")) {

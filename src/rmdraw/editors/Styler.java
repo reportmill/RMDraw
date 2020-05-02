@@ -63,7 +63,13 @@ public class Styler {
     /**
      * Sets the selected border show edge.
      */
-    public void setBorderShowEdge(Pos aPos, boolean aValue)  { }
+    public void setBorderShowEdge(Pos aPos, boolean aValue)
+    {
+        Border bdr = getBorder();
+        Borders.EdgeBorder ebdr = bdr instanceof Borders.EdgeBorder ? (Borders.EdgeBorder)bdr : new Borders.EdgeBorder();
+        ebdr = ebdr.copyForShowEdge(aPos, aValue);
+        setBorder(ebdr);
+    }
 
     /**
      * Returns the fill of currently selected view.
