@@ -11,7 +11,7 @@ import snap.view.ViewEvent;
 /**
  * UI editing for GradientPaint.
  */
-public class GradientPaintTool extends PaintTool {
+public class GradientPaintTool extends StylerOwner {
     
     /**
      * Initialize UI.

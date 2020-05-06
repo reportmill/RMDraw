@@ -8,7 +8,7 @@ import snap.view.ViewEvent;
 /**
  * UI editing for ReflectEffect.
  */
-public class ReflectEffectTool extends EffectTool {
+public class ReflectEffectTool extends StylerOwner {
     
 /**
  * Called to reset UI controls.
@@ -16,7 +16,8 @@ public class ReflectEffectTool extends EffectTool {
 public void resetUI()
 {
     // Get currently selected effect, and get as reflect (create new if not available)
-    Effect eff = getEffect();
+    Styler styler = getStyler();
+    Effect eff = styler.getEffect();
     ReflectEffect reff = eff instanceof ReflectEffect ? (ReflectEffect)eff : new ReflectEffect();
     
     // Update ReflectionHeightSpinner, FadeHeightSpinner, GapHeightSpinner
@@ -31,7 +32,8 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected effect, and get as reflect (create new if not available)
-    Effect eff = getEffect();
+    Styler styler = getStyler();
+    Effect eff = styler.getEffect();
     ReflectEffect reff = eff instanceof ReflectEffect ? (ReflectEffect)eff : new ReflectEffect();
     
     // Handle ReflectionHeightSpinner, FadeHeightSpinner, GapHeightSpinner
@@ -43,7 +45,7 @@ public void respondUI(ViewEvent anEvent)
         reff = reff.copyForGap(anEvent.getFloatValue());
     
     // Set new effect
-    setEffect(reff);
+    styler.setEffect(reff);
 }
 
 }

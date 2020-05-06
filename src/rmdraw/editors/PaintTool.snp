@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ColView Padding="20,0,20,0" Spacing="5" Align="CENTER">
-  <Label text="Color" />
-  <ColorWell Name="FillColorWell" PrefWidth="60" PrefHeight="30" />
-</ColView>
+<TitleView MinHeight="30" Padding="6,4,4,4" Text="Fill / Paint" Collapsible="true">
+  <ColView FillWidth="true">
+    <RowView Spacing="30">
+      <CheckBox Name="FillCheckBox" Padding="0,0,0,8" />
+      <ComboBox Name="FillComboBox" PrefWidth="135" PrefHeight="23" />
+    </RowView>
+    <BoxView Name="FillPane" FillWidth="true" />
+  </ColView>
+</TitleView>

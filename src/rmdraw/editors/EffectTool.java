@@ -4,18 +4,16 @@
 package rmdraw.editors;
 import java.util.*;
 import snap.gfx.*;
-import snap.view.ViewOwner;
+import snap.view.BoxView;
+import snap.view.ViewEvent;
 
 /**
  * Provides a tool for editing Snap Effects.
  */
-public class EffectTool extends ViewOwner {
-
-    // The Styler used to get/set paint attributes
-    private Styler _styler;
+public class EffectTool extends StylerOwner {
 
     // Map of tool instances by shape class
-    private Map<Class,EffectTool>  _tools = new Hashtable();
+    private Map<Class,StylerOwner>  _tools = new HashMap<>();
     
     // List of known effects
     static Effect  _effects[] = { new ShadowEffect(), new ReflectEffect(), new BlurEffect(), new EmbossEffect() };
@@ -29,19 +27,6 @@ public class EffectTool extends ViewOwner {
     }
 
     /**
-     * Returns the styler.
-     */
-    public Styler getStyler()  { return _styler; }
-
-    /**
-     * Sets the styler.
-     */
-    public void setStyler(Styler aStyler)
-    {
-        _styler = aStyler;
-    }
-
-    /**
      * Returns the number of known effects.
      */
     public int getEffectCount()  { return _effects.length; }
@@ -52,7 +37,7 @@ public class EffectTool extends ViewOwner {
     public Effect getEffect(int anIndex)  { return _effects[anIndex]; }
 
     /**
-     * Returns the currently selected shape's effect.
+     * Returns the current styler effect.
      */
     public Effect getEffect()
     {
@@ -60,7 +45,7 @@ public class EffectTool extends ViewOwner {
     }
 
     /**
-     * Iterate over editor selected shapes and set fill.
+     * Sets the current styler effect.
      */
     public void setEffect(Effect anEffect)
     {
@@ -69,13 +54,67 @@ public class EffectTool extends ViewOwner {
     }
 
     /**
+     * Initialize UI panel.
+     */
+    protected void initUI()
+    {
+        // Initialize EffectComboBox
+        int ecount = getEffectCount();
+        Object enames[] = new String[ecount];
+        for (int i=0;i<ecount;i++) enames[i] = getEffect(i).getName();
+        setViewItems("EffectComboBox", enames);
+    }
+
+    /**
+     * Reset UI controls from current selection.
+     */
+    public void resetUI()
+    {
+        // Get current effect (or default, if not available)
+        Styler styler = getStyler();
+        Effect effect = styler.getEffect();
+        if (effect==null) effect = new ShadowEffect();
+
+        // Update EffectCheckBox, EffectComboBox
+        setViewValue("EffectCheckBox", styler.getEffect()!=null);
+        setViewValue("EffectComboBox", effect.getName());
+
+        // Get effect tool, install tool UI in effect panel and ResetUI
+        StylerOwner etool = getTool(effect);
+        getView("EffectPane", BoxView.class).setContent(etool.getUI());
+        etool.resetLater();
+    }
+
+    /**
+     * Updates styler from UI controls.
+     */
+    public void respondUI(ViewEvent anEvent)
+    {
+        // Get styler
+        Styler styler = getStyler();
+
+        // Handle EffectCheckBox: Iterate over shapes and add effect if not there or remove if there
+        if (anEvent.equals("EffectCheckBox")) {
+            boolean selected = anEvent.getBoolValue();
+            Effect eff = selected ? new ShadowEffect() : null;
+            styler.setEffect(eff);
+        }
+
+        // Handle EffectComboBox: Get selected effect instance and iterate over shapes and add effect if not there
+        if (anEvent.equals("EffectComboBox")) {
+            Effect eff = getEffect(anEvent.getSelIndex());
+            styler.setEffect(eff);
+        }
+    }
+
+    /**
      * Returns the specific tool for a given shape.
      */
-    public EffectTool getTool(Object anObj)
+    public StylerOwner getTool(Object anObj)
     {
         // Get tool from tools map - just return if present
         Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
-        EffectTool tool = _tools.get(cls);
+        StylerOwner tool = _tools.get(cls);
         if (tool==null) {
             _tools.put(cls, tool=getToolImpl(cls));
             tool.setStyler(getStyler());
@@ -86,13 +125,13 @@ public class EffectTool extends ViewOwner {
     /**
      * Returns the specific tool for a given effect.
      */
-    private static EffectTool getToolImpl(Class aClass)
+    private static StylerOwner getToolImpl(Class aClass)
     {
         if (aClass==ShadowEffect.class) return new ShadowEffectTool();
         if (aClass==ReflectEffect.class) return new ReflectEffectTool();
         if (aClass==BlurEffect.class) return new BlurEffectTool();
         if (aClass==EmbossEffect.class) return new EmbossEffectTool();
         System.err.println("EffectTool.getToolImpl: Can't find tool for: " + aClass);
-        return new EffectTool();
+        return new ShadowEffectTool();
     }
 }

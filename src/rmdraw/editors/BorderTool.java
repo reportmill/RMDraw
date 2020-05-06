@@ -1,110 +1,108 @@
-/*
- * Copyright (c) 2010, ReportMill Software. All rights reserved.
- */
 package rmdraw.editors;
-import java.util.*;
-import snap.gfx.*;
+import snap.gfx.Border;
+import snap.gfx.Borders;
+import snap.gfx.Color;
 import snap.view.*;
-import snap.viewx.ColorWell;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * UI editing for Borders.
+ * Provides UI to edit borders.
  */
-public class BorderTool extends ViewOwner {
-
-    // The Styler used to get/set border attributes
-    private Styler _styler;
+public class BorderTool extends StylerOwner {
 
     // Map of tool instances by shape class
-    private Map<Class,BorderTool> _tools = new Hashtable();
-
-    // List of known borders
-    private static Border  _borders[] = { Border.blackBorder(), new Borders.EdgeBorder() };
+    private Map<Class, StylerOwner> _tools = new HashMap<>();
 
     /**
-     * Returns the styler.
+     * Creates BorderTool.
      */
-    public Styler getStyler()  { return _styler; }
-
-    /**
-     * Sets the styler.
-     */
-    public void setStyler(Styler aStyler)
+    public BorderTool(Styler aStyler)
     {
-        _styler = aStyler;
+        setStyler(aStyler);
     }
 
     /**
-     * Returns the number of known borders.
+     * Initialize UI panel.
      */
-    public int getBorderCount()  { return _borders.length; }
+    protected void initUI()
+    {
+        // Configure Borders
+        Label l1 = getView("LineBdrButton", ButtonBase.class).getLabel();
+        l1.setPrefSize(16, 16);
+        l1.setBorder(Color.BLACK, 1);
+        Label l2 = getView("LowerBdrButton", ButtonBase.class).getLabel();
+        l2.setPrefSize(16, 16);
+        l2.setBorder(new Borders.BevelBorder(0));
+        Label l3 = getView("RaiseBdrButton", ButtonBase.class).getLabel();
+        l3.setPrefSize(16, 16);
+        l3.setBorder(new Borders.BevelBorder(1));
+        Label l4 = getView("EtchBdrButton", ButtonBase.class).getLabel();
+        l4.setPrefSize(16, 16);
+        l4.setBorder(new Borders.EtchBorder());
+        Label l5 = getView("EdgeBdrButton", ButtonBase.class).getLabel();
+        l5.setPrefSize(16, 16);
+        l5.setBorder(new Borders.EdgeBorder());
+    }
 
     /**
-     * Returns the individual border at given index.
-     */
-    public Border getBorder(int anIndex)  { return _borders[anIndex]; }
-
-    /**
-     * Reset UI controls.
+     * Reset UI controls from current selection.
      */
     public void resetUI()
     {
-        // Get currently selected border/stroke
+        // Get current border (or default, if not available)
         Styler styler = getStyler();
         Border border = styler.getBorder();
-        if (border==null) border = Border.createLineBorder(Color.BLACK, 1);
-        Stroke stroke = border.getStroke();
+        if (border==null) border = Border.blackBorder();
 
-        // Update StrokeColorWell, StrokeWidthText, StrokeWidthThumb, DashArrayText, DashPhaseSpinner
-        setViewValue("StrokeColorWell", border.getColor());
-        setViewValue("StrokeWidthText", border.getWidth());
-        setViewValue("StrokeWidthThumb", border.getWidth());
-        setViewValue("DashArrayText", Stroke.getDashArrayString(stroke));
-        setViewValue("DashPhaseSpinner", stroke.getDashOffset());
+        // Update StrokeCheckBox
+        Border bdr = styler.getBorder();
+        setViewValue("StrokeCheckBox", bdr!=null);
+
+        // Update Border Buttons
+        setViewValue("LineBdrButton", bdr instanceof Borders.LineBorder);
+        setViewValue("LowerBdrButton", bdr instanceof Borders.BevelBorder && ((Borders.BevelBorder)bdr).getType()==0);
+        setViewValue("RaiseBdrButton", bdr instanceof Borders.BevelBorder && ((Borders.BevelBorder)bdr).getType()==1);
+        setViewValue("EtchBdrButton", bdr instanceof Borders.EtchBorder);
+        setViewValue("EdgeBdrButton", bdr instanceof Borders.EdgeBorder);
+
+        // Get stroke tool, install tool UI in stroke panel and ResetUI
+        StylerOwner btool = getTool(border);
+        getView("StrokePane", BoxView.class).setContent(btool.getUI());
+        btool.resetLater();
     }
 
     /**
-     * Respond to UI changes
+     * Updates border from UI controls.
      */
     public void respondUI(ViewEvent anEvent)
     {
-        // Get editor selected shapes and selected shape
+        // Get styler
         Styler styler = getStyler();
 
-        // Handle StrokeColorWell - get color and set in selected shapes
-        if (anEvent.equals("StrokeColorWell")) {
-            ColorWell cwell = getView("StrokeColorWell", ColorWell.class);
-            Color color = cwell.getColor();
-            styler.setBorderStrokeColor(color);
+        // Handle StrokeCheckBox: Add border if not there or remove if there
+        if (anEvent.equals("StrokeCheckBox")) {
+            boolean selected = anEvent.getBoolValue();
+            Border border = selected ? Border.blackBorder() : null;
+            styler.setBorder(border);
         }
 
-        // Handle StrokeWidthText, StrokeWidthThumb
-        if (anEvent.equals("StrokeWidthText") || anEvent.equals("StrokeWidthThumb")) {
-            double width = anEvent.getFloatValue();
-            styler.setBorderStrokeWidth(width);
-        }
-
-        // Handle DashArrayText
-        if (anEvent.equals("DashArrayText")) {
-            double darray[] = Stroke.getDashArray(anEvent.getStringValue());
-            styler.setBorderStrokeDashArray(darray);
-        }
-
-        // Handle DashPhaseSpinner
-        if (anEvent.equals("DashPhaseSpinner")) {
-            double dphase = anEvent.getFloatValue();
-            styler.setBorderStrokeDashPhase(dphase);
-        }
+        // Handle LineBdrButton, LowerBdrButton, RaiseBdrButton, EtchBdrButton
+        if (anEvent.equals("LineBdrButton")) styler.setBorder(Border.blackBorder());
+        if (anEvent.equals("LowerBdrButton")) styler.setBorder(new Borders.BevelBorder(0));
+        if (anEvent.equals("RaiseBdrButton")) styler.setBorder(new Borders.BevelBorder(1));
+        if (anEvent.equals("EtchBdrButton")) styler.setBorder(new Borders.EtchBorder());
+        if (anEvent.equals("EdgeBdrButton")) styler.setBorder(new Borders.EdgeBorder());
     }
 
     /**
      * Returns the specific tool for a given fill.
      */
-    public BorderTool getTool(Object anObj)
+    public StylerOwner getTool(Object anObj)
     {
         // Get tool from tools map - just return if present
         Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
-        BorderTool tool = _tools.get(cls);
+        StylerOwner tool = _tools.get(cls);
         if(tool==null) {
             _tools.put(cls, tool=getToolImpl(cls));
             tool.setStyler(getStyler());
@@ -115,10 +113,10 @@ public class BorderTool extends ViewOwner {
     /**
      * Returns the specific tool for a given fill.
      */
-    private static BorderTool getToolImpl(Class aClass)
+    private StylerOwner getToolImpl(Class aClass)
     {
         if(aClass==Borders.EdgeBorder.class) return new EdgeBorderTool();
-        if(Border.class.isAssignableFrom(aClass)) return new BorderTool();
+        if(Border.class.isAssignableFrom(aClass)) return new LineBorderTool();
         throw new RuntimeException("BorderTool.getToolImpl: Unknown border class: " + aClass);
     }
 }

@@ -9,7 +9,7 @@ import snap.viewx.ColorWell;
 /**
  * UI editing for ShadowEffect.
  */
-public class ShadowEffectTool extends EffectTool {
+public class ShadowEffectTool extends StylerOwner {
     
     /**
      * Reset UI controls.
@@ -17,7 +17,8 @@ public class ShadowEffectTool extends EffectTool {
     public void resetUI()
     {
         // Get currently selected effect and shadow effect (create new if not available)
-        Effect eff = getEffect();
+        Styler styler = getStyler();
+        Effect eff = styler.getEffect();
         ShadowEffect seff = eff instanceof ShadowEffect ? (ShadowEffect)eff : new ShadowEffect();
 
         // Update ShadowColor
@@ -38,7 +39,8 @@ public class ShadowEffectTool extends EffectTool {
     public void respondUI(ViewEvent anEvent)
     {
         // Get currently selected effect and shadow effect (create new if not available)
-        Effect eff = getEffect();
+        Styler styler = getStyler();
+        Effect eff = styler.getEffect();
         ShadowEffect seff = eff instanceof ShadowEffect ? (ShadowEffect)eff : new ShadowEffect();
 
         // Handle ShadowColorWell: Create new fill from old shadow fill with new softness
@@ -64,7 +66,7 @@ public class ShadowEffectTool extends EffectTool {
         }
 
         // Set new shadow effect
-        setEffect(seff);
+        styler.setEffect(seff);
     }
 
 /**

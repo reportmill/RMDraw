@@ -8,14 +8,15 @@ import snap.view.ViewEvent;
 /**
  * Inspector for EmbossEffect.
  */
-public class EmbossEffectTool extends EffectTool {
+public class EmbossEffectTool extends StylerOwner {
 
 /**
  * Return emboss effect (or default emboss effect, if not available).
  */
 public EmbossEffect getEmbossEffect()
 {
-    Effect eff = getEffect();
+    Styler styler = getStyler();
+    Effect eff = styler.getEffect();
     return eff instanceof EmbossEffect ? (EmbossEffect)eff : new EmbossEffect();
 }
 
@@ -58,7 +59,7 @@ public void respondUI(ViewEvent anEvent)
 
     // Set new effect
     if (neff!=null)
-        setEffect(neff);
+        getStyler().setEffect(neff);
 }
 
 }

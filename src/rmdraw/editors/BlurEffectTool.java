@@ -8,7 +8,7 @@ import snap.view.ViewEvent;
 /**
  * UI editing for BlurEffect.
  */
-public class BlurEffectTool extends EffectTool {
+public class BlurEffectTool extends StylerOwner {
     
 /**
  * Called to reset UI controls.
@@ -16,7 +16,8 @@ public class BlurEffectTool extends EffectTool {
 public void resetUI()
 {
     // Get currently selected effect and blur effect
-    Effect eff = getEffect();
+    Styler styler = getStyler();
+    Effect eff = styler.getEffect();
     BlurEffect beff = eff instanceof BlurEffect ? (BlurEffect)eff : new BlurEffect();
     
     // Set BlurRadiusSpinner, BlurRadiusSlider
@@ -30,7 +31,8 @@ public void resetUI()
 public void respondUI(ViewEvent anEvent)
 {
     // Get currently selected effect and blur effect
-    Effect eff = getEffect();
+    Styler styler = getStyler();
+    Effect eff = styler.getEffect();
     BlurEffect beff = eff instanceof BlurEffect? (BlurEffect)eff : new BlurEffect();
     
     // Handle BlurRadiusSpinner
@@ -42,7 +44,7 @@ public void respondUI(ViewEvent anEvent)
         beff = new BlurEffect(anEvent.getIntValue());
 
     // Set new shadow effect
-    setEffect(beff);
+    styler.setEffect(beff);
 }
 
 }

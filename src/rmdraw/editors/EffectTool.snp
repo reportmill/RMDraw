@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TitleView MinHeight="30" Padding="6,4,4,4" Text="Effect" Collapsible="true">
+  <ColView FillWidth="true">
+    <RowView Spacing="30">
+      <CheckBox Name="EffectCheckBox" Padding="0,0,0,8" />
+      <ComboBox Name="EffectComboBox" PrefWidth="135" PrefHeight="23" />
+    </RowView>
+    <BoxView Name="EffectPane" FillWidth="true" />
+  </ColView>
+</TitleView>

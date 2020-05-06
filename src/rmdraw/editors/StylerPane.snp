@@ -1,38 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ColView Padding="4" Spacing="4" FillWidth="true">
-  <TitleView MinHeight="30" Padding="6,4,4,4" Text="Fill/Paint" Collapsible="true">
-    <ColView FillWidth="true">
-      <RowView Spacing="30">
-        <CheckBox Name="FillCheckBox" Padding="0,0,0,8" />
-        <ComboBox Name="FillComboBox" PrefWidth="135" PrefHeight="23" />
-      </RowView>
-      <BoxView Name="FillPane" FillWidth="true" />
-    </ColView>
-  </TitleView>
-  <TitleView MinHeight="30" Padding="6,4,4,4" Text="Border/Stroke" Collapsible="true">
-    <ColView FillWidth="true">
-      <RowView Spacing="-1">
-        <CheckBox Name="StrokeCheckBox" Padding="0,0,0,8" />
-        <ToggleButton Name="LineBdrButton" PrefWidth="25" PrefHeight="24" Margin="0,0,0,32" Padding="4" ToolTip="Line Border" Position="CENTER_LEFT" />
-        <ToggleButton Name="LowerBdrButton" PrefWidth="25" PrefHeight="24" Margin="0" Padding="4" ToolTip="RaisedBorder" Position="CENTER" />
-        <ToggleButton Name="RaiseBdrButton" PrefWidth="25" PrefHeight="24" Padding="4" ToolTip="Lowered Border" Position="CENTER" />
-        <ToggleButton Name="EtchBdrButton" PrefWidth="25" PrefHeight="24" Padding="4" ToolTip="Etched Border" Position="CENTER" />
-        <ToggleButton Name="EdgeBdrButton" PrefWidth="25" PrefHeight="24" Padding="4" ToolTip="Edge Border" Position="CENTER" />
-        <ToggleButton Name="NoBdrButton" PrefWidth="25" PrefHeight="24" Padding="4" ToolTip="No Border" Position="CENTER_RIGHT" />
-      </RowView>
-      <BoxView Name="StrokePane" FillWidth="true" />
-    </ColView>
-  </TitleView>
-  <TitleView Name="TextTitleView" MinHeight="30" Padding="6,4,4,4" Text="Text/Font" Collapsible="true">
-  </TitleView>
-  <TitleView MinHeight="30" Padding="6,4,4,4" Text="Effect" Collapsible="true">
-    <ColView FillWidth="true">
-      <RowView Spacing="30">
-        <CheckBox Name="EffectCheckBox" Padding="0,0,0,8" />
-        <ComboBox Name="EffectComboBox" PrefWidth="135" PrefHeight="23" />
-      </RowView>
-      <BoxView Name="EffectPane" FillWidth="true" />
-    </ColView>
+  <TitleView Name="TextTitleView" MinHeight="30" Padding="6,4,4,4" Text="Text / Font" Collapsible="true">
   </TitleView>
   <TitleView Padding="8" Text="Transparency">
     <RowView Spacing="5">

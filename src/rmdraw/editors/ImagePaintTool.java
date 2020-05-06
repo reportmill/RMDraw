@@ -13,7 +13,10 @@ import snap.web.WebURL;
 /**
  * UI editing for ImagePaint.
  */
-public class ImagePaintTool extends PaintTool {
+public class ImagePaintTool extends StylerOwner {
+
+    // The default image fill
+    private static ImagePaint  _imageFill;
 
     /**
      * Updates the UI controls from the currently selected shape.
@@ -81,4 +84,13 @@ public class ImagePaintTool extends PaintTool {
      */
     public String getWindowTitle()  { return "Fill Inspector (Texture)"; }
 
+    /**
+     * Returns the default ImagePaint.
+     */
+    public static ImagePaint getDefault()
+    {
+        if (_imageFill!=null) return _imageFill;
+        Image img = Image.get(ImagePaintTool.class, "pkg.images/Clouds.jpg");
+        return _imageFill = new ImagePaint(img);
+    }
 }

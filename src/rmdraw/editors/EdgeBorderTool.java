@@ -12,7 +12,7 @@ import snap.viewx.ColorWell;
 /**
  * BorderTool subclass for editing EdgeBorder.
  */
-public class EdgeBorderTool extends BorderTool {
+public class EdgeBorderTool extends StylerOwner {
 
     /**
      * Reset UI controls.

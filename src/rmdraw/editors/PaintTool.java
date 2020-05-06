@@ -5,24 +5,17 @@ package rmdraw.editors;
 import java.util.*;
 import snap.gfx.*;
 import snap.view.*;
-import snap.viewx.ColorWell;
 
 /**
  * Provides a tool for editing Paint.
  */
-public class PaintTool extends ViewOwner {
-
-    // The Styler used to get/set paint attributes
-    private Styler _styler;
+public class PaintTool extends StylerOwner {
 
     // Map of PaintTool instances by Paint class
-    private Map<Class,PaintTool> _tools = new Hashtable();
+    private Map<Class,StylerOwner> _tools = new HashMap<>();
     
     // Array of known fills
     private static Paint  _fills[];
-
-    // The default image fill
-    protected static ImagePaint  _imageFill;
 
     /**
      * Creates PaintTool.
@@ -33,16 +26,16 @@ public class PaintTool extends ViewOwner {
     }
 
     /**
-     * Returns the styler.
+     * Initialize UI panel.
      */
-    public Styler getStyler()  { return _styler; }
-
-    /**
-     * Sets the styler.
-     */
-    public void setStyler(Styler aStyler)
+    protected void initUI()
     {
-        _styler = aStyler;
+        // Get array of known fill names and initialize FillComboBox
+        int fcount = getFillCount();
+        Object fnames[] = new String[fcount];
+        for (int i=0;i<fcount;i++)
+            fnames[i] = getFill(i).getName();
+        setViewItems("FillComboBox", fnames);
     }
 
     /**
@@ -50,11 +43,21 @@ public class PaintTool extends ViewOwner {
      */
     protected void resetUI()
     {
-        // Get currently selected color
-        Color color = getStyler().getFillColor();
+        // Get styler
+        Styler styler = getStyler();
 
-        // Update FillColorWell
-        setViewValue("FillColorWell", color);
+        // Get current fill (or default, if not available)
+        Paint fill = styler.getFill();
+        if (fill==null) fill = Color.BLACK;
+
+        // Update FillCheckBox, FillComboBox
+        setViewValue("FillCheckBox", styler.getFill()!=null);
+        setViewValue("FillComboBox", fill.getName());
+
+        // Get fill tool, install tool UI in fill panel and ResetUI
+        StylerOwner ftool = getTool(fill);
+        getView("FillPane", BoxView.class).setContent(ftool.getUI());
+        ftool.resetLater();
     }
 
     /**
@@ -62,11 +65,20 @@ public class PaintTool extends ViewOwner {
      */
     protected void respondUI(ViewEvent anEvent)
     {
-        // Handle FillColorWell: Get color from ColorWell and set with styler
-        if (anEvent.equals("FillColorWell")) {
-            ColorWell cwell = getView("FillColorWell", ColorWell.class);
-            Color color = cwell.getColor();
-            getStyler().setFillColor(color);
+        // Get styler
+        Styler styler = getStyler();
+
+        // Handle FillCheckBox: Iterate over shapes and add fill if not there or remove if there
+        if (anEvent.equals("FillCheckBox")) {
+            boolean selected = anEvent.getBoolValue();
+            Paint fill = selected ? Color.BLACK : null;
+            styler.setFill(fill);
+        }
+
+        // Handle FillComboBox: Get selected fill instance and iterate over shapes and add fill if not there
+        if (anEvent.equals("FillComboBox")) {
+            Paint fill = getFill(anEvent.getSelIndex());
+            styler.setFill(fill);
         }
     }
 
@@ -89,21 +101,18 @@ public class PaintTool extends ViewOwner {
         if (_fills!=null) return _fills;
 
         // Create default fills array and return
-        Paint f0 = Color.BLACK;
-        Paint f1 = new GradientPaint();
-        Image img = Image.get(getClass(), "pkg.images/Clouds.jpg");
-        _imageFill = new ImagePaint(img);
-        return _fills = new Paint[] { f0, f1, _imageFill };
+        Paint f0 = Color.BLACK, f1 = new GradientPaint();
+        return _fills = new Paint[] { f0, f1, ImagePaintTool.getDefault() };
     }
 
     /**
      * Returns the specific tool for a given fill.
      */
-    public PaintTool getTool(Object anObj)
+    public StylerOwner getTool(Object anObj)
     {
         // Get tool from tools map - just return if present
         Class cls = anObj instanceof Class? (Class)anObj : anObj.getClass();
-        PaintTool tool = _tools.get(cls);
+        StylerOwner tool = _tools.get(cls);
         if (tool==null) {
             _tools.put(cls, tool=getToolImpl(cls));
             tool.setStyler(getStyler());
@@ -114,9 +123,9 @@ public class PaintTool extends ViewOwner {
     /**
      * Returns the specific tool for a given fill.
      */
-    private static PaintTool getToolImpl(Class aClass)
+    private static StylerOwner getToolImpl(Class aClass)
     {
-        if (aClass==Color.class) return new PaintTool();
+        if (aClass==Color.class) return new ColorPaintTool();
         if (aClass==GradientPaint.class) return new GradientPaintTool();
         if (aClass==ImagePaint.class) return new ImagePaintTool();
         throw new RuntimeException("PaintTool.getToolImp: No tool class for " + aClass);
