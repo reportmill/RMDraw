@@ -18,6 +18,9 @@ public class StylerPane extends ViewOwner {
 
     // The BorderTool
     private BorderTool _borderTool = new BorderTool();
+
+    // The FontPanel
+    private FontPanel _fontPanel;
     
     // The EffectTool
     private EffectTool _effectTool = new EffectTool();
@@ -85,6 +88,11 @@ public class StylerPane extends ViewOwner {
         l0.setPrefSize(16,16);
         l0.setBorder(Color.LIGHTGRAY,1);
 
+        // Install FontPanel
+        _fontPanel = new FontPanel(getStyler());
+        TitleView textTitleView = getView("TextTitleView", TitleView.class);
+        textTitleView.setContent(_fontPanel.getUI());
+
         // Get array of known effect names and initialize EffectComboBox
         int ecount = _effectTool.getEffectCount();
         Object enames[] = new String[ecount];
@@ -143,6 +151,9 @@ public class StylerPane extends ViewOwner {
         EffectTool etool = _effectTool.getTool(effect);
         getView("EffectPane", BoxView.class).setContent(etool.getUI());
         etool.resetLater();
+
+        // Reset FontPanel
+        _fontPanel.resetLater();
 
         // Update TransparencySlider, TransparencyText (transparency is opposite of opacity and on 0-100 scale)
         double transparency = 100 - styler.getOpacity()*100;

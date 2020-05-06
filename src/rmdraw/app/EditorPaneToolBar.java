@@ -172,11 +172,8 @@ protected void respondUI(ViewEvent anEvent)
 
     // Handle FontFaceComboBox
     if (anEvent.equals("FontFaceComboBox")) {
-        String familyName = anEvent.getText();
-        String fontNames[] = Font.getFontNames(familyName); if(fontNames==null || fontNames.length==0) return;
-        String fontName = fontNames[0];
-        Font font = Font.get(fontName, 12);
-        editor.getStyler().setFontFamily(font);
+        String fname = anEvent.getText();
+        editor.getStyler().setFontFamily(fname);
         editor.requestFocus();
     }
     

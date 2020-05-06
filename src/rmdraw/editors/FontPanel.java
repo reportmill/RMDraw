@@ -159,7 +159,7 @@ public class FontPanel extends ViewOwner {
             Font ofont = styler.getFont();
             Font font = new FontPicker().showPicker(styler.getClientView(), ofont);
             if(font!=null)
-                styler.setFontFamily(font);
+                styler.setFontFamily(font.getFamily());
         }
 
         // Handle SizesList
@@ -172,11 +172,8 @@ public class FontPanel extends ViewOwner {
 
         // Handle FamilyList, FamilyComboBox
         if (anEvent.equals("FamilyList") || (anEvent.equals("FamilyComboBox") && anEvent.isActionEvent())) {
-            String familyName = getViewStringValue("FamilyList");
-            String fontNames[] = Font.getFontNames(familyName); if(fontNames.length==0) return;
-            String fontName = fontNames[0];
-            Font font = Font.getFont(fontName, 12);
-            styler.setFontFamily(font);
+            String fname = getViewStringValue("FamilyList");
+            styler.setFontFamily(fname);
         }
 
         // Handle AllButton, PDFButton
@@ -185,8 +182,8 @@ public class FontPanel extends ViewOwner {
 
         // Handle FontNameComboBox
         if (anEvent.equals("FontNameComboBox")) {
-            Font font = Font.getFont(anEvent.getStringValue(), 12);
-            styler.setFontName(font);
+            String name = anEvent.getStringValue();
+            styler.setFontName(name);
         }
     }
 

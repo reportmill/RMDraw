@@ -126,6 +126,14 @@ public class Styler {
     public void setFont(Font aFont)  { }
 
     /**
+     * Returns the default font.
+     */
+    public Font getFontDefault()
+    {
+        return Font.Arial11;
+    }
+
+    /**
      * Returns whether current text is underlined.
      */
     public boolean isUnderlined()
@@ -159,29 +167,55 @@ public class Styler {
     public void setTextColor(Color aColor)  { }
 
     /**
-     * Sets the font family of selected text.
+     * Resets the current font to given font name (preserving size).
      */
-    public void setFontFamily(Font aFont)  { }
+    public void setFontName(String aName)
+    {
+        Font font1 = getFont(); if (font1==null) font1 = getFontDefault();
+        Font font2 = Font.getFont(aName, font1.getSize());
+        setFont(font2);
+    }
 
     /**
-     * Sets the font name of editor's selected shape(s).
+     * Resets the current font to given family name (preserving size).
      */
-    public void setFontName(Font aFont)  { }
+    public void setFontFamily(String aName)
+    {
+        String fnames[] = Font.getFontNames(aName); if (fnames.length==0) return;
+        String fname = fnames[0];
+        setFontName(fname);
+    }
 
     /**
      * Sets the font size of editor's selected shape(s).
      */
-    public void setFontSize(float aSize, boolean isRelative)  { }
+    public void setFontSize(float aSize, boolean isRelative)
+    {
+        Font font = getFont();
+        double size = isRelative ? font.getSize() + aSize : aSize;
+        Font font2 = font.deriveFont(size);
+        setFont(font2);
+    }
 
     /**
      * Sets the "boldness" of text in the currently selected shapes.
      */
-    public void setFontBold(boolean aFlag)  { }
+    public void setFontBold(boolean aFlag)
+    {
+        Font font = getFont();
+        Font font2 = font.getBold();
+        setFont(font2);
+    }
 
     /**
      * Sets the italic state of text in the currently selected shapes.
      */
-    public void setFontItalic(boolean aFlag)  { }
+    public void setFontItalic(boolean aFlag)
+    {
+        Font font = getFont();
+        Font font2 = font.getItalic();
+        setFont(font2);
+    }
 
     /**
      * Returns the client View.

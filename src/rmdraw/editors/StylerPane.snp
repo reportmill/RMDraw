@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ColView Padding="4" Spacing="4" FillWidth="true">
-  <TitleView MinHeight="30" Padding="6,4,4,4" Text="Fill" Collapsible="true">
+  <TitleView MinHeight="30" Padding="6,4,4,4" Text="Fill/Paint" Collapsible="true">
     <ColView FillWidth="true">
       <RowView Spacing="30">
         <CheckBox Name="FillCheckBox" Padding="0,0,0,8" />
@@ -9,7 +9,7 @@
       <BoxView Name="FillPane" FillWidth="true" />
     </ColView>
   </TitleView>
-  <TitleView MinHeight="30" Padding="6,4,4,4" Text="Stroke" Collapsible="true">
+  <TitleView MinHeight="30" Padding="6,4,4,4" Text="Border/Stroke" Collapsible="true">
     <ColView FillWidth="true">
       <RowView Spacing="-1">
         <CheckBox Name="StrokeCheckBox" Padding="0,0,0,8" />
@@ -22,6 +22,8 @@
       </RowView>
       <BoxView Name="StrokePane" FillWidth="true" />
     </ColView>
+  </TitleView>
+  <TitleView Name="TextTitleView" MinHeight="30" Padding="6,4,4,4" Text="Text/Font" Collapsible="true">
   </TitleView>
   <TitleView MinHeight="30" Padding="6,4,4,4" Text="Effect" Collapsible="true">
     <ColView FillWidth="true">

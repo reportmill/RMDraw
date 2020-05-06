@@ -203,6 +203,14 @@ public class ToolStyler <T extends SGView> {
     }
 
     /**
+     * Returns the default font.
+     */
+    public Font getFontDefault()
+    {
+        return Font.getDefaultFont();
+    }
+
+    /**
      * Returns the font for the given shape.
      */
     public Font getFontDeep()
@@ -233,19 +241,19 @@ public class ToolStyler <T extends SGView> {
     }
 
     /**
-     * Sets the font family of editor's selected shape(s).
+     * Resets the current font to given font name (preserving size).
      */
-    public void setFontFamily(Font aFont)
+    public void setFontName(String aName)
     {
-        setFontKeyDeep(FontFamily_Key, aFont);
+        setFontKeyDeep(FontName_Key, aName);
     }
 
     /**
-     * Sets the font name of editor's selected shape(s).
+     * Resets the current font to given family name (preserving size).
      */
-    public void setFontName(Font aFont)
+    public void setFontFamily(String aName)
     {
-        setFontKeyDeep(FontName_Key, aFont);
+        setFontKeyDeep(FontFamily_Key, aName);
     }
 
     /**
@@ -290,8 +298,9 @@ public class ToolStyler <T extends SGView> {
             case FontName_Key: {
 
                 // Get new font for name and current shape size and set
-                Font aFont = (Font)aVal;
-                Font font2 = font!=null? aFont.deriveFont(font.getSize()) : aFont;
+                String name = (String)aVal;
+                Font font1 = font!=null ? font : getFontDefault();
+                Font font2 = Font.getFont(name, font1.getSize());
                 setFont(font2);
                 break;
             }
@@ -300,12 +309,15 @@ public class ToolStyler <T extends SGView> {
             case FontFamily_Key: {
 
                 // Get new font for given font family font and current shape font size/style and set
-                Font aFont = (Font)aVal;
-                Font font2 = aFont;
-                if(font!=null) {
-                    if(font.isBold()!=font2.isBold() && font2.getBold()!=null)
+                String name = (String)aVal;
+                String fnames[] = Font.getFontNames(name); if (fnames.length==0) return;
+                String fname = fnames[0];
+                Font font1 = font!=null ? font : getFontDefault();
+                Font font2 = Font.getFont(fname, font1.getSize());
+                if (font!=null) {
+                    if (font.isBold()!=font2.isBold() && font2.getBold()!=null)
                         font2 = font2.getBold();
-                    if(font.isItalic()!=font2.isItalic() && font2.getItalic()!=null)
+                    if (font.isItalic()!=font2.isItalic() && font2.getItalic()!=null)
                         font2 = font2.getItalic();
                     font2 = font2.deriveFont(font.getSize());
                 }

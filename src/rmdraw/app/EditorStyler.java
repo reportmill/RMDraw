@@ -173,21 +173,21 @@ public class EditorStyler extends Styler {
     }
 
     /**
-     * Sets the font family of editor's selected shape(s).
+     * Resets the current font to given font name (preserving size).
      */
-    public void setFontFamily(Font aFont)
+    public void setFontName(String aName)
     {
         for (ToolStyler styler : getSelOrSuperSelStylers())
-            styler.setFontFamily(aFont);
+            styler.setFontName(aName);
     }
 
     /**
-     * Sets the font name of editor's selected shape(s).
+     * Resets the current font to given family name (preserving size).
      */
-    public void setFontName(Font aFont)
+    public void setFontFamily(String aName)
     {
         for (ToolStyler styler : getSelOrSuperSelStylers())
-            styler.setFontName(aFont);
+            styler.setFontFamily(aName);
     }
 
     /**
