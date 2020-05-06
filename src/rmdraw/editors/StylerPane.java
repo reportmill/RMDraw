@@ -15,8 +15,8 @@ public class StylerPane extends StylerOwner {
     // The BorderTool
     private BorderTool _borderTool;
 
-    // The FontPanel
-    private FontPanel _fontPanel;
+    // The FontTool
+    private FontTool _fontTool;
     
     // The EffectTool
     private EffectTool _effectTool;
@@ -46,10 +46,10 @@ public class StylerPane extends StylerOwner {
         _borderTool = new BorderTool(getStyler());
         mainView.addChild(_borderTool.getUI(), 1);
 
-        // Install FontPanel
-        _fontPanel = new FontPanel(getStyler());
-        TitleView textTitleView = getView("TextTitleView", TitleView.class);
-        textTitleView.setContent(_fontPanel.getUI());
+        // Install FontTool
+        _fontTool = new FontTool();
+        _fontTool.setStyler(getStyler());
+        mainView.addChild(_fontTool.getUI(), 2);
 
         // Initialize tools
         _effectTool = new EffectTool();
@@ -67,8 +67,8 @@ public class StylerPane extends StylerOwner {
         _borderTool.resetLater();
         _effectTool.resetLater();
 
-        // Reset FontPanel
-        _fontPanel.resetLater();
+        // Reset FontTool
+        _fontTool.resetLater();
 
         // Update TransparencySlider, TransparencyText (transparency is opposite of opacity and on 0-100 scale)
         Styler styler = getStyler();
