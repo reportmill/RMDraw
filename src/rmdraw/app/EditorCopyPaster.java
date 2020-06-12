@@ -68,7 +68,7 @@ public class EditorCopyPaster implements CopyPaster {
             // Get xml for selected views and add DRAW_XML to clipboard
             List <SGView> views = _editor.getSelOrSuperSelViews();
             XMLElement xml = new RMArchiver().writeToXML(views);
-            String xmlStr = xml.toString();
+            String xmlStr = xml.getString();
             cb.addData(DRAW_XML_FORMAT, xmlStr);
 
             // If only one view, add as image
