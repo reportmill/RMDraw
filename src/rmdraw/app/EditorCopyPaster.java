@@ -2,6 +2,7 @@ package rmdraw.app;
 import rmdraw.scene.*;
 import snap.geom.Point;
 import snap.geom.Rect;
+import snap.gfx.Image;
 import snap.text.RichText;
 import snap.util.ListUtils;
 import snap.util.XMLElement;
@@ -61,13 +62,23 @@ public class EditorCopyPaster implements CopyPaster {
         if(!(_editor.getSelOrSuperSelView() instanceof SGDoc) &&
                 !(_editor.getSelOrSuperSelView() instanceof SGPage)) {
 
-            // Get xml for selected shapes
-            XMLElement xml = new RMArchiver().writeToXML(_editor.getSelOrSuperSelViews());
-            String xmlStr = xml.toString();
-
-            // Get System clipboard and add data as RMData and String (text/plain)
+            // Get System clipboard
             Clipboard cb = Clipboard.getCleared();
+
+            // Get xml for selected views and add DRAW_XML to clipboard
+            List <SGView> views = _editor.getSelOrSuperSelViews();
+            XMLElement xml = new RMArchiver().writeToXML(views);
+            String xmlStr = xml.toString();
             cb.addData(DRAW_XML_FORMAT, xmlStr);
+
+            // If only one view, add as image
+            SGView view = views.size()==1 ? _editor.getSelView() : null;
+            if (view!=null) {
+                Image image = SGViewUtils.createImage(view, null);
+                cb.addData(image);
+            }
+
+            // Add XML as plain string, too (probably stupid)
             cb.addData(xmlStr);
 
             // Reset Editor.LastCopyShape/LastPasteShape
