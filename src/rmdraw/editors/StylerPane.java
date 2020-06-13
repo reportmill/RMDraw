@@ -9,15 +9,15 @@ import snap.view.*;
  */
 public class StylerPane extends StylerOwner {
 
+    // The FontTool
+    private FontTool _fontTool;
+
     // The PaintTool
     private PaintTool _fillTool;
 
     // The BorderTool
     private BorderTool _borderTool;
 
-    // The FontTool
-    private FontTool _fontTool;
-    
     // The EffectTool
     private EffectTool _effectTool;
     
@@ -37,24 +37,36 @@ public class StylerPane extends StylerOwner {
         // Get Main UI
         ColView mainView = getUI(ColView.class);
 
-        // Create/install BorderTool
-        _fillTool = new PaintTool();
-        _fillTool.setStyler(getStyler());
-        mainView.addChild(_fillTool.getUI(), 0);
-
-        // Create/install BorderTool
-        _borderTool = new BorderTool(getStyler());
-        mainView.addChild(_borderTool.getUI(), 1);
+        // Get MiscPane and remove
+        View miscPane = mainView.getChild(0);
+        mainView.removeChild(miscPane);
 
         // Install FontTool
         _fontTool = new FontTool();
         _fontTool.setStyler(getStyler());
-        mainView.addChild(_fontTool.getUI(), 2);
+        mainView.addChild(_fontTool.getUI());
+        Collapser.createCollapserAndLabel(_fontTool.getUI(), "Text / Font");
 
-        // Initialize tools
+        // Create/install FillTool
+        _fillTool = new PaintTool();
+        _fillTool.setStyler(getStyler());
+        mainView.addChild(_fillTool.getUI());
+        Collapser.createCollapserAndLabel(_fillTool.getUI(), "Fill / Paint");
+
+        // Create/install BorderTool
+        _borderTool = new BorderTool(getStyler());
+        mainView.addChild(_borderTool.getUI());
+        Collapser.createCollapserAndLabel(_borderTool.getUI(), "Border / Stroke");
+
+        // Create/install EffectTool
         _effectTool = new EffectTool();
         _effectTool.setStyler(getStyler());
-        mainView.addChild(_effectTool.getUI(), 3);
+        mainView.addChild(_effectTool.getUI());
+        Collapser.createCollapserAndLabel(_effectTool.getUI(), "Effect").setCollapsed(true);
+
+        // Add MiscPane
+        mainView.addChild(miscPane);
+        Collapser.createCollapserAndLabel(miscPane, "Transparency").setCollapsed(true);
     }
 
     /**
