@@ -37,7 +37,7 @@ public class EditorProxGuide {
     public static void setEnabled(boolean aFlag)
     {
         _enabled=aFlag;
-        Prefs.get().set("ProximityGuide", aFlag);
+        Prefs.get().setValue("ProximityGuide", aFlag);
     }
 
     /**
