@@ -148,7 +148,7 @@ public class SGText extends SGRect {
     /**
      * Returns whether all characters can be visibly rendered in text bounds.
      */
-    public boolean isAllTextVisible()  { return !getTextBox().isOutOfRoom(); }
+    public boolean isAllTextVisible()  { return !getTextBox().isTextOutOfBounds(); }
 
     /**
      * Returns the font for char 0.
