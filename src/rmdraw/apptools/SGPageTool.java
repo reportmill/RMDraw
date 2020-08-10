@@ -114,7 +114,7 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
             page.selectLayer(layer);
 
             // If column one was selected, cycle through layer states
-            int col = _layersTable.getSelCol();
+            int col = _layersTable.getSelColIndex();
             if (anEvent.isMouseClick() && col==1) {
                 int state = layer.getLayerState();
                 if (state==SGPageLayer.StateVisible) layer.setLayerState(SGPageLayer.StateInvisible);
