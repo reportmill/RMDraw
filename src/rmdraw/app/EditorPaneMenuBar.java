@@ -198,8 +198,8 @@ public class EditorPaneMenuBar extends EditorPane.SupportPane {
         if (anEvent.equals("ShowRulersMenuItem")) epane.setShowRulers(!epane.isShowRulers());
 
         // Handle SupportPageMenuItem, TutorialMenuItem
-        if (anEvent.equals("SupportPageMenuItem")) URLUtils.openURL("http://reportmill.com/support");
-        if (anEvent.equals("TutorialMenuItem")) URLUtils.openURL("http://reportmill.com/support/tutorial.pdf");
+        if (anEvent.equals("SupportPageMenuItem")) URLUtils.openURL("https://reportmill.com/support");
+        if (anEvent.equals("TutorialMenuItem")) URLUtils.openURL("https://reportmill.com/support/tutorial.pdf");
 
         // Handle SplitColumnMenuItem (from right mouse pop-up)
         if (anEvent.equals("SplitColumnMenuItem")) EditorUtils.splitHorizontal(editor);
