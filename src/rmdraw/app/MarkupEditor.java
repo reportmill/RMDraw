@@ -41,14 +41,6 @@ public class MarkupEditor extends Editor {
     @Override
     public void paintFront(Painter aPntr)  { }
 
-    @Override
-    protected void paintChildren(Painter aPntr)
-    {
-        System.out.println("Hey");
-        super.paintChildren(aPntr);
-        System.out.println("Hey");
-    }
-
     /**
      * Override to paint above EmbedView.
      */
