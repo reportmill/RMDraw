@@ -40,6 +40,15 @@ public EditorPaneToolBar(EditorPane anEP)
 }
 
 /**
+ * Returns the ToolBar view.
+ */
+public RowView getToolsView()
+{
+    View selectTool = getView("SelectToolButton");
+    return (RowView) selectTool.getParent();
+}
+
+/**
  * Initialize UI.
  */
 protected void initUI()

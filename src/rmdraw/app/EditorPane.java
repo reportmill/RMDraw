@@ -28,14 +28,17 @@ public class EditorPane extends ViewerPane {
     private static Image   _frameImg;
 
     /**
-     * Creates a new EditorPane.
+     * Constructor.
      */
-    public EditorPane()  { }
+    public EditorPane()
+    {
+        super();
+    }
 
     /**
      * Returns the viewer as an editor.
      */
-    public Editor getEditor()  { return (Editor)getViewer(); }
+    public Editor getEditor()  { return (Editor) getViewer(); }
 
     /**
      * Overridden to return an Editor.
@@ -45,22 +48,34 @@ public class EditorPane extends ViewerPane {
     /**
      * Override to return as EditorPaneToolBar.
      */
-    public EditorPaneToolBar getTopToolBar()  { return (EditorPaneToolBar)super.getTopToolBar(); }
+    public EditorPaneToolBar getTopToolBar()
+    {
+        return (EditorPaneToolBar) super.getTopToolBar();
+    }
 
     /**
      * Creates the top tool bar.
      */
-    protected ViewOwner createTopToolBar()  { return new EditorPaneToolBar(this); }
+    protected ViewOwner createTopToolBar()
+    {
+        return new EditorPaneToolBar(this);
+    }
 
     /**
      * Returns the SwingOwner for the menu bar.
      */
-    public EditorPaneMenuBar getMenuBar()  { return _menuBar!=null? _menuBar : (_menuBar = createMenuBar()); }
+    public EditorPaneMenuBar getMenuBar()
+    {
+        return _menuBar!=null ? _menuBar : (_menuBar = createMenuBar());
+    }
 
     /**
      * Creates the EditorPaneMenuBar for the menu bar.
      */
-    protected EditorPaneMenuBar createMenuBar()  { return new EditorPaneMenuBar(this); }
+    protected EditorPaneMenuBar createMenuBar()
+    {
+        return new EditorPaneMenuBar(this);
+    }
 
     /**
      * Returns whether editing.
@@ -72,7 +87,7 @@ public class EditorPane extends ViewerPane {
      */
     public void setEditing(boolean aFlag)
     {
-        if(aFlag) return;
+        if (aFlag) return;
         throw new RuntimeException("EditorPane.setEditing: Not implemented");
     }
 
@@ -82,7 +97,7 @@ public class EditorPane extends ViewerPane {
     protected View createUI()
     {
         // Create normal ViewerPane BorderView UI
-        BorderView borderView = (BorderView)super.createUI();
+        BorderView borderView = (BorderView) super.createUI();
 
         // Get InspectorPanel
         InspectorPanel inspPanel = getInspectorPanel();
@@ -106,9 +121,17 @@ public class EditorPane extends ViewerPane {
         ParentView rbox = getRulerBox();
         attrPanel.getDrawer().showTabButton(rbox);
 
-        // Create ColView holding MenuBar and EditorPane UI (with key listener so MenuBar catches shortcut keys)
-        View mbarView = MenuBar.createMenuBarView(getMenuBar().getUI(), borderView);
-        return mbarView;
+        // Wrap MenuBar View around UI
+        return createMenuBarUI(borderView);
+    }
+
+    /**
+     * Create ColView holding MenuBar and EditorPane UI (with key listener so MenuBar catches shortcut keys).
+     */
+    protected View createMenuBarUI(View contentView)
+    {
+        EditorPaneMenuBar menuBar = getMenuBar();
+        return MenuBar.createMenuBarView(menuBar.getUI(), contentView);
     }
 
     /**

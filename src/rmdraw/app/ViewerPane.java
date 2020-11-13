@@ -3,6 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.scene.*;
+import snap.gfx.Paint;
 import snap.util.*;
 import snap.view.*;
 import snap.viewx.DialogBox;
@@ -22,24 +23,31 @@ import snap.web.WebURL;
 public class ViewerPane extends ViewOwner {
 
     // The real viewer
-    Viewer _viewer;
+    private Viewer  _viewer;
     
     // The ScrollView for this viewer
-    ScrollView        _scrollView;
+    private ScrollView  _scrollView;
     
     // The RulerBox that holds the ScrollView
-    RulerBox          _rulerBox;
+    private RulerBox  _rulerBox;
     
     // The controls at the top of the document
-    ViewOwner         _topToolBar;
+    private ViewOwner  _topToolBar;
     
     // The controls at the bottom of the document
-    ViewOwner         _btmToolBar;
+    private ViewOwner  _btmToolBar;
+
+    // Constants
+    private static Paint BACK_FILL = ViewUtils.getBackFill();
     
     /**
      * Returns the viewer for this viewer pane.
      */
-    public Viewer getViewer()  { if(_viewer==null) getUI(); return _viewer; }
+    public Viewer getViewer()
+    {
+        if(_viewer==null) getUI();
+        return _viewer;
+    }
 
     /**
      * Sets the viewer for this viewer pane.
@@ -73,27 +81,42 @@ public class ViewerPane extends ViewOwner {
     /**
      * Returns the document source.
      */
-    protected WebURL getSourceURL()  { return getViewer().getSourceURL(); }
+    protected WebURL getSourceURL()
+    {
+        return getViewer().getSourceURL();
+    }
 
     /**
      * Returns the top controls.
      */
-    public ViewOwner getTopToolBar()  { return _topToolBar!=null? _topToolBar : (_topToolBar=createTopToolBar()); }
+    public ViewOwner getTopToolBar()
+    {
+        return _topToolBar!=null ? _topToolBar : (_topToolBar=createTopToolBar());
+    }
 
     /**
      * Creates the top tool bar.
      */
-    protected ViewOwner createTopToolBar()  { return new ViewerTopToolBar(this); }
+    protected ViewOwner createTopToolBar()
+    {
+        return new ViewerTopToolBar(this);
+    }
 
     /**
      * Returns the bottom controls.
      */
-    public ViewOwner getBottomToolBar()  { return _btmToolBar!=null? _btmToolBar : (_btmToolBar=createBottomToolBar()); }
+    public ViewOwner getBottomToolBar()
+    {
+        return _btmToolBar!=null ? _btmToolBar : (_btmToolBar=createBottomToolBar());
+    }
 
     /**
      * Creates bottom tool bar.
      */
-    protected ViewOwner createBottomToolBar()  { return new ViewerBottomToolBar(this); }
+    protected ViewOwner createBottomToolBar()
+    {
+        return new ViewerBottomToolBar(this);
+    }
 
     /**
      * Saves the current viewer document.
@@ -159,8 +182,10 @@ public class ViewerPane extends ViewOwner {
     {
         // Create and configure viewer
         _viewer = createViewer();
-        _scrollView = new ScrollView(); _scrollView.setFill(new snap.gfx.Color("#c0c0c0"));
 
+        // Create/configure ScrollView
+        _scrollView = new ScrollView();
+        _scrollView.setFill(BACK_FILL);
         _scrollView.setContent(_viewer);
 
         // Create RulerBox

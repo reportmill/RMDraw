@@ -58,6 +58,8 @@ public class Editor extends Viewer {
      */
     public Editor()
     {
+        super();
+
         // Enable Drag events
         enableEvents(DragEvents);
 

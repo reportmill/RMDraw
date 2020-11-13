@@ -46,6 +46,9 @@ public class Viewer extends ParentView implements SceneGraph.Client {
     
     // Constants for PropertyChanges
     public static final String Content_Prop = "Content";
+
+    // Constants
+    private static Color BACK_FILL = Color.LIGHTGRAY;
         
     /**
      * Creates a new RMViewer with an empty document in it.
@@ -56,7 +59,7 @@ public class Viewer extends ParentView implements SceneGraph.Client {
         enableEvents(KeyEvents);
         setFocusable(true);
         setFocusWhenPressed(true);
-        setFill(Color.LIGHTGRAY);
+        setFill(BACK_FILL);
     }
 
     /**
