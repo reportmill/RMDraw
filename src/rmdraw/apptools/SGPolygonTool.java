@@ -159,17 +159,17 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
             Rect firstHandleRect = new Rect(beginPoint.x - 3, beginPoint.y - 3, 6f, 6f);
             Rect lastHandleRect = new Rect(lastPoint.x - 3, lastPoint.y - 3, 6f, 6f);
             Rect currentHandleRect = new Rect(thisPoint.x - 3, thisPoint.y - 3, 6f, 6f);
-            boolean createPath = false;
+            boolean createPath = DEFAULT_PENCIL_ONESHOT;
 
             // If mouseUp is in startPoint, create poly and surrender to selectTool
-            if (currentHandleRect.intersectsRect(firstHandleRect)) {
+            if (!createPath && currentHandleRect.intersectsRect(firstHandleRect)) {
                 if(lastElmnt==Seg.LineTo) _path.removeLastSeg();
                 _path.close();
                 createPath = true;
             }
 
             // If mouseUp is in startPoint, create poly and surrender to selectTool
-            if (currentHandleRect.intersectsRect(lastHandleRect)) {
+            if (!createPath && currentHandleRect.intersectsRect(lastHandleRect)) {
                 if(_path.getSegLast()==Seg.LineTo) _path.removeLastSeg();
                 createPath = true;
             }
@@ -256,7 +256,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
             SGPolygon poly = new SGPolygon();
             Rect polyFrame = getEditor().getSuperSelView().parentToLocal(_path.getBounds(), null).getBounds();
             poly.setFrame(polyFrame);
-            poly.setBorder(Border.blackBorder());
+            poly.setBorder(DEFAULT_BORDER);
             poly.setPath(_path);
 
             // Add view to superSelView (within an undo grouping).
@@ -296,7 +296,9 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     public void paintTool(Painter aPntr)
     {
         if (_path==null) return;
-        aPntr.setColor(Color.BLACK); aPntr.setStroke(Stroke.Stroke1); aPntr.draw(_path);
+        aPntr.setColor(DEFAULT_BORDER.getColor());
+        aPntr.setStroke(DEFAULT_BORDER.getStroke());
+        aPntr.draw(_path);
     }
 
     /**

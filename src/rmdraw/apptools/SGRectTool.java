@@ -6,6 +6,7 @@ import rmdraw.app.Tool;
 import rmdraw.scene.*;
 import java.util.*;
 import snap.gfx.Border;
+import snap.gfx.Color;
 import snap.view.*;
 
 /**
@@ -19,7 +20,7 @@ public class SGRectTool<T extends SGRect> extends Tool<T> {
     protected T newInstance()
     {
         T view = super.newInstance();
-        view.setBorder(Border.blackBorder());
+        view.setBorder(DEFAULT_BORDER);
         return view;
     }
 

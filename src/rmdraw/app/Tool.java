@@ -46,6 +46,10 @@ public class Tool<T extends SGView> extends ViewOwner {
     public static final byte HandleN = 6;
     public static final byte HandleS = 7;
 
+    // Constants
+    public static final Border DEFAULT_BORDER = Border.createLineBorder(Color.RED, 4); //Border.blackBorder()
+    public static final boolean DEFAULT_PENCIL_ONESHOT = true;
+
     /**
      * Returns the view class that this tool handles.
      */
