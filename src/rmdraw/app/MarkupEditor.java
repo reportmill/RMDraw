@@ -2,6 +2,8 @@ package rmdraw.app;
 import rmdraw.scene.SGDoc;
 import rmdraw.scene.SGPage;
 import rmdraw.scene.SGView;
+import snap.gfx.Border;
+import snap.gfx.Color;
 import snap.gfx.Painter;
 import snap.view.BoxView;
 import snap.view.View;
@@ -34,6 +36,9 @@ public class MarkupEditor extends Editor {
         addChild(_embedView);
 
         setZoomFactor(1);
+
+        Tool.DEFAULT_BORDER = Border.createLineBorder(Color.RED, 4);
+        Tool.DEFAULT_PENCIL_ONESHOT = true;
     }
 
     /**
