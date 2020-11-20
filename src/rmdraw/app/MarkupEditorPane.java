@@ -87,6 +87,7 @@ public class MarkupEditorPane extends EditorPane {
         BorderView borderView = (BorderView) toolBarTopUI.getParent();
         borderView.setTop(null);
         borderView.setBottom(null);
+        borderView.setRight(null);
 
         // Get reference to ToolsView
         _toolsView = toolBarTop.getToolsView();
