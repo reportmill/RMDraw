@@ -14,19 +14,19 @@ import snap.util.*;
 public class SGSpringsView extends SGParent {
     
     // Whether springs resizing is disabled
-    boolean             _springsDisabled;
+    private boolean  _springsDisabled;
     
     // The parent best height
-    double              _bh;
+    private double  _bh;
     
     // The children Boxes
-    Box                 _cboxes[];
+    private Box  _cboxes[];
     
     // The PropChangeListener to notify of changes in child
-    PropChangeListener  _childLsnr;
+    private PropChangeListener  _childLsnr;
     
     // Constants for positions above and below
-    enum Position { Above, Below };
+    private enum Position { Above, Below };
 
     /**
      * Return whether springs have been disabled.
@@ -75,7 +75,7 @@ public class SGSpringsView extends SGParent {
 
             // Create rect and update for new width/height
             Rect rect = rects[i] = new Rect(sinfo.x, sinfo.y, sinfo.width, sinfo.height);
-            double oldPW = sinfo.pwidth, oldPH = sinfo.pheight; if(newPW==oldPW && newPH==oldPH) continue;
+            double oldPW = sinfo.pwidth, oldPH = sinfo.pheight; if (newPW==oldPW && newPH==oldPH) continue;
             String asize = child.getAutosizing();
 
             // Set new width/height
@@ -101,8 +101,8 @@ public class SGSpringsView extends SGParent {
         double dw = newWidth - oldWidth;
 
         // Update rect x/width
-        if(lms) rect.x += sw>0? dw*rx/sw : dw;
-        if(ws && sw!=0) rect.width += dw*rw/sw;
+        if (lms) rect.x += sw>0 ? dw*rx/sw : dw;
+        if (ws && sw!=0) rect.width += dw*rw/sw;
     }
 
     /**
@@ -119,7 +119,7 @@ public class SGSpringsView extends SGParent {
         double dh = newHeight - oldHeight;
 
         // Update rect y/height
-        if (tms) rect.y += sh>0? dh*ry/sh : dh;
+        if (tms) rect.y += sh>0 ? dh*ry/sh : dh;
         if (hs && sh!=0) rect.height += dh*rh/sh;
     }
 
@@ -151,7 +151,7 @@ public class SGSpringsView extends SGParent {
         if (childrenToGrow==null) { _bh = pheight; return _cboxes; }
 
         // Iterate until we have grown all children in childrenToGrow list
-        while(!childrenToGrow.isEmpty()) {
+        while (!childrenToGrow.isEmpty()) {
 
             // Get new height and declare index variable for shape with min best height for this interaction
             double newHeight = pheight;
@@ -283,8 +283,8 @@ public class SGSpringsView extends SGParent {
      */
     public void addChild(SGView aChild, int anIndex)
     {
-        super.addChild(aChild, anIndex); if(_springsDisabled) return;
-        aChild.addPropChangeListener(_childLsnr!=null? _childLsnr : (_childLsnr = pc -> childPropChanged(pc)));
+        super.addChild(aChild, anIndex); if (_springsDisabled) return;
+        aChild.addPropChangeListener(_childLsnr!=null ? _childLsnr : (_childLsnr = pc -> childPropChanged(pc)));
         addSpringInfo(aChild); _cboxes = null;
     }
 
@@ -293,7 +293,7 @@ public class SGSpringsView extends SGParent {
      */
     public SGView removeChild(int anIndex)
     {
-        SGView child = super.removeChild(anIndex); if(_springsDisabled) return child;
+        SGView child = super.removeChild(anIndex); if (_springsDisabled) return child;
         child.removePropChangeListener(_childLsnr);
         removeSpringInfo(child); _cboxes = null;
         return child;
@@ -305,7 +305,7 @@ public class SGSpringsView extends SGParent {
     protected void paintView(Painter aPntr)
     {
         // Do normal version
-        super.paintView(aPntr); if(getClass()!= SGSpringsView.class) return;
+        super.paintView(aPntr); if (getClass()!= SGSpringsView.class) return;
 
         // Paint dashed box around bounds
         boolean isEditing = SceneGraph.isEditing(this);
@@ -324,7 +324,7 @@ public class SGSpringsView extends SGParent {
      */
     protected void resetLayout()
     {
-        for(SGView child : getChildren()) addSpringInfo(child);
+        for (SGView child : getChildren()) addSpringInfo(child);
         setNeedsLayout(false);
     }
 
@@ -336,6 +336,18 @@ public class SGSpringsView extends SGParent {
         SGView btmShape = super.divideViewFromTop(anAmount);
         resetLayout();
         return btmShape;
+    }
+
+    /**
+     * Override to clear object refs.
+     */
+    @Override
+    public SGSpringsView clone()
+    {
+        SGSpringsView clone = (SGSpringsView) super.clone();
+        clone._cboxes = null;
+        clone._childLsnr = null;
+        return clone;
     }
 
     /**
@@ -361,10 +373,10 @@ public class SGSpringsView extends SGParent {
     {
         // If bounds widths intersect
         if (aShape.widthsIntersect(aPeer)) {
-            if(aPos==Position.Above) { // Check position above
-                if(aShape.getMaxY() <= Math.min(aPeer.getMidY(),aPeer.getY()+10))
+            if (aPos==Position.Above) { // Check position above
+                if (aShape.getMaxY() <= Math.min(aPeer.getMidY(),aPeer.getY()+10))
                     return true; }
-            else if(aShape.getY() >= Math.max(aPeer.getMidY(),aPeer.getMaxY()-10)) // Check position below
+            else if (aShape.getY() >= Math.max(aPeer.getMidY(),aPeer.getMaxY()-10)) // Check position below
                 return true;
         }
 
@@ -410,9 +422,9 @@ public class SGSpringsView extends SGParent {
         /** Returns whether the receiver intersects with the given rect (horizontally only). */
         public boolean widthsIntersect(Box r2)
         {
-            if(this.width <= 0f || r2.width <= 0f) return false;
-            if(this.x < r2.x) { if(this.x + this.width <= r2.x) return false; }
-            else { if(r2.x + r2.width <= this.x) return false; }
+            if (this.width <= 0f || r2.width <= 0f) return false;
+            if (this.x < r2.x) { if (this.x + this.width <= r2.x) return false; }
+            else { if (r2.x + r2.width <= this.x) return false; }
             return true;
         }
     }
