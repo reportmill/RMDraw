@@ -2,11 +2,11 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.scene;
-import rmdraw.gfx3d.*;
 import java.util.*;
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.gfx.*;
+import snap.gfx3d.*;
 import snap.util.*;
 import snap.view.ViewEvent;
 

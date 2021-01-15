@@ -3,8 +3,8 @@
  */
 package rmdraw.apptools;
 import rmdraw.app.Tool;
-import rmdraw.gfx3d.*;
 import rmdraw.scene.*;
+import snap.gfx3d.*;
 import snap.view.ViewEvent;
 
 /**

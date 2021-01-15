@@ -6,7 +6,7 @@
     <Label PrefHeight="18" PrefWidth="40" />
   </RowView>
   <RowView Align="CENTER">
-    <View Name="Trackball" PrefWidth="118" PrefHeight="118" Class="rmdraw.gfx3d.Trackball" />
+    <View Name="Trackball" PrefWidth="118" PrefHeight="118" Class="snap.gfx3d.Trackball" />
     <ColView Spacing="8">
       <RowView Spacing="5">
         <Label PrefWidth="32" text="Yaw:" />
