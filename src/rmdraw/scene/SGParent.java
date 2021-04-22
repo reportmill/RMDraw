@@ -523,7 +523,7 @@ public class SGParent extends SGView implements PropChange.DoChange {
     /**
      * Sets the value for given key.
      */
-    public void doChange(PropChange aPC, Object oldVal, Object newVal)
+    public void processPropChange(PropChange aPC, Object oldVal, Object newVal)
     {
         String pname = aPC.getPropName();
         if (pname==Child_Prop) {
