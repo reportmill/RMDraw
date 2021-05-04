@@ -252,12 +252,18 @@ public class SGParent extends SGView implements PropChange.DoChange {
     /**
      * Property change listener implementation to forward changes on to deep listeners.
      */
-    void childDidPropChange(PropChange aPC)  { _pcs.fireDeepChange(this, aPC); }
+    void childDidPropChange(PropChange aPC)
+    {
+        _pcs.fireDeepChange(this, aPC);
+    }
 
     /**
      * Deep property change listener implementation to forward deep changes to deep listeners.
      */
-    void childDidDeepChange(Object aLsnr, PropChange aPC)  { _pcs.fireDeepChange(aLsnr, aPC); }
+    void childDidDeepChange(Object aLsnr, PropChange aPC)
+    {
+        _pcs.fireDeepChange(aLsnr, aPC);
+    }
 
     /**
      * Sets view layout to invalid and requests deferred layout.
@@ -514,7 +520,7 @@ public class SGParent extends SGView implements PropChange.DoChange {
     /**
      * Returns the value for given key.
      */
-    public Object getKeyValue(String aPropName)
+    public Object getPropValue(String aPropName)
     {
         if (aPropName==Child_Prop) return null;
         return super.getKeyValue(aPropName);

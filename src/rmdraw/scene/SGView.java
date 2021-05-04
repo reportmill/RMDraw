@@ -27,7 +27,7 @@ import snap.view.*;
  *   text.setOpacity(.667f);
  * </pre></blockquote>
  */
-public class SGView implements Cloneable, Archivable, Key.GetSet {
+public class SGView extends PropObject implements Cloneable, Archivable, Key.GetSet {
 
     // X location of view
     double         _x = 0;
@@ -42,7 +42,7 @@ public class SGView implements Cloneable, Archivable, Key.GetSet {
     double         _height = 0;
     
     // An array to hold optional roll/scale/skew values
-    protected double  _rss[];
+    protected double[]  _rss;
     
     // The border for this view
     private Border  _border = null;
@@ -69,9 +69,6 @@ public class SGView implements Cloneable, Archivable, Key.GetSet {
     // Map to hold less used attributes (name, url, etc.)
     private SGViewSharedMap _attrMap = SHARED_MAP;
     
-    // The PropChangeSupport
-    protected PropChangeSupport  _pcs = PropChangeSupport.EMPTY;
-
     // A shared/root RMSharedMap (cloned to turn on shared flag)
     private static final SGViewSharedMap SHARED_MAP = new SGViewSharedMap().clone();
     
@@ -1446,9 +1443,8 @@ public class SGView implements Cloneable, Archivable, Key.GetSet {
         SGView clone; try { clone = (SGView)super.clone(); }
         catch(CloneNotSupportedException e) { throw new RuntimeException(e); }
 
-        // Clear Parent and PropChangeSupport
+        // Clear Parent
         clone._parent = null;
-        clone._pcs = PropChangeSupport.EMPTY;
 
         // Clone Rotate/Scale/Skew array
         if (_rss!=null) clone._rss = Arrays.copyOf(_rss,_rss.length);
@@ -1701,65 +1697,25 @@ public class SGView implements Cloneable, Archivable, Key.GetSet {
     public Shape getClipShape()  { return null; }
 
     /**
-     * Add listener.
+     * Returns the value for given key.
      */
-    public void addPropChangeListener(PropChangeListener aLsnr)
+    public Object getKeyValue(String aPropName)
     {
-        if(_pcs==PropChangeSupport.EMPTY) _pcs = new PropChangeSupport(this);
-        _pcs.addPropChangeListener(aLsnr);
+        return getPropValue(aPropName);
     }
 
     /**
-     * Remove listener.
+     * Sets the value for given key.
      */
-    public void removePropChangeListener(PropChangeListener aLsnr)  { _pcs.removePropChangeListener(aLsnr); }
-
-    /**
-     * Adds a deep change listener to view to listen for view changes and property changes received by view.
-     */
-    public void addDeepChangeListener(DeepChangeListener aLsnr)
+    public void setKeyValue(String aPropName, Object aValue)
     {
-        if (_pcs==PropChangeSupport.EMPTY) _pcs = new PropChangeSupport(this);
-        _pcs.addDeepChangeListener(aLsnr);
-    }
-
-    /**
-     * Removes a deep change listener from view.
-     */
-    public void removeDeepChangeListener(DeepChangeListener aLsnr)  { _pcs.removeDeepChangeListener(aLsnr); }
-
-    /**
-     * Fires a property change for given property name, old value, new value and index.
-     */
-    protected void firePropChange(String aProp, Object oldVal, Object newVal)
-    {
-        if (!_pcs.hasListener(aProp)) return;
-        PropChange pc = new PropChange(this, aProp, oldVal, newVal);
-        firePropChange(pc);
-    }
-
-    /**
-     * Fires a property change for given property name, old value, new value and index.
-     */
-    protected void firePropChange(String aProp, Object oldVal, Object newVal, int anIndex)
-    {
-        if (!_pcs.hasListener(aProp)) return;
-        PropChange pc = new PropChange(this, aProp, oldVal, newVal, anIndex);
-        firePropChange(pc);
-    }
-
-    /**
-     * Fires a given property change.
-     */
-    protected void firePropChange(PropChange aPC)
-    {
-        _pcs.firePropChange(aPC);
+        setPropValue(aPropName, aValue);
     }
 
     /**
      * Returns the value for given key.
      */
-    public Object getKeyValue(String aPropName)
+    public Object getPropValue(String aPropName)
     {
         // Handle properties
         switch(aPropName) {
@@ -1790,7 +1746,7 @@ public class SGView implements Cloneable, Archivable, Key.GetSet {
     /**
      * Sets the value for given key.
      */
-    public void setKeyValue(String aPropName, Object aValue)
+    public void setPropValue(String aPropName, Object aValue)
     {
         // Handle properties
         switch(aPropName) {
