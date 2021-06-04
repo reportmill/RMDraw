@@ -16,13 +16,13 @@ import snap.view.ViewEvent;
 public class SGScene3D extends SGParent {
     
     // A Scene3D to do real scene management
-    Scene3D        _scene = new Scene3D();
+    private Scene3D  _scene = new Scene3D();
     
     // A Camera to do camera work
-    Camera         _camera;
+    private Camera  _camera;
     
     // List of real child shapes
-    List <SGView> _rmshapes = new ArrayList();
+    private List<SGView> _rmshapes = new ArrayList<>();
 
     /**
      * Creates an RMScene3D.
@@ -202,7 +202,7 @@ public class SGScene3D extends SGParent {
         if (getShapeRMCount()>0) {
             removeShapes();
             for (SGView shp : _rmshapes)
-                addShapesForRMShape(shp, 0, getDepth(), false);
+                addShapesForRMShape(shp, 0, getDepth());
         }
     }
 
@@ -279,7 +279,7 @@ public class SGScene3D extends SGParent {
      * Adds Shape3D objects for given RMShape.
      * FixEdges flag indicates wheter to stroke polygons created during extrusion, to try to make them mesh better.
      */
-    protected void addShapesForRMShape(SGView aShape, double z1, double z2, boolean fixEdges)
+    protected void addShapesForRMShape(SGView aShape, double z1, double z2)
     {
         // If aShape is text, add shape3d for background and add shape3d for char path shape
         if (aShape instanceof SGText) { SGText text = (SGText)aShape;
@@ -288,12 +288,12 @@ public class SGScene3D extends SGParent {
             if (text.getFill()!=null || text.getBorder()!=null) {
                 SGView background = new SGPolygon(aShape.getPath()); // Create background shape from text
                 background.copyView(aShape);
-                addShapesForRMShape(background, z1+.1f, z2, fixEdges); // Add background shape
+                addShapesForRMShape(background, z1+.1f, z2); // Add background shape
             }
 
             // Get shape for char paths and add shape3d for char path shape
             SGView charsShape = SGTextUtils.getTextPathView(text);
-            addShapesForRMShape(charsShape, z1, z1, fixEdges);
+            addShapesForRMShape(charsShape, z1, z1);
             return;
         }
 
@@ -303,7 +303,7 @@ public class SGScene3D extends SGParent {
         shapePath.transformBy(aShape.getTransform());
 
         // Get path3d for shape path
-        PathBox3D pathBox = new PathBox3D(shapePath, z1, z2, fixEdges);
+        PathBox3D pathBox = new PathBox3D(shapePath, z1, z2);
 
         // Create 3D shape from path, set fill/stroke/opacity and add
         Paint fill = aShape.getFill();
