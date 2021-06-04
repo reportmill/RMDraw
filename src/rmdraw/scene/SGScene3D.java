@@ -212,7 +212,7 @@ public class SGScene3D extends SGParent {
     protected void paintChildren(Painter aPntr)
     {
         // Paint Scene paths
-        _camera.paintPaths(aPntr);
+        _camera.paintScene(aPntr);
 
         // Do normal version
         super.paintChildren(aPntr);
