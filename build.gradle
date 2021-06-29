@@ -1,8 +1,11 @@
 
 plugins {
-    id 'java'
     id 'application'
+    id 'java-library'
 }
+
+group 'com.reportmill'
+version '1.0.0'
 
 sourceSets.main.java.srcDirs = ['src']
 sourceSets.main.resources.srcDirs = ['src']
@@ -14,8 +17,8 @@ java {
 
 repositories {
 
-    // Jitpack makes builds from GitHub repos
-    maven { url 'https://jitpack.io' }
+    // Github packages repos
+    maven { url 'https://maven.pkg.github.com/reportmill/SnapKit' }
 }
 
 dependencies {
@@ -23,8 +26,30 @@ dependencies {
     // If Local SnapKit project, use that, otherwise use latest SnapKit GitHub repo
     if (findProject(':SnapKit') != null) { println 'Using local SnapKit project'
         compile project(':SnapKit') }
-    else { println 'Using latest SnapKit GitHub repo'
-        implementation 'com.github.reportmill:SnapKit:master-SNAPSHOT'  }
+    else { println 'Using latest SnapKit GitHub package'
+        implementation 'com.reportmill:snapkit:1.0.0'  }
 }
 
 mainClassName = 'rmdraw.app.App'
+
+publishing {
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/reportmill/RMDraw"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+                println "GitHubPackages Publish Artifact:\n\tusername=$username\n\ttoken=$password"
+            }
+        }
+    }
+
+    publications {
+        gpr(MavenPublication) {
+            artifactId 'rmdraw'
+            from(components.java)
+        }
+    }
+}
