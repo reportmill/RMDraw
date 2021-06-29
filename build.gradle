@@ -18,17 +18,23 @@ java {
 
 repositories {
 
-    // Github packages repos
-    maven { url 'https://maven.pkg.github.com/reportmill/SnapKit' }
+    // Jitpack.io builds Github packages
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
 
-    // If Local SnapKit project, use that, otherwise use latest SnapKit GitHub repo
-    if (findProject(':SnapKit') != null) { println 'Using local SnapKit project'
-        compile project(':SnapKit') }
-    else { println 'Using latest SnapKit GitHub package'
-        implementation 'com.reportmill:snapkit:1.0.0'  }
+    // If Local SnapKit project, use that
+    if (findProject(':SnapKit') != null) {
+        println 'Using local SnapKit project'
+        compile project(':SnapKit')
+    }
+
+    // Otherwise use latest SnapKit GitHub repo
+    else {
+        println 'Using GitHub SnapKit build for release 1.0.0'
+        implementation 'com.github.User:Repo:1.0.0'
+    }
 }
 
 mainClassName = 'rmdraw.app.App'
