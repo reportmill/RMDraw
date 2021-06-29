@@ -32,8 +32,8 @@ dependencies {
 
     // Otherwise use latest SnapKit GitHub repo
     else {
-        println 'Using GitHub SnapKit build for release 1.0.0'
-        implementation 'com.github.User:Repo:1.0.0'
+        println 'Using GitHub SnapKit build for Release 1.0.0'
+        implementation 'com.github.reportmill:SnapKit:1.0.0'
     }
 }
 
