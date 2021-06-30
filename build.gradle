@@ -33,7 +33,7 @@ dependencies {
     // Otherwise use latest SnapKit GitHub repo
     else {
         println 'Using GitHub SnapKit build for Release 1.0.0'
-        implementation 'com.github.reportmill:SnapKit:1.0.0'
+        implementation 'com.github.reportmill:SnapKit:2021.06.29'
     }
 }
 
