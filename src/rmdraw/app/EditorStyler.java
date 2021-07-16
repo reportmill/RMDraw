@@ -1,9 +1,9 @@
 package rmdraw.app;
-import rmdraw.editors.Styler;
 import rmdraw.scene.SGView;
 import snap.geom.HPos;
 import snap.geom.Pos;
 import snap.gfx.*;
+import snap.styler.Styler;
 import snap.text.TextFormat;
 import snap.view.View;
 import java.util.List;

@@ -22,6 +22,9 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+// SnapKit version (might want 'master-SNAPSHOT', '2021.06.29', '<tag_hash>', etc.)
+project.ext.SnapKitVersion = "master-SNAPSHOT"
+
 dependencies {
 
     // If Local SnapKit project, use that
@@ -30,10 +33,10 @@ dependencies {
         compile project(':SnapKit')
     }
 
-    // Otherwise use latest SnapKit GitHub repo
+    // Otherwise use jitpack.io generated maven package of GitHub SnapKit repo for version
     else {
         println 'Using GitHub SnapKit build for Release 1.0.0'
-        implementation 'com.github.reportmill:SnapKit:2021.06.29'
+        implementation 'com.github.reportmill:SnapKit:$SnapKitVersion'
     }
 }
 

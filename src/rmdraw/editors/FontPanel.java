@@ -4,8 +4,8 @@
 package rmdraw.editors;
 import java.util.ArrayList;
 import java.util.List;
-
 import snap.gfx.*;
+import snap.styler.Styler;
 import snap.util.*;
 import snap.view.*;
 

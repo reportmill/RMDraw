@@ -3,9 +3,9 @@
  */
 package rmdraw.app;
 import rmdraw.editors.PlacerTool;
-import rmdraw.editors.StylerPane;
 import rmdraw.scene.*;
 import snap.geom.Polygon;
+import snap.styler.StylerPane;
 import snap.gfx.*;
 import snap.util.SnapUtils;
 import snap.view.*;
