@@ -193,7 +193,7 @@ public class EditorStyler extends Styler {
     /**
      * Sets the font size of editor's selected shape(s).
      */
-    public void setFontSize(float aSize, boolean isRelative)
+    public void setFontSize(double aSize, boolean isRelative)
     {
         for (ToolStyler styler : getSelOrSuperSelStylers())
             styler.setFontSize(aSize, isRelative);

@@ -259,7 +259,7 @@ public class ToolStyler <T extends SGView> {
     /**
      * Sets the font size of editor's selected shape(s).
      */
-    public void setFontSize(float aSize, boolean isRelative)
+    public void setFontSize(double aSize, boolean isRelative)
     {
         String key = isRelative? FontSizeDelta_Key : FontSize_Key;
         setFontKeyDeep(key, aSize);
