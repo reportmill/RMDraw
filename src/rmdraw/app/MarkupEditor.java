@@ -126,7 +126,7 @@ public class MarkupEditor extends Editor {
     @Override
     protected void layoutImpl()
     {
-        BoxView.layout(this, _embedView, null, true, true);
+        BoxView.layout(this, _embedView, true, true);
 
         double embW = _embedView.getWidth();
         double embH = _embedView.getHeight();
