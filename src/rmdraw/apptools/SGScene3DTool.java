@@ -144,7 +144,7 @@ public void mouseReleased(T aView, ViewEvent anEvent)
 /**
  * Sets Psuedo3D with some good settings.
  */
-private void setPseudo3D(Camera aCam, boolean isPseudo3D)
+private void setPseudo3D(Camera3D aCam, boolean isPseudo3D)
 {
     // Set defaults for pseudo 3d
     aCam.setPseudo3D(isPseudo3D);

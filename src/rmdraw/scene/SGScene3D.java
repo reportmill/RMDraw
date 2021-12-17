@@ -19,7 +19,7 @@ public class SGScene3D extends SGParent {
     private Scene3D  _scene = new Scene3D();
     
     // A Camera to do camera work
-    private Camera  _camera;
+    private Camera3D _camera;
     
     // List of real child shapes
     private List<SGView> _rmshapes = new ArrayList<>();
@@ -36,7 +36,7 @@ public class SGScene3D extends SGParent {
     /**
      * Returns the camera as a vector.
      */
-    public Camera getCamera()  { return _camera; }
+    public Camera3D getCamera()  { return _camera; }
 
     /**
      * Returns the Scene3D.
