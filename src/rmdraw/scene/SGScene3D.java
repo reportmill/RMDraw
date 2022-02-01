@@ -124,16 +124,6 @@ public class SGScene3D extends SGParent {
     public void setPseudoSkewY(double anAngle)  { _camera.setPseudoSkewY(anAngle); }
 
     /**
-     * Returns the field of view of the camera (derived from focalLength).
-     */
-    public double getFieldOfView()  { return _camera.getFieldOfView(); }
-
-    /**
-     * Sets the field of view of the camera.
-     */
-    public void setFieldOfView(double aValue)  { _camera.setFieldOfView(aValue); }
-
-    /**
      * Returns the number of shapes in the shape list.
      */
     public int getShapeCount()  { return _scene.getShapeCount(); }
