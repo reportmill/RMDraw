@@ -94,16 +94,6 @@ public class SGScene3D extends SGParent {
     public void setFocalLength(double aValue)  { _camera.setFocalLength(aValue); }
 
     /**
-     * Returns the Z offset of the scene (for zooming).
-     */
-    public double getOffsetZ()  { return _camera.getOffsetZ(); }
-
-    /**
-     * Sets the Z offset of the scene (for zooming).
-     */
-    public void setOffsetZ(double aValue)  { _camera.setOffsetZ(aValue); }
-
-    /**
      * Returns whether scene is rendered in pseudo 3d.
      */
     public boolean isPseudo3D()  { return _camera.isPseudo3D(); }
@@ -343,13 +333,12 @@ public class SGScene3D extends SGParent {
             e.add(shapesXML);
         }
 
-        // Archive Depth, Yaw, Pitch, Roll, FocalLength, Offset3D
+        // Archive Depth, Yaw, Pitch, Roll, FocalLength
         if (getDepth()!=0) e.add("depth", getDepth());
         if (getYaw()!=0) e.add("yaw", getYaw());
         if (getPitch()!=0) e.add("pitch", getPitch());
         if (getRoll3D()!=0) e.add("zroll", getRoll3D());
         if (getFocalLength()!=60*72) e.add("focal-length", getFocalLength());
-        if (getOffsetZ()!=0) e.add("offset-z", getOffsetZ());
 
         // Archive Pseudo3D
         if (isPseudo3D()) {
@@ -378,13 +367,12 @@ public class SGScene3D extends SGParent {
         // Fix scene width/height
         _camera.setWidth(getWidth()); _camera.setHeight(getHeight());
 
-        // Unarchive Depth, Yaw, Pitch, Roll, FocalLength, OffsetZ
+        // Unarchive Depth, Yaw, Pitch, Roll, FocalLength
         setDepth(anElement.getAttributeFloatValue("depth"));
         setYaw(anElement.getAttributeFloatValue("yaw"));
         setPitch(anElement.getAttributeFloatValue("pitch"));
         setRoll3D(anElement.getAttributeFloatValue("zroll"));
         setFocalLength(anElement.getAttributeFloatValue("focal-length", 60*72));
-        setOffsetZ(anElement.getAttributeFloatValue("offset-z"));
 
         // Unarchive Pseudo3D
         setPseudo3D(anElement.getAttributeBoolValue("pseudo", false));
