@@ -2,7 +2,9 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.scene;
+
 import java.util.*;
+
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.gfx.*;
@@ -14,15 +16,21 @@ import snap.view.ViewEvent;
  * This encapsulates a Snap Scene3D to render simple 3d.
  */
 public class SGScene3D extends SGParent {
-    
+
+    // The depth
+    private double _depth = 40;
+
     // A Scene3D to do real scene management
-    private Scene3D  _scene = new Scene3D();
-    
+    private Scene3D _scene = new Scene3D();
+
     // A Camera to do camera work
     private Camera3D _camera;
-    
+
     // List of real child shapes
     private List<SGView> _rmshapes = new ArrayList<>();
+
+    // Constants for properties
+    public static final String Depth_Prop = "Depth";
 
     /**
      * Creates an RMScene3D.
@@ -36,142 +44,181 @@ public class SGScene3D extends SGParent {
     /**
      * Returns the camera as a vector.
      */
-    public Camera3D getCamera()  { return _camera; }
+    public Camera3D getCamera()
+    {
+        return _camera;
+    }
 
     /**
      * Returns the Scene3D.
      */
-    public Scene3D getScene()  { return _scene; }
+    public Scene3D getScene()
+    {
+        return _scene;
+    }
 
     /**
      * Returns the depth of the scene.
      */
-    public double getDepth()  { return _camera.getDepth(); }
+    public double getDepth()
+    {
+        return _depth;
+    }
 
     /**
      * Sets the depth of the scene.
      */
-    public void setDepth(double aValue)  { _camera.setDepth(aValue); }
+    public void setDepth(double aValue)
+    {
+        if (aValue == getDepth()) return;
+        firePropChange(Depth_Prop, _depth, _depth = aValue);
+        relayout();
+        repaint();
+    }
 
     /**
      * Returns the rotation about the Y axis in degrees.
      */
-    public double getYaw()  { return _camera.getYaw(); }
+    public double getYaw()
+    {
+        return _camera.getYaw();
+    }
 
     /**
      * Sets the rotation about the Y axis in degrees.
      */
-    public void setYaw(double aValue)  { _camera.setYaw(aValue); }
+    public void setYaw(double aValue)
+    {
+        _camera.setYaw(aValue);
+    }
 
     /**
      * Returns the rotation about the X axis in degrees.
      */
-    public double getPitch()  { return _camera.getPitch(); }
+    public double getPitch()
+    {
+        return _camera.getPitch();
+    }
 
     /**
      * Sets the rotation about the X axis in degrees.
      */
-    public void setPitch(double aValue)  { _camera.setPitch(aValue); }
+    public void setPitch(double aValue)
+    {
+        _camera.setPitch(aValue);
+    }
 
     /**
      * Returns the rotation about the Z axis in degrees.
      */
-    public double getRoll3D()  { return _camera.getRoll(); }
+    public double getRoll3D()
+    {
+        return _camera.getRoll();
+    }
 
     /**
      * Sets the rotation about the Z axis in degrees.
      */
-    public void setRoll3D(double aValue)  { _camera.setRoll(aValue); }
+    public void setRoll3D(double aValue)
+    {
+        _camera.setRoll(aValue);
+    }
 
     /**
      * Returns the focal length of the camera (derived from the field of view and with view size).
      */
-    public double getFocalLength()  { return _camera.getFocalLength(); }
+    public double getFocalLength()
+    {
+        return _camera.getFocalLength();
+    }
 
     /**
      * Sets the focal length of the camera. Two feet is normal (1728 points).
      */
-    public void setFocalLength(double aValue)  { _camera.setFocalLength(aValue); }
-
-    /**
-     * Returns whether scene is rendered in pseudo 3d.
-     */
-    public boolean isPseudo3D()  { return _camera.isPseudo3D(); }
-
-    /**
-     * Sets whether scene is rendered in pseudo 3d.
-     */
-    public void setPseudo3D(boolean aFlag)  { _camera.setPseudo3D(aFlag); }
-
-    /**
-     * Returns the skew angle for X by Z.
-     */
-    public double getPseudoSkewX()  { return _camera.getPseudoSkewX(); }
-
-    /**
-     * Sets the skew angle for X by Z.
-     */
-    public void setPseudoSkewX(double anAngle)  { _camera.setPseudoSkewX(anAngle); }
-
-    /**
-     * Returns the skew angle for Y by Z.
-     */
-    public double getPseudoSkewY()  { return _camera.getPseudoSkewY(); }
-
-    /**
-     * Sets the skew angle for Y by Z.
-     */
-    public void setPseudoSkewY(double anAngle)  { _camera.setPseudoSkewY(anAngle); }
+    public void setFocalLength(double aValue)
+    {
+        _camera.setFocalLength(aValue);
+    }
 
     /**
      * Returns the number of shapes in the shape list.
      */
-    public int getShapeCount()  { return _scene.getShapeCount(); }
+    public int getShapeCount()
+    {
+        return _scene.getShapeCount();
+    }
 
     /**
      * Returns the specific shape at the given index from the shape list.
      */
-    public Shape3D getShape(int anIndex)  { return _scene.getShape(anIndex); }
+    public Shape3D getShape(int anIndex)
+    {
+        return _scene.getShape(anIndex);
+    }
 
     /**
      * Adds a shape to the end of the shape list.
      */
-    public void addShape(Shape3D aShape)  { _scene.addShape(aShape); }
+    public void addShape(Shape3D aShape)
+    {
+        _scene.addShape(aShape);
+    }
 
     /**
      * Removes the shape at the given index from the shape list.
      */
-    public void removeShapes()  { _scene.removeShapes(); }
+    public void removeShapes()
+    {
+        _scene.removeShapes();
+    }
 
     /**
      * Returns a path in camera coords for given path in local coords.
      */
-    public Path3D localToCamera(Path3D aPath)  { return _scene.localToCamera(aPath); }
+    public Path3D localToCamera(Path3D aPath)
+    {
+        return _scene.localToCamera(aPath);
+    }
 
     /**
      * Returns the given vector in camera coords.
      */
-    public Vector3D localToCameraForVector(double x, double y, double z)  { return _scene.localToCameraForVector(x,y,z); }
+    public Vector3D localToCameraForVector(double x, double y, double z)
+    {
+        return _scene.localToCameraForVector(x, y, z);
+    }
 
     /**
      * Returns whether a vector is facing camera.
      */
-    public boolean isFacing(Vector3D aV3D)  { return _camera.isFacing(aV3D); }
+    public boolean isFacing(Vector3D aV3D)
+    {
+        return _camera.isFacing(aV3D);
+    }
 
     /**
      * Returns whether a vector is facing away from camera.
      */
-    public boolean isFacingAway(Vector3D aV3D)  { return _camera.isFacingAway(aV3D); }
+    public boolean isFacingAway(Vector3D aV3D)
+    {
+        return _camera.isFacingAway(aV3D);
+    }
 
     /**
      * Returns whether a Path3d is facing camera.
      */
-    public boolean isFacing(Path3D aPath)  { return _camera.isFacing(aPath); }
+    public boolean isFacing(Path3D aPath)
+    {
+        return _camera.isFacing(aPath);
+    }
 
     /**
      * Returns whether a Path3d is facing away from camera.
      */
-    public boolean isFacingAway(Path3D aPath)  { return _camera.isFacingAway(aPath); }
+    public boolean isFacingAway(Path3D aPath)
+    {
+        return _camera.isFacingAway(aPath);
+    }
 
     /**
      * Rebuilds display list of Path3Ds from Shapes.
@@ -179,7 +226,7 @@ public class SGScene3D extends SGParent {
     protected void layoutImpl()
     {
         // If RMShapes, recreate Shape list from RMShapes
-        if (getShapeRMCount()>0) {
+        if (getShapeRMCount() > 0) {
             removeShapes();
             for (SGView shp : _rmshapes)
                 addShapesForRMShape(shp, 0, getDepth());
@@ -201,17 +248,28 @@ public class SGScene3D extends SGParent {
     /**
      * Viewer method.
      */
-    public void processEvent(ViewEvent anEvent)  { _camera.processEvent(anEvent); }
+    public void processEvent(ViewEvent anEvent)
+    {
+        _camera.processEvent(anEvent);
+    }
 
     /**
      * Override to forward to Scene3D.
      */
-    public void setWidth(double aValue)  { super.setWidth(aValue); _camera.setWidth(aValue); }
+    public void setWidth(double aValue)
+    {
+        super.setWidth(aValue);
+        _camera.setWidth(aValue);
+    }
 
     /**
      * Override to forward to Scene3D.
      */
-    public void setHeight(double aValue)  { super.setHeight(aValue); _camera.setHeight(aValue); }
+    public void setHeight(double aValue)
+    {
+        super.setHeight(aValue);
+        _camera.setHeight(aValue);
+    }
 
     /**
      * Override to account for Scene3D bounds.
@@ -220,10 +278,10 @@ public class SGScene3D extends SGParent {
     {
         Rect bounds = super.getBoundsMarked();
         Rect camBnds = _camera.getSceneBounds();
-        if (camBnds.x<bounds.x) bounds.x = camBnds.x;
-        if (camBnds.y<bounds.y) bounds.y = camBnds.y;
-        if (camBnds.getMaxX()>bounds.getMaxX()) bounds.width = camBnds.getMaxX() - bounds.x;
-        if (camBnds.getMaxY()>bounds.getMaxY()) bounds.height = camBnds.getMaxY() - bounds.y;
+        if (camBnds.x < bounds.x) bounds.x = camBnds.x;
+        if (camBnds.y < bounds.y) bounds.y = camBnds.y;
+        if (camBnds.getMaxX() > bounds.getMaxX()) bounds.width = camBnds.getMaxX() - bounds.x;
+        if (camBnds.getMaxY() > bounds.getMaxY()) bounds.height = camBnds.getMaxY() - bounds.y;
         return bounds;
     }
 
@@ -233,18 +291,25 @@ public class SGScene3D extends SGParent {
     protected void sceneChanged(PropChange aPC)
     {
         _pcs.fireDeepChange(this, aPC);
-        relayout(); repaint();
+        relayout();
+        repaint();
     }
 
     /**
      * Returns the number of shapes in the shape list.
      */
-    public int getShapeRMCount()  { return _rmshapes.size(); }
+    public int getShapeRMCount()
+    {
+        return _rmshapes.size();
+    }
 
     /**
      * Returns the specific shape at the given index from the shape list.
      */
-    public SGView getShapeRM(int anIndex)  { return _rmshapes.get(anIndex); }
+    public SGView getShapeRM(int anIndex)
+    {
+        return _rmshapes.get(anIndex);
+    }
 
     /**
      * Adds a shape to the end of the shape list.
@@ -262,13 +327,14 @@ public class SGScene3D extends SGParent {
     protected void addShapesForRMShape(SGView aShape, double z1, double z2)
     {
         // If aShape is text, add shape3d for background and add shape3d for char path shape
-        if (aShape instanceof SGText) { SGText text = (SGText)aShape;
+        if (aShape instanceof SGText) {
+            SGText text = (SGText) aShape;
 
             // If text draws fill or stroke, add child for background
-            if (text.getFill()!=null || text.getBorder()!=null) {
+            if (text.getFill() != null || text.getBorder() != null) {
                 SGView background = new SGPolygon(aShape.getPath()); // Create background shape from text
                 background.copyView(aShape);
-                addShapesForRMShape(background, z1+.1f, z2); // Add background shape
+                addShapesForRMShape(background, z1 + .1f, z2); // Add background shape
             }
 
             // Get shape for char paths and add shape3d for char path shape
@@ -287,25 +353,38 @@ public class SGScene3D extends SGParent {
 
         // Create 3D shape from path, set fill/stroke/opacity and add
         Paint fill = aShape.getFill();
-        if (fill!=null)
+        if (fill != null)
             pathBox.setColor(fill.getColor());
         Border border = aShape.getBorder();
-        if (border!=null)
+        if (border != null)
             pathBox.setStroke(border.getColor(), border.getWidth());
         pathBox.setOpacity(aShape.getOpacity());
         addShape(pathBox);
     }
 
-    /** Override to indicate that scene children are unhittable. */
-    public boolean isHittable(SGView aChild)  { return false; }
+    /**
+     * Override to indicate that scene children are unhittable.
+     */
+    public boolean isHittable(SGView aChild)
+    {
+        return false;
+    }
 
-    /** Viewer method. */
-    public boolean acceptsMouse()  { return true; }
+    /**
+     * Viewer method.
+     */
+    public boolean acceptsMouse()
+    {
+        return true;
+    }
 
     /**
      * Copy 3D attributes only.
      */
-    public void copy3D(SGScene3D aScene3D)  { getCamera().copy3D(aScene3D.getCamera()); }
+    public void copy3D(SGScene3D aScene3D)
+    {
+        getCamera().copy3D(aScene3D.getCamera());
+    }
 
     /**
      * XML archival.
@@ -313,29 +392,23 @@ public class SGScene3D extends SGParent {
     protected XMLElement toXMLView(XMLArchiver anArchiver)
     {
         // Archive basic shape attributes and reset element name
-        XMLElement e = super.toXMLView(anArchiver); e.setName("scene3d");
+        XMLElement e = super.toXMLView(anArchiver);
+        e.setName("scene3d");
 
         // Archive the RMShape children: create element for shape, iterate over shapes and add
-        if (getShapeRMCount()>0) {
+        if (getShapeRMCount() > 0) {
             XMLElement shapesXML = new XMLElement("shapes");
-            for (int i=0, iMax=getShapeRMCount(); i<iMax; i++)
+            for (int i = 0, iMax = getShapeRMCount(); i < iMax; i++)
                 shapesXML.add(anArchiver.toXML(getShapeRM(i)));
             e.add(shapesXML);
         }
 
         // Archive Depth, Yaw, Pitch, Roll, FocalLength
-        if (getDepth()!=0) e.add("depth", getDepth());
-        if (getYaw()!=0) e.add("yaw", getYaw());
-        if (getPitch()!=0) e.add("pitch", getPitch());
-        if (getRoll3D()!=0) e.add("zroll", getRoll3D());
-        if (getFocalLength()!=60*72) e.add("focal-length", getFocalLength());
-
-        // Archive Pseudo3D
-        if (isPseudo3D()) {
-            e.add("pseudo", true);
-            e.add("pseudo-skew-x", getPseudoSkewX());
-            e.add("pseudo-skew-y", getPseudoSkewY());
-        }
+        if (getDepth() != 0) e.add("depth", getDepth());
+        if (getYaw() != 0) e.add("yaw", getYaw());
+        if (getPitch() != 0) e.add("pitch", getPitch());
+        if (getRoll3D() != 0) e.add("zroll", getRoll3D());
+        if (getFocalLength() != 60 * 72) e.add("focal-length", getFocalLength());
 
         // Return xml element
         return e;
@@ -344,7 +417,9 @@ public class SGScene3D extends SGParent {
     /**
      * XML archival of children - overrides shape implementation to suppress archival of generated 3D shapes.
      */
-    protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement) { }
+    protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
+    {
+    }
 
     /**
      * XML unarchival.
@@ -355,24 +430,20 @@ public class SGScene3D extends SGParent {
         super.fromXMLView(anArchiver, anElement);
 
         // Fix scene width/height
-        _camera.setWidth(getWidth()); _camera.setHeight(getHeight());
+        _camera.setWidth(getWidth());
+        _camera.setHeight(getHeight());
 
         // Unarchive Depth, Yaw, Pitch, Roll, FocalLength
         setDepth(anElement.getAttributeFloatValue("depth"));
         setYaw(anElement.getAttributeFloatValue("yaw"));
         setPitch(anElement.getAttributeFloatValue("pitch"));
         setRoll3D(anElement.getAttributeFloatValue("zroll"));
-        setFocalLength(anElement.getAttributeFloatValue("focal-length", 60*72));
-
-        // Unarchive Pseudo3D
-        setPseudo3D(anElement.getAttributeBoolValue("pseudo", false));
-        setPseudoSkewX(anElement.getAttributeFloatValue("pseudo-skew-x"));
-        setPseudoSkewY(anElement.getAttributeFloatValue("pseudo-skew-y"));
+        setFocalLength(anElement.getAttributeFloatValue("focal-length", 60 * 72));
 
         // Unarchive the 2d children
         XMLElement shapesXML = anElement.get("shapes");
-        if (shapesXML!=null)
-            for (int i=0, iMax=shapesXML.size(); i<iMax; i++)
-                addShapeRM((SGView)anArchiver.fromXML(shapesXML.get(i), this));
+        if (shapesXML != null)
+            for (int i = 0, iMax = shapesXML.size(); i < iMax; i++)
+                addShapeRM((SGView) anArchiver.fromXML(shapesXML.get(i), this));
     }
 }
