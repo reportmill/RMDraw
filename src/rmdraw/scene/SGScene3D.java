@@ -259,7 +259,7 @@ public class SGScene3D extends SGParent {
     public void setWidth(double aValue)
     {
         super.setWidth(aValue);
-        _camera.setWidth(aValue);
+        _camera.setViewWidth(aValue);
     }
 
     /**
@@ -268,7 +268,7 @@ public class SGScene3D extends SGParent {
     public void setHeight(double aValue)
     {
         super.setHeight(aValue);
-        _camera.setHeight(aValue);
+        _camera.setViewHeight(aValue);
     }
 
     /**
@@ -430,8 +430,8 @@ public class SGScene3D extends SGParent {
         super.fromXMLView(anArchiver, anElement);
 
         // Fix scene width/height
-        _camera.setWidth(getWidth());
-        _camera.setHeight(getHeight());
+        _camera.setViewWidth(getWidth());
+        _camera.setViewHeight(getHeight());
 
         // Unarchive Depth, Yaw, Pitch, Roll, FocalLength
         setDepth(anElement.getAttributeFloatValue("depth"));
