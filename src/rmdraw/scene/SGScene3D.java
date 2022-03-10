@@ -141,27 +141,11 @@ public class SGScene3D extends SGParent {
     }
 
     /**
-     * Returns the number of shapes in the shape list.
-     */
-    public int getShapeCount()
-    {
-        return _scene.getShapeCount();
-    }
-
-    /**
-     * Returns the specific shape at the given index from the shape list.
-     */
-    public Shape3D getShape(int anIndex)
-    {
-        return _scene.getShape(anIndex);
-    }
-
-    /**
      * Adds a shape to the end of the shape list.
      */
     public void addShape(Shape3D aShape)
     {
-        _scene.addShape(aShape);
+        _scene.addChild(aShape);
     }
 
     /**
@@ -169,7 +153,7 @@ public class SGScene3D extends SGParent {
      */
     public void removeShapes()
     {
-        _scene.removeShapes();
+        _scene.removeChildren();
     }
 
     /**
