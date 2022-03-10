@@ -157,22 +157,6 @@ public class SGScene3D extends SGParent {
     }
 
     /**
-     * Returns a path in camera coords for given path in local coords.
-     */
-    public Path3D localToCamera(Path3D aPath)
-    {
-        return _scene.localToCamera(aPath);
-    }
-
-    /**
-     * Returns the given vector in camera coords.
-     */
-    public Vector3D localToCameraForVector(double x, double y, double z)
-    {
-        return _scene.localToCameraForVector(x, y, z);
-    }
-
-    /**
      * Returns whether a vector is facing camera.
      */
     public boolean isFacing(Vector3D aV3D)
