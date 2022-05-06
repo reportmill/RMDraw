@@ -2,9 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.scene;
-
 import java.util.*;
-
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.gfx.*;
@@ -28,6 +26,9 @@ public class SGScene3D extends SGParent {
 
     // List of real child shapes
     private List<SGView> _rmshapes = new ArrayList<>();
+
+    // MouseHandler
+    private MouseHandler  _mouseHandler;
 
     // Constants for properties
     public static final String Depth_Prop = "Depth";
@@ -157,38 +158,6 @@ public class SGScene3D extends SGParent {
     }
 
     /**
-     * Returns whether a vector is facing camera.
-     */
-    public boolean isFacing(Vector3D aV3D)
-    {
-        return _camera.isFacing(aV3D);
-    }
-
-    /**
-     * Returns whether a vector is facing away from camera.
-     */
-    public boolean isFacingAway(Vector3D aV3D)
-    {
-        return _camera.isFacingAway(aV3D);
-    }
-
-    /**
-     * Returns whether a Path3d is facing camera.
-     */
-    public boolean isFacing(Path3D aPath)
-    {
-        return _camera.isFacing(aPath);
-    }
-
-    /**
-     * Returns whether a Path3d is facing away from camera.
-     */
-    public boolean isFacingAway(Path3D aPath)
-    {
-        return _camera.isFacingAway(aPath);
-    }
-
-    /**
      * Rebuilds display list of Path3Ds from Shapes.
      */
     protected void layoutImpl()
@@ -218,7 +187,9 @@ public class SGScene3D extends SGParent {
      */
     public void processEvent(ViewEvent anEvent)
     {
-        _camera.processEvent(anEvent);
+        if (_mouseHandler == null)
+            _mouseHandler = new MouseHandler(_camera);
+        _mouseHandler.processEvent(anEvent);
     }
 
     /**
