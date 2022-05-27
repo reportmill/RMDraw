@@ -50,7 +50,7 @@ public class SGPolygon extends SGParent {
         setSize(bounds.getWidth(), bounds.getHeight());
 
         // Transform to parent for new x & y
-        Rect boundsInParent = bounds.clone(); toParentXF.transform(boundsInParent);
+        Rect boundsInParent = bounds.clone(); toParentXF.transformRect(boundsInParent);
         setFrameXY(boundsInParent.getXY());
     }
 
