@@ -5,6 +5,7 @@ package rmdraw.app;
 import rmdraw.scene.*;
 import java.util.*;
 import snap.gfx.*;
+import snap.props.PropChange;
 import snap.view.*;
 import snap.viewx.*;
 import snap.web.*;

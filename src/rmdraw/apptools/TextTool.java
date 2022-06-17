@@ -7,8 +7,9 @@ import rmdraw.scene.*;
 import java.util.List;
 import snap.geom.*;
 import snap.gfx.*;
+import snap.props.PropChange;
+import snap.props.PropChangeListener;
 import snap.text.*;
-import snap.util.*;
 import snap.view.*;
 
 /**
@@ -32,7 +33,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
     private double  _updatingMinHeight = 0;
 
     // A Listener for TextEditor Selection PropChange
-    private PropChangeListener  _textEditorSelChangeLsnr = pc -> textEditorSelChanged();
+    private PropChangeListener _textEditorSelChangeLsnr = pc -> textEditorSelChanged();
 
     /**
      * Returns the TextEditor used to edit text in Editor view.

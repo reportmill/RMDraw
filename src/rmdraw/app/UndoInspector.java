@@ -3,6 +3,10 @@
  */
 package rmdraw.app;
 import java.util.*;
+
+import snap.props.PropChange;
+import snap.props.UndoSet;
+import snap.props.Undoer;
 import snap.util.*;
 import snap.view.*;
 

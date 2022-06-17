@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.List;
 import snap.geom.*;
 import snap.gfx.*;
+import snap.props.PropChange;
+import snap.props.PropChangeListener;
 import snap.text.*;
 import snap.util.*;
 
@@ -65,7 +67,7 @@ public class SGText extends SGRect {
     static Insets          _marginDefault = new Insets(1, 2, 0, 2);
     
     // A listener to handle rich text changes
-    PropChangeListener     _richTextLsnr = pc -> richTextDidPropChange(pc);
+    PropChangeListener _richTextLsnr = pc -> richTextDidPropChange(pc);
     
     // Constants for overflow behavior during RPG
     public static final byte WRAP_NONE = 0;

@@ -7,6 +7,7 @@ import snap.geom.Path;
 import snap.geom.Rect;
 import snap.gfx.*;
 import snap.gfx3d.*;
+import snap.props.PropChange;
 import snap.util.*;
 import snap.view.ViewEvent;
 

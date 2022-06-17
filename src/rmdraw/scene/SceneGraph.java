@@ -3,10 +3,10 @@
  */
 package rmdraw.scene;
 import snap.gfx.*;
-import snap.util.DeepChangeListener;
-import snap.util.PropChange;
-import snap.util.PropChangeListener;
-import snap.util.Undoer;
+import snap.props.DeepChangeListener;
+import snap.props.PropChange;
+import snap.props.PropChangeListener;
+import snap.props.Undoer;
 
 /**
  * The root of a hierarchy of views.

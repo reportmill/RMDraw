@@ -3,6 +3,7 @@
  */
 package rmdraw.app;
 import snap.geom.HPos;
+import snap.props.Undoer;
 import snap.text.TextEditor;
 import snap.util.*;
 import snap.view.*;

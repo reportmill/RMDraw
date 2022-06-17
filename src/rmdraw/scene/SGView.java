@@ -5,6 +5,8 @@ package rmdraw.scene;
 import java.util.*;
 import snap.geom.*;
 import snap.gfx.*;
+import snap.props.PropObject;
+import snap.props.Undoer;
 import snap.text.TextFormat;
 import snap.util.*;
 import snap.util.XMLArchiver.*;

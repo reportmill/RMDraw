@@ -6,6 +6,8 @@ import java.util.*;
 
 import snap.geom.Rect;
 import snap.gfx.*;
+import snap.props.PropChange;
+import snap.props.PropChangeListener;
 import snap.util.*;
 
 /**
@@ -23,7 +25,7 @@ public class SGSpringsView extends SGParent {
     private Box  _cboxes[];
     
     // The PropChangeListener to notify of changes in child
-    private PropChangeListener  _childLsnr;
+    private PropChangeListener _childLsnr;
     
     // Constants for positions above and below
     private enum Position { Above, Below };
