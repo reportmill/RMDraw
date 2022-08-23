@@ -123,9 +123,11 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
         // Get xstring font size and scale up to 12pt if any string run is smaller
         double fsize = 12;
-        for (RichTextLine line : text.getRichText().getLines())
-            for (RichTextRun run : line.getRuns())
+        for (RichTextLine line : text.getRichText().getLines()) {
+            BaseTextRun[] lineRuns = line.getRuns();
+            for (BaseTextRun run : lineRuns)
                 fsize = Math.min(fsize, run.getFont().getSize());
+        }
         _textArea.setFontScale(fsize<12? 12/fsize : 1);
 
         // Update MarginText, RoundingThumb, RoundingText
