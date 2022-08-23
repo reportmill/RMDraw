@@ -114,7 +114,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         if(isTextEditorSet())
             return getTextEditor().isUnderlined();
-        return getRichText().getRunAt(0).isUnderlined();
+        return getRichText().getRunForCharIndex(0).isUnderlined();
     }
 
     /**
@@ -232,7 +232,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
      */
     public float getCharSpacing()
     {
-        return getRichText().getRunAt(0).getCharSpacing();
+        return getRichText().getRunForCharIndex(0).getCharSpacing();
     }
 
     /**
@@ -252,7 +252,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         if (isTextEditorSet())
             return getTextEditor().getLineSpacing();
-        return getRichText().getLineStyleAt(0).getSpacing();
+        return getRichText().getLineStyleForCharIndex(0).getSpacing();
     }
 
     /**
@@ -264,7 +264,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
             getTextEditor().setLineSpacing(aHeight);
         else {
 
-            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
+            TextLineStyle ps = getRichText().getLineStyleForCharIndex(0).copyFor(TextLineStyle.SPACING_FACTOR_KEY, aHeight);
             getRichText().setLineStyle(ps, 0, length());
         }
     }
@@ -276,7 +276,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         if (isTextEditorSet())
             return getTextEditor().getLineGap();
-        return getRichText().getLineStyleAt(0).getSpacing();
+        return getRichText().getLineStyleForCharIndex(0).getSpacing();
     }
 
     /**
@@ -287,7 +287,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
         if (isTextEditorSet())
             getTextEditor().setLineGap(aHeight);
         else {
-            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.SPACING_KEY, aHeight);
+            TextLineStyle ps = getRichText().getLineStyleForCharIndex(0).copyFor(TextLineStyle.SPACING_KEY, aHeight);
             getRichText().setLineStyle(ps, 0, length());
         }
     }
@@ -299,7 +299,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         if (isTextEditorSet())
             return getTextEditor().getLineHeightMin();
-        return getRichText().getLineStyleAt(0).getMinHeight();
+        return getRichText().getLineStyleForCharIndex(0).getMinHeight();
     }
 
     /**
@@ -310,7 +310,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
         if (isTextEditorSet())
             getTextEditor().setLineHeightMin(aHeight);
         else {
-            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
+            TextLineStyle ps = getRichText().getLineStyleForCharIndex(0).copyFor(TextLineStyle.MIN_HEIGHT_KEY, aHeight);
             getRichText().setLineStyle(ps, 0, length());
         }
     }
@@ -322,7 +322,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         if (isTextEditorSet())
             return getTextEditor().getLineHeightMax();
-        return getRichText().getLineStyleAt(0).getMaxHeight();
+        return getRichText().getLineStyleForCharIndex(0).getMaxHeight();
     }
 
     /**
@@ -333,7 +333,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
         if (isTextEditorSet())
             getTextEditor().setLineHeightMax(aHeight);
         else {
-            TextLineStyle ps = getRichText().getLineStyleAt(0).copyFor(TextLineStyle.MAX_HEIGHT_KEY, aHeight);
+            TextLineStyle ps = getRichText().getLineStyleForCharIndex(0).copyFor(TextLineStyle.MAX_HEIGHT_KEY, aHeight);
             getRichText().setLineStyle(ps, 0, length());
         }
     }

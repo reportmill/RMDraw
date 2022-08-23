@@ -88,7 +88,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
         // Get paragraph from text
         int selStart = 0; if(_textArea.isFocused()) selStart = _textArea.getSelStart();
-        TextLineStyle pgraph = text.getRichText().getLineStyleAt(selStart);
+        TextLineStyle pgraph = text.getRichText().getLineStyleForCharIndex(selStart);
 
         // If editor is text editing, get paragraph from text editor instead
         TextEditor ted = getTextEditor();

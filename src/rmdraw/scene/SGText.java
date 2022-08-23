@@ -157,7 +157,7 @@ public class SGText extends SGRect {
      */
     public Font getFont()
     {
-        return getRichText().getFontAt(0);
+        return getRichText().getFontForCharIndex(0);
     }
 
     /**
@@ -173,7 +173,7 @@ public class SGText extends SGRect {
      */
     public TextFormat getFormat()
     {
-        return getRichText().getRunAt(0).getFormat();
+        return getRichText().getRunForCharIndex(0).getFormat();
     }
 
     /**
@@ -187,7 +187,7 @@ public class SGText extends SGRect {
     /**
      * Returns the color of the first character of the xstring associated with this RMText.
      */
-    public Color getTextColor()  { return getRichText().getRunAt(0).getColor(); }
+    public Color getTextColor()  { return getRichText().getRunForCharIndex(0).getColor(); }
 
     /**
      * Sets the color of the characters in the XString associated with this RMText.
@@ -202,7 +202,7 @@ public class SGText extends SGRect {
      */
     public Border getTextBorder()
     {
-        return getRichText().getRunAt(0).getBorder();
+        return getRichText().getRunForCharIndex(0).getBorder();
     }
 
     /**
@@ -218,7 +218,7 @@ public class SGText extends SGRect {
      */
     public HPos getAlignX()
     {
-        return getRichText().getLineStyleAt(0).getAlign();
+        return getRichText().getLineStyleForCharIndex(0).getAlign();
     }
 
     /**
