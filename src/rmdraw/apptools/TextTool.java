@@ -109,7 +109,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
         setViewValue("AlignBottomButton", text.getAlignY()==VPos.BOTTOM);
 
         // Set TextView RichText and selection
-        _textArea.setRichText(text.getRichText());
+        _textArea.setTextDoc(text.getRichText());
         if (ted!=null)
             _textArea.setSel(ted.getSelStart(), ted.getSelEnd());
 

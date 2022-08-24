@@ -495,7 +495,7 @@ public class SGText extends SGRect {
     protected void updateTextBox()
     {
         // Update RichText
-        _textBox.setRichText(getRichText());
+        _textBox.setTextDoc(getRichText());
 
         // Update bounds
         Insets pad = getMargin();
