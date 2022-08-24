@@ -78,7 +78,7 @@ public class SGTextUtils {
                 // If non-space character, create glyph view
                 if (c != ' ') {
                     Rect glyphBounds = font.getCharBounds(c);
-                    RichText rtext = aText.getRichText().subtext(run.getStart() + i, run.getStart() + i + 1);
+                    RichText rtext = aText.getRichText().copyForRange(run.getStart() + i, run.getStart() + i + 1);
                     SGText glyph = new SGText(rtext); glyph.setAutosizing("~-~,~-~");
 
                     charsView.addChild(glyph);
