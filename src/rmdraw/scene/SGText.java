@@ -145,7 +145,7 @@ public class SGText extends SGRect {
     /**
      * Returns the last character index visible in this text.
      */
-    public int getVisibleEnd()  { return getTextBox().getEnd(); }
+    public int getVisibleEnd()  { return getTextBox().getEndCharIndex(); }
 
     /**
      * Returns whether all characters can be visibly rendered in text bounds.
@@ -505,7 +505,7 @@ public class SGText extends SGRect {
         _textBox.setBounds(pl, pt, w, h);
 
         // Update Start, Linked, Align
-        _textBox.setStart(getVisibleStart());
+        _textBox.setStartCharIndex(getVisibleStart());
         _textBox.setLinked(getLinkedText()!=null);
         _textBox.setAlignY(getAlignY());
         _textBox.setBoundsPath(!(getPath() instanceof Rect) || getPerformsWrap()? getPath() : null);
