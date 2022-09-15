@@ -11,14 +11,14 @@ import snap.viewx.DialogBox;
  * This class provides UI editing for SGPage.
  */
 public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
-    
+
     // The Layers table
-    private TableView <SGPageLayer>  _layersTable;
+    private TableView<SGPageLayer> _layersTable;
 
     // Icons
-    private Image  _visibleIcon = getImage("LayerVisible.png");
-    private Image  _invisibleIcon = getImage("LayerInvisible.png");
-    private Image  _lockedIcon = getImage("LayerLocked.png");
+    private Image _visibleIcon = getImage("LayerVisible.png");
+    private Image _invisibleIcon = getImage("LayerInvisible.png");
+    private Image _lockedIcon = getImage("LayerLocked.png");
 
     /**
      * Initialize UI panel for this tool.
@@ -27,7 +27,7 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
     {
         // Configure LayersTable CellConfigure and MouseClicks
         _layersTable = getView("LayersTable", TableView.class);
-        _layersTable.setCellConfigure(this :: configureLayersTable);
+        _layersTable.setCellConfigure(this::configureLayersTable);
         enableEvents(_layersTable, MouseRelease);
         enableEvents("DatasetKeyText", DragDrop);
     }
@@ -38,17 +38,18 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
     public void resetUI()
     {
         // Get currently selected page (just return if null)
-        SGPage page = getSelView(); if (page==null) return;
+        SGPage page = getSelView();
+        if (page == null) return;
 
         // Update DatasetKeyText, PaintBackCheckBox
         setViewValue("DatasetKeyText", page.getDatasetKey());
         setViewValue("PaintBackCheckBox", page.getPaintBackground());
 
         // Update AddButton, RemoveButton, RenameButton, MergeButton enabled state
-        setViewEnabled("AddButton", page.getLayerCount()>0);
-        setViewEnabled("RemoveButton", page.getLayerCount()>1);
-        setViewEnabled("RenameButton", page.getLayerCount()>0);
-        setViewEnabled("MergeButton", page.getLayerCount()>1 && page.getSelLayerIndex()>0);
+        setViewEnabled("AddButton", page.getLayerCount() > 0);
+        setViewEnabled("RemoveButton", page.getLayerCount() > 1);
+        setViewEnabled("RenameButton", page.getLayerCount() > 0);
+        setViewEnabled("MergeButton", page.getLayerCount() > 1 && page.getSelLayerIndex() > 0);
 
         // Update layers table selection
         _layersTable.setItems(page.getLayers());
@@ -61,7 +62,8 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
     public void respondUI(ViewEvent anEvent)
     {
         // Get currently selected page (just return if null)
-        SGPage page = getSelView(); if (page==null) return;
+        SGPage page = getSelView();
+        if (page == null) return;
 
         // Handle DatasetKeyText, PaintBackCheckBox
         if (anEvent.equals("DatasetKeyText"))
@@ -87,7 +89,7 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
             int index = page.getSelLayerIndex();
 
             // If index is less than layer count
-            if (index<page.getLayerCount()) {
+            if (index < page.getLayerCount()) {
                 SGPageLayer resultingLayer = page.getLayer(index - 1);
                 resultingLayer.addChildren(layer.getChildren());
                 layer.removeChildren();
@@ -99,9 +101,10 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
         if (anEvent.equals("RenameButton")) {
             int srow = getViewSelIndex("LayersTable");
             SGPageLayer layer = page.getLayer(srow);
-            DialogBox dbox = new DialogBox("Rename Layer"); dbox.setQuestionMessage("Layer Name:");
+            DialogBox dbox = new DialogBox("Rename Layer");
+            dbox.setQuestionMessage("Layer Name:");
             String newName = dbox.showInputDialog(getUI(), layer.getName());
-            if (newName!=null && newName.length()>0)
+            if (newName != null && newName.length() > 0)
                 layer.setName(newName);
         }
 
@@ -109,16 +112,17 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
         if (anEvent.equals("LayersTable")) {
 
             // Handle MouseClick event - have page select new table row
-            int row = _layersTable.getSelIndex(); if (row<0) return;
+            int row = _layersTable.getSelIndex();
+            if (row < 0) return;
             SGPageLayer layer = page.getLayer(row);
             page.selectLayer(layer);
 
             // If column one was selected, cycle through layer states
             int col = _layersTable.getSelColIndex();
-            if (anEvent.isMouseClick() && col==1) {
+            if (anEvent.isMouseClick() && col == 1) {
                 int state = layer.getLayerState();
-                if (state==SGPageLayer.StateVisible) layer.setLayerState(SGPageLayer.StateInvisible);
-                else if (state==SGPageLayer.StateInvisible) layer.setLayerState(SGPageLayer.StateLocked);
+                if (state == SGPageLayer.StateVisible) layer.setLayerState(SGPageLayer.StateInvisible);
+                else if (state == SGPageLayer.StateInvisible) layer.setLayerState(SGPageLayer.StateLocked);
                 else layer.setLayerState(SGPageLayer.StateVisible);
                 _layersTable.updateItems();
             }
@@ -126,42 +130,43 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
 
         // Handle AllVisibleButton
         if (anEvent.equals("AllVisibleButton"))
-            for (int i=0, iMax=page.getLayerCount(); i<iMax; i++)
+            for (int i = 0, iMax = page.getLayerCount(); i < iMax; i++)
                 page.getLayer(i).setLayerState(SGPageLayer.StateVisible);
 
         // Handle AllVisibleButton
         if (anEvent.equals("AllInvisibleButton"))
-            for (int i=0, iMax=page.getLayerCount(); i<iMax; i++)
+            for (int i = 0, iMax = page.getLayerCount(); i < iMax; i++)
                 page.getLayer(i).setLayerState(SGPageLayer.StateInvisible);
 
         // Handle AllLockedButton
         if (anEvent.equals("AllLockedButton"))
-            for (int i=0, iMax=page.getLayerCount(); i<iMax; i++)
+            for (int i = 0, iMax = page.getLayerCount(); i < iMax; i++)
                 page.getLayer(i).setLayerState(SGPageLayer.StateLocked);
     }
 
     /**
      * Configure LayersTable: Set image for second column.
      */
-    public void configureLayersTable(ListCell <SGPageLayer> aCell)
+    public void configureLayersTable(ListCell<SGPageLayer> aCell)
     {
         // Get page, cell row/col, page layer
         //SGPage page = getSelView(); if(page==null) return;
         //int row = aCell.getRow(), col = aCell.getCol(); if(row<0 || row>=page.getLayerCount()) return;
-        SGPageLayer layer = aCell.getItem(); if (layer==null) return; //page.getLayer(row);
+        SGPageLayer layer = aCell.getItem();
+        if (layer == null) return; //page.getLayer(row);
         int col = aCell.getCol();
 
         // Handle column 0 (layer name)
-        if (col==0) {
+        if (col == 0) {
             aCell.setText(layer.getName());
         }
 
         // Handle column 1 (layer state image)
-        if (col==1) {
-            int state = layer!=null ? layer.getLayerState() : -1;
-            if (state== SGPageLayer.StateVisible) aCell.setImage(_visibleIcon);
-            else if (state== SGPageLayer.StateInvisible) aCell.setImage(_invisibleIcon);
-            else if (state== SGPageLayer.StateLocked) aCell.setImage(_lockedIcon);
+        if (col == 1) {
+            int state = layer != null ? layer.getLayerState() : -1;
+            if (state == SGPageLayer.StateVisible) aCell.setImage(_visibleIcon);
+            else if (state == SGPageLayer.StateInvisible) aCell.setImage(_invisibleIcon);
+            else if (state == SGPageLayer.StateLocked) aCell.setImage(_lockedIcon);
             aCell.setText(null);
         }
     }
@@ -169,15 +174,24 @@ public class SGPageTool<T extends SGPage> extends SGParentTool<T> {
     /**
      * Returns the view class that this tool is responsible for.
      */
-    public Class getViewClass()  { return SGPage.class; }
+    public Class getViewClass()
+    {
+        return SGPage.class;
+    }
 
     /**
      * Returns the name to be used for this tool in the inspector window title.
      */
-    public String getWindowTitle()  { return "Page Inspector"; }
+    public String getWindowTitle()
+    {
+        return "Page Inspector";
+    }
 
     /**
      * Overrides tool method to declare that pages have no handles.
      */
-    public int getHandleCount(T aView)  { return 0; }
+    public int getHandleCount(T aView)
+    {
+        return 0;
+    }
 }

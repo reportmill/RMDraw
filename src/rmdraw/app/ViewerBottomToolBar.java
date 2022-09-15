@@ -18,19 +18,25 @@ public class ViewerBottomToolBar extends ViewOwner {
     /**
      * Creates a new bottom ui.
      */
-    public ViewerBottomToolBar(ViewerPane aViewerPane)  { _viewerPane = aViewerPane; }
+    public ViewerBottomToolBar(ViewerPane aViewerPane)
+    {
+        _viewerPane = aViewerPane;
+    }
 
     /**
      * Returns the viewer pane.
      */
-    public ViewerPane getViewerPane()  { return _viewerPane; }
+    public ViewerPane getViewerPane()
+    {
+        return _viewerPane;
+    }
 
     /**
      * Override to swap top level RowView for subclass to manually centers PageNavBox under viewer.
      */
     protected View createUI()
     {
-        RowView rowView = (RowView)super.createUI();
+        RowView rowView = (RowView) super.createUI();
         RowView rowView2 = new RMVRowView(rowView);
         return rowView2;
     }
@@ -49,12 +55,14 @@ public class ViewerBottomToolBar extends ViewOwner {
         getView("PageBackButton", Button.class).setImage(getImage(p2));
 
         // Set left arrow plus stop bar in PageBackAllButton
-        Path p3 = new Path(); p3.append(p2.getPathIter(new Transform(2, 0)));
+        Path p3 = new Path();
+        p3.append(p2.getPathIter(new Transform(2, 0)));
         p3.append(new Rect(2, 6, 2, 10));
         getView("PageBackAllButton", Button.class).setImage(getImage(p3));
 
         // Set right arrow plus stop bar in PageForwardAllButton
-        Path p4 = new Path(); p4.append(p1.getPathIter(new Transform(-2, 0)));
+        Path p4 = new Path();
+        p4.append(p1.getPathIter(new Transform(-2, 0)));
         p4.append(new Rect(10, 6, 2, 10));
         getView("PageForwardAllButton", Button.class).setImage(getImage(p4));
     }
@@ -69,20 +77,20 @@ public class ViewerBottomToolBar extends ViewOwner {
         Viewer viewer = viewerPane.getViewer();
 
         // Reset ZoomText
-        setViewValue("ZoomText", Math.round(viewer.getZoomFactor()*100) + "%");
+        setViewValue("ZoomText", Math.round(viewer.getZoomFactor() * 100) + "%");
 
         // Reset PageText field
-        String pageText = "" + (viewer.getSelPageIndex()+1) + " of " + viewer.getPageCount();
+        String pageText = "" + (viewer.getSelPageIndex() + 1) + " of " + viewer.getPageCount();
         setViewValue("PageText", pageText);
 
         // Reset PageNavBox.Visible and enabled states for page back/forward buttons
-        setViewEnabled("PageBackButton", viewer.getSelPageIndex()>0);
-        setViewEnabled("PageBackAllButton", viewer.getSelPageIndex()>0);
-        setViewEnabled("PageForwardButton", viewer.getSelPageIndex()<viewer.getPageCount()-1);
-        setViewEnabled("PageForwardAllButton", viewer.getSelPageIndex()<viewer.getPageCount()-1);
+        setViewEnabled("PageBackButton", viewer.getSelPageIndex() > 0);
+        setViewEnabled("PageBackAllButton", viewer.getSelPageIndex() > 0);
+        setViewEnabled("PageForwardButton", viewer.getSelPageIndex() < viewer.getPageCount() - 1);
+        setViewEnabled("PageForwardAllButton", viewer.getSelPageIndex() < viewer.getPageCount() - 1);
 
         // Update PageNavBox.Visible
-        getView("PageNavBox").setVisible(viewer.getDoc().getPageCount()>1);
+        getView("PageNavBox").setVisible(viewer.getDoc().getPageCount() > 1);
     }
 
     /**
@@ -96,11 +104,11 @@ public class ViewerBottomToolBar extends ViewOwner {
 
         // Handle ZoomComboBox
         if (anEvent.equals("ZoomText"))
-            viewer.setZoomFactor(anEvent.getFloatValue()/100);
+            viewer.setZoomFactor(anEvent.getFloatValue() / 100);
 
         // Handle ZoomMenuButton
         if (anEvent.equals("ZoomMenuItem"))
-            viewer.setZoomFactor(SnapUtils.floatValue(anEvent.getText())/100);
+            viewer.setZoomFactor(SnapUtils.floatValue(anEvent.getText()) / 100);
 
         // Handle ZoomToActualSizeMenuItem - use screen resolution to figure out zooming for actual size
         if (anEvent.equals("ZoomToActualSizeMenuItem"))
@@ -116,7 +124,7 @@ public class ViewerBottomToolBar extends ViewOwner {
 
         // Handle PageText
         if (anEvent.equals("PageText"))
-            viewer.setSelPageIndex(anEvent.getIntValue()-1);
+            viewer.setSelPageIndex(anEvent.getIntValue() - 1);
 
         // Handle PageBackButton
         if (anEvent.equals("PageBackButton"))
@@ -132,7 +140,7 @@ public class ViewerBottomToolBar extends ViewOwner {
 
         // Handle PageForwardAllButton
         if (anEvent.equals("PageForwardAllButton"))
-            viewer.setSelPageIndex(viewer.getPageCount()-1);
+            viewer.setSelPageIndex(viewer.getPageCount() - 1);
 
         // Have viewer pane reset
         viewerPane.resetLater();
@@ -143,8 +151,12 @@ public class ViewerBottomToolBar extends ViewOwner {
      */
     private static Image getImage(Shape aShape)
     {
-        Image img = Image.get(14,22,true); Painter pntr = img.getPainter(); pntr.setColor(Color.DARKGRAY);
-        pntr.fill(aShape); pntr.flush(); return img;
+        Image img = Image.get(14, 22, true);
+        Painter pntr = img.getPainter();
+        pntr.setColor(Color.DARKGRAY);
+        pntr.fill(aShape);
+        pntr.flush();
+        return img;
     }
 
     /**
@@ -152,20 +164,29 @@ public class ViewerBottomToolBar extends ViewOwner {
      */
     public class RMVRowView extends RowView {
 
-        /** Copy settings from given RowView. */
-        public RMVRowView(RowView aRV) {
-             setPrefHeight(aRV.getPrefHeight()); setPadding(aRV.getPadding()); setChildren(aRV.getChildren());
+        /**
+         * Copy settings from given RowView.
+         */
+        public RMVRowView(RowView aRV)
+        {
+            setPrefHeight(aRV.getPrefHeight());
+            setPadding(aRV.getPadding());
+            setChildren(aRV.getChildren());
         }
 
-        /** Override to center PageNavBox under Viewer. */
+        /**
+         * Override to center PageNavBox under Viewer.
+         */
         protected void layoutImpl()
         {
             View pageNavBox = getView("PageNavBox");
-            if(pageNavBox.isVisible()) {
+            if (pageNavBox.isVisible()) {
                 Viewer viewer = getViewerPane().getViewer();
-                View spacerLabel = getView("SpacerLabel"); if(spacerLabel.getX()==0) super.layoutImpl();
+                View spacerLabel = getView("SpacerLabel");
+                if (spacerLabel.getX() == 0) super.layoutImpl();
                 double w0 = viewer.getParent().getWidth(), w1 = pageNavBox.getPrefWidth();
-                double x0 = spacerLabel.getX(), x1 = Math.round((w0 - w1)/2); spacerLabel.setPrefWidth(x1 - x0);
+                double x0 = spacerLabel.getX(), x1 = Math.round((w0 - w1) / 2);
+                spacerLabel.setPrefWidth(x1 - x0);
             }
             super.layoutImpl();
         }

@@ -17,12 +17,18 @@ public class EditorPaneMenuBar extends EditorPane.SupportPane {
     /**
      * Creates a new editor pane menu bar.
      */
-    public EditorPaneMenuBar(EditorPane anEP)  { super(anEP); }
+    public EditorPaneMenuBar(EditorPane anEP)
+    {
+        super(anEP);
+    }
 
     /**
      * Override to return node as MenuBar.
      */
-    public MenuBar getUI()  { return (MenuBar)super.getUI(); }
+    public MenuBar getUI()
+    {
+        return (MenuBar) super.getUI();
+    }
 
     /**
      * Initialize UI panel.
@@ -43,14 +49,14 @@ public class EditorPaneMenuBar extends EditorPane.SupportPane {
         Undoer undoer = getEditor().getUndoer();
 
         // Update UndoMenuItem
-        String uTitle = undoer==null || undoer.getUndoSetLast()==null? "Undo" : undoer.getUndoSetLast().getFullUndoTitle();
+        String uTitle = undoer == null || undoer.getUndoSetLast() == null ? "Undo" : undoer.getUndoSetLast().getFullUndoTitle();
         setViewValue("UndoMenuItem", uTitle);
-        setViewEnabled("UndoMenuItem", undoer!=null && undoer.getUndoSetLast()!=null);
+        setViewEnabled("UndoMenuItem", undoer != null && undoer.getUndoSetLast() != null);
 
         // Update RedoMenuItem
-        String rTitle = undoer==null || undoer.getRedoSetLast()==null? "Redo" : undoer.getRedoSetLast().getFullRedoTitle();
+        String rTitle = undoer == null || undoer.getRedoSetLast() == null ? "Redo" : undoer.getRedoSetLast().getFullRedoTitle();
         setViewValue("RedoMenuItem", rTitle);
-        setViewEnabled("RedoMenuItem", undoer!=null && undoer.getRedoSetLast()!=null);
+        setViewEnabled("RedoMenuItem", undoer != null && undoer.getRedoSetLast() != null);
 
         // Update ShowRulersMenuItem
         setViewValue("ShowRulersMenuItem", getEditorPane().isShowRulers());
@@ -74,18 +80,19 @@ public class EditorPaneMenuBar extends EditorPane.SupportPane {
         // Handle OpenMenuItem, OpenButton: Get new editor pane from open panel and make visible (if created)
         if (anEvent.equals("OpenMenuItem") || anEvent.equals("OpenButton")) {
             EditorPane editorPane = ClassUtils.newInstance(epane).open(epane.getUI());
-            if(editorPane!=null)
+            if (editorPane != null)
                 editorPane.setWindowVisible(true);
         }
 
         // Handle OpenRecentMenuItem
         if (anEvent.equals("OpenRecentMenuItem")) {
-            String path = RecentFiles.showPathsPanel(epane.getUI(), "RecentDocuments"); if(path==null) return;
+            String path = RecentFiles.showPathsPanel(epane.getUI(), "RecentDocuments");
+            if (path == null) return;
             rmdraw.app.Welcome.getShared().open(path); //file.getAbsolutePath());
         }
 
         // Handle CloseMenuItem
-        if(anEvent.equals("CloseMenuItem")) epane.close();
+        if (anEvent.equals("CloseMenuItem")) epane.close();
 
         // Handle SaveMenuItem, SaveButton, SaveAsMenuItem, RevertMenuItem
         if (anEvent.equals("SaveMenuItem") || anEvent.equals("SaveButton"))

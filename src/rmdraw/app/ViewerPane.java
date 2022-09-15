@@ -11,8 +11,8 @@ import snap.web.WebURL;
 
 /**
  * This class is a container for a viewer and tool bars. The default tool bars add document controls (save,
- * print, copy), input controls (select, pan, text select, image select), zoom controls and page controls. 
- * 
+ * print, copy), input controls (select, pan, text select, image select), zoom controls and page controls.
+ * <p>
  * You might use it like this to view in a Swing component hierarchy:
  * <p><blockquote><pre>
  *   RMViewerPane viewer = new RMViewerPane(); viewer.getViewer().setDoc(new SGDoc(aSource));
@@ -23,29 +23,29 @@ import snap.web.WebURL;
 public class ViewerPane extends ViewOwner {
 
     // The real viewer
-    private Viewer  _viewer;
-    
+    private Viewer _viewer;
+
     // The ScrollView for this viewer
-    private ScrollView  _scrollView;
-    
+    private ScrollView _scrollView;
+
     // The RulerBox that holds the ScrollView
-    private RulerBox  _rulerBox;
-    
+    private RulerBox _rulerBox;
+
     // The controls at the top of the document
-    private ViewOwner  _topToolBar;
-    
+    private ViewOwner _topToolBar;
+
     // The controls at the bottom of the document
-    private ViewOwner  _btmToolBar;
+    private ViewOwner _btmToolBar;
 
     // Constants
     private static Paint BACK_FILL = ViewUtils.getBackFill();
-    
+
     /**
      * Returns the viewer for this viewer pane.
      */
     public Viewer getViewer()
     {
-        if(_viewer==null) getUI();
+        if (_viewer == null) getUI();
         return _viewer;
     }
 
@@ -61,22 +61,34 @@ public class ViewerPane extends ViewOwner {
     /**
      * Creates the real viewer for this viewer pane.
      */
-    protected Viewer createViewer()  { return new Viewer(); }
+    protected Viewer createViewer()
+    {
+        return new Viewer();
+    }
 
     /**
      * Returns the scroll view for this viewer pane.
      */
-    public ScrollView getScrollView()  { return _scrollView; }
+    public ScrollView getScrollView()
+    {
+        return _scrollView;
+    }
 
     /**
      * Returns the RulerBox that holds the ScrollView.
      */
-    public RulerBox getRulerBox()  { return _rulerBox; }
+    public RulerBox getRulerBox()
+    {
+        return _rulerBox;
+    }
 
     /**
      * Returns the document associated with this viewer.
      */
-    public SGDoc getDoc()  { return getViewer().getDoc(); }
+    public SGDoc getDoc()
+    {
+        return getViewer().getDoc();
+    }
 
     /**
      * Returns the document source.
@@ -91,7 +103,7 @@ public class ViewerPane extends ViewOwner {
      */
     public ViewOwner getTopToolBar()
     {
-        return _topToolBar!=null ? _topToolBar : (_topToolBar=createTopToolBar());
+        return _topToolBar != null ? _topToolBar : (_topToolBar = createTopToolBar());
     }
 
     /**
@@ -107,7 +119,7 @@ public class ViewerPane extends ViewOwner {
      */
     public ViewOwner getBottomToolBar()
     {
-        return _btmToolBar!=null ? _btmToolBar : (_btmToolBar=createBottomToolBar());
+        return _btmToolBar != null ? _btmToolBar : (_btmToolBar = createBottomToolBar());
     }
 
     /**
@@ -121,22 +133,33 @@ public class ViewerPane extends ViewOwner {
     /**
      * Saves the current viewer document.
      */
-    public void save()  { }
+    public void save()
+    {
+    }
 
     /**
      * Prints the current viewer document.
      */
-    public void print()  { getViewer().print(); }
+    public void print()
+    {
+        getViewer().print();
+    }
 
     /**
      * Copies the current viewer document selection.
      */
-    public void copy()  { getViewer().getInteractor().copy(); }
+    public void copy()
+    {
+        getViewer().getInteractor().copy();
+    }
 
     /**
      * Returns whether editor pane shows rulers.
      */
-    public boolean isShowRulers()  { return getRulerBox().isShowRulers(); }
+    public boolean isShowRulers()
+    {
+        return getRulerBox().isShowRulers();
+    }
 
     /**
      * Sets whether editor pane shows rulers.
@@ -151,7 +174,7 @@ public class ViewerPane extends ViewOwner {
         getRulerBox().setShowRulers(aValue);
 
         // Resize window if window was previously at preferred size
-        if(doPack)
+        if (doPack)
             getWindow().pack();
     }
 
@@ -161,13 +184,14 @@ public class ViewerPane extends ViewOwner {
     public void runZoomPanel()
     {
         // Run input dialog to get zoom factor string
-        DialogBox dbox = new DialogBox("Zoom Panel"); dbox.setQuestionMessage("Enter Percentage to Zoom to:");
+        DialogBox dbox = new DialogBox("Zoom Panel");
+        dbox.setQuestionMessage("Enter Percentage to Zoom to:");
         String string = dbox.showInputDialog(getUI(), "120");
 
         // If string is valid, set zoom factor to float value
-        if(string!=null) {
-            float factor = StringUtils.floatValue(string)/100;
-            if(factor>0)
+        if (string != null) {
+            float factor = StringUtils.floatValue(string) / 100;
+            if (factor > 0)
                 getViewer().setZoomFactor(factor);
         }
 
@@ -206,7 +230,7 @@ public class ViewerPane extends ViewOwner {
     protected void resetUI()
     {
         // Repaint rulers if visible
-        if(isShowRulers()) getRulerBox().repaint();
+        if (isShowRulers()) getRulerBox().repaint();
 
         // Trigger top/bottom toolbar resets
         if (!ViewUtils.isMouseDown()) getTopToolBar().resetLater();

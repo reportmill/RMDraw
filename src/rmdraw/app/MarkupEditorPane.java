@@ -10,10 +10,10 @@ import snap.view.*;
 public class MarkupEditorPane extends EditorPane {
 
     // The embedded view
-    private View  _embedView;
+    private View _embedView;
 
     // A reference to ToolsView
-    protected RowView  _toolsView;
+    protected RowView _toolsView;
 
     /**
      * Constructor.
@@ -38,7 +38,7 @@ public class MarkupEditorPane extends EditorPane {
      */
     public boolean isSelecting()
     {
-        return isShowing() && getEditor().getCurrentTool()==getEditor().getSelectTool();
+        return isShowing() && getEditor().getCurrentTool() == getEditor().getSelectTool();
     }
 
     /**
@@ -101,12 +101,15 @@ public class MarkupEditorPane extends EditorPane {
         // Get selected tool button name and button - if found and not selected, select it
         String toolButtonName = getEditor().getCurrentTool().getClass().getSimpleName() + "Button";
         ToggleButton toolButton = (ToggleButton) _toolsView.getChild(toolButtonName);
-        if(toolButton!=null && !toolButton.isSelected())
+        if (toolButton != null && !toolButton.isSelected())
             toolButton.setSelected(true);
     }
 
     /**
      * Returns the ToolsView.
      */
-    public RowView getToolsView()  { return _toolsView; }
+    public RowView getToolsView()
+    {
+        return _toolsView;
+    }
 }

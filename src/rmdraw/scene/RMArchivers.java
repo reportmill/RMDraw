@@ -14,15 +14,41 @@ public class RMArchivers {
      */
     public static class RMFillStub implements Paint, XMLArchiver.Archivable {
 
-        /** Bogus paint methods. */
-        public boolean isAbsolute()  { return false; }
-        public boolean isOpaque()  { return false; }
-        public Paint copyForRect(Rect aRect)  { return null; }
-        public Color getColor()  { return null; }
-        public Paint copyForColor(Color aColor)  { return null; }
+        /**
+         * Bogus paint methods.
+         */
+        public boolean isAbsolute()
+        {
+            return false;
+        }
 
-        /** Implement toXML for interface. */
-        public XMLElement toXML(XMLArchiver anArchive)  { return null; }
+        public boolean isOpaque()
+        {
+            return false;
+        }
+
+        public Paint copyForRect(Rect aRect)
+        {
+            return null;
+        }
+
+        public Color getColor()
+        {
+            return null;
+        }
+
+        public Paint copyForColor(Color aColor)
+        {
+            return null;
+        }
+
+        /**
+         * Implement toXML for interface.
+         */
+        public XMLElement toXML(XMLArchiver anArchive)
+        {
+            return null;
+        }
 
         /**
          * XML unarchival.
@@ -48,16 +74,16 @@ public class RMArchivers {
             // Unarchive ImageName: get resource bytes, page and set ImageRef
             Image img = null;
             String iname = anElement.getAttributeValue("resource");
-            if (iname!=null) {
+            if (iname != null) {
                 byte bytes[] = anArchiver.getResource(iname);
                 img = Image.get(bytes);
             }
-            if (img==null)
+            if (img == null)
                 img = ImageUtils.getEmptyImage();
 
             // Unarchive Tile, legacy FillStyle (Stretch=0, Tile=1, Fit=2, FitIfNeeded=3)
             boolean tiled = anElement.getAttributeBooleanValue("Tile", false);
-            if (anElement.hasAttribute("fillstyle")) tiled = anElement.getAttributeIntValue("fillstyle")==1;
+            if (anElement.hasAttribute("fillstyle")) tiled = anElement.getAttributeIntValue("fillstyle") == 1;
 
             // Unarchive X, Y
             double x = 0, y = 0;
@@ -71,18 +97,24 @@ public class RMArchivers {
             // Create ImagePaint and return
             ImagePaint paint;
             if (tiled)
-                paint = new ImagePaint(img, new Rect(x,y,img.getWidth()*sx,img.getHeight()*sx), true);
-            else paint = new ImagePaint(img, new Rect(0,0,sx,sy), false);
+                paint = new ImagePaint(img, new Rect(x, y, img.getWidth() * sx, img.getHeight() * sx), true);
+            else paint = new ImagePaint(img, new Rect(0, 0, sx, sy), false);
             return paint;
         }
     }
+
     /**
      * A Border subclass that paints a border for a stroke and color.
      */
     public static class RMStrokeStub extends Borders.LineBorder {
 
-        /** XML archival. */
-        public XMLElement toXML(XMLArchiver anArchiver)  { return null; }
+        /**
+         * XML archival.
+         */
+        public XMLElement toXML(XMLArchiver anArchiver)
+        {
+            return null;
+        }
 
         /**
          * XML unarchival.
@@ -91,7 +123,7 @@ public class RMArchivers {
         {
             // Unarchive Color
             String colorStr = anElement.getAttributeValue("color");
-            Color color = colorStr!=null ? new Color(colorStr) : Color.BLACK;
+            Color color = colorStr != null ? new Color(colorStr) : Color.BLACK;
 
             // Unarchive Width, DashArray, DashPhase
             double width = 1, dashArray[] = null, dashPhase = 0;
@@ -101,7 +133,7 @@ public class RMArchivers {
                 width = anElement.getAttributeFloatValue("linewidth", 1);
             if (anElement.hasAttribute("dash-array"))
                 dashArray = Stroke.getDashArray(anElement.getAttributeValue("dash-array"));
-            if(anElement.hasAttribute("dash-phase"))
+            if (anElement.hasAttribute("dash-phase"))
                 dashPhase = anElement.getAttributeFloatValue("dash-phase");
             Stroke stroke = new Stroke(width, dashArray, dashPhase);
             return new Borders.LineBorder(color, stroke);

@@ -1,5 +1,6 @@
 package rmdraw.app;
 import rmdraw.scene.*;
+
 import java.util.*;
 
 import snap.geom.*;
@@ -14,34 +15,34 @@ import snap.web.WebURL;
  * A class to show samples.
  */
 public class SamplesPane extends ViewOwner {
-    
+
     // The editor pane
-    private EditorPane  _epane;
-    
+    private EditorPane _epane;
+
     // The shared document names
-    private static String  _docNames[];
-    
+    private static String _docNames[];
+
     // The shared document images
-    private static Image  _docImages[];
-    
+    private static Image _docImages[];
+
     // The selected index
-    private int  _selIndex;
-    
+    private int _selIndex;
+
     // The dialog box
-    private SheetDialogBox  _dbox;
-    
+    private SheetDialogBox _dbox;
+
     // Constants
     private static final String SAMPLES_ROOT = "https://reportmill.com/rmsamples/";
     private static final Effect SHADOW = new ShadowEffect();
     private static final Effect SHADOW_SEL = new ShadowEffect(10, Color.get("#038ec3"), 0, 0);
-    
+
     /**
      * Shows the samples pane.
      */
     public void showSamples(EditorPane anEP)
     {
         _epane = anEP;
-        ChildView aView = (ChildView)anEP.getUI();
+        ChildView aView = (ChildView) anEP.getUI();
 
         _dbox = new SheetDialogBox();
         _dbox.setContent(getUI());
@@ -54,7 +55,7 @@ public class SamplesPane extends ViewOwner {
     void dialogBoxClosed()
     {
         if (_dbox._cancelled) return;
-        if (_selIndex==0 && _epane.getDoc().getPage(0).getChildCount()==0) return;
+        if (_selIndex == 0 && _epane.getDoc().getPage(0).getChildCount() == 0) return;
         _epane.getEditor().setDoc(getDoc(_selIndex));
         _epane.getEditor().requestFocus();
     }
@@ -65,13 +66,14 @@ public class SamplesPane extends ViewOwner {
     protected View createUI()
     {
         // Create main ColView to hold RowViews for samples
-        ColView colView = new ColView(); colView.setName("ItemColView");
+        ColView colView = new ColView();
+        colView.setName("ItemColView");
         colView.setSpacing(25);
-        colView.setPadding(25,15,20,15);
+        colView.setPadding(25, 15, 20, 15);
         colView.setAlign(Pos.TOP_CENTER);
         colView.setFillWidth(true);
-        colView.setFill(new Color(.97,.97,1d));
-        colView.setBorder(Color.GRAY,1);
+        colView.setFill(new Color(.97, .97, 1d));
+        colView.setBorder(Color.GRAY, 1);
         colView.setPrefWidth(557);
 
         // Add loading label
@@ -81,8 +83,10 @@ public class SamplesPane extends ViewOwner {
         colView.addChild(loadLabel);
 
         // Create ScrollView
-        ScrollView scroll = new ScrollView(colView); scroll.setPrefHeight(420);
-        scroll.setShowHBar(false); scroll.setShowVBar(true);
+        ScrollView scroll = new ScrollView(colView);
+        scroll.setPrefHeight(420);
+        scroll.setShowHBar(false);
+        scroll.setShowVBar(true);
 
         // Create "Select template" label
         Label selectLabel = new Label("Select a template:");
@@ -94,7 +98,8 @@ public class SamplesPane extends ViewOwner {
 
         // Create top level col view to hold HeaderRow and ColView
         ColView boxView = new ColView();
-        boxView.setSpacing(8); boxView.setFillWidth(true);
+        boxView.setSpacing(8);
+        boxView.setFillWidth(true);
         boxView.setChildren(headerRow, scroll);
         return boxView;
     }
@@ -104,7 +109,7 @@ public class SamplesPane extends ViewOwner {
      */
     protected void initUI()
     {
-        if (_docNames==null)
+        if (_docNames == null)
             loadIndexFile();
         else buildUI();
     }
@@ -124,17 +129,20 @@ public class SamplesPane extends ViewOwner {
     private void indexFileLoaded(WebResponse aResp)
     {
         // If response is bogus, report it
-        if (aResp.getCode()!=WebResponse.OK) {
-            runLater(() -> indexFileLoadFailed(aResp)); return; }
+        if (aResp.getCode() != WebResponse.OK) {
+            runLater(() -> indexFileLoadFailed(aResp));
+            return;
+        }
 
         // Get text and break into lines
         String text = aResp.getText();
         String lines[] = text.split("\\s*\n\\s*");
 
         // Get names list from lines
-        List <String> docNamesList = new ArrayList();
-        for (String line : lines) { line = line.trim();
-            if (line.length()>0)
+        List<String> docNamesList = new ArrayList();
+        for (String line : lines) {
+            line = line.trim();
+            if (line.length() > 0)
                 docNamesList.add(line);
         }
 
@@ -153,8 +161,9 @@ public class SamplesPane extends ViewOwner {
     {
         // Get error string and TextArea
         String str = "Failed to load index file.\n" + "Response code: " + aResp.getCodeString() + "\n" +
-            "Exception: " + aResp.getException();
-        TextArea textArea = new TextArea(); textArea.setText(str);
+                "Exception: " + aResp.getException();
+        TextArea textArea = new TextArea();
+        textArea.setText(str);
 
         // Add to ColView
         ColView colView = getView("ItemColView", ColView.class);
@@ -173,25 +182,39 @@ public class SamplesPane extends ViewOwner {
 
         // Create RowViews
         RowView rowView = null;
-        for (int i=0; i<_docNames.length; i++) { String name = _docNames[i];
+        for (int i = 0; i < _docNames.length; i++) {
+            String name = _docNames[i];
 
             // Create/add new RowView for every three samples
-            if (i%3==0) {
-                rowView = new RowView(); rowView.setAlign(Pos.CENTER);
+            if (i % 3 == 0) {
+                rowView = new RowView();
+                rowView.setAlign(Pos.CENTER);
                 colView.addChild(rowView);
             }
 
             // Create ImageViewX for sample
-            ImageView iview = new ImageView(); iview.setPrefSize(getDocSize(i)); iview.setFill(Color.WHITE);
-            iview.setName("ImageView" + i); iview.setEffect(i==0? SHADOW_SEL : SHADOW);
+            ImageView iview = new ImageView();
+            iview.setPrefSize(getDocSize(i));
+            iview.setFill(Color.WHITE);
+            iview.setName("ImageView" + i);
+            iview.setEffect(i == 0 ? SHADOW_SEL : SHADOW);
 
             // Create label for sample
-            Label label = new Label(name); label.setFont(Font.Arial13); label.setPadding(3,4,3,4);
-            label.setLeanY(VPos.BOTTOM); if(i==0) { label.setFill(Color.BLUE); label.setTextFill(Color.WHITE); }
+            Label label = new Label(name);
+            label.setFont(Font.Arial13);
+            label.setPadding(3, 4, 3, 4);
+            label.setLeanY(VPos.BOTTOM);
+            if (i == 0) {
+                label.setFill(Color.BLUE);
+                label.setTextFill(Color.WHITE);
+            }
 
             // Create/add ItemBox for Sample and add ImageView + Label
-            ColView ibox = new ColView(); ibox.setPrefSize(175,175); ibox.setAlign(Pos.TOP_CENTER);
-            ibox.setChildren(iview, label); ibox.setPadding(0,0,8,0);
+            ColView ibox = new ColView();
+            ibox.setPrefSize(175, 175);
+            ibox.setAlign(Pos.TOP_CENTER);
+            ibox.setChildren(iview, label);
+            ibox.setPadding(0, 0, 8, 0);
             ibox.setName("ItemBox" + i);
             ibox.addEventHandler(e -> itemBoxWasPressed(ibox, e), MousePress);
             rowView.addChild(ibox);
@@ -217,35 +240,46 @@ public class SamplesPane extends ViewOwner {
         // Set attributes of current selection back to normal
         ColView oldItemBox = getView("ItemBox" + _selIndex, ColView.class);
         oldItemBox.getChild(0).setEffect(SHADOW);
-        Label oldLabel = (Label)oldItemBox.getChild(1);
-        oldLabel.setFill(null); oldLabel.setTextFill(null);
+        Label oldLabel = (Label) oldItemBox.getChild(1);
+        oldLabel.setFill(null);
+        oldLabel.setTextFill(null);
 
         // Set attributes of new selection to selected effect
         anItemBox.getChild(0).setEffect(SHADOW_SEL);
-        Label newLabel = (Label)anItemBox.getChild(1);
-        newLabel.setFill(Color.BLUE); newLabel.setTextFill(Color.WHITE);
+        Label newLabel = (Label) anItemBox.getChild(1);
+        newLabel.setFill(Color.BLUE);
+        newLabel.setTextFill(Color.WHITE);
 
         // Set new index
         _selIndex = index;
 
         // If double-click, confirm dialog box
-        if (anEvent.getClickCount()>1) _dbox.confirm();
+        if (anEvent.getClickCount() > 1) _dbox.confirm();
     }
 
     /**
      * Returns the number of docs.
      */
-    private static int getDocCount()  { return _docNames.length; }
+    private static int getDocCount()
+    {
+        return _docNames.length;
+    }
 
     /**
      * Returns the doc names.
      */
-    private static String[] getDocNames()  { return _docNames; }
+    private static String[] getDocNames()
+    {
+        return _docNames;
+    }
 
     /**
      * Returns the doc name at index.
      */
-    private static String getDocName(int anIndex)  { return _docNames[anIndex]; }
+    private static String getDocName(int anIndex)
+    {
+        return _docNames[anIndex];
+    }
 
     /**
      * Returns the doc at given index.
@@ -259,7 +293,10 @@ public class SamplesPane extends ViewOwner {
 
         // Get bytes (complain if not found)
         byte bytes[] = url.getBytes();
-        if (bytes==null) { System.err.println("SamplesPane.getDoc: Couldn't load " + url); return null; }
+        if (bytes == null) {
+            System.err.println("SamplesPane.getDoc: Couldn't load " + url);
+            return null;
+        }
 
         // Return document
         SGDoc doc = SGDoc.getDocFromSource(bytes);
@@ -272,7 +309,8 @@ public class SamplesPane extends ViewOwner {
     private Image getDocImage(int anIndex)
     {
         // If image already set, just return
-        Image img = _docImages[anIndex]; if(img!=null) return img;
+        Image img = _docImages[anIndex];
+        if (img != null) return img;
 
         // Get image name, URL string, and URL
         String name = getDocName(anIndex);
@@ -290,13 +328,16 @@ public class SamplesPane extends ViewOwner {
      */
     private static Size getDocSize(int anIndex)
     {
-        return new Size(102,132);
+        return new Size(102, 132);
     }
 
     /**
      * Loads the thumbnail image for each sample in background thread.
      */
-    private void loadImagesInBackground()  { new Thread(() -> loadImages()).start(); }
+    private void loadImagesInBackground()
+    {
+        new Thread(() -> loadImages()).start();
+    }
 
     /**
      * Loads the thumbnail image for each sample in background thread.
@@ -304,13 +345,16 @@ public class SamplesPane extends ViewOwner {
     private void loadImages()
     {
         // Iterate over sample names and load/set images
-        for (int i=0; i<getDocCount(); i++) { int index = i;
+        for (int i = 0; i < getDocCount(); i++) {
+            int index = i;
             Image img = getDocImage(i);
             runLater(() -> setImage(img, index));
         }
     }
 
-    /** Called after an image is loaded to set in ImageView in app thread. */
+    /**
+     * Called after an image is loaded to set in ImageView in app thread.
+     */
     private void setImage(Image anImg, int anIndex)
     {
         String name = "ImageView" + anIndex;
@@ -323,10 +367,12 @@ public class SamplesPane extends ViewOwner {
      */
     private static void createImages()
     {
-        for (int i=0,iMax=getDocCount();i<iMax;i++) {
-            SGDoc doc = getDoc(i); if(doc==null) continue;
+        for (int i = 0, iMax = getDocCount(); i < iMax; i++) {
+            SGDoc doc = getDoc(i);
+            if (doc == null) continue;
             doc.getPage(0).setPaintBackground(false);
-            Size size = getDocSize(i); int index = i;
+            Size size = getDocSize(i);
+            int index = i;
             Image img = createImage(doc.getPage(0), size.width, size.height);
             byte bytes[] = img.getBytesPNG();
             new java.io.File("/tmp/gallery").mkdir();
@@ -341,19 +387,22 @@ public class SamplesPane extends ViewOwner {
     private static Image createImage(SGView aShape, double aW, double aH)
     {
         // Create new image
-        int w = (int)Math.round(aW), h = (int)Math.round(aH);
+        int w = (int) Math.round(aW), h = (int) Math.round(aH);
         Image img = Image.get(w, h, false);
 
         // Create painter and configure
-        Painter pntr = img.getPainter(); pntr.setImageQuality(1);
+        Painter pntr = img.getPainter();
+        pntr.setImageQuality(1);
 
         // Fill background
-        pntr.setColor(Color.WHITE); pntr.fillRect(0,0,w,h);
-        pntr.setColor(Color.GRAY); pntr.drawRect(.5,.5,w-1,h-1);
+        pntr.setColor(Color.WHITE);
+        pntr.fillRect(0, 0, w, h);
+        pntr.setColor(Color.GRAY);
+        pntr.drawRect(.5, .5, w - 1, h - 1);
 
         // Paint shape and return image
         SGViewUtils.layoutDeep(aShape);
-        SGViewUtils.paintView(aShape, pntr, new Rect(0,0,w,h), 1d/6);
+        SGViewUtils.paintView(aShape, pntr, new Rect(0, 0, w, h), 1d / 6);
         pntr.flush();
         return img;
     }
@@ -364,13 +413,13 @@ public class SamplesPane extends ViewOwner {
     private class SheetDialogBox extends DialogBox {
 
         // The parent view hosting the SheetDialogBox
-        ChildView     _hostView;
+        ChildView _hostView;
 
         // The BoxView to hold/clip the UI
-        BoxView       _clipBox;
+        BoxView _clipBox;
 
         // Whether the dialog box was cancelled
-        boolean       _cancelled;
+        boolean _cancelled;
 
         /**
          * Show Dialog in sheet.
@@ -378,8 +427,8 @@ public class SamplesPane extends ViewOwner {
         protected boolean showPanel(View aView)
         {
             // Get given view as HostView
-            _hostView = aView instanceof ChildView? (ChildView)aView : null;
-            if (_hostView==null) return super.showPanel(aView);
+            _hostView = aView instanceof ChildView ? (ChildView) aView : null;
+            if (_hostView == null) return super.showPanel(aView);
 
             // Make Other views invisible to mouse clicks
             for (View v : _hostView.getChildren()) v.setPickable(false);
@@ -435,10 +484,22 @@ public class SamplesPane extends ViewOwner {
             dialogBoxClosed();
         }
 
-        /** Override to set cancelled flag. */
-        public void confirm()  { _cancelled = false; hide(); }
+        /**
+         * Override to set cancelled flag.
+         */
+        public void confirm()
+        {
+            _cancelled = false;
+            hide();
+        }
 
-        /** Override to set cancelled flag. */
-        public void cancel()  { _cancelled = true; hide(); }
+        /**
+         * Override to set cancelled flag.
+         */
+        public void cancel()
+        {
+            _cancelled = true;
+            hide();
+        }
     }
 }

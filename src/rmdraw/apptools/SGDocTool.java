@@ -15,22 +15,28 @@ import snap.view.*;
  * This class provides UI for configuring an SGDoc.
  */
 public class SGDocTool<T extends SGDoc> extends Tool<T> {
-    
+
     // The array of supported paper sizes
-    private static Size  _paperSizes[];
-    
+    private static Size _paperSizes[];
+
     // The array of supported paper size names
-    private static String  _paperSizeNames[];
+    private static String _paperSizeNames[];
 
     /**
      * Returns the class that tool edits.
      */
-    public Class getViewClass()  { return SGDoc.class; }
+    public Class getViewClass()
+    {
+        return SGDoc.class;
+    }
 
     /**
      * Returns the name to be show in inspector window.
      */
-    public String getWindowTitle()  { return "Document Inspector"; }
+    public String getWindowTitle()
+    {
+        return "Document Inspector";
+    }
 
     /**
      * Initialize UI panel.
@@ -48,7 +54,8 @@ public class SGDocTool<T extends SGDoc> extends Tool<T> {
     public void resetUI()
     {
         // Get currently selected document and its page size
-        SGDoc doc = getSelView(); if (doc==null) return;
+        SGDoc doc = getSelView();
+        if (doc == null) return;
         SGPage page = doc.getSelPage();
 
         // Set PageWidthText and PageHeightText
@@ -56,14 +63,17 @@ public class SGDocTool<T extends SGDoc> extends Tool<T> {
         setViewValue("PageHeightText", getUnitsFromPointsStr(page.getHeight()));
 
         // Update PaperSizeComboBox: Get index of PaperName for Page.Size and set SelIndex
-        int sindex = 0; for(int i=1; i<_paperSizeNames.length && sindex==0; i++) { Size size = _paperSizes[i];
-            if(size.equals(page.getSize()) || size.equals(page.getHeight(), page.getWidth())) sindex = i; }
+        int sindex = 0;
+        for (int i = 1; i < _paperSizeNames.length && sindex == 0; i++) {
+            Size size = _paperSizes[i];
+            if (size.equals(page.getSize()) || size.equals(page.getHeight(), page.getWidth())) sindex = i;
+        }
         setViewSelIndex("PaperSizeComboBox", sindex); // default to "custom"
 
         // Reset Units and orientation controls
         setViewValue("UnitComboBox", doc.getUnit());
-        setViewValue("PortraitRadioButton", page.getHeight()>=page.getWidth());
-        setViewValue("LandscapeRadioButton", page.getWidth()>page.getHeight());
+        setViewValue("PortraitRadioButton", page.getHeight() >= page.getWidth());
+        setViewValue("LandscapeRadioButton", page.getWidth() > page.getHeight());
 
         // Reset Margin controls
         setViewValue("LeftMarginText", getUnitsFromPointsStr(doc.getMarginLeft()));
@@ -79,10 +89,10 @@ public class SGDocTool<T extends SGDoc> extends Tool<T> {
         setViewValue("GridSpacingText", getUnitsFromPointsStr(doc.getGridSpacing()));
 
         // Reset Page Layout controls and null string text
-        setViewValue("SingleRadio", doc.getPageLayout()== SGDoc.PageLayout.Single);
-        setViewValue("DoubleRadio", doc.getPageLayout()== SGDoc.PageLayout.Double);
-        setViewValue("FacingRadio", doc.getPageLayout()== SGDoc.PageLayout.Facing);
-        setViewValue("ContinuousRadio", doc.getPageLayout()== SGDoc.PageLayout.Continuous);
+        setViewValue("SingleRadio", doc.getPageLayout() == SGDoc.PageLayout.Single);
+        setViewValue("DoubleRadio", doc.getPageLayout() == SGDoc.PageLayout.Double);
+        setViewValue("FacingRadio", doc.getPageLayout() == SGDoc.PageLayout.Facing);
+        setViewValue("ContinuousRadio", doc.getPageLayout() == SGDoc.PageLayout.Continuous);
         setViewValue("NullStringText", doc.getNullString());
 
         // Repaint PageSizeView
@@ -100,7 +110,8 @@ public class SGDocTool<T extends SGDoc> extends Tool<T> {
     public void respondUI(ViewEvent anEvent)
     {
         // Get current document and page (just return if null)
-        SGDoc doc = getSelView(); if (doc==null) return;
+        SGDoc doc = getSelView();
+        if (doc == null) return;
         SGPage page = doc.getSelPage();
 
         // Set boolean for whether we need to resize window
@@ -128,18 +139,18 @@ public class SGDocTool<T extends SGDoc> extends Tool<T> {
 
         // Handle UnitComboBox
         if (anEvent.equals("UnitComboBox"))
-            doc.setUnit((SGDoc.Unit)anEvent.getValue());
+            doc.setUnit((SGDoc.Unit) anEvent.getValue());
 
         // Handle PortraitRadioButton, LandscapeRadioButton
-        if ((anEvent.equals("PortraitRadioButton") && page.getWidth()>page.getHeight()) ||
-            (anEvent.equals("LandscapeRadioButton") && page.getHeight()>page.getWidth())) {
+        if ((anEvent.equals("PortraitRadioButton") && page.getWidth() > page.getHeight()) ||
+                (anEvent.equals("LandscapeRadioButton") && page.getHeight() > page.getWidth())) {
             doc.setPageSize(page.getHeight(), page.getWidth());
             resizeWindow = true;
         }
 
         // Handle margin Texts
         if (anEvent.equals("LeftMarginText") || anEvent.equals("RightMarginText") ||
-            anEvent.equals("TopMarginText") || anEvent.equals("BottomMarginText")) {
+                anEvent.equals("TopMarginText") || anEvent.equals("BottomMarginText")) {
             float l = getViewFloatValue("LeftMarginText");
             float r = getViewFloatValue("RightMarginText");
             float t = getViewFloatValue("TopMarginText");
@@ -158,7 +169,7 @@ public class SGDocTool<T extends SGDoc> extends Tool<T> {
 
         // Handle Page Layout options: SingleRadio, DoubleRadio, FacingRadio and ContinuousRadio
         if (anEvent.equals("SingleRadio") || anEvent.equals("DoubleRadio") ||
-            anEvent.equals("FacingRadio") || anEvent.equals("ContinuousRadio")) {
+                anEvent.equals("FacingRadio") || anEvent.equals("ContinuousRadio")) {
             String name = StringUtils.delete(anEvent.getName(), "Radio");
             doc.setPageLayout(name);
             resizeWindow = true;
@@ -183,43 +194,68 @@ public class SGDocTool<T extends SGDoc> extends Tool<T> {
     /**
      * Overrides tool method to declare that documents have no handles.
      */
-    public int getHandleCount(T aView)  { return 0; }
+    public int getHandleCount(T aView)
+    {
+        return 0;
+    }
 
     // Initialize page sizes and paper size names
     static {
-        _paperSizeNames = new String[15]; _paperSizes = new Size[15];
-        _paperSizeNames[0] = "Custom"; _paperSizes[0] = new Size(612, 792);
-        _paperSizeNames[1] = "Letter"; _paperSizes[1] = new Size(612, 792);
-        _paperSizeNames[2] = "Legal"; _paperSizes[2] = new Size(612, 1008);
-        _paperSizeNames[3] = "Tabloid"; _paperSizes[3] = new Size(792, 1224);
-        _paperSizeNames[4] = "Exec"; _paperSizes[4] = new Size(540, 720);
-        _paperSizeNames[5] = "#10 Env"; _paperSizes[5] = new Size(684, 306);
-        _paperSizeNames[6] = "Banner"; _paperSizes[6] = new Size(500, 100);
-        _paperSizeNames[7] = "Small"; _paperSizes[7] = new Size(320, 240);
-        _paperSizeNames[8] = "Medium"; _paperSizes[8] = new Size(640, 480);
-        _paperSizeNames[9] = "Large"; _paperSizes[9] = new Size(800, 600);
-        _paperSizeNames[10] = "A3"; _paperSizes[10] = new Size(842, 1190);
-        _paperSizeNames[11] = "A4"; _paperSizes[11] = new Size(595, 842);
-        _paperSizeNames[12] = "A5"; _paperSizes[12] = new Size(420, 595);
-        _paperSizeNames[13] = "B4"; _paperSizes[13] = new Size(729, 1032);
-        _paperSizeNames[14] = "B5"; _paperSizes[14] = new Size(516, 729);
+        _paperSizeNames = new String[15];
+        _paperSizes = new Size[15];
+        _paperSizeNames[0] = "Custom";
+        _paperSizes[0] = new Size(612, 792);
+        _paperSizeNames[1] = "Letter";
+        _paperSizes[1] = new Size(612, 792);
+        _paperSizeNames[2] = "Legal";
+        _paperSizes[2] = new Size(612, 1008);
+        _paperSizeNames[3] = "Tabloid";
+        _paperSizes[3] = new Size(792, 1224);
+        _paperSizeNames[4] = "Exec";
+        _paperSizes[4] = new Size(540, 720);
+        _paperSizeNames[5] = "#10 Env";
+        _paperSizes[5] = new Size(684, 306);
+        _paperSizeNames[6] = "Banner";
+        _paperSizes[6] = new Size(500, 100);
+        _paperSizeNames[7] = "Small";
+        _paperSizes[7] = new Size(320, 240);
+        _paperSizeNames[8] = "Medium";
+        _paperSizes[8] = new Size(640, 480);
+        _paperSizeNames[9] = "Large";
+        _paperSizes[9] = new Size(800, 600);
+        _paperSizeNames[10] = "A3";
+        _paperSizes[10] = new Size(842, 1190);
+        _paperSizeNames[11] = "A4";
+        _paperSizes[11] = new Size(595, 842);
+        _paperSizeNames[12] = "A5";
+        _paperSizes[12] = new Size(420, 595);
+        _paperSizeNames[13] = "B4";
+        _paperSizes[13] = new Size(729, 1032);
+        _paperSizeNames[14] = "B5";
+        _paperSizes[14] = new Size(516, 729);
     }
 
-    /** An inner class to render Page control. */
+    /**
+     * An inner class to render Page control.
+     */
     public static class PageSizeView extends View {
-        public void paintFront(Painter aPntr) {
+        public void paintFront(Painter aPntr)
+        {
             SGDocTool docTool = getOwner(SGDocTool.class);
             Editor editor = docTool.getEditor();
             Size pageSize = editor.getDoc().getPageSize();
-            double maxHeight = Math.max(17*72, pageSize.height);
-            double scale = (getHeight()-10)/maxHeight;
-            double pageW = Math.round(pageSize.width*scale);
-            double pageH = Math.round(pageSize.height*scale);
-            double pageX = Math.round((getWidth() - pageW)/2f);
-            double pageY = Math.round((getHeight() - pageH)/2f);
-            aPntr.setColor(Color.BLACK); aPntr.fillRect(pageX+5, pageY+5, pageW, pageH);
-            aPntr.setColor(Color.WHITE); aPntr.fillRect(pageX, pageY, pageW, pageH);
-            aPntr.setColor(Color.BLACK); aPntr.drawRect(pageX, pageY, pageW, pageH);
+            double maxHeight = Math.max(17 * 72, pageSize.height);
+            double scale = (getHeight() - 10) / maxHeight;
+            double pageW = Math.round(pageSize.width * scale);
+            double pageH = Math.round(pageSize.height * scale);
+            double pageX = Math.round((getWidth() - pageW) / 2f);
+            double pageY = Math.round((getHeight() - pageH) / 2f);
+            aPntr.setColor(Color.BLACK);
+            aPntr.fillRect(pageX + 5, pageY + 5, pageW, pageH);
+            aPntr.setColor(Color.WHITE);
+            aPntr.fillRect(pageX, pageY, pageW, pageH);
+            aPntr.setColor(Color.BLACK);
+            aPntr.drawRect(pageX, pageY, pageW, pageH);
         }
     }
 }

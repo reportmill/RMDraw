@@ -4,7 +4,9 @@
 package rmdraw.apptools;
 import rmdraw.app.Tool;
 import rmdraw.scene.*;
+
 import java.util.*;
+
 import snap.gfx.Border;
 import snap.gfx.Color;
 import snap.view.*;
@@ -13,7 +15,7 @@ import snap.view.*;
  * This class handles editing of SGRect.
  */
 public class SGRectTool<T extends SGRect> extends Tool<T> {
-    
+
     /**
      * Returns a new instance of view class that this tool is responsible for.
      */
@@ -30,7 +32,8 @@ public class SGRectTool<T extends SGRect> extends Tool<T> {
     public void resetUI()
     {
         // Get selected rectangle (just return if null)
-        SGRect rect = getSelView(); if (rect==null) return;
+        SGRect rect = getSelView();
+        if (rect == null) return;
 
         // Update RoundingThumb and RoundingText
         setViewValue("RoundingThumb", rect.getRadius());
@@ -43,8 +46,9 @@ public class SGRectTool<T extends SGRect> extends Tool<T> {
     public void respondUI(ViewEvent anEvent)
     {
         // Get the current rect and list of rects (just return if null)
-        SGRect rect = getSelView(); if (rect==null) return;
-        List <SGRect> rects = (List) getSelViews();
+        SGRect rect = getSelView();
+        if (rect == null) return;
+        List<SGRect> rects = (List) getSelViews();
 
         // Handle Rounding Radius Thumb & Text
         if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText")) {
@@ -52,7 +56,7 @@ public class SGRectTool<T extends SGRect> extends Tool<T> {
             float value = anEvent.getFloatValue();
             for (SGRect r : rects) {
                 r.setRadius(value);
-                if (r.getBorder()==null)
+                if (r.getBorder() == null)
                     r.setBorder(Border.blackBorder());
             }
         }
@@ -61,15 +65,24 @@ public class SGRectTool<T extends SGRect> extends Tool<T> {
     /**
      * Event handling - overridden to install cross-hair cursor.
      */
-    public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.CROSSHAIR); }
+    public void mouseMoved(ViewEvent anEvent)
+    {
+        getEditor().setCursor(Cursor.CROSSHAIR);
+    }
 
     /**
      * Returns the class that this tool is responsible for.
      */
-    public Class getViewClass()  { return SGRect.class; }
+    public Class getViewClass()
+    {
+        return SGRect.class;
+    }
 
     /**
      * Returns the name to be presented to user.
      */
-    public String getWindowTitle()  { return "Rectangle Tool"; }
+    public String getWindowTitle()
+    {
+        return "Rectangle Tool";
+    }
 }

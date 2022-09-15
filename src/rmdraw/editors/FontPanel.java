@@ -4,6 +4,7 @@
 package rmdraw.editors;
 import java.util.ArrayList;
 import java.util.List;
+
 import snap.gfx.*;
 import snap.styler.Styler;
 import snap.util.*;
@@ -16,18 +17,18 @@ import snap.view.*;
  * shows all the individual fonts available for a given family.
  */
 public class FontPanel extends ViewOwner {
-    
+
     // The Styler used to get/set paint attributes
     private Styler _styler;
 
     // Whether to show all fonts (or PDF only)
-    boolean         _showAll = true;
-    
+    boolean _showAll = true;
+
     // The PDF Family names
-    String          _pdfFonts[];
+    String _pdfFonts[];
 
     // All PDF built in font family names.
-    static String   _pdfBuiltIns[] = { "Arial", "Helvetica", "Times", "Courier", "Symbol", "ZapfDingbats" };
+    static String _pdfBuiltIns[] = {"Arial", "Helvetica", "Times", "Courier", "Symbol", "ZapfDingbats"};
 
     /**
      * Creates a new FontPanel for EditorPane.
@@ -40,7 +41,10 @@ public class FontPanel extends ViewOwner {
     /**
      * Returns the styler.
      */
-    public Styler getStyler()  { return _styler; }
+    public Styler getStyler()
+    {
+        return _styler;
+    }
 
     /**
      * Sets the styler.
@@ -55,7 +59,7 @@ public class FontPanel extends ViewOwner {
      */
     public String[] getFamilyNames()
     {
-        return _showAll? Font.getFamilyNames() : getPDFFamilyNames();
+        return _showAll ? Font.getFamilyNames() : getPDFFamilyNames();
     }
 
     /**
@@ -63,11 +67,13 @@ public class FontPanel extends ViewOwner {
      */
     public String[] getPDFFamilyNames()
     {
-        if(_pdfFonts!=null) return _pdfFonts;
+        if (_pdfFonts != null) return _pdfFonts;
         List pdfs = new ArrayList();
-        for(String name : _pdfBuiltIns) { Font font = Font.get(name, 12);
-            if(font!=null) pdfs.add(font.getFamily()); }
-        return _pdfFonts = (String[])pdfs.toArray(new String[0]);
+        for (String name : _pdfBuiltIns) {
+            Font font = Font.get(name, 12);
+            if (font != null) pdfs.add(font.getFamily());
+        }
+        return _pdfFonts = (String[]) pdfs.toArray(new String[0]);
     }
 
     /**
@@ -76,7 +82,7 @@ public class FontPanel extends ViewOwner {
     protected void initUI()
     {
         // Get/configure FamilyList
-        ListView <String> familyList = getView("FamilyList", ListView.class);
+        ListView<String> familyList = getView("FamilyList", ListView.class);
         familyList.setItems(getFamilyNames());
 
         // Get/configure FamilyComboBox
@@ -84,11 +90,13 @@ public class FontPanel extends ViewOwner {
         familyComboBox.setListView(familyList);
 
         // Configure SizesList
-        setViewItems("SizesList", new Object[] { 6,8,9,10,11,12,14,16,18,22,24,36,48,64,72,96,128,144 });
+        setViewItems("SizesList", new Object[]{6, 8, 9, 10, 11, 12, 14, 16, 18, 22, 24, 36, 48, 64, 72, 96, 128, 144});
 
         // Configure SizeText
         TextField sizeText = getView("SizeText", TextField.class);
-        sizeText.addPropChangeListener(pce -> { if(sizeText.isFocused()) sizeText.selectAll(); }, View.Focused_Prop);
+        sizeText.addPropChangeListener(pce -> {
+            if (sizeText.isFocused()) sizeText.selectAll();
+        }, View.Focused_Prop);
     }
 
     /**
@@ -107,22 +115,23 @@ public class FontPanel extends ViewOwner {
         // Reset FamilyList, SizesList, SizeText, SizeThumb, and Bold, Italic, Underline and Outline buttons
         setViewItems("FamilyList", getFamilyNames());
         setViewSelItem("FamilyList", familyName);
-        setViewValue("SizesList", (int)size);
+        setViewValue("SizesList", (int) size);
         setViewValue("SizeText", StringUtils.toString(size) + " pt");
         setViewValue("BoldButton", font.isBold());
-        setViewEnabled("BoldButton", font.getBold()!=null);
+        setViewEnabled("BoldButton", font.getBold() != null);
         setViewValue("ItalicButton", font.isItalic());
-        setViewEnabled("ItalicButton", font.getItalic()!=null);
+        setViewEnabled("ItalicButton", font.getItalic() != null);
         setViewValue("UnderlineButton", styler.isUnderlined());
-        setViewValue("OutlineButton", styler.getTextBorder()!=null);
+        setViewValue("OutlineButton", styler.getTextBorder() != null);
 
         // Get font names in currently selected font's family
         String familyNames[] = Font.getFontNames(font.getFamily());
 
         // Reset FontNameComboBox Items, SelItem and Enabled
         setViewItems("FontNameComboBox", familyNames);
-        String fn = font.getFontFile().getNativeName(); setViewSelItem("FontNameComboBox", fn);
-        setViewEnabled("FontNameComboBox", familyNames.length>1);
+        String fn = font.getFontFile().getNativeName();
+        setViewSelItem("FontNameComboBox", fn);
+        setViewEnabled("FontNameComboBox", familyNames.length > 1);
     }
 
     /**
@@ -134,10 +143,14 @@ public class FontPanel extends ViewOwner {
         Styler styler = getStyler();
 
         // Handle FontSizeUpButton, FontSizeDownButton
-        if (anEvent.equals("FontSizeUpButton")) { Font font = styler.getFont();
-            styler.setFontSize(font.getSize()<16? 1 : 2, true); }
-        if (anEvent.equals("FontSizeDownButton")) { Font font = styler.getFont();
-            styler.setFontSize(font.getSize()<16? -1 : -2, true); }
+        if (anEvent.equals("FontSizeUpButton")) {
+            Font font = styler.getFont();
+            styler.setFontSize(font.getSize() < 16 ? 1 : 2, true);
+        }
+        if (anEvent.equals("FontSizeDownButton")) {
+            Font font = styler.getFont();
+            styler.setFontSize(font.getSize() < 16 ? -1 : -2, true);
+        }
 
         // Handle BoldButton, ItalicButton, UnderlineButton, OutlineButton
         if (anEvent.equals("BoldButton"))
@@ -148,8 +161,8 @@ public class FontPanel extends ViewOwner {
             styler.setUnderlined(anEvent.getBoolValue());
         if (anEvent.equals("OutlineButton")) {
             Border tbdr = styler.getTextBorder();
-            Border tbdr2 = tbdr==null ? Border.blackBorder() : null;
-            Color tclr2 = tbdr==null ? Color.WHITE : Color.BLACK;
+            Border tbdr2 = tbdr == null ? Border.blackBorder() : null;
+            Color tclr2 = tbdr == null ? Color.WHITE : Color.BLACK;
             styler.setTextBorder(tbdr2);
             styler.setTextColor(tclr2);
         }
@@ -158,12 +171,12 @@ public class FontPanel extends ViewOwner {
         if (anEvent.equals("FontPickerButton")) {
             Font ofont = styler.getFont();
             Font font = new FontPicker().showPicker(styler.getClientView(), ofont);
-            if(font!=null)
+            if (font != null)
                 styler.setFontFamily(font.getFamily());
         }
 
         // Handle SizesList
-        if (anEvent.equals("SizesList") && anEvent.getValue()!=null)
+        if (anEvent.equals("SizesList") && anEvent.getValue() != null)
             styler.setFontSize(anEvent.getFloatValue(), false);
 
         // Handle SizeText
@@ -187,6 +200,11 @@ public class FontPanel extends ViewOwner {
         }
     }
 
-    /** Returns the name for the inspector window. */
-    public String getWindowTitle()  { return "Font Panel"; }
+    /**
+     * Returns the name for the inspector window.
+     */
+    public String getWindowTitle()
+    {
+        return "Font Panel";
+    }
 }

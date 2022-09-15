@@ -29,7 +29,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     public Color getFillColor()
     {
         // If text color and text editing, return color of text editor
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             return getTextEditor().getTextColor();
         return super.getFillColor();
     }
@@ -40,11 +40,11 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     public void setFillColor(Color aColor)
     {
         // If text color and text editing, return color of text editor
-        if(isTextEditorSet()) {
+        if (isTextEditorSet()) {
 
             // If command down, and text is outlined, set color of outline instead
             TextEditor ted = getTextEditor();
-            if(ViewUtils.isShortcutDown() && ted.getTextBorder()!=null) {
+            if (ViewUtils.isShortcutDown() && ted.getTextBorder() != null) {
                 Border lbrdr = ted.getTextBorder();
                 ted.setTextBorder(Border.createLineBorder(aColor, lbrdr.getWidth()));
             }
@@ -92,7 +92,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
      */
     public Font getFont()
     {
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             return getTextEditor().getFont();
         return super.getFont();
     }
@@ -102,7 +102,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
      */
     public void setFont(Font aFont)
     {
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             getTextEditor().setFont(aFont);
         else super.setFont(aFont);
     }
@@ -112,7 +112,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
      */
     public boolean isUnderlined()
     {
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             return getTextEditor().isUnderlined();
         return getRichText().getRunForCharIndex(0).isUnderlined();
     }
@@ -123,7 +123,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     public void setUnderlined(boolean aValue)
     {
         setUndoTitle("Make Underlined");
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             getTextEditor().setUnderlined(aValue);
         else getRichText().setStyleValue(TextStyle.UNDERLINE_KEY, aValue ? 1 : 0);
     }
@@ -192,7 +192,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         setUndoTitle("Make Superscript");
         TextEditor ted = getTextEditor();
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             ted.setSuperscript();
     }
 
@@ -203,7 +203,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         setUndoTitle("Make Subscript");
         TextEditor ted = getTextEditor();
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             ted.setSubscript();
     }
 
@@ -242,7 +242,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     {
         if (isTextEditorSet())
             getTextEditor().setCharSpacing(aValue);
-        else getRichText().setStyleValue(TextStyle.CHAR_SPACING_KEY, aValue==0? null : aValue);
+        else getRichText().setStyleValue(TextStyle.CHAR_SPACING_KEY, aValue == 0 ? null : aValue);
     }
 
     /**
@@ -260,7 +260,7 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
      */
     public void setLineSpacing(float aHeight)
     {
-        if(isTextEditorSet())
+        if (isTextEditorSet())
             getTextEditor().setLineSpacing(aHeight);
         else {
 
@@ -341,24 +341,33 @@ public class TextToolStyler<T extends SGText> extends ToolStyler<T> {
     /**
      * Returns the length of text.
      */
-    private int length()  { return _shape.length(); }
+    private int length()
+    {
+        return _shape.length();
+    }
 
     /**
      * Returns the TextShape RichText.
      */
-    private RichText getRichText()  { return _shape.getRichText(); }
+    private RichText getRichText()
+    {
+        return _shape.getRichText();
+    }
 
     /**
      * Returns whether TextEditor is active.
      */
-    private boolean isTextEditorSet()  { return getTextEditor()!=null; }
+    private boolean isTextEditorSet()
+    {
+        return getTextEditor() != null;
+    }
 
     /**
      * Returns the TextEditor (or null if not editing).
      */
     private TextEditor getTextEditor()
     {
-        TextTool tool = _tool instanceof TextTool ? (TextTool)_tool : null;
-        return tool!=null ? tool.getTextEditor() : null;
+        TextTool tool = _tool instanceof TextTool ? (TextTool) _tool : null;
+        return tool != null ? tool.getTextEditor() : null;
     }
 }

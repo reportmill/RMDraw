@@ -2,7 +2,7 @@ package rmdraw.app;
 
 /**
  * Interface for anything that can handle standard copy/paste operations.
- *
+ * <p>
  * The full set of operations is cut, copy, paste, delete, select all.
  */
 public interface CopyPaster {

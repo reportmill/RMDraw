@@ -4,6 +4,7 @@
 package rmdraw.apptools;
 import rmdraw.app.Tool;
 import rmdraw.scene.*;
+
 import java.util.*;
 
 import snap.geom.Point;
@@ -16,10 +17,10 @@ import snap.web.WebURL;
  * This class handles creation of lines.
  */
 public class SGLineTool<T extends SGLine> extends Tool<T> {
-    
+
     // Indicates whether line should try to be strictly horizontal or vertical
-    private boolean  _hysteresis = false;
-    
+    private boolean _hysteresis = false;
+
     // The list of arrow heads
     private static SGView _arrowHeads[];
 
@@ -30,17 +31,26 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
     /**
      * Returns the view class that this tool is responsible for.
      */
-    public Class getViewClass()  { return SGLine.class; }
+    public Class getViewClass()
+    {
+        return SGLine.class;
+    }
 
     /**
      * Returns the name of this tool to be displayed by inspector.
      */
-    public String getWindowTitle()  { return "Line Inspector"; }
+    public String getWindowTitle()
+    {
+        return "Line Inspector";
+    }
 
     /**
      * Event handling - overridden to install cross-hair cursor.
      */
-    public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.CROSSHAIR); }
+    public void mouseMoved(ViewEvent anEvent)
+    {
+        getEditor().setCursor(Cursor.CROSSHAIR);
+    }
 
     /**
      * Handles mouse press for line creation.
@@ -62,12 +72,12 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
         double breakingPoint = 20f;
 
         if (_hysteresis) {
-            if(Math.abs(dx) > Math.abs(dy)) {
-                if(Math.abs(dy) < breakingPoint) dy = 0;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (Math.abs(dy) < breakingPoint) dy = 0;
                 else _hysteresis = false;
             }
 
-            else if(Math.abs(dx) < breakingPoint) dx = 0;
+            else if (Math.abs(dx) < breakingPoint) dx = 0;
             else _hysteresis = false;
         }
 
@@ -81,14 +91,17 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
     /**
      * Editor method (returns the number of handles).
      */
-    public int getHandleCount(T aView)  { return 2; }
+    public int getHandleCount(T aView)
+    {
+        return 2;
+    }
 
     /**
      * Editor method.
      */
     public Point getHandlePoint(T aView, int anIndex, boolean isSuperSel)
     {
-        return super.getHandlePoint(aView, anIndex==HandleEndPoint? HandleSE : anIndex, isSuperSel);
+        return super.getHandlePoint(aView, anIndex == HandleEndPoint ? HandleSE : anIndex, isSuperSel);
     }
 
     /**
@@ -96,7 +109,7 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
      */
     public void moveHandle(T aView, int aHandle, Point aPoint)
     {
-        super.moveHandle(aView, aHandle==HandleEndPoint? HandleSE : aHandle, aPoint);
+        super.moveHandle(aView, aHandle == HandleEndPoint ? HandleSE : aHandle, aPoint);
     }
 
     /**
@@ -105,15 +118,16 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
     private SGView[] getArrowHeads()
     {
         // If already set, just return
-        if (_arrowHeads!=null) return _arrowHeads;
+        if (_arrowHeads != null) return _arrowHeads;
 
         // Load document with defined arrow heads
         WebURL url = WebURL.getURL(SGLineTool.class, "SGLineToolArrowHeads.rpt");
         SGDoc doc = SGDoc.getDocFromSource(url);
 
         // Extract lines and heads and return array of heads
-        List <SGLine> lines = doc.getChildrenWithClass(SGLine.class);
-        List <SGView> heads = new ArrayList(lines.size()); for(SGLine ln : lines) heads.add(ln.getArrowHead());
+        List<SGLine> lines = doc.getChildrenWithClass(SGLine.class);
+        List<SGView> heads = new ArrayList(lines.size());
+        for (SGLine ln : lines) heads.add(ln.getArrowHead());
         return _arrowHeads = heads.toArray(new SGView[lines.size()]);
     }
 
@@ -127,14 +141,19 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
 
         // Add arrows menu button
         SGView arrowHeads[] = getArrowHeads();
-        for (int i=0; i<arrowHeads.length; i++) { SGView ahead = arrowHeads[i];
+        for (int i = 0; i < arrowHeads.length; i++) {
+            SGView ahead = arrowHeads[i];
             Image image = SGViewUtils.createImage(ahead, null);
-            MenuItem mi = new MenuItem(); mi.setImage(image); mi.setName("ArrowsMenuButtonMenuItem" + i);
+            MenuItem mi = new MenuItem();
+            mi.setImage(image);
+            mi.setName("ArrowsMenuButtonMenuItem" + i);
             menuButton.addItem(mi);
         }
 
         // Add "None" menu item
-        MenuItem mi = new MenuItem(); mi.setText("None"); mi.setName("ArrowsMenuButtonMenuItem 999");
+        MenuItem mi = new MenuItem();
+        mi.setText("None");
+        mi.setName("ArrowsMenuButtonMenuItem 999");
         menuButton.addItem(mi);
     }
 
@@ -144,18 +163,19 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
     public void resetUI()
     {
         // Get selected line and arrow head
-        SGLine line = getSelView(); if (line==null) return;
+        SGLine line = getSelView();
+        if (line == null) return;
         SGLine.ArrowHead ahead = line.getArrowHead();
 
         // Update ArrowsMenuButton
-        Image image = ahead!=null? SGViewUtils.createImage(line.getArrowHead(), null) : null;
+        Image image = ahead != null ? SGViewUtils.createImage(line.getArrowHead(), null) : null;
         getView("ArrowsMenuButton", MenuButton.class).setImage(image);
 
         // Update ScaleText and ScaleThumbWheel
-        setViewValue("ScaleText", ahead!=null? ahead.getScaleX() : 0);
-        setViewValue("ScaleThumbWheel", ahead!=null? ahead.getScaleX() : 0);
-        setViewEnabled("ScaleText", ahead!=null);
-        setViewEnabled("ScaleThumbWheel", ahead!=null);
+        setViewValue("ScaleText", ahead != null ? ahead.getScaleX() : 0);
+        setViewValue("ScaleThumbWheel", ahead != null ? ahead.getScaleX() : 0);
+        setViewEnabled("ScaleText", ahead != null);
+        setViewEnabled("ScaleThumbWheel", ahead != null);
     }
 
     /**
@@ -174,8 +194,8 @@ public class SGLineTool<T extends SGLine> extends Tool<T> {
         // Handle ArrowsMenuButtonMenuItem
         if (anEvent.getName().startsWith("ArrowsMenuButtonMenuItem")) {
             int ind = SnapUtils.intValue(anEvent.getName());
-            SGView ahead = ind<getArrowHeads().length ? getArrowHeads()[ind] : null;
-            line.setArrowHead(ahead!=null ? (SGLine.ArrowHead)ahead.clone() : null);
+            SGView ahead = ind < getArrowHeads().length ? getArrowHeads()[ind] : null;
+            line.setArrowHead(ahead != null ? (SGLine.ArrowHead) ahead.clone() : null);
         }
     }
 }

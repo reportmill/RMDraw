@@ -3,6 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.scene.*;
+
 import java.util.*;
 import java.util.List;
 
@@ -18,25 +19,28 @@ import snap.util.*;
 public class EditorProxGuide {
 
     // Whether proximity guides are enabled.
-    private static boolean  _enabled = Prefs.get().getBoolean("ProximityGuide", false);
-    
+    private static boolean _enabled = Prefs.get().getBoolean("ProximityGuide", false);
+
     // Whether bounds of parent view are also check for proximity
-    private static boolean  _includeSuperSelView = false;
-    
+    private static boolean _includeSuperSelView = false;
+
     // The list of rects that need to be repainted for proximity guides
-    private static List <Rect>  _guidelineRects = new Vector();
+    private static List<Rect> _guidelineRects = new Vector();
 
     /**
      * Returns whether proximity guides are enabled.
      */
-    public static boolean isEnabled()  { return _enabled; }
+    public static boolean isEnabled()
+    {
+        return _enabled;
+    }
 
     /**
      * Sets whether proximity guides are enabled.
      */
     public static void setEnabled(boolean aFlag)
     {
-        _enabled=aFlag;
+        _enabled = aFlag;
         Prefs.get().setValue("ProximityGuide", aFlag);
     }
 
@@ -55,11 +59,11 @@ public class EditorProxGuide {
     public static void markGuidelinesDirty(Editor anEditor)
     {
         // If no GuidelineRects, just return
-        if (_guidelineRects.size()==0) return;
+        if (_guidelineRects.size() == 0) return;
 
         // Get copy of first rect and union with successive rects
         Rect dirty = _guidelineRects.get(0).clone();
-        for (int i=1; i<_guidelineRects.size(); i++)
+        for (int i = 1; i < _guidelineRects.size(); i++)
             dirty.union(_guidelineRects.get(i));
 
         // Outset by 2 to cover stroke and repaint rect
@@ -73,11 +77,12 @@ public class EditorProxGuide {
     public static void paintProximityGuides(Editor anEditor, Painter aPntr)
     {
         // If no GuidelineRects, just return
-        if (_guidelineRects.size()==0) return;
+        if (_guidelineRects.size() == 0) return;
 
         // Set color to blue and stroke to 1.3pt dashed line
         aPntr.setColor(Color.BLUE);
-        Stroke stroke = new Stroke(1.3, new float[] { 4,2 }, 0); aPntr.setStroke(stroke);
+        Stroke stroke = new Stroke(1.3, new float[]{4, 2}, 0);
+        aPntr.setStroke(stroke);
 
         // Draw proximity guide lines (with AntiAliasing on?)
         boolean aa = aPntr.setAntialiasing(true);
@@ -88,21 +93,24 @@ public class EditorProxGuide {
     /**
      * If this flag is set, the bounds of parent view are also checked for proximity.
      */
-    public static void setIncludeSuperSelView(boolean aFlag)  { _includeSuperSelView = aFlag; }
+    public static void setIncludeSuperSelView(boolean aFlag)
+    {
+        _includeSuperSelView = aFlag;
+    }
 
     /**
      * Returns the list of views to be included in the proximity check.
      */
-    public static List <SGView> getCandidateViews(Editor anEditor)
+    public static List<SGView> getCandidateViews(Editor anEditor)
     {
         // Get super selected view
         SGView parent = anEditor.getSuperSelView();
-        if (parent.getChildCount()==0)
+        if (parent.getChildCount() == 0)
             return Collections.emptyList();
 
         // Get all peers of selected views
-        List <SGView> candidates = new ArrayList(parent.getChildren());
-        for (int i = 0, iMax = anEditor.getSelViewCount(); i<iMax; i++)
+        List<SGView> candidates = new ArrayList(parent.getChildren());
+        for (int i = 0, iMax = anEditor.getSelViewCount(); i < iMax; i++)
             ListUtils.removeId(candidates, anEditor.getSelView(i));
 
         // Optionally, also check against the bounds of the parent.
@@ -126,11 +134,11 @@ public class EditorProxGuide {
     {
         // If not in select tool drag move or resize, just return
         SelectTool.DragMode dragMode = anEditor.getSelectTool().getDragMode();
-        if (dragMode!= SelectTool.DragMode.Move && dragMode!= SelectTool.DragMode.Resize)
+        if (dragMode != SelectTool.DragMode.Move && dragMode != SelectTool.DragMode.Resize)
             return;
 
         // If no selected views, just return
-        if (anEditor.getSelViewCount()==0)
+        if (anEditor.getSelViewCount() == 0)
             return;
 
         // Get parent of selected views (just return if structured table row)
@@ -138,7 +146,7 @@ public class EditorProxGuide {
         //if(parent instanceof RMTableRow && ((RMTableRow) parent).isStructured()) return;
 
         // Get candidate views for editor
-        List <SGView> candidates = getCandidateViews(anEditor);
+        List<SGView> candidates = getCandidateViews(anEditor);
 
         // Get bounds
         Rect bounds = SGViewUtils.getBoundsOfChildren(parent, anEditor.getSelViews());
@@ -160,21 +168,21 @@ public class EditorProxGuide {
         clearGuidelines(anEditor);
 
         // If no candidate views, just return
-        if (candidateViews==null || candidateViews.isEmpty()) return;
+        if (candidateViews == null || candidateViews.isEmpty()) return;
 
         double minDX = 9999, maxDX = 9999, minDY = 9999, maxDY = 9999;
-        SGView minDXminYView=null, minDXmaxYView=null, maxDXminYView=null, maxDXmaxYView=null;
-        SGView minDYminXView=null, minDYmaxXView=null, maxDYminXView=null, maxDYmaxXView=null;
+        SGView minDXminYView = null, minDXmaxYView = null, maxDXminYView = null, maxDXmaxYView = null;
+        SGView minDYminXView = null, minDYmaxXView = null, maxDYminXView = null, maxDYmaxXView = null;
         double delta, x1, y1, x2, y2;
         Point p1, p2;
 
         // Iterate over children to see which is the closest to selViews min/max X
-        for (int i=0, iMax=candidateViews.size(); i<iMax; i++) {
+        for (int i = 0, iMax = candidateViews.size(); i < iMax; i++) {
 
             // Get current child
             SGView child = (SGView) candidateViews.get(i);
 
-            delta=Math.abs(child.getFrameX() - bounds.x);
+            delta = Math.abs(child.getFrameX() - bounds.x);
             if (delta < minDX) {
                 minDX = delta;
                 minDXminYView = minDXmaxYView = child;
@@ -189,7 +197,7 @@ public class EditorProxGuide {
             delta = Math.abs(child.getFrameMaxX() - bounds.getMaxX());
             if (delta < maxDX) {
                 maxDX = delta;
-                maxDXminYView = maxDXmaxYView=child;
+                maxDXminYView = maxDXmaxYView = child;
             }
             else if (delta == maxDX) {
                 if (child.getFrameY() < maxDXminYView.getFrameY())
@@ -198,12 +206,12 @@ public class EditorProxGuide {
                     maxDXmaxYView = child;
             }
 
-            delta=Math.abs(child.getFrameY() - bounds.y);
+            delta = Math.abs(child.getFrameY() - bounds.y);
             if (delta < minDY) {
                 minDY = delta;
                 minDYminXView = minDYmaxXView = child;
             }
-            else if (delta==minDY) {
+            else if (delta == minDY) {
                 if (child.getFrameX() < minDYminXView.getFrameX())
                     minDYminXView = child;
                 if (child.getFrameMaxX() > minDYmaxXView.getFrameMaxX())
@@ -211,11 +219,11 @@ public class EditorProxGuide {
             }
 
             delta = Math.abs(child.getFrameMaxY() - bounds.getMaxY());
-            if (delta<maxDY) {
+            if (delta < maxDY) {
                 maxDY = delta;
-                maxDYminXView = maxDYmaxXView=child;
+                maxDYminXView = maxDYmaxXView = child;
             }
-            else if (delta==maxDY) {
+            else if (delta == maxDY) {
                 if (child.getFrameX() < maxDYminXView.getFrameX())
                     maxDYminXView = child;
                 if (child.getFrameMaxX() > maxDYmaxXView.getFrameMaxX())
@@ -266,14 +274,17 @@ public class EditorProxGuide {
     /**
      * Adds a guideline rect for the given points.
      */
-    private static void addGuideline(Point p1, Point p2)  { _guidelineRects.add(Rect.get(p1, p2)); }
+    private static void addGuideline(Point p1, Point p2)
+    {
+        _guidelineRects.add(Rect.get(p1, p2));
+    }
 
     /**
      * Returns the given point snapped to relevant proximity guides.
      */
     public static Point pointSnappedToProximityGuides(Editor anEditor, Point aPoint)
     {
-        return pointSnappedToProximityGuides(anEditor,aPoint, anEditor.getSelectTool().getDragMode());
+        return pointSnappedToProximityGuides(anEditor, aPoint, anEditor.getSelectTool().getDragMode());
     }
 
     /**
@@ -285,7 +296,7 @@ public class EditorProxGuide {
         if (!_enabled) return aPoint;
 
         // If drag mode is not move or resize, just return point
-        if (aDragMode!= SelectTool.DragMode.Move && aDragMode!= SelectTool.DragMode.Resize)
+        if (aDragMode != SelectTool.DragMode.Move && aDragMode != SelectTool.DragMode.Resize)
             return aPoint;
 
         // Get parent
@@ -298,16 +309,16 @@ public class EditorProxGuide {
         List selViews = anEditor.getSelViews();
 
         // Get list of candidate views
-        List <SGView> candidates = getCandidateViews(anEditor);
+        List<SGView> candidates = getCandidateViews(anEditor);
 
         // Declare variable for bounds
         Rect bounds;
 
         // If mode is move, set bounds to snap the entire bounding box
-        if (aDragMode== SelectTool.DragMode.Move)
+        if (aDragMode == SelectTool.DragMode.Move)
             bounds = SGViewUtils.getBoundsOfChildren(parent, selViews);
 
-        // If mode is resize, set bounds to just snap a handle
+            // If mode is resize, set bounds to just snap a handle
         else {
             bounds = new Rect(aPoint.x, aPoint.y, 0, 0);
             bounds = parent.parentToLocal(bounds, null).getBounds();
@@ -326,10 +337,10 @@ public class EditorProxGuide {
         SGView maxDYView = null;
 
         // Iterate over children to see which is the closest to selViews min/max X
-        for (int i=0, iMax=candidates.size(); i < iMax; i++) {
+        for (int i = 0, iMax = candidates.size(); i < iMax; i++) {
 
             // Get current child
-            SGView child = (SGView)candidates.get(i);
+            SGView child = (SGView) candidates.get(i);
 
             double dx1 = Math.abs(child.getFrameX() - bounds.x);
             if (dx1 < minDX) {

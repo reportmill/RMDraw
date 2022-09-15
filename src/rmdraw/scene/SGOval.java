@@ -10,48 +10,59 @@ import snap.util.*;
  * This class represents a simple oval, with a setable start angle and sweep angle.
  */
 public class SGOval extends SGView {
-    
+
     // The oval start angle
-    float         _start = 0;
-    
+    float _start = 0;
+
     // The oval sweep angle
-    float         _sweep = 360;
+    float _sweep = 360;
 
     // The oval hole ratio
-    double        _holeRatio;
+    double _holeRatio;
 
     /**
      * Returns the start angle for the oval.
      */
-    public float getStartAngle()  { return _start; }
+    public float getStartAngle()
+    {
+        return _start;
+    }
 
     /**
      * Sets the start angle for the oval.
      */
     public void setStartAngle(float aValue)
     {
-        if (getStartAngle()==aValue) return; repaint();
+        if (getStartAngle() == aValue) return;
+        repaint();
         firePropChange("StartAngle", _start, _start = aValue);
     }
 
     /**
      * Returns the sweep angle for the oval.
      */
-    public float getSweepAngle()  { return _sweep; }
+    public float getSweepAngle()
+    {
+        return _sweep;
+    }
 
     /**
      * Sets the sweep angle for the oval.
      */
     public void setSweepAngle(float aValue)
     {
-        if (getSweepAngle()==aValue) return; repaint();
+        if (getSweepAngle() == aValue) return;
+        repaint();
         firePropChange("SweepAngle", _sweep, _sweep = aValue);
     }
 
     /**
      * Returns the ratio that describes the hole (0 = no hole, 1 = no wedge).
      */
-    public double getHoleRatio()  { return _holeRatio; }
+    public double getHoleRatio()
+    {
+        return _holeRatio;
+    }
 
     /**
      * Sets the ratio that describes the hole (0 = no hole, 1 = no wedge).
@@ -59,7 +70,7 @@ public class SGOval extends SGView {
     public void setHoleRatio(double aValue)
     {
         double value = MathUtils.clamp(aValue, 0, 1);
-        if (value==getHoleRatio()) return;
+        if (value == getHoleRatio()) return;
         firePropChange("HoleRatio", _holeRatio, _holeRatio = value);
         repaint();
     }
@@ -67,17 +78,21 @@ public class SGOval extends SGView {
     /**
      * Returns the (oval) path for this shape.
      */
-    public Shape getPath()  { return new Arc(0, 0, getWidth(), getHeight(), _start, _sweep, _holeRatio); }
+    public Shape getPath()
+    {
+        return new Arc(0, 0, getWidth(), getHeight(), _start, _sweep, _holeRatio);
+    }
 
     /**
      * XML archival.
      */
     public XMLElement toXML(XMLArchiver anArchiver)
     {
-        XMLElement e = super.toXML(anArchiver); e.setName("oval");  // Archive basic shape attributes and reset name
-        if (_start!=0) e.add("start", _start);                       // Archive StartAngle, Sweep
-        if (_sweep!=360) e.add("sweep", _sweep);
-        if (_holeRatio!=0) e.add("HoleRatio", _holeRatio);
+        XMLElement e = super.toXML(anArchiver);
+        e.setName("oval");  // Archive basic shape attributes and reset name
+        if (_start != 0) e.add("start", _start);                       // Archive StartAngle, Sweep
+        if (_sweep != 360) e.add("sweep", _sweep);
+        if (_holeRatio != 0) e.add("HoleRatio", _holeRatio);
         return e;
     }
 

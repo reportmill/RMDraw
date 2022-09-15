@@ -11,18 +11,18 @@ import snap.viewx.ColorPanel;
  * This class manages the attributes panel which holds the color panel, font panel, formatter panel and keys panel.
  */
 public class AttributesPanel extends EditorPane.SupportPane {
-    
+
     // The TabView
-    private TabView  _tabView;
-    
+    private TabView _tabView;
+
     // Inspector names
-    private String  _inspNames[];
-    
+    private String _inspNames[];
+
     // Inspectors
-    private ViewOwner  _insprs[];
-    
+    private ViewOwner _insprs[];
+
     // The DrawerView
-    private DrawerView  _drawer;
+    private DrawerView _drawer;
 
     // Constants for tab selection
     public static final String KEYS = "Keys";
@@ -33,22 +33,34 @@ public class AttributesPanel extends EditorPane.SupportPane {
     /**
      * Creates new AttributesPanel for EditorPane.
      */
-    public AttributesPanel(EditorPane anEP)  { super(anEP); }
+    public AttributesPanel(EditorPane anEP)
+    {
+        super(anEP);
+    }
 
     /**
      * Returns the inspector names.
      */
-    public String[] getInspectorNames()  { return _inspNames!=null? _inspNames : (_inspNames=createInspectorNames()); }
+    public String[] getInspectorNames()
+    {
+        return _inspNames != null ? _inspNames : (_inspNames = createInspectorNames());
+    }
 
     /**
      * Creates the inspector names array.
      */
-    public String[] createInspectorNames()  { return new String[] { COLOR, FONT, FORMAT }; }
+    public String[] createInspectorNames()
+    {
+        return new String[]{COLOR, FONT, FORMAT};
+    }
 
     /**
      * Returns the inspectors.
      */
-    public ViewOwner[] getInspectors()  { return _insprs!=null? _insprs : (_insprs=createInspectors()); }
+    public ViewOwner[] getInspectors()
+    {
+        return _insprs != null ? _insprs : (_insprs = createInspectors());
+    }
 
     /**
      * Creates the inspectors array.
@@ -57,13 +69,16 @@ public class AttributesPanel extends EditorPane.SupportPane {
     {
         APColorPanel color = new APColorPanel();
         FontPanel font = new FontPanel(getEditor().getStyler());
-        return new ViewOwner[] { color, font };
+        return new ViewOwner[]{color, font};
     }
 
     /**
      * Returns whether the attributes panel is visible.
      */
-    public boolean isVisible()  { return isUISet() && getUI().isShowing(); }
+    public boolean isVisible()
+    {
+        return isUISet() && getUI().isShowing();
+    }
 
     /**
      * Sets the attributes panel visible.
@@ -78,7 +93,10 @@ public class AttributesPanel extends EditorPane.SupportPane {
     /**
      * Returns the index of the currently visible tab (or -1 if attributes panel not visible).
      */
-    public int getVisible()  { return isVisible()? _tabView.getSelIndex() : -1; }
+    public int getVisible()
+    {
+        return isVisible() ? _tabView.getSelIndex() : -1;
+    }
 
     /**
      * Sets the attributes panel visible, specifying a specific tab by the given index.
@@ -92,7 +110,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
         _tabView.setSelIndex(anIndex);
 
         // If drawer is set, show drawer
-        if (_drawer!=null)
+        if (_drawer != null)
             showDrawer();
 
         // ResetUI
@@ -102,12 +120,18 @@ public class AttributesPanel extends EditorPane.SupportPane {
     /**
      * Returns the visible name.
      */
-    public String getVisibleName(String aName)  { return getInspectorNames()[getVisible()]; }
+    public String getVisibleName(String aName)
+    {
+        return getInspectorNames()[getVisible()];
+    }
 
     /**
      * Sets the visible name.
      */
-    public void setVisibleName(String aName)  { setVisibleName(aName, false); }
+    public void setVisibleName(String aName)
+    {
+        setVisibleName(aName, false);
+    }
 
     /**
      * Sets the visible name, with option to toggle if named panel already open.
@@ -116,8 +140,9 @@ public class AttributesPanel extends EditorPane.SupportPane {
     {
         String names[] = getInspectorNames();
         int vis = getVisible();
-        int vis2 = -1; for (int i=0;i<names.length;i++) if (aName.equals(names[i])) vis2 = i;
-        if (vis!=vis2)
+        int vis2 = -1;
+        for (int i = 0; i < names.length; i++) if (aName.equals(names[i])) vis2 = i;
+        if (vis != vis2)
             setVisible(vis2);
         else if (doToggle)
             setVisible(false);
@@ -129,7 +154,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
     public DrawerView getDrawer()
     {
         // If already set, just return
-        if (_drawer!=null) return _drawer;
+        if (_drawer != null) return _drawer;
 
         // Get/configure UI for drawer
         View attrUI = getUI();
@@ -143,12 +168,18 @@ public class AttributesPanel extends EditorPane.SupportPane {
     /**
      * Returns the DrawerView.
      */
-    public void showDrawer()  { getDrawer().show(); }
+    public void showDrawer()
+    {
+        getDrawer().show();
+    }
 
     /**
      * Hides the Attributes Drawer.
      */
-    public void hideDrawer()  { getDrawer().hide(); }
+    public void hideDrawer()
+    {
+        getDrawer().hide();
+    }
 
     /**
      * Returns the UI panel for the attributes panel.
@@ -163,7 +194,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
         // Install child inspectors (placeholders)
         String names[] = getInspectorNames();
         ViewOwner inspectors[] = getInspectors();
-        for (int i=0;i<names.length;i++) _tabView.addTab(names[i], new Label());
+        for (int i = 0; i < names.length; i++) _tabView.addTab(names[i], new Label());
 
         // Return TabView
         return _tabView;
@@ -191,7 +222,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
     public void childDragStart()
     {
         // If no drawer, bail
-        if (_drawer==null) return;
+        if (_drawer == null) return;
 
         // Make drawer invisible to mouse, and clear effect to speed up fade out anim
         _drawer.setPickable(false);
@@ -207,7 +238,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
     public void childDragStop()
     {
         // If no drawer, bail
-        if (_drawer==null) return;
+        if (_drawer == null) return;
 
         // Make drawer pickage again
         _drawer.setPickable(true);
@@ -230,7 +261,12 @@ public class AttributesPanel extends EditorPane.SupportPane {
      */
     public class APColorPanel extends ColorPanel {
 
-        /** Overrides color panel behavior to order attributes panel visible instead. */
-        public void setWindowVisible(boolean aValue)  { setVisibleName(COLOR, true); }
+        /**
+         * Overrides color panel behavior to order attributes panel visible instead.
+         */
+        public void setWindowVisible(boolean aValue)
+        {
+            setVisibleName(COLOR, true);
+        }
     }
 }

@@ -3,6 +3,7 @@
  */
 package rmdraw.scene;
 import java.util.*;
+
 import snap.util.*;
 
 /**
@@ -11,22 +12,22 @@ import snap.util.*;
  * to ease template editing.
  */
 public class SGPageLayer implements Cloneable {
-    
+
     // The parent page
     SGPage _page;
-    
+
     // The name of the layer
-    String          _name;
-    
+    String _name;
+
     // Whether layer is visible
-    boolean         _visible = true;
-    
+    boolean _visible = true;
+
     // Whether layer is locked
-    boolean         _locked = false;
-    
+    boolean _locked = false;
+
     // The children in this layer
-    List <SGView>  _children = new ArrayList();
-    
+    List<SGView> _children = new ArrayList();
+
     // Constants defining the state of the layer
     public static final int StateVisible = 0;
     public static final int StateInvisible = 1;
@@ -35,52 +36,82 @@ public class SGPageLayer implements Cloneable {
     /**
      * Creates a plain layer.
      */
-    public SGPageLayer() { }
+    public SGPageLayer()
+    {
+    }
 
     /**
      * Creates a page layer for a given page and name.
      */
-    public SGPageLayer(SGPage aPage, String aName)  { _page = aPage; _name = aName; }
+    public SGPageLayer(SGPage aPage, String aName)
+    {
+        _page = aPage;
+        _name = aName;
+    }
 
     /**
      * Returns the page associated with this layer.
      */
-    public SGPage getPage()  { return _page; }
+    public SGPage getPage()
+    {
+        return _page;
+    }
 
     /**
      * Returns the layer's name.
      */
-    public String getName()  { return _name; }
+    public String getName()
+    {
+        return _name;
+    }
 
     /**
      * Sets the layer's name.
      */
-    public void setName(String aName)  { _name = aName; }
+    public void setName(String aName)
+    {
+        _name = aName;
+    }
 
     /**
      * Returns whether this layer is to be drawn.
      */
-    public boolean isVisible()  { return _visible; }
+    public boolean isVisible()
+    {
+        return _visible;
+    }
 
     /**
      * Sets whether this layer is to be drawn.
      */
-    public void setVisible(boolean aFlag)  { _visible = aFlag; }
+    public void setVisible(boolean aFlag)
+    {
+        _visible = aFlag;
+    }
 
     /**
      * Returns whether this layer is editable.
      */
-    public boolean isLocked()  { return _locked; }
+    public boolean isLocked()
+    {
+        return _locked;
+    }
 
     /**
      * Sets whether this layer is editable.
      */
-    public void setLocked(boolean aFlag)  { _locked = aFlag; }
+    public void setLocked(boolean aFlag)
+    {
+        _locked = aFlag;
+    }
 
     /**
      * Sets whether this layer is selectable.
      */
-    public boolean isSelectable()  { return _visible && !_locked; }
+    public boolean isSelectable()
+    {
+        return _visible && !_locked;
+    }
 
     /**
      * Returns the state of this layer (locked, visible, invisible).
@@ -98,56 +129,80 @@ public class SGPageLayer implements Cloneable {
     public void setLayerState(int aState)
     {
         // Handle StateLocked
-        if (aState==StateLocked) _locked = _visible = true;
+        if (aState == StateLocked) _locked = _visible = true;
 
-        // Handle StateInvisible
-        else if (aState==StateInvisible) _locked = _visible = false;
+            // Handle StateInvisible
+        else if (aState == StateInvisible) _locked = _visible = false;
 
-        // Handle StateVisible
-        else if (aState==StateVisible) { _locked = false; _visible = true; }
+            // Handle StateVisible
+        else if (aState == StateVisible) {
+            _locked = false;
+            _visible = true;
+        }
     }
 
     /**
      * Returns the number of children in this layer.
      */
-    public int getChildCount()  { return _children.size(); }
+    public int getChildCount()
+    {
+        return _children.size();
+    }
 
     /**
      * Returns the specific child of this layer at the given index.
      */
-    public SGView getChild(int anIndex)  { return _children.get(anIndex); }
+    public SGView getChild(int anIndex)
+    {
+        return _children.get(anIndex);
+    }
 
     /**
      * Returns the list of children for this layer.
      */
-    public List <SGView> getChildren()  { return _children; }
+    public List<SGView> getChildren()
+    {
+        return _children;
+    }
 
     /**
      * Adds a child to this layer.
      */
-    public void addChild(SGView aChild)  { _children.add(aChild); }
+    public void addChild(SGView aChild)
+    {
+        _children.add(aChild);
+    }
 
     /**
      * Adds a child to this layer at the given index.
      */
-    public void addChild(SGView aChild, int anIndex)  { _children.add(anIndex, aChild); }
+    public void addChild(SGView aChild, int anIndex)
+    {
+        _children.add(anIndex, aChild);
+    }
 
     /**
      * Removes a child from this layer.
      */
-    public Object removeChild(int anIndex)  { return _children.remove(anIndex); }
+    public Object removeChild(int anIndex)
+    {
+        return _children.remove(anIndex);
+    }
 
     /**
      * Removes a child from this layer.
      */
-    public int removeChild(SGView aChild)  { return ListUtils.removeId(_children, aChild); }
+    public int removeChild(SGView aChild)
+    {
+        return ListUtils.removeId(_children, aChild);
+    }
 
     /**
      * Adds a list of children to this layer.
      */
-    public void addChildren(List <SGView> theShapes)
+    public void addChildren(List<SGView> theShapes)
     {
-        if (theShapes!=null)
+        if (theShapes != null)
             for (SGView shape : theShapes)
                 addChild(shape);
     }
@@ -155,7 +210,7 @@ public class SGPageLayer implements Cloneable {
     /**
      * Removes a list of children from this layer.
      */
-    public void removeChildren(List <SGView> theShapes)
+    public void removeChildren(List<SGView> theShapes)
     {
         for (SGView shape : theShapes)
             removeChild(shape);
@@ -164,7 +219,10 @@ public class SGPageLayer implements Cloneable {
     /**
      * Removes all children from this layer.
      */
-    public void removeChildren()  { _children.clear(); }
+    public void removeChildren()
+    {
+        _children.clear();
+    }
 
     /**
      * Returns the index of this layer in its page.
@@ -172,8 +230,8 @@ public class SGPageLayer implements Cloneable {
     public int getIndex()
     {
         // Iterate over page layers and return index of this layer
-        for (int i=0, iMax=getPage().getLayerCount(); i<iMax; i++)
-            if(getPage().getLayer(i)==this)
+        for (int i = 0, iMax = getPage().getLayerCount(); i < iMax; i++)
+            if (getPage().getLayer(i) == this)
                 return i;
         return -1; // Return -1 since layer not found
     }
@@ -181,7 +239,10 @@ public class SGPageLayer implements Cloneable {
     /**
      * Returns the index of a given child.
      */
-    public int getChildIndex(SGView aChild)  { return ListUtils.indexOfId(getChildren(), aChild); }
+    public int getChildIndex(SGView aChild)
+    {
+        return ListUtils.indexOfId(getChildren(), aChild);
+    }
 
     /**
      * Returns the index of this layer's first child in the page.
@@ -189,10 +250,11 @@ public class SGPageLayer implements Cloneable {
     public int getPageChildIndex()
     {
         // Get index (just return 0 if 0)
-        int index = getIndex(); if(index==0) return 0;
+        int index = getIndex();
+        if (index == 0) return 0;
 
         // Get previous layer
-        SGPageLayer layer = getPage().getLayer(index-1);
+        SGPageLayer layer = getPage().getLayer(index - 1);
         return layer.getPageChildIndex() + layer.getChildCount();
     }
 
@@ -202,9 +264,9 @@ public class SGPageLayer implements Cloneable {
     public void bringShapesToFront(List shapes)
     {
         // Iterate over given shapes and move each to front of this layer
-        for (int i=0, iMax=shapes.size(); i<iMax; i++) {
-            SGView child = (SGView)shapes.get(i);
-            if(ListUtils.removeId(_children, child)>=0)
+        for (int i = 0, iMax = shapes.size(); i < iMax; i++) {
+            SGView child = (SGView) shapes.get(i);
+            if (ListUtils.removeId(_children, child) >= 0)
                 _children.add(child);
         }
     }
@@ -215,9 +277,9 @@ public class SGPageLayer implements Cloneable {
     public void sendShapesToBack(List shapes)
     {
         // Iterate over given shapes and move each to back of this layer
-        for (int i=0, iMax=shapes.size(); i<iMax; i++) {
-            SGView child = (SGView)shapes.get(i);
-            if(ListUtils.removeId(_children, child)>=0)
+        for (int i = 0, iMax = shapes.size(); i < iMax; i++) {
+            SGView child = (SGView) shapes.get(i);
+            if (ListUtils.removeId(_children, child) >= 0)
                 _children.add(i, child);
         }
     }
@@ -231,7 +293,8 @@ public class SGPageLayer implements Cloneable {
         SGPageLayer clone;
         try {
             clone = (SGPageLayer) super.clone();
-        } catch (CloneNotSupportedException e) {
+        }
+        catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
 

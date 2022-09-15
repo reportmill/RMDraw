@@ -4,7 +4,9 @@
 package rmdraw.apptools;
 import rmdraw.app.*;
 import rmdraw.scene.*;
+
 import java.util.List;
+
 import snap.geom.*;
 import snap.gfx.*;
 import snap.props.PropChange;
@@ -16,21 +18,21 @@ import snap.view.*;
  * This class provides UI editing for text shapes.
  */
 public class TextTool<T extends SGText> extends Tool<T> {
-    
+
     // The TextArea in the inspector panel
-    private TextArea  _textArea;
+    private TextArea _textArea;
 
     // The TextArea used to paint text in editor when super-selected
     private TextEditor _textEdtr;
-    
+
     // The shape hit by text tool on mouse down
     private SGView _downShape;
-    
+
     // Whether editor should resize RMText whenever text changes
-    private boolean  _updatingSize = false;
-    
+    private boolean _updatingSize = false;
+
     // The minimum height of the RMText when editor text editor is updating size
-    private double  _updatingMinHeight = 0;
+    private double _updatingMinHeight = 0;
 
     // A Listener for TextEditor Selection PropChange
     private PropChangeListener _textEditorSelChangeLsnr = pc -> textEditorSelChanged();
@@ -44,7 +46,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
         // Get selected text (just return if null)
         SGText text = getSelView();
-        if (text==null || !isSuperSelected(text))
+        if (text == null || !isSuperSelected(text))
             return null;
 
         // Update TextEditor
@@ -58,7 +60,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
      */
     public boolean isTextEditorActive()
     {
-        return getTextEditor()!=null;
+        return getTextEditor() != null;
     }
 
     /**
@@ -83,43 +85,45 @@ public class TextTool<T extends SGText> extends Tool<T> {
     {
         // Get editor and currently selected text
         Editor editor = getEditor();
-        SGText text = getSelView(); if(text==null) return;
-        TextToolStyler styler = (TextToolStyler)getStyler(text);
+        SGText text = getSelView();
+        if (text == null) return;
+        TextToolStyler styler = (TextToolStyler) getStyler(text);
 
         // Get paragraph from text
-        int selStart = 0; if(_textArea.isFocused()) selStart = _textArea.getSelStart();
+        int selStart = 0;
+        if (_textArea.isFocused()) selStart = _textArea.getSelStart();
         TextLineStyle pgraph = text.getRichText().getLineStyleForCharIndex(selStart);
 
         // If editor is text editing, get paragraph from text editor instead
         TextEditor ted = getTextEditor();
-        if (ted!=null) {
+        if (ted != null) {
             pgraph = ted.getSelLineStyle();
             ted.setActive(editor.isFocused() && isSuperSelected(text));
         }
 
         // Update AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton
-        setViewValue("AlignLeftButton", pgraph.getAlign()==HPos.LEFT);
-        setViewValue("AlignCenterButton", pgraph.getAlign()==HPos.CENTER);
-        setViewValue("AlignRightButton", pgraph.getAlign()==HPos.RIGHT);
+        setViewValue("AlignLeftButton", pgraph.getAlign() == HPos.LEFT);
+        setViewValue("AlignCenterButton", pgraph.getAlign() == HPos.CENTER);
+        setViewValue("AlignRightButton", pgraph.getAlign() == HPos.RIGHT);
         setViewValue("AlignFullButton", pgraph.isJustify());
 
         // Update AlignTopButton, AlignMiddleButton, AlignBottomButton
-        setViewValue("AlignTopButton", text.getAlignY()== VPos.TOP);
-        setViewValue("AlignMiddleButton", text.getAlignY()==VPos.CENTER);
-        setViewValue("AlignBottomButton", text.getAlignY()==VPos.BOTTOM);
+        setViewValue("AlignTopButton", text.getAlignY() == VPos.TOP);
+        setViewValue("AlignMiddleButton", text.getAlignY() == VPos.CENTER);
+        setViewValue("AlignBottomButton", text.getAlignY() == VPos.BOTTOM);
 
         // Set TextView RichText and selection
         _textArea.setTextDoc(text.getRichText());
-        if (ted!=null)
+        if (ted != null)
             _textArea.setSel(ted.getSelStart(), ted.getSelEnd());
 
         // Get text's background color and set in TextArea if found
         Color color = null;
-        for (SGView shape = text; color==null && shape!=null;) {
-            if (shape.getFill()==null) shape = shape.getParent();
+        for (SGView shape = text; color == null && shape != null; ) {
+            if (shape.getFill() == null) shape = shape.getParent();
             else color = shape.getFill().getColor();
         }
-        _textArea.setFill(color==null ? Color.WHITE : color);
+        _textArea.setFill(color == null ? Color.WHITE : color);
 
         // Get xstring font size and scale up to 12pt if any string run is smaller
         double fsize = 12;
@@ -128,7 +132,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
             for (TextRun run : lineRuns)
                 fsize = Math.min(fsize, run.getFont().getSize());
         }
-        _textArea.setFontScale(fsize<12? 12/fsize : 1);
+        _textArea.setFontScale(fsize < 12 ? 12 / fsize : 1);
 
         // Update MarginText, RoundingThumb, RoundingText
         setViewValue("MarginText", text.getMarginString());
@@ -141,9 +145,9 @@ public class TextTool<T extends SGText> extends Tool<T> {
         setViewValue("PerformWrapCheckBox", text.getPerformsWrap());
 
         // Update PaginateRadio, ShrinkRadio, GrowRadio
-        setViewValue("PaginateRadio", text.getWraps()== SGText.WRAP_BASIC);
-        setViewValue("ShrinkRadio", text.getWraps()== SGText.WRAP_SCALE);
-        setViewValue("GrowRadio", text.getWraps()== SGText.WRAP_NONE);
+        setViewValue("PaginateRadio", text.getWraps() == SGText.WRAP_BASIC);
+        setViewValue("ShrinkRadio", text.getWraps() == SGText.WRAP_SCALE);
+        setViewValue("GrowRadio", text.getWraps() == SGText.WRAP_NONE);
 
         // Update CharSpacingSpinner, LineSpacingSpinner, LineGapSpinner
         setViewValue("CharSpacingSpinner", styler.getCharSpacing());
@@ -163,31 +167,32 @@ public class TextTool<T extends SGText> extends Tool<T> {
     {
         // Get editor, currently selected text shape and text shapes (just return if null)
         Editor editor = getEditor();
-        SGText text = getSelView(); if(text==null) return;
-        List <SGText> texts = (List) getSelViews();
+        SGText text = getSelView();
+        if (text == null) return;
+        List<SGText> texts = (List) getSelViews();
 
         // Register repaint for texts
-        for(SGView txt : texts) txt.repaint(); //texts.forEach(i -> i.repaint());
+        for (SGView txt : texts) txt.repaint(); //texts.forEach(i -> i.repaint());
 
         // Handle AlignLeftButton, AlignCenterButton, AlignRightButton, AlignFullButton, AlignTopButton, AlignMiddleButton
         if (anEvent.equals("AlignLeftButton")) editor.getStyler().setAlignX(HPos.LEFT);
         if (anEvent.equals("AlignCenterButton")) editor.getStyler().setAlignX(HPos.CENTER);
         if (anEvent.equals("AlignRightButton")) editor.getStyler().setAlignX(HPos.RIGHT);
         if (anEvent.equals("AlignFullButton")) editor.getStyler().setJustify(true);
-        if (anEvent.equals("AlignTopButton")) for(SGText txt : texts) txt.setAlignY(VPos.TOP);
-        if (anEvent.equals("AlignMiddleButton")) for(SGText txt : texts) txt.setAlignY(VPos.CENTER);
-        if (anEvent.equals("AlignBottomButton")) for(SGText txt : texts) txt.setAlignY(VPos.BOTTOM);
+        if (anEvent.equals("AlignTopButton")) for (SGText txt : texts) txt.setAlignY(VPos.TOP);
+        if (anEvent.equals("AlignMiddleButton")) for (SGText txt : texts) txt.setAlignY(VPos.CENTER);
+        if (anEvent.equals("AlignBottomButton")) for (SGText txt : texts) txt.setAlignY(VPos.BOTTOM);
 
         // If RoundingThumb or RoundingText, make sure shapes have stroke
         if (anEvent.equals("RoundingThumb") || anEvent.equals("RoundingText"))
-            for(SGText t : texts) t.setBorder(Border.blackBorder());
+            for (SGText t : texts) t.setBorder(Border.blackBorder());
 
         // Handle MarginText, RoundingThumb, RoundingText
-        if (anEvent.equals("MarginText")) for(SGText txt : texts)
+        if (anEvent.equals("MarginText")) for (SGText txt : texts)
             txt.setMarginString(anEvent.getStringValue());
-        if (anEvent.equals("RoundingThumb")) for(SGText txt : texts)
+        if (anEvent.equals("RoundingThumb")) for (SGText txt : texts)
             txt.setRadius(anEvent.getFloatValue());
-        if (anEvent.equals("RoundingText")) for(SGText txt : texts)
+        if (anEvent.equals("RoundingText")) for (SGText txt : texts)
             txt.setRadius(anEvent.getFloatValue());
 
         // Handle ShowBorderCheckBox, CoalesceNewlinesCheckBox, PerformWrapCheckBox
@@ -199,9 +204,9 @@ public class TextTool<T extends SGText> extends Tool<T> {
             for (SGText txt : texts) txt.setPerformsWrap(anEvent.getBoolValue());
 
         // Handle PaginateRadio, ShrinkRadio, GrowRadio
-        if (anEvent.equals("PaginateRadio")) for(SGText txt : texts) txt.setWraps(SGText.WRAP_BASIC);
-        if (anEvent.equals("ShrinkRadio")) for(SGText txt : texts) txt.setWraps(SGText.WRAP_SCALE);
-        if (anEvent.equals("GrowRadio")) for(SGText txt : texts) txt.setWraps(SGText.WRAP_NONE);
+        if (anEvent.equals("PaginateRadio")) for (SGText txt : texts) txt.setWraps(SGText.WRAP_BASIC);
+        if (anEvent.equals("ShrinkRadio")) for (SGText txt : texts) txt.setWraps(SGText.WRAP_SCALE);
+        if (anEvent.equals("GrowRadio")) for (SGText txt : texts) txt.setWraps(SGText.WRAP_NONE);
 
         // Handle CharSpacingSpinner, LineSpacingSpinner, LineSpacingSingleButton, LineSpacingDoubleButton, LineGapSpinner
         if (anEvent.equals("CharSpacingSpinner")) setCharSpacing(anEvent.getFloatValue());
@@ -223,7 +228,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
         // Handle TurnToPathMenuItem
         if (anEvent.equals("TurnToPathMenuItem"))
-            for (int i=0; i<texts.size(); i++) {
+            for (int i = 0; i < texts.size(); i++) {
                 SGText text1 = texts.get(i);
                 SGView textPathShape = SGTextUtils.getTextPathView(text1);
                 SGParent parent = text1.getParent();
@@ -234,7 +239,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
         // Handle TurnToCharsShapeMenuItem
         if (anEvent.equals("TurnToCharsShapeMenuItem"))
-            for (int i=0; i<texts.size(); i++) {
+            for (int i = 0; i < texts.size(); i++) {
                 SGText text1 = texts.get(i);
                 SGView textCharsShape = SGTextUtils.getTextCharsView(text1);
                 SGParent parent = text1.getParent();
@@ -251,9 +256,9 @@ public class TextTool<T extends SGText> extends Tool<T> {
             text.getParent().addChild(linkedText);
 
             // Shift linked text down if there's room, otherwise right, otherwise just offset by quarter inch
-            if (text.getFrameMaxY() + 18 + text.getFrame().height*.75 < text.getParent().getHeight())
+            if (text.getFrameMaxY() + 18 + text.getFrame().height * .75 < text.getParent().getHeight())
                 linkedText.offsetXY(0, text.getHeight() + 18);
-            else if (text.getFrameMaxX() + 18 + text.getFrame().width*.75 < text.getParent().getWidth())
+            else if (text.getFrameMaxX() + 18 + text.getFrame().width * .75 < text.getParent().getWidth())
                 linkedText.offsetXY(text.getWidth() + 18, 0);
             else linkedText.offsetXY(18, 18);
 
@@ -279,7 +284,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
         if (isSuperSelected)
             paintTextEditor(aView, aPntr);
 
-        // Otherwise, do normal paint
+            // Otherwise, do normal paint
         else super.paintHandles(aView, aPntr, isSuperSelected);
 
         // Call paintTextLinkIndicator
@@ -293,10 +298,10 @@ public class TextTool<T extends SGText> extends Tool<T> {
     protected boolean isShowBoundsRect(SGText aText)
     {
         Editor editor = getEditor();
-        if (aText.getBorder()!=null) return false; // If text draws it's own stroke, return false
+        if (aText.getBorder() != null) return false; // If text draws it's own stroke, return false
         if (!editor.isEditing()) return false; // If editor is previewing, return false
         if (editor.isSelected(aText) || editor.isSuperSelected(aText)) return true; // If selected, return true
-        if (aText.length()==0) return true; // If text is zero length, return true
+        if (aText.length() == 0) return true; // If text is zero length, return true
         if (aText.getDrawsSelectionRect()) return true; // If text explicitly draws selection rect, return true
         return false; // Otherwise, return false
     }
@@ -311,7 +316,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
         // Save gstate, set color/stroke
         aPntr.save();
-        aPntr.setColor(getEditor().isSuperSelected(aText)? new Color(.9f, .4f, .4f) : Color.LIGHTGRAY);
+        aPntr.setColor(getEditor().isSuperSelected(aText) ? new Color(.9f, .4f, .4f) : Color.LIGHTGRAY);
         aPntr.setStroke(Stroke.Stroke1.copyForDashes(3, 2));
 
         // Get bounds path
@@ -354,13 +359,13 @@ public class TextTool<T extends SGText> extends Tool<T> {
     protected boolean isPaintingTextLinkIndicator(SGText aText)
     {
         // If there is a linked text, return true
-        if(aText.getLinkedText()!=null) return true;
+        if (aText.getLinkedText() != null) return true;
 
         // If height is less than half-inch, return false
-        if(aText.getHeight()<36) return false;
+        if (aText.getHeight() < 36) return false;
 
         // If all text visible, return false
-        if(aText.isAllTextVisible()) return false;
+        if (aText.isAllTextVisible()) return false;
 
         // Return true
         return true;
@@ -375,16 +380,18 @@ public class TextTool<T extends SGText> extends Tool<T> {
         aPntr.setAntialiasing(false);
 
         // Get overflow indicator box center point in editor coords
-        Point point = getEditor().convertFromSceneView(aText.getWidth()-15, aText.getHeight(), aText);
+        Point point = getEditor().convertFromSceneView(aText.getWidth() - 15, aText.getHeight(), aText);
 
         // Get overflow indicator box rect in editor coords
         Rect rect = new Rect(point.x - 5, point.y - 5, 10, 10);
 
         // Draw white background, black frame, and plus sign and turn off aliasing
-        aPntr.setColor(aText.getLinkedText()==null? Color.WHITE : new Color(90, 200, 255)); aPntr.fill(rect);
-        aPntr.setColor(aText.getLinkedText()==null? Color.BLACK : Color.GRAY);
-        aPntr.setStroke(Stroke.Stroke1); aPntr.draw(rect);
-        aPntr.setColor(aText.getLinkedText()==null? Color.BLACK : Color.WHITE);
+        aPntr.setColor(aText.getLinkedText() == null ? Color.WHITE : new Color(90, 200, 255));
+        aPntr.fill(rect);
+        aPntr.setColor(aText.getLinkedText() == null ? Color.BLACK : Color.GRAY);
+        aPntr.setStroke(Stroke.Stroke1);
+        aPntr.draw(rect);
+        aPntr.setColor(aText.getLinkedText() == null ? Color.BLACK : Color.WHITE);
         aPntr.setStroke(new Stroke(1)); //, BasicStroke.CAP_BUTT, 0));
         aPntr.drawLine(rect.getMidX(), rect.y + 2, rect.getMidX(), rect.getMaxY() - 2);
         aPntr.drawLine(rect.x + 2, rect.getMidY(), rect.getMaxX() - 2, rect.getMidY());
@@ -415,7 +422,10 @@ public class TextTool<T extends SGText> extends Tool<T> {
     /**
      * Event handling - overridden to install text cursor.
      */
-    public void mouseMoved(ViewEvent anEvent)  { getEditor().setCursor(Cursor.TEXT); }
+    public void mouseMoved(ViewEvent anEvent)
+    {
+        getEditor().setCursor(Cursor.TEXT);
+    }
 
     /**
      * Event handling - overridden to install text cursor.
@@ -423,7 +433,9 @@ public class TextTool<T extends SGText> extends Tool<T> {
     public void mouseMoved(T aView, ViewEvent anEvent)
     {
         if (getEditor().getViewAtPoint(anEvent.getPoint()) instanceof SGText) {
-            getEditor().setCursor(Cursor.TEXT); anEvent.consume(); }
+            getEditor().setCursor(Cursor.TEXT);
+            anEvent.consume();
+        }
     }
 
     /**
@@ -435,13 +447,14 @@ public class TextTool<T extends SGText> extends Tool<T> {
         for (SGView shp : getEditor().getSelViews()) shp.repaint();
 
         // Get shape hit by down point
-        _downShape = getEditor().getViewAtPoint(anEvent.getX(),anEvent.getY());
+        _downShape = getEditor().getViewAtPoint(anEvent.getX(), anEvent.getY());
 
         // Get _downPoint from editor
         _downPoint = getEditorEvents().getEventPointInView(true);
 
         // Create default text instance and set initial bounds to reasonable value
-        SGText tshape = new SGText(); _newView = tshape;
+        SGText tshape = new SGText();
+        _newView = tshape;
         Rect defaultBounds = TextToolUtils.getDefaultBounds(tshape, _downPoint);
         _newView.setFrame(defaultBounds);
 
@@ -459,7 +472,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
     public void mouseDragged(ViewEvent anEvent)
     {
         // If shape wasn't created in mouse down, just return
-        if (_newView ==null) return;
+        if (_newView == null) return;
 
         // Set shape to repaint
         _newView.repaint();
@@ -480,7 +493,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
         // Set UpdatingMinHeight to drag rect height, but if text rect unreasonably thin, reset to 0
         _updatingMinHeight = rect.height;
-        if (rect.width<=30)
+        if (rect.width <= 30)
             _updatingMinHeight = 0;
 
         // Set new shape bounds
@@ -497,7 +510,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
         upPoint = _newView.localToParent(upPoint);
 
         // If upRect is really small, see if the user meant to convert a shape to text instead
-        if (Math.abs(_downPoint.x - upPoint.x)<=3 && Math.abs(_downPoint.y - upPoint.y)<=3) {
+        if (Math.abs(_downPoint.x - upPoint.x) <= 3 && Math.abs(_downPoint.y - upPoint.y) <= 3) {
 
             // If hit shape is text, just super-select that text and return
             if (_downShape instanceof SGText) {
@@ -537,7 +550,8 @@ public class TextTool<T extends SGText> extends Tool<T> {
         if (!isSuperSelected(aText)) return;
 
         // If mouse event, convert event to text shape coords and consume
-        if (anEvent.isMouseEvent()) { anEvent.consume();
+        if (anEvent.isMouseEvent()) {
+            anEvent.consume();
             Point pnt = getEditor().convertToSceneView(anEvent.getX(), anEvent.getY(), aText);
             anEvent = anEvent.copyForPoint(pnt.getX(), pnt.getY());
         }
@@ -547,7 +561,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
         aText.repaint();
     }
 
-   /**
+    /**
      * Override to forward to TextEditor.
      */
     protected void processKeyEvent(T aView, ViewEvent anEvent)
@@ -572,14 +586,15 @@ public class TextTool<T extends SGText> extends Tool<T> {
     public void willLoseSuperSel(T aText)
     {
         // If text editor was really just an insertion point and ending text length is zero, remove text
-        if (_updatingSize && aText.length()==0 && getEditor().getSelectTool().getDragMode()==SelectTool.DragMode.None)
+        if (_updatingSize && aText.length() == 0 && getEditor().getSelectTool().getDragMode() == SelectTool.DragMode.None)
             aText.removeFromParent();
 
         // Stop listening to changes to TextShape RichText
         TextEditor ted = getTextEditor();
         ted.removePropChangeListener(_textEditorSelChangeLsnr, TextEditor.Selection_Prop);
         ted.setActive(false);
-        _updatingSize = false; _updatingMinHeight = 0;
+        _updatingSize = false;
+        _updatingMinHeight = 0;
     }
 
     /**
@@ -591,24 +606,24 @@ public class TextTool<T extends SGText> extends Tool<T> {
         if (isSendEventDisabled()) return;
 
         // Handle Selection change
-        if (aPC.getPropertyName()==TextArea.Selection_Prop) {
+        if (aPC.getPropertyName() == TextArea.Selection_Prop) {
 
             // Make sure TextShape is super-selected
             Editor editor = getEditor();
             SGText textShape = getSelView();
-            if (textShape!=null && textShape!=editor.getSuperSelView())
+            if (textShape != null && textShape != editor.getSuperSelView())
                 editor.setSuperSelView(textShape);
 
             // Make sure TextEditor has same selection
             TextEditor ted = getTextEditor();
-            if (ted!=null)
+            if (ted != null)
                 ted.setSel(_textArea.getSelStart(), _textArea.getSelEnd());
         }
 
         // Handle Focus change
-        else if (aPC.getPropertyName()==TextArea.Focused_Prop) {
+        else if (aPC.getPropertyName() == TextArea.Focused_Prop) {
             TextEditor ted = getTextEditor();
-            if (ted!=null && _textArea.isFocused())
+            if (ted != null && _textArea.isFocused())
                 ted.setActive(false);
         }
 
@@ -616,20 +631,22 @@ public class TextTool<T extends SGText> extends Tool<T> {
         else if (_updatingSize) {
 
             // Get TextView
-            SGText text = getSelView(); if (text==null) return;
+            SGText text = getSelView();
+            if (text == null) return;
 
             // Get preferred text shape width
-            double maxWidth = _updatingMinHeight==0 ? text.getParent().getWidth() - text.getX() : text.getWidth();
-            double prefWidth = text.getPrefWidth(); if (prefWidth>maxWidth) prefWidth = maxWidth;
+            double maxWidth = _updatingMinHeight == 0 ? text.getParent().getWidth() - text.getX() : text.getWidth();
+            double prefWidth = text.getPrefWidth();
+            if (prefWidth > maxWidth) prefWidth = maxWidth;
 
             // If width gets updated, get & set desired width (make sure it doesn't go beyond page border)
-            if (_updatingMinHeight==0)
+            if (_updatingMinHeight == 0)
                 text.setWidth(prefWidth);
 
             // If PrefHeight or current height is greater than UpdatingMinHeight (which won't be zero if user drew a
             //  text box to enter text), set Height to PrefHeight
             double prefHeight = text.getPrefHeight();
-            if (prefHeight>_updatingMinHeight || text.getHeight()>_updatingMinHeight)
+            if (prefHeight > _updatingMinHeight || text.getHeight() > _updatingMinHeight)
                 text.setHeight(Math.max(prefHeight, _updatingMinHeight));
         }
     }
@@ -640,9 +657,10 @@ public class TextTool<T extends SGText> extends Tool<T> {
     private void textEditorSelChanged()
     {
         // Get TextEditor and update sel from TextArea
-        SGText textShape = getSelView(); if (textShape==null) return;
+        SGText textShape = getSelView();
+        if (textShape == null) return;
         TextEditor textEd = getTextEditor();
-        if (textEd!=null)
+        if (textEd != null)
             _textArea.setSel(textEd.getSelStart(), textEd.getSelEnd());
 
         // Repaint TextShape and ResetUI on MouseUp
@@ -657,17 +675,18 @@ public class TextTool<T extends SGText> extends Tool<T> {
     {
         // Iterator over selected shapes and see if any has an overflow indicator box that was hit
         List shapes = getEditor().getSelOrSuperSelViews();
-        for (int i=0, iMax=shapes.size(); i<iMax; i++) { SGText text = (SGText)shapes.get(i);
+        for (int i = 0, iMax = shapes.size(); i < iMax; i++) {
+            SGText text = (SGText) shapes.get(i);
 
             // If no linked text and not painting text indicator, just continue
-            if (text.getLinkedText()==null && !isPaintingTextLinkIndicator(text)) continue;
+            if (text.getLinkedText() == null && !isPaintingTextLinkIndicator(text)) continue;
 
             // Get point in text coords
             Point point = getEditor().convertToSceneView(anEvent.getX(), anEvent.getY(), text);
 
             // If pressed was in overflow indicator box, add linked text (or select existing one)
-            if (point.x>=text.getWidth()-20 && point.x<=text.getWidth()-10 && point.y>=text.getHeight()-5) {
-                if (text.getLinkedText()==null) sendEvent("LinkedTextMenuItem");   // If not linked text, add it
+            if (point.x >= text.getWidth() - 20 && point.x <= text.getWidth() - 10 && point.y >= text.getHeight() - 5) {
+                if (text.getLinkedText() == null) sendEvent("LinkedTextMenuItem");   // If not linked text, add it
                 else getEditor().setSelView(text.getLinkedText());          // Otherwise, select it
                 return true;    // Return true so SelectTool goes to DragModeNone
             }
@@ -683,11 +702,12 @@ public class TextTool<T extends SGText> extends Tool<T> {
     public String getToolTip(T aView, ViewEvent anEvent)
     {
         // If all text is visible and greater than 8 pt, return null
-        if (aView.isAllTextVisible() && aView.getFont().getSize()>=8) return null;
+        if (aView.isAllTextVisible() && aView.getFont().getSize() >= 8) return null;
 
         // Get text string (just return if empty), trim to 64 chars or less and return
-        String string = aView.getText(); if (string==null || string.length()==0) return null;
-        if (string.length()>64) string = string.substring(0,64) + "...";
+        String string = aView.getText();
+        if (string == null || string.length() == 0) return null;
+        if (string.length() > 64) string = string.substring(0, 64) + "...";
         return string;
     }
 
@@ -698,7 +718,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
     {
         // If KeysPanel is dragging, return true
         Clipboard cb = anEvent.getClipboard();
-        if(cb.hasString())
+        if (cb.hasString())
             return true;
 
         // Otherwise, return normal
@@ -712,10 +732,10 @@ public class TextTool<T extends SGText> extends Tool<T> {
     {
         // If a keys panel drop, add key to text
         Clipboard cb = anEvent.getClipboard();
-        if(cb.hasString()) {
+        if (cb.hasString()) {
             String string = anEvent.getClipboard().getString();
             SGText text = aView;
-            if (text.length()==0)
+            if (text.length() == 0)
                 text.setText(string);
             else text.getRichText().addChars(" " + string);
         }
@@ -724,7 +744,9 @@ public class TextTool<T extends SGText> extends Tool<T> {
         else super.dragDrop(aView, anEvent);
     }
 
-    /** Sets the character spacing for the currently selected shapes. */
+    /**
+     * Sets the character spacing for the currently selected shapes.
+     */
     private void setCharSpacing(float aValue)
     {
         setUndoTitle("Char Spacing Change");
@@ -732,7 +754,9 @@ public class TextTool<T extends SGText> extends Tool<T> {
             styler.setCharSpacing(aValue);
     }
 
-    /** Sets the line spacing for all chars (or all selected chars, if editing). */
+    /**
+     * Sets the line spacing for all chars (or all selected chars, if editing).
+     */
     private void setLineSpacing(float aHeight)
     {
         setUndoTitle("Line Spacing Change");
@@ -740,7 +764,9 @@ public class TextTool<T extends SGText> extends Tool<T> {
             styler.setLineSpacing(aHeight);
     }
 
-    /** Sets the line gap for all chars (or all selected chars, if editing). */
+    /**
+     * Sets the line gap for all chars (or all selected chars, if editing).
+     */
     private void setLineGap(float aHeight)
     {
         setUndoTitle("Line Gap Change");
@@ -762,24 +788,33 @@ public class TextTool<T extends SGText> extends Tool<T> {
     {
         List<SGView> shapes = getEditor().getSelOrSuperSelViews();
         TextToolStyler stylers[] = new TextToolStyler[shapes.size()];
-        for (int i=0, iMax=shapes.size(); i<iMax; i++) stylers[i] = (TextToolStyler)getStyler(shapes.get(i));
+        for (int i = 0, iMax = shapes.size(); i < iMax; i++) stylers[i] = (TextToolStyler) getStyler(shapes.get(i));
         return stylers;
     }
 
     /**
      * Returns the shape class that this tool edits.
      */
-    public Class getViewClass()  { return SGText.class; }
+    public Class getViewClass()
+    {
+        return SGText.class;
+    }
 
     /**
      * Returns the name of this tool to be displayed by inspector.
      */
-    public String getWindowTitle()  { return "Text Inspector"; }
+    public String getWindowTitle()
+    {
+        return "Text Inspector";
+    }
 
     /**
      * Returns the image used to represent shapes that this tool represents.
      */
-    protected Image getImageImpl()  { return Image.get(TextTool.class, "TextTool.png"); }
+    protected Image getImageImpl()
+    {
+        return Image.get(TextTool.class, "TextTool.png");
+    }
 
     /**
      * A TextEditor subclass to repaint super-selected SGTextView when text selection changes.
@@ -790,7 +825,7 @@ public class TextTool<T extends SGText> extends Tool<T> {
         {
             super.repaintSel();
             SGText text = getSelView();
-            if (text!=null)
+            if (text != null)
                 text.repaint();
         }
     }
@@ -800,19 +835,44 @@ public class TextTool<T extends SGText> extends Tool<T> {
      */
     private class TextEditorCopyPaster implements CopyPaster {
 
-        /** Override to forward to TextEditor. */
-        public void cut()  { getTextEditor().cut(); }
+        /**
+         * Override to forward to TextEditor.
+         */
+        public void cut()
+        {
+            getTextEditor().cut();
+        }
 
-        /** Override to forward to TextEditor. */
-        public void copy()  { getTextEditor().copy(); }
+        /**
+         * Override to forward to TextEditor.
+         */
+        public void copy()
+        {
+            getTextEditor().copy();
+        }
 
-        /** Override to forward to TextEditor. */
-        public void paste()  { getTextEditor().paste(); }
+        /**
+         * Override to forward to TextEditor.
+         */
+        public void paste()
+        {
+            getTextEditor().paste();
+        }
 
-        /** Override to forward to TextEditor. */
-        public void delete()  { getTextEditor().delete(); }
+        /**
+         * Override to forward to TextEditor.
+         */
+        public void delete()
+        {
+            getTextEditor().delete();
+        }
 
-        /** Override to forward to TextEditor. */
-        public void selectAll()  { getTextEditor().selectAll(); }
+        /**
+         * Override to forward to TextEditor.
+         */
+        public void selectAll()
+        {
+            getTextEditor().selectAll();
+        }
     }
 }

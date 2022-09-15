@@ -11,26 +11,37 @@ public class ViewerTopToolBar extends ViewOwner {
 
     // The viewer associated with this tool bar
     ViewerPane _viewerPane;
-    
+
     /**
      * Creates a new top ui.
      */
-    public ViewerTopToolBar(ViewerPane aViewerPane)  { _viewerPane = aViewerPane; }
+    public ViewerTopToolBar(ViewerPane aViewerPane)
+    {
+        _viewerPane = aViewerPane;
+    }
 
     /**
      * Returns the viewer pane.
      */
-    public ViewerPane getViewerPane()  { return _viewerPane; }
+    public ViewerPane getViewerPane()
+    {
+        return _viewerPane;
+    }
 
     /**
      * Returns the viewer.
      */
-    public Viewer getViewer()  { return getViewerPane().getViewer(); }
+    public Viewer getViewer()
+    {
+        return getViewerPane().getViewer();
+    }
 
     /**
      * Resets to UI.
      */
-    public void resetUI()  { }
+    public void resetUI()
+    {
+    }
 
     /**
      * Responds to UI.

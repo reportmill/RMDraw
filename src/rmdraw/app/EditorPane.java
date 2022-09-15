@@ -20,13 +20,13 @@ public class EditorPane extends ViewerPane {
     EditorPaneMenuBar _menuBar;
 
     // The shared editor inspector
-    InspectorPanel         _inspPanel = createInspectorPanel();
-    
+    InspectorPanel _inspPanel = createInspectorPanel();
+
     // The shared attributes inspector (go ahead and create to get RMColorPanel created)
-    AttributesPanel        _attrsPanel = createAttributesPanel();
-    
+    AttributesPanel _attrsPanel = createAttributesPanel();
+
     // The image for a window frame icon
-    private static Image   _frameImg;
+    private static Image _frameImg;
 
     /**
      * Constructor.
@@ -39,12 +39,18 @@ public class EditorPane extends ViewerPane {
     /**
      * Returns the viewer as an editor.
      */
-    public Editor getEditor()  { return (Editor) getViewer(); }
+    public Editor getEditor()
+    {
+        return (Editor) getViewer();
+    }
 
     /**
      * Overridden to return an Editor.
      */
-    protected Viewer createViewer()  { return new Editor(); }
+    protected Viewer createViewer()
+    {
+        return new Editor();
+    }
 
     /**
      * Override to return as EditorPaneToolBar.
@@ -67,7 +73,7 @@ public class EditorPane extends ViewerPane {
      */
     public EditorPaneMenuBar getMenuBar()
     {
-        return _menuBar!=null ? _menuBar : (_menuBar = createMenuBar());
+        return _menuBar != null ? _menuBar : (_menuBar = createMenuBar());
     }
 
     /**
@@ -81,7 +87,10 @@ public class EditorPane extends ViewerPane {
     /**
      * Returns whether editing.
      */
-    public boolean isEditing()  { return false; }
+    public boolean isEditing()
+    {
+        return false;
+    }
 
     /**
      * Sets whether editing.
@@ -164,19 +173,19 @@ public class EditorPane extends ViewerPane {
         super.resetUI();
 
         // If title has changed, update window title
-        if(isWindowVisible()) {
+        if (isWindowVisible()) {
             String title = getWindowTitle();
             WindowView win = getWindow();
-            if(!SnapUtils.equals(title, win.getTitle())) {
+            if (!SnapUtils.equals(title, win.getTitle())) {
                 win.setTitle(title);
                 win.setDocURL(getSourceURL());
             }
         }
 
         // Reset MenuBar, InspectorPanel and AttributesPanel
-        if(!ViewUtils.isMouseDown()) getMenuBar().resetLater();
-        if(getInspectorPanel().isResetWithEditor()) getInspectorPanel().resetLater();
-        if(getAttributesPanel().isVisible() && !ViewUtils.isMouseDown()) getAttributesPanel().resetLater();
+        if (!ViewUtils.isMouseDown()) getMenuBar().resetLater();
+        if (getInspectorPanel().isResetWithEditor()) getInspectorPanel().resetLater();
+        if (getAttributesPanel().isVisible() && !ViewUtils.isMouseDown()) getAttributesPanel().resetLater();
     }
 
     /**
@@ -191,53 +200,79 @@ public class EditorPane extends ViewerPane {
         super.respondUI(anEvent);
 
         // Handle PopupTrigger
-        if(anEvent.isPopupTrigger() && !anEvent.isConsumed())
+        if (anEvent.isPopupTrigger() && !anEvent.isConsumed())
             runPopupMenu(anEvent);
 
-        // Handle WinClosing
-        else if(anEvent.isWinClose()) {
-            close(); anEvent.consume(); }
+            // Handle WinClosing
+        else if (anEvent.isWinClose()) {
+            close();
+            anEvent.consume();
+        }
     }
 
     /**
      * Returns the inspector panel (shared).
      */
-    public InspectorPanel getInspectorPanel()  { return _inspPanel; }
+    public InspectorPanel getInspectorPanel()
+    {
+        return _inspPanel;
+    }
 
     /**
      * Creates the InspectorPanel.
      */
-    protected InspectorPanel createInspectorPanel()  { return new InspectorPanel(this); }
+    protected InspectorPanel createInspectorPanel()
+    {
+        return new InspectorPanel(this);
+    }
 
     /**
      * Returns the attributes panel (shared).
      */
-    public AttributesPanel getAttributesPanel()  { return _attrsPanel; }
+    public AttributesPanel getAttributesPanel()
+    {
+        return _attrsPanel;
+    }
 
     /**
      * Creates the AttributesPanel.
      */
-    protected AttributesPanel createAttributesPanel()  { return new AttributesPanel(this); }
+    protected AttributesPanel createAttributesPanel()
+    {
+        return new AttributesPanel(this);
+    }
 
     /**
      * Shows the AttributesPanel Drawer.
      */
-    public void showAttributesDrawer()  { getAttributesPanel().showDrawer(); }
+    public void showAttributesDrawer()
+    {
+        getAttributesPanel().showDrawer();
+    }
 
     /**
      * Hides the AttributesPanel Drawer.
      */
-    public void hideAttributesDrawer()  { getAttributesPanel().hideDrawer(); }
+    public void hideAttributesDrawer()
+    {
+        getAttributesPanel().hideDrawer();
+    }
 
     /**
      * Returns extension for editor document.
      */
-    public String[] getFileExtensions()  { return new String[] { ".rpt", ".pdf"}; }
+    public String[] getFileExtensions()
+    {
+        return new String[]{".rpt", ".pdf"};
+    }
 
     /**
      * Returns the description for the editor document for use in open/save panels.
      */
-    public String getFileDescription()  { return "ReportMill files (.rpt, .pdf)"; }
+    public String getFileDescription()
+    {
+        return "ReportMill files (.rpt, .pdf)";
+    }
 
     /**
      * Returns the window title.
@@ -245,12 +280,13 @@ public class EditorPane extends ViewerPane {
     public String getWindowTitle()
     {
         // Get window title: Basic filename + optional "Doc edited asterisk + optional "Doc Scaled"
-        String title = getSourceURL()!=null? getSourceURL().getPath() : null; if(title==null) title = "Untitled";
+        String title = getSourceURL() != null ? getSourceURL().getPath() : null;
+        if (title == null) title = "Untitled";
 
         // If has undos, add asterisk. If zoomed, add ZoomFactor
-        if (getEditor().getUndoer()!=null && getEditor().getUndoer().hasUndos()) title = "* " + title;
+        if (getEditor().getUndoer() != null && getEditor().getUndoer().hasUndos()) title = "* " + title;
         if (!MathUtils.equals(getEditor().getZoomFactor(), 1f))
-            title += " @ " + Math.round(getEditor().getZoomFactor()*100) + "%";
+            title += " @ " + Math.round(getEditor().getZoomFactor() * 100) + "%";
 
         // If previewing, add "(Previewing)" and return
         if (getEditor().isPreview()) title += " (Previewing)";
@@ -281,7 +317,7 @@ public class EditorPane extends ViewerPane {
     public EditorPane open(Object aSource)
     {
         // If document source is null, just return null
-        if (aSource==null) return null;
+        if (aSource == null) return null;
 
         // Get Source URL
         WebURL url = WebURL.getURL(aSource);
@@ -295,25 +331,30 @@ public class EditorPane extends ViewerPane {
         }
 
         // Load document
-        SGDoc doc = null; try { doc = SGDoc.getDocFromSource(aSource); }
+        SGDoc doc = null;
+        try {
+            doc = SGDoc.getDocFromSource(aSource);
+        }
 
         // If there was an XML parse error loading aSource, show error dialog
-        catch(Exception e) {
+        catch (Exception e) {
             e.printStackTrace();
             String msg = StringUtils.wrap("Error reading file:\n" + e.getMessage(), 40);
             runLater(() -> {
-                DialogBox dbox = new DialogBox("Error Reading File"); dbox.setErrorMessage(msg);
-                dbox.showMessageDialog(getUI()); });
+                DialogBox dbox = new DialogBox("Error Reading File");
+                dbox.setErrorMessage(msg);
+                dbox.showMessageDialog(getUI());
+            });
         }
 
         // If no document, just return null
-        if (doc==null) return null;
+        if (doc == null) return null;
 
         // Set document
         getViewer().setDoc(doc);
 
         // If source is string, add to recent files menu
-        if (url!=null) RecentFiles.addPath("RecentDocuments", url.getPath(), 10);
+        if (url != null) RecentFiles.addPath("RecentDocuments", url.getPath(), 10);
 
         // Return the editor
         return this;
@@ -329,14 +370,15 @@ public class EditorPane extends ViewerPane {
 
         // Get extensions - if there is an existing extension, make sure it's first in the exts array
         String exts[] = getFileExtensions();
-        if (getSourceURL()!=null && FilePathUtils.getExtension(getSourceURL().getPath())!=null) {
+        if (getSourceURL() != null && FilePathUtils.getExtension(getSourceURL().getPath()) != null) {
             List ex = new ArrayList(Arrays.asList(exts));
             ex.add(0, FilePathUtils.getExtension(getSourceURL().getPath()));
-            exts = (String[])ex.toArray(new String[0]);
+            exts = (String[]) ex.toArray(new String[0]);
         }
 
         // Run save panel, set Document.Source to path and re-save (or just return if cancelled)
-        String path = FilePanel.showSavePanel(getUI(), getFileDescription(), exts); if(path==null) return;
+        String path = FilePanel.showSavePanel(getUI(), getFileDescription(), exts);
+        if (path == null) return;
         getDoc().setSourceURL(WebURL.getURL(path));
         save();
     }
@@ -347,18 +389,25 @@ public class EditorPane extends ViewerPane {
     public void save()
     {
         // If can't save to current source, do SaveAs instead
-        WebURL url = getSourceURL(); if(url==null) { saveAs(); return; }
+        WebURL url = getSourceURL();
+        if (url == null) {
+            saveAs();
+            return;
+        }
 
         // Make sure editor isn't previewing and has focus (to commit any inspector textfield changes)
         setEditing(true);
         getEditor().requestFocus();
 
         // Do actual save - if exception, print stack trace and set error string
-        try { saveImpl(); }
-        catch(Throwable e) {
+        try {
+            saveImpl();
+        }
+        catch (Throwable e) {
             e.printStackTrace();
             String msg = "The file " + url.getPath() + " could not be saved (" + e + ").";
-            DialogBox dbox = new DialogBox("Error on Save"); dbox.setErrorMessage(msg);
+            DialogBox dbox = new DialogBox("Error on Save");
+            dbox.setErrorMessage(msg);
             dbox.showMessageDialog(getUI());
             return;
         }
@@ -376,7 +425,7 @@ public class EditorPane extends ViewerPane {
     {
         WebURL url = getSourceURL();
         WebFile file = url.getFile();
-        if (file==null) file = url.createFile(false);
+        if (file == null) file = url.createFile(false);
         file.setBytes(getDoc().getBytes());
         file.save();
     }
@@ -387,11 +436,13 @@ public class EditorPane extends ViewerPane {
     public void revert()
     {
         // Get filename (just return if null)
-        WebURL surl = getSourceURL(); if(surl==null) return;
+        WebURL surl = getSourceURL();
+        if (surl == null) return;
 
         // Run option panel for revert confirmation (just return if denied)
         String msg = "Revert to saved version of " + surl.getPathName() + "?";
-        DialogBox dbox = new DialogBox("Revert to Saved"); dbox.setQuestionMessage(msg);
+        DialogBox dbox = new DialogBox("Revert to Saved");
+        dbox.setQuestionMessage(msg);
         if (!dbox.showConfirmDialog(getUI())) return;
 
         // Re-open filename
@@ -409,13 +460,18 @@ public class EditorPane extends ViewerPane {
 
         // If unsaved changes, run panel to request save
         if (getEditor().undoerHasUndos()) {
-            String fname = getSourceURL()==null? "untitled document" : getSourceURL().getPathName();
-            String msg = "Save changes to " + fname + "?", options[] = { "Save", "Don't Save", "Cancel" };
-            DialogBox dbox = new DialogBox("Unsaved Changes"); dbox.setWarningMessage(msg); dbox.setOptions(options);
-            switch(dbox.showOptionDialog(getUI(), "Save")) {
-                case 0: save();
-                case 1: break;
-                default: return false;
+            String fname = getSourceURL() == null ? "untitled document" : getSourceURL().getPathName();
+            String msg = "Save changes to " + fname + "?", options[] = {"Save", "Don't Save", "Cancel"};
+            DialogBox dbox = new DialogBox("Unsaved Changes");
+            dbox.setWarningMessage(msg);
+            dbox.setOptions(options);
+            switch (dbox.showOptionDialog(getUI(), "Save")) {
+                case 0:
+                    save();
+                case 1:
+                    break;
+                default:
+                    return false;
             }
         }
 
@@ -434,7 +490,7 @@ public class EditorPane extends ViewerPane {
 
         // If another open editor is available focus on it, otherwise run WelcomePanel
         EditorPane epane = WindowView.getOpenWindowOwner(EditorPane.class);
-        if (epane!=null)
+        if (epane != null)
             epane.getEditor().requestFocus();
         else if (Welcome.getShared().isEnabled())
             Welcome.getShared().runWelcome();
@@ -443,7 +499,10 @@ public class EditorPane extends ViewerPane {
     /**
      * Called when the app is about to exit to gracefully handle any open documents.
      */
-    public void quit()  { App.quitApp(); }
+    public void quit()
+    {
+        App.quitApp();
+    }
 
     /**
      * Returns a popup menu for the editor.
@@ -456,12 +515,13 @@ public class EditorPane extends ViewerPane {
         if (view instanceof SGPage) return;
 
         // If SGText, get copy of Format menu
-        if (view instanceof SGText) { SGText text = (SGText)view;
+        if (view instanceof SGText) {
+            SGText text = (SGText) view;
 
             // Get editor pane format menu and add menu items to popup
             Menu formatMenu = getMenuBar().getView("FormatMenu", Menu.class);
-            Menu formatMenuCopy = (Menu)formatMenu.clone();
-            for(MenuItem m : formatMenuCopy.getItems()) pmenu.addItem(m);
+            Menu formatMenuCopy = (Menu) formatMenu.clone();
+            for (MenuItem m : formatMenuCopy.getItems()) pmenu.addItem(m);
 
             // If structured tablerow, add AddColumnMenuItem and SplitColumnMenuItem
             //if(text.isStructured()) { MenuItem mi;
@@ -472,7 +532,7 @@ public class EditorPane extends ViewerPane {
 
         // Get copy of views menu and add menu items to popup
         Menu viewsMenu = getMenuBar().getView("ShapesMenu", Menu.class);
-        Menu viewsMenuCopy = (Menu)viewsMenu.clone();
+        Menu viewsMenuCopy = (Menu) viewsMenu.clone();
         for (MenuItem m : viewsMenuCopy.getItems()) pmenu.addItem(m);
 
         // Initialize popup menu items to send Events to menu bar
@@ -487,9 +547,11 @@ public class EditorPane extends ViewerPane {
     private void editorDidPropChange(PropChange aPC)
     {
         String pname = aPC.getPropName();
-        switch(pname) {
+        switch (pname) {
             case Editor.SelViews_Prop:
-            case Editor.SuperSelView_Prop: resetLater(); break;
+            case Editor.SuperSelView_Prop:
+                resetLater();
+                break;
         }
     }
 
@@ -498,7 +560,7 @@ public class EditorPane extends ViewerPane {
      */
     private static Image getFrameIcon()
     {
-        return _frameImg!=null ? _frameImg : (_frameImg=Image.get(EditorPane.class, "ReportMill16x16.png"));
+        return _frameImg != null ? _frameImg : (_frameImg = Image.get(EditorPane.class, "ReportMill16x16.png"));
     }
 
     /**
@@ -509,19 +571,44 @@ public class EditorPane extends ViewerPane {
         // The editor pane
         EditorPane _editorPane;
 
-        /** Creates a new SupportPane with given editor pane. */
-        public SupportPane(EditorPane anEP)  { _editorPane = anEP; }
+        /**
+         * Creates a new SupportPane with given editor pane.
+         */
+        public SupportPane(EditorPane anEP)
+        {
+            _editorPane = anEP;
+        }
 
-        /** Returns the EditorPane. */
-        public EditorPane getEditorPane()  { return _editorPane; }
+        /**
+         * Returns the EditorPane.
+         */
+        public EditorPane getEditorPane()
+        {
+            return _editorPane;
+        }
 
-        /** Sets the EditorPane. */
-        public void setEditorPane(EditorPane anEP)  { _editorPane = anEP; }
+        /**
+         * Sets the EditorPane.
+         */
+        public void setEditorPane(EditorPane anEP)
+        {
+            _editorPane = anEP;
+        }
 
-        /** Returns the editor. */
-        public Editor getEditor()  { return _editorPane.getEditor(); }
+        /**
+         * Returns the editor.
+         */
+        public Editor getEditor()
+        {
+            return _editorPane.getEditor();
+        }
 
-        /** Returns the title. */
-        public String getWindowTitle()  { return "Inspector"; }
+        /**
+         * Returns the title.
+         */
+        public String getWindowTitle()
+        {
+            return "Inspector";
+        }
     }
 }

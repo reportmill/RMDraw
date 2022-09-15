@@ -20,7 +20,7 @@ public class MarkupEditor extends Editor {
     private View _embedView;
 
     // Whether MarkupEditor needs to show inspector
-    private boolean  _needsInspector;
+    private boolean _needsInspector;
 
     // Constants for Properties
     public static final String NeedsInspector_Prop = "NeedsInspector";
@@ -47,20 +47,23 @@ public class MarkupEditor extends Editor {
     public boolean isAnySelected()
     {
         SGView selView = getSelView();
-        return !(selView==null || selView instanceof SGDoc || selView instanceof SGPage);
+        return !(selView == null || selView instanceof SGDoc || selView instanceof SGPage);
     }
 
     /**
      * Returns whether editor needs inspector to show.
      */
-    public boolean isNeedsInspector()  { return _needsInspector; }
+    public boolean isNeedsInspector()
+    {
+        return _needsInspector;
+    }
 
     /**
      * Sets whether editor needs inspector to show.
      */
     public void setNeedsInspector(boolean aValue)
     {
-        if (aValue==_needsInspector) return;
+        if (aValue == _needsInspector) return;
         firePropChange(NeedsInspector_Prop, _needsInspector, _needsInspector = aValue);
     }
 
@@ -71,13 +74,13 @@ public class MarkupEditor extends Editor {
     {
         if (!isShowing())
             return false;
-        if (getCurrentTool()!=getSelectTool())
+        if (getCurrentTool() != getSelectTool())
             return true;
         SGView supView = getSuperSelView();
-        if (supView!=null && !(supView instanceof SGDoc) && !(supView instanceof SGPage))
+        if (supView != null && !(supView instanceof SGDoc) && !(supView instanceof SGPage))
             return true;
         SGView selView = getSelView();
-        return !(selView==null || selView instanceof SGDoc || selView instanceof SGPage);
+        return !(selView == null || selView instanceof SGDoc || selView instanceof SGPage);
     }
 
     /**
@@ -93,7 +96,9 @@ public class MarkupEditor extends Editor {
      * Override to suppress normal paintFront().
      */
     @Override
-    public void paintFront(Painter aPntr)  { }
+    public void paintFront(Painter aPntr)
+    {
+    }
 
     /**
      * Override to paint above EmbedView.
@@ -146,7 +151,7 @@ public class MarkupEditor extends Editor {
         if (anEvent.isMouseMove() && isCurrentToolSelectTool()) {
             SGView hitView = getViewAtPoint(anEvent.getX(), anEvent.getY());
             boolean overChart = hitView == null || hitView instanceof SGDoc || hitView instanceof SGPage;
-            if (overChart) overChart = getSelectTool().getHandleAtPoint(anEvent.getPoint())==null;
+            if (overChart) overChart = getSelectTool().getHandleAtPoint(anEvent.getPoint()) == null;
             _embedView.setPickable(overChart);
         }
 
@@ -178,7 +183,7 @@ public class MarkupEditor extends Editor {
         super.setCurrentTool(aTool);
 
         // Make EmbedView pickable for SelectTool only
-        _embedView.setPickable(aTool==getSelectTool());
+        _embedView.setPickable(aTool == getSelectTool());
         updateNeedsInspector();
 
         getEditorPane().resetLater();

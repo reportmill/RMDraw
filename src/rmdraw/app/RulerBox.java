@@ -11,34 +11,40 @@ import rmdraw.scene.*;
  * Currently assumes that view is Editor is ScrollView.
  */
 public class RulerBox extends ParentView {
-    
+
     // The content view
-    private View  _content;
+    private View _content;
 
     // The horizontal/vertical ruler views
-    private RulerView  _hruler, _vruler;
-    
+    private RulerView _hruler, _vruler;
+
     /**
      * Returns the box content.
      */
-    public View getContent()  { return _content; }
+    public View getContent()
+    {
+        return _content;
+    }
 
     /**
      * Sets the box content.
      */
     public void setContent(View aView)
     {
-        if (aView==_content) return;
+        if (aView == _content) return;
         removeChildren();
-        if (_content!=null) removeChild(_content);
+        if (_content != null) removeChild(_content);
         _content = aView;
-        if (_content!=null) addChild(_content);
+        if (_content != null) addChild(_content);
     }
 
     /**
      * Returns whether editor pane shows rulers.
      */
-    public boolean isShowRulers()  { return _hruler!=null; }
+    public boolean isShowRulers()
+    {
+        return _hruler != null;
+    }
 
     /**
      * Sets whether editor pane shows rulers.
@@ -46,19 +52,19 @@ public class RulerBox extends ParentView {
     public void setShowRulers(boolean aValue)
     {
         // If already set, just return
-        if (aValue==isShowRulers()) return;
+        if (aValue == isShowRulers()) return;
 
         // Determine if we should resize window after toggle (depending on whether window is at preferred size)
         WindowView win = getWindow();
         boolean doPack = win.getSize().equals(win.getPrefSize());
 
         // If no rulers, create and add them
-        if (_hruler==null) {
+        if (_hruler == null) {
 
             // Get Content for rulers
             View content = _content;
             if (content instanceof ScrollView)
-                content = ((ScrollView)content).getContent();
+                content = ((ScrollView) content).getContent();
 
             // Create rulers and add
             _hruler = new RulerView(content);
@@ -85,8 +91,8 @@ public class RulerBox extends ParentView {
      */
     public void setMousePoint(Point aPoint)
     {
-        if (_hruler!=null) _hruler.setMousePoint(aPoint);
-        if (_vruler!=null) _vruler.setMousePoint(aPoint);
+        if (_hruler != null) _hruler.setMousePoint(aPoint);
+        if (_vruler != null) _vruler.setMousePoint(aPoint);
     }
 
     /**
@@ -123,15 +129,15 @@ public class RulerBox extends ParentView {
         SGDoc _doc;
 
         // Zoom Factor
-        double                    _zoomFactor;
+        double _zoomFactor;
 
         // The mouse point
-        Point                     _mouse = new Point();
+        Point _mouse = new Point();
 
         // Ruler constants
-        private static final int          RULER_WIDTH = 20;
-        private static final Font         RULER_FONT = Font.Arial10.deriveFont(8);
-        private static final Stroke       MOUSE_STROKE = Stroke.Stroke1.copyForDashes(2, 2);
+        private static final int RULER_WIDTH = 20;
+        private static final Font RULER_FONT = Font.Arial10.deriveFont(8);
+        private static final Stroke MOUSE_STROKE = Stroke.Stroke1.copyForDashes(2, 2);
 
         /**
          * Creates a new editor ruler.
@@ -139,7 +145,7 @@ public class RulerBox extends ParentView {
         public RulerView(View aView)
         {
             // Set views
-            _editor = (Editor)aView;
+            _editor = (Editor) aView;
             _doc = _editor.getDoc();
             _zoomFactor = _editor.getZoomFactor();
 
@@ -152,31 +158,42 @@ public class RulerBox extends ParentView {
         /**
          * Returns the size in points of a standard measure.
          */
-        public int getUnitWidth()  { return (int)Math.round(72*_zoomFactor); }
-
-        /** Override to control size. */
-        protected double getPrefWidthImpl(double aH)
+        public int getUnitWidth()
         {
-            return isHorizontal()? _doc.getWidth() : RULER_WIDTH;
+            return (int) Math.round(72 * _zoomFactor);
         }
 
-        /** Override to control size. */
+        /**
+         * Override to control size.
+         */
+        protected double getPrefWidthImpl(double aH)
+        {
+            return isHorizontal() ? _doc.getWidth() : RULER_WIDTH;
+        }
+
+        /**
+         * Override to control size.
+         */
         protected double getPrefHeightImpl(double aW)
         {
-            return isHorizontal()? RULER_WIDTH : _doc.getHeight();
+            return isHorizontal() ? RULER_WIDTH : _doc.getHeight();
         }
 
         /**
          * Sets the mouse point.
          */
-        public void setMousePoint(Point aPoint)  { _mouse = aPoint; repaint(); }
+        public void setMousePoint(Point aPoint)
+        {
+            _mouse = aPoint;
+            repaint();
+        }
 
         /**
          * Paint.
          */
         protected void paintFront(Painter aPntr)
         {
-            if(isHorizontal()) paintHor(aPntr);
+            if (isHorizontal()) paintHor(aPntr);
             else paintVer(aPntr);
         }
 
@@ -192,41 +209,44 @@ public class RulerBox extends ParentView {
 
             // Scale and translate ruler to doc coords
             aPntr.save();
-            double scale = getWidth()/bnds.width;
-            aPntr.scale(scale,1);
+            double scale = getWidth() / bnds.width;
+            aPntr.scale(scale, 1);
             aPntr.translate(-bnds.x, 0);
 
             // Get basic coords
             double usize = getUnitWidth();
             double x = MathUtils.floor(bnds.x, usize), maxx = bnds.getMaxX();
-            double h = getHeight(), hh = h/2;
+            double h = getHeight(), hh = h / 2;
             double dx = usize, dxm = 9;
 
             // Get/set font and get font ascent
-            Font font = RULER_FONT; aPntr.setFont(font);
+            Font font = RULER_FONT;
+            aPntr.setFont(font);
             double fontAscent = font.getAscent();
 
             // Paint ticks/labels
-            while (x<maxx) {
-                String str = String.valueOf((int)Math.round(x));
-                aPntr.drawString(str, x+2, fontAscent+2);
-                aPntr.drawLine(x,0,x,h);
-                for (double x2=x+dxm, mx2=x+dx/2-1; x2<mx2; x2+=dxm) aPntr.drawLine(x2,h,x2,h-5);
-                double midx = x+dx/2; aPntr.drawLine(midx,h,midx,h-hh);
-                for (double x2=midx+dxm, mx2=x+dx-1; x2<mx2; x2+=dxm) aPntr.drawLine(x2,h,x2,h-5);
+            while (x < maxx) {
+                String str = String.valueOf((int) Math.round(x));
+                aPntr.drawString(str, x + 2, fontAscent + 2);
+                aPntr.drawLine(x, 0, x, h);
+                for (double x2 = x + dxm, mx2 = x + dx / 2 - 1; x2 < mx2; x2 += dxm) aPntr.drawLine(x2, h, x2, h - 5);
+                double midx = x + dx / 2;
+                aPntr.drawLine(midx, h, midx, h - hh);
+                for (double x2 = midx + dxm, mx2 = x + dx - 1; x2 < mx2; x2 += dxm) aPntr.drawLine(x2, h, x2, h - 5);
                 x += dx;
             }
 
             // Paint shape position
             Rect selBnds = getShapeBounds();
-            if (selBnds!=null) {
-                aPntr.setColor(new Color(1,.5));
+            if (selBnds != null) {
+                aPntr.setColor(new Color(1, .5));
                 aPntr.fillRect(selBnds.x, 0, selBnds.width, getHeight());
             }
 
             // Paint mouse position
             Point mp = _editor.convertToSceneView(_mouse.x, _mouse.y, _doc);
-            aPntr.setColor(Color.BLACK); aPntr.setStroke(MOUSE_STROKE);
+            aPntr.setColor(Color.BLACK);
+            aPntr.setStroke(MOUSE_STROKE);
             aPntr.drawLine(mp.getX(), 0, mp.getX(), getHeight());
             aPntr.restore();
         }
@@ -243,50 +263,55 @@ public class RulerBox extends ParentView {
 
             // Scale ruler to doc coords
             aPntr.save();
-            double scale = getHeight()/bnds.height;
-            aPntr.scale(1,scale);
+            double scale = getHeight() / bnds.height;
+            aPntr.scale(1, scale);
             aPntr.translate(0, -bnds.y);
 
             // Get basic coords
             double usize = getUnitWidth();
-            double y = MathUtils.floor(bnds.y,usize), maxy = bnds.getMaxY();
-            double w = getWidth(), hw = w/2;
+            double y = MathUtils.floor(bnds.y, usize), maxy = bnds.getMaxY();
+            double w = getWidth(), hw = w / 2;
             double dy = usize, dym = 9;
 
             // Get/set font and get font ascent
-            Font font = RULER_FONT; aPntr.setFont(font);
+            Font font = RULER_FONT;
+            aPntr.setFont(font);
             double fontAscent = font.getAscent();
 
             // Paint ticks/labels
-            while (y<maxy) {
-                String str = String.valueOf((int)Math.round(y));
-                aPntr.drawString(str,2, y + fontAscent+2);
-                aPntr.drawLine(0,y,w,y);
-                for (double y2=y+dym, my2=y+dy/2-1; y2<my2; y2+=dym) aPntr.drawLine(w-5,y2,w,y2);
-                double my = y+dy/2; aPntr.drawLine(w,my,w-hw,my);
-                for (double y2=my+dym, my2=y+dy-1; y2<my2; y2+=dym) aPntr.drawLine(w,y2,w-5,y2);
+            while (y < maxy) {
+                String str = String.valueOf((int) Math.round(y));
+                aPntr.drawString(str, 2, y + fontAscent + 2);
+                aPntr.drawLine(0, y, w, y);
+                for (double y2 = y + dym, my2 = y + dy / 2 - 1; y2 < my2; y2 += dym) aPntr.drawLine(w - 5, y2, w, y2);
+                double my = y + dy / 2;
+                aPntr.drawLine(w, my, w - hw, my);
+                for (double y2 = my + dym, my2 = y + dy - 1; y2 < my2; y2 += dym) aPntr.drawLine(w, y2, w - 5, y2);
                 y += dy;
             }
 
             // Paint shape position
             Rect selBnds = getShapeBounds();
-            if (selBnds!=null) {
-                aPntr.setColor(new Color(1,.5));
+            if (selBnds != null) {
+                aPntr.setColor(new Color(1, .5));
                 aPntr.fillRect(0, selBnds.y, getWidth(), selBnds.height);
             }
 
             // Paint mouse position
             Point mp = _editor.convertToSceneView(_mouse.x, _mouse.y, _doc);
-            aPntr.setColor(Color.BLACK); aPntr.setStroke(MOUSE_STROKE);
+            aPntr.setColor(Color.BLACK);
+            aPntr.setStroke(MOUSE_STROKE);
             aPntr.drawLine(0, mp.getY(), getWidth(), mp.getY());
             aPntr.restore();
         }
 
-        /** Returns the current shape bounds. */
+        /**
+         * Returns the current shape bounds.
+         */
         private Rect getShapeBounds()
         {
             SGView shape = _editor.getSelOrSuperSelView();
-            if (shape==null || shape instanceof SGDoc || shape instanceof SGPage) return null;
+            if (shape == null || shape instanceof SGDoc || shape instanceof SGPage) return null;
             return shape.localToParent(shape.getBoundsLocal(), null).getBounds();
         }
     }

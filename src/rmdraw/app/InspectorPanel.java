@@ -14,50 +14,53 @@ import snap.view.*;
  * This class is responsible for the UI associated with the inspector window.
  */
 public class InspectorPanel extends EditorPane.SupportPane {
-    
+
     // The selection path view
-    private ChildView  _selPathView;
-    
+    private ChildView _selPathView;
+
     // The Title label
-    private Label  _titleLabel;
-    
+    private Label _titleLabel;
+
     // The view SpecificButton
-    private ToggleButton  _specificBtn;
-    
+    private ToggleButton _specificBtn;
+
     // The ScrollView that holds UI for child inspectors
-    private ScrollView  _inspBox;
-    
+    private ScrollView _inspBox;
+
     // The child inspector current installed in inspector panel
-    private ViewOwner  _childInsp;
-    
+    private ViewOwner _childInsp;
+
     // The inspector for paint/fill attributes
-    private StylerPane  _stylerPane;
-    
+    private StylerPane _stylerPane;
+
     // The inspector for view placement attributes (location, size, roll, scale, skew, autosizing)
     private PlacerTool _placerInsp;
-    
+
     // The inspector for view general attributes (name, url, text wrap around)
     private ViewGeneral _generalInsp;
-    
+
     // The inspector for view hierarchy
     private ViewTreePane _viewTree;
-    
+
     // The inspector for Undo
-    private UndoInspector  _undoInspector;
-    
+    private UndoInspector _undoInspector;
+
     // The inspector for XML datasource
     //private DataSourcePanel  _dataSource;
-    
+
     // Used for managing selection path
     private SGView _deepView;
-    
+
     // Used for managing selection path
     private SGView _selView;
 
     /**
      * Creates a new InspectorPanel for EditorPane.
      */
-    public InspectorPanel(EditorPane anEP)  { super(anEP); }
+    public InspectorPanel(EditorPane anEP)
+    {
+        super(anEP);
+    }
 
     /**
      * Initializes UI panel for the inspector.
@@ -100,7 +103,8 @@ public class InspectorPanel extends EditorPane.SupportPane {
     public void resetUI()
     {
         // Get editor (and just return if null) and tool for selected views
-        Editor editor = getEditor(); if (editor==null) return;
+        Editor editor = getEditor();
+        if (editor == null) return;
         Tool tool = editor.getToolForViews(editor.getSelOrSuperSelViews());
 
         // If ViewSpecificButton is selected, instal inspector for current selection
@@ -119,7 +123,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
         _titleLabel.setText(title);
 
         // If owner non-null, tell it to reset
-        if (owner!=null)
+        if (owner != null)
             owner.resetLater();
 
         // Reset the selection path view
@@ -159,7 +163,10 @@ public class InspectorPanel extends EditorPane.SupportPane {
     /**
      * Returns whether the inspector is visible.
      */
-    public boolean isVisible()  { return isUISet() && getUI().isShowing(); }
+    public boolean isVisible()
+    {
+        return isUISet() && getUI().isShowing();
+    }
 
     /**
      * Sets whether the inspector is visible.
@@ -177,13 +184,13 @@ public class InspectorPanel extends EditorPane.SupportPane {
     public void setVisible(int anIndex)
     {
         // If index 0, 1 or 3, set appropriate toggle button true
-        if (anIndex==0) setViewValue("SpecificButton", true);
-        if (anIndex==1) setViewValue("FillsButton", true);
-        if (anIndex==3) setViewValue("GeneralButton", true);
+        if (anIndex == 0) setViewValue("SpecificButton", true);
+        if (anIndex == 1) setViewValue("FillsButton", true);
+        if (anIndex == 3) setViewValue("GeneralButton", true);
 
         // If index is 6, show _undoInspector
-        if (anIndex==6) {
-            setInspector(_undoInspector!=null? _undoInspector : (_undoInspector = new UndoInspector(getEditorPane())));
+        if (anIndex == 6) {
+            setInspector(_undoInspector != null ? _undoInspector : (_undoInspector = new UndoInspector(getEditorPane())));
             _specificBtn.getToggleGroup().setSelected(null); //setViewValue("OffscreenButton", true);
         }
 
@@ -194,7 +201,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
         //}
 
         // If index is 9, show ViewTree Inspector
-        if (anIndex==9) {
+        if (anIndex == 9) {
             setInspector(_viewTree);
             _specificBtn.getToggleGroup().setSelected(null);
         }
@@ -207,7 +214,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         if (!isVisible()) return false;
         if (!ViewUtils.isMouseDrag()) return true;
-        return getInspector()== _placerInsp;
+        return getInspector() == _placerInsp;
     }
 
     /**
@@ -221,7 +228,10 @@ public class InspectorPanel extends EditorPane.SupportPane {
     /**
      * Returns the inspector (owner) of the inspector pane.
      */
-    protected ViewOwner getInspector()  { return _childInsp; }
+    protected ViewOwner getInspector()
+    {
+        return _childInsp;
+    }
 
     /**
      * Sets the inspector in the inspector pane.
@@ -248,7 +258,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
         // Get main editor, Selected/SuperSelected view and view that should be selected in selection path
         Editor editor = getEditor();
         SGView selView = editor.getSelOrSuperSelView();
-        SGView view = _deepView!=null && _deepView.isAncestor(selView)? _deepView : selView;
+        SGView view = _deepView != null && _deepView.isAncestor(selView) ? _deepView : selView;
 
         // If the selView has changed because of external forces, reset selectionPath to point to it
         if (selView != _selView)
@@ -259,33 +269,34 @@ public class InspectorPanel extends EditorPane.SupportPane {
         _selView = selView;
 
         // Remove current buttons
-        for (int i=_selPathView.getChildCount()-1; i>=0; i--) {
+        for (int i = _selPathView.getChildCount() - 1; i >= 0; i--) {
             View button = _selPathView.removeChild(i);
             if (button instanceof ToggleButton)
-                getToggleGroup("SelPathGroup").remove((ToggleButton)button);
+                getToggleGroup("SelPathGroup").remove((ToggleButton) button);
         }
 
         // Add buttons for DeepView and its ancestors
-        for (SGView vue = _deepView; vue!=null; vue=vue.getParent()) {
+        for (SGView vue = _deepView; vue != null; vue = vue.getParent()) {
 
             // Create new button and configure action
             ToggleButton button = new ToggleButton();
             button.setName("SelPath " + vue.getAncestorCount());
-            button.setPrefSize(40,40);
-            button.setMinSize(40,40);
+            button.setPrefSize(40, 40);
+            button.setMinSize(40, 40);
             button.setShowArea(false);
 
             // Set button images
             Image img = editor.getToolForView(vue).getImage();
             button.setImage(img);
             button.setToolTip(vue.getClass().getSimpleName());
-            if (vue==selView)
+            if (vue == selView)
                 button.setSelected(true);  // Whether selected
 
             // Add button to selection path panel and button group
-            _selPathView.addChild(button, 0); button.setOwner(this);
+            _selPathView.addChild(button, 0);
+            button.setOwner(this);
             getToggleGroup("SelPathGroup").add(button);
-            if (vue!= _deepView)
+            if (vue != _deepView)
                 _selPathView.addChild(new Sep(), 1);
         }
     }
@@ -296,7 +307,8 @@ public class InspectorPanel extends EditorPane.SupportPane {
     public void popSelection(int selIndex)
     {
         // Get main editor (just return if editor or deepest view is null)
-        Editor editor = getEditor(); if (editor==null || _deepView ==null) return;
+        Editor editor = getEditor();
+        if (editor == null || _deepView == null) return;
 
         // If user selected descendant of current selected view, select on down to it
         if (selIndex > editor.getSelOrSuperSelView().getAncestorCount()) {
@@ -312,7 +324,7 @@ public class InspectorPanel extends EditorPane.SupportPane {
             if (view.getParent().childrenSuperSelectImmediately())
                 editor.setSuperSelView(view);
 
-            // If view shouldn't superSelect, just select it
+                // If view shouldn't superSelect, just select it
             else editor.setSelView(view);
         }
 
@@ -345,11 +357,11 @@ public class InspectorPanel extends EditorPane.SupportPane {
     {
         // If Tool, just return title
         if (owner instanceof Tool)
-            return ((Tool)owner).getWindowTitle();
+            return ((Tool) owner).getWindowTitle();
 
             // If SupportPane
         else if (owner instanceof EditorPane.SupportPane) {
-            String title = ((EditorPane.SupportPane)owner).getWindowTitle();
+            String title = ((EditorPane.SupportPane) owner).getWindowTitle();
             String cname = tool.getViewClass().getSimpleName();
             String shpName = cname.replace("RM", "").replace("Shape", "");
             title += " (" + shpName + ')';
@@ -360,11 +372,26 @@ public class InspectorPanel extends EditorPane.SupportPane {
         return "Inspector";
     }
 
-    /** View to render SelectionPath separator. */
+    /**
+     * View to render SelectionPath separator.
+     */
     private static class Sep extends View {
-        protected double getPrefWidthImpl(double aH)  { return 5; }
-        protected double getPrefHeightImpl(double aW)  { return 40; }
-        protected void paintFront(Painter aPntr)  { aPntr.setColor(Color.DARKGRAY); aPntr.fill(_arrow); }
+        protected double getPrefWidthImpl(double aH)
+        {
+            return 5;
+        }
+
+        protected double getPrefHeightImpl(double aW)
+        {
+            return 40;
+        }
+
+        protected void paintFront(Painter aPntr)
+        {
+            aPntr.setColor(Color.DARKGRAY);
+            aPntr.fill(_arrow);
+        }
+
         static Polygon _arrow = new Polygon(0, 15, 5, 20, 0, 25);
     }
 }

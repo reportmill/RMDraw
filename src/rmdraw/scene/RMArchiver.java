@@ -3,6 +3,7 @@
  */
 package rmdraw.scene;
 import java.util.*;
+
 import snap.gfx.*;
 import snap.text.RichText;
 import snap.text.TextLineStyle;
@@ -15,12 +16,14 @@ import snap.web.WebURL;
 public class RMArchiver extends XMLArchiver {
 
     // The shared class map
-    private static Map <String, Class> _classMapRM;
+    private static Map<String, Class> _classMapRM;
 
     /**
      * Creates RMArchiver.
      */
-    public RMArchiver()  { }
+    public RMArchiver()
+    {
+    }
 
     /**
      * Returns a parent shape for source.
@@ -28,19 +31,19 @@ public class RMArchiver extends XMLArchiver {
     public SGDoc getDocFromSource(Object aSource)
     {
         // If source is a document, just return it
-        if (aSource instanceof SGDoc) return (SGDoc)aSource;
+        if (aSource instanceof SGDoc) return (SGDoc) aSource;
 
         // Get URL and/or bytes (complain if not found)
         WebURL url = WebURL.getURL(aSource);
-        byte bytes[] = url!=null? url.getBytes() : SnapUtils.getBytes(aSource);
-        if (bytes==null)
-            throw new RuntimeException("RMArchiver.getDoc: Cannot read source: " + (url!=null? url : aSource));
+        byte bytes[] = url != null ? url.getBytes() : SnapUtils.getBytes(aSource);
+        if (bytes == null)
+            throw new RuntimeException("RMArchiver.getDoc: Cannot read source: " + (url != null ? url : aSource));
 
         // If PDF, return PDF Doc
         //if(RMPDFData.canRead(bytes)) return RMPDFShape.getDocPDF(url!=null? url : bytes, aBaseDoc);
 
         // Read document from source
-        SGDoc doc = (SGDoc) readFromXMLSource(url!=null? url : bytes);
+        SGDoc doc = (SGDoc) readFromXMLSource(url != null ? url : bytes);
 
         // Set Source URL and return
         doc.setSourceURL(getSourceURL());
@@ -50,7 +53,7 @@ public class RMArchiver extends XMLArchiver {
     /**
      * Creates the class map.
      */
-    protected Map <String, Class> createClassMap()
+    protected Map<String, Class> createClassMap()
     {
         return getClassMapShared();
     }
@@ -58,10 +61,10 @@ public class RMArchiver extends XMLArchiver {
     /**
      * Creates the class map.
      */
-    public static Map <String, Class> getClassMapShared()
+    public static Map<String, Class> getClassMapShared()
     {
         // If already set, just return
-        if (_classMapRM!=null) return _classMapRM;
+        if (_classMapRM != null) return _classMapRM;
 
         // Create class map and add classes
         Map cmap = new HashMap();

@@ -6,6 +6,7 @@ import snap.gfx.*;
 import snap.styler.Styler;
 import snap.text.TextFormat;
 import snap.view.View;
+
 import java.util.List;
 
 /**
@@ -99,7 +100,7 @@ public class EditorStyler extends Styler {
      */
     public void setFill(Paint aPaint)
     {
-        for(ToolStyler styler : getSelOrSuperSelStylers())
+        for (ToolStyler styler : getSelOrSuperSelStylers())
             styler.setFill(aPaint);
     }
 
@@ -152,15 +153,15 @@ public class EditorStyler extends Styler {
     public Font getFont()
     {
         Font font = null;
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
+        for (int i = 0, iMax = getSelOrSuperSelShapeCount(); i < iMax && font == null; i++) {
             SGView shape = getSelOrSuperSelShape(i);
             font = getStyler(shape).getFont();
         }
-        for (int i=0, iMax=getSelOrSuperSelShapeCount(); i<iMax && font==null; i++) {
+        for (int i = 0, iMax = getSelOrSuperSelShapeCount(); i < iMax && font == null; i++) {
             SGView shape = getSelOrSuperSelShape(i);
             font = getStyler(shape).getFontDeep();
         }
-        return font!=null ? font : Font.getDefaultFont();
+        return font != null ? font : Font.getDefaultFont();
     }
 
     /**
@@ -260,8 +261,8 @@ public class EditorStyler extends Styler {
      */
     public void setTextBorder()
     {
-        if(getTextBorder()==null) {
-            setTextBorder(Border.createLineBorder(Color.BLACK,1));
+        if (getTextBorder() == null) {
+            setTextBorder(Border.createLineBorder(Color.BLACK, 1));
             setTextColor(Color.WHITE);
         }
         else {
@@ -378,7 +379,10 @@ public class EditorStyler extends Styler {
     /**
      * Returns the client View.
      */
-    public View getClientView()  { return _editor; }
+    public View getClientView()
+    {
+        return _editor;
+    }
 
     /**
      * Returns the currently selected shape or, if none, the super-selected shape.
@@ -396,29 +400,41 @@ public class EditorStyler extends Styler {
     {
         List<SGView> shapes = getSelOrSuperSelShapes();
         ToolStyler stylers[] = new ToolStyler[shapes.size()];
-        for (int i=0, iMax=shapes.size(); i<iMax; i++) stylers[i] = getStyler(shapes.get(i));
+        for (int i = 0, iMax = shapes.size(); i < iMax; i++) stylers[i] = getStyler(shapes.get(i));
         return stylers;
     }
 
     /**
      * Returns the currently selected shapes or, if none, the super-selected shape in a list.
      */
-    private List<SGView> getSelOrSuperSelShapes()  { return _editor.getSelOrSuperSelViews(); }
+    private List<SGView> getSelOrSuperSelShapes()
+    {
+        return _editor.getSelOrSuperSelViews();
+    }
 
     /**
      * Returns the number of currently selected shapes or simply 1, if a shape is super-selected.
      */
-    private int getSelOrSuperSelShapeCount()  { return _editor.getSelOrSuperSelViewCount(); }
+    private int getSelOrSuperSelShapeCount()
+    {
+        return _editor.getSelOrSuperSelViewCount();
+    }
 
     /**
      * Returns the currently selected shape at the given index, or the super-selected shape.
      */
-    private SGView getSelOrSuperSelShape(int anIndex)  { return _editor.getSelOrSuperSelView(anIndex); }
+    private SGView getSelOrSuperSelShape(int anIndex)
+    {
+        return _editor.getSelOrSuperSelView(anIndex);
+    }
 
     /**
      * Returns the specific tool for a given shape.
      */
-    private Tool getTool(SGView aShape)  { return _editor.getToolForView(aShape); }
+    private Tool getTool(SGView aShape)
+    {
+        return _editor.getToolForView(aShape);
+    }
 
     /**
      * Returns the currently selected shape or, if none, the super-selected shape.

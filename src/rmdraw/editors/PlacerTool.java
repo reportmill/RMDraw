@@ -3,6 +3,7 @@
  */
 package rmdraw.editors;
 import java.text.DecimalFormat;
+
 import snap.geom.Point;
 import snap.gfx.*;
 import snap.util.MathUtils;
@@ -14,18 +15,21 @@ import snap.view.*;
 public class PlacerTool extends ViewOwner {
 
     // The Placer
-    private Placer  _placer;
+    private Placer _placer;
 
     // The Autosizing Panel
-    private AutosizingPanel  _autosizingPanel;
+    private AutosizingPanel _autosizingPanel;
 
     // A formatter for bounds fields
-    private DecimalFormat  _fmt = new DecimalFormat("0.##");
-    
+    private DecimalFormat _fmt = new DecimalFormat("0.##");
+
     /**
      * Creates a new ShapePlacement pane.
      */
-    public PlacerTool(Placer aPlacer)  { _placer = aPlacer; }
+    public PlacerTool(Placer aPlacer)
+    {
+        _placer = aPlacer;
+    }
 
     /**
      * Initialize UI.
@@ -91,12 +95,12 @@ public class PlacerTool extends ViewOwner {
         setViewValue("SkewYText", skewY);
 
         // Update MinWText and MinHText
-        setViewValue("MinWText", placer.isMinWidthSet()? placer.getMinWidth() : "-");
-        setViewValue("MinHText", placer.isMinHeightSet()? placer.getMinHeight() : "-");
+        setViewValue("MinWText", placer.isMinWidthSet() ? placer.getMinWidth() : "-");
+        setViewValue("MinHText", placer.isMinHeightSet() ? placer.getMinHeight() : "-");
 
         // Update PrefWText and PrefHText
-        setViewValue("PrefWText", placer.isPrefWidthSet()? placer.getPrefWidth() : "-");
-        setViewValue("PrefHText", placer.isPrefHeightSet()? placer.getPrefHeight() : "-");
+        setViewValue("PrefWText", placer.isPrefWidthSet() ? placer.getPrefWidth() : "-");
+        setViewValue("PrefHText", placer.isPrefHeightSet() ? placer.getPrefHeight() : "-");
 
         // Disable if document or page
         getUI().setEnabled(placer.isEditable());
@@ -137,7 +141,7 @@ public class PlacerTool extends ViewOwner {
         if (anEvent.equals("WThumb") || anEvent.equals("WText")) {
             double value = anEvent.getFloatValue();
             value = getPointsFromUnits(value);
-            if (Math.abs(value)<.1) value = MathUtils.sign(value)*.1f;
+            if (Math.abs(value) < .1) value = MathUtils.sign(value) * .1f;
             placer.setWidth(value);
         }
 
@@ -145,7 +149,7 @@ public class PlacerTool extends ViewOwner {
         if (anEvent.equals("HThumb") || anEvent.equals("HText")) {
             double value = anEvent.getFloatValue();
             value = getPointsFromUnits(value);
-            if (Math.abs(value)<.1) value = MathUtils.sign(value)*.1f;
+            if (Math.abs(value) < .1) value = MathUtils.sign(value) * .1f;
             placer.setHeight(value);
         }
 
@@ -157,7 +161,7 @@ public class PlacerTool extends ViewOwner {
 
         // Handle ScaleX/ScaleY Thumb & Text
         if (anEvent.equals("ScaleXThumb") || anEvent.equals("ScaleXText") ||
-            anEvent.equals("ScaleYThumb") || anEvent.equals("ScaleYText")) {
+                anEvent.equals("ScaleYThumb") || anEvent.equals("ScaleYText")) {
             float value = anEvent.getFloatValue();
             boolean symmetrical = getViewBoolValue("ScaleSymetricCheckBox");
 
@@ -207,19 +211,25 @@ public class PlacerTool extends ViewOwner {
             placer.setAutosizing(_autosizingPanel.getAutosizing());
 
         // Handle ResetAutosizingButton
-        if(anEvent.equals("ResetAutosizingButton"))
+        if (anEvent.equals("ResetAutosizingButton"))
             placer.setAutosizing("--~,--~");
     }
 
     /**
      * Converts from shape units to tool units.
      */
-    public double getUnitsFromPoints(double aValue)  { return _placer.getUnitsFromPoints(aValue); }
+    public double getUnitsFromPoints(double aValue)
+    {
+        return _placer.getUnitsFromPoints(aValue);
+    }
 
     /**
      * Converts from tool units to shape units.
      */
-    public double getPointsFromUnits(double aValue)  { return _placer.getPointsFromUnits(aValue); }
+    public double getPointsFromUnits(double aValue)
+    {
+        return _placer.getPointsFromUnits(aValue);
+    }
 
     /**
      * Converts from shape units to tool units.
@@ -232,7 +242,10 @@ public class PlacerTool extends ViewOwner {
     /**
      * Returns the name to be used in the inspector's window title.
      */
-    public String getWindowTitle()  { return "Placement Inspector"; }
+    public String getWindowTitle()
+    {
+        return "Placement Inspector";
+    }
 
     /**
      * An inner class to provide a simple springs and struts control.
@@ -240,10 +253,10 @@ public class PlacerTool extends ViewOwner {
     public static class AutosizingPanel extends View {
 
         // Autosizing string
-        String    _autosizing = "-~~,-~~";
+        String _autosizing = "-~~,-~~";
 
         // Autosizing spring/strut images
-        Image      _images[];
+        Image _images[];
 
         // Constants for images
         public static final int BACKGROUND = 0;
@@ -256,27 +269,31 @@ public class PlacerTool extends ViewOwner {
         public static final int INNER_HORIZONTAL_STRUT = 7;
         public static final int INNER_VERTICAL_STRUT = 8;
 
-        /** Creates a new autosizing panel. */
+        /**
+         * Creates a new autosizing panel.
+         */
         public AutosizingPanel()
         {
             // Get image names
-            String imageNames[] = { "SpringsBack.png",
-                "SpringOuterX.png", "SpringOuterY.png",
-                "StrutOuterX.png", "StrutOuterY.png",
-                "SpringX.png", "SpringY.png",
-                "StrutX.png", "StrutY.png"
+            String imageNames[] = {"SpringsBack.png",
+                    "SpringOuterX.png", "SpringOuterY.png",
+                    "StrutOuterX.png", "StrutOuterY.png",
+                    "SpringX.png", "SpringY.png",
+                    "StrutX.png", "StrutY.png"
             };
 
             // Create images array and load images
             _images = new Image[imageNames.length];
-            for(int i=0; i<imageNames.length; ++i)
+            for (int i = 0; i < imageNames.length; ++i)
                 _images[i] = Image.get(getClass(), imageNames[i]);
 
             // Add mouse listener to send action
             enableEvents(MouseRelease, Action);
         }
 
-        /** ProcessEvent. */
+        /**
+         * ProcessEvent.
+         */
         protected void processEvent(ViewEvent anEvent)
         {
             if (!isEnabled() || !anEvent.isMouseEvent()) return;
@@ -284,14 +301,14 @@ public class PlacerTool extends ViewOwner {
             Point p = new Point(anEvent.getX(), anEvent.getY());
             double w = getWidth(), h = getHeight();
 
-            if (p.getDistance(w/8,h/2)<w/8) sb.setCharAt(0, sb.charAt(0)=='-'? '~' : '-');
-            else if (p.getDistance(w*3/8,h/2)<w/8) sb.setCharAt(1, sb.charAt(1)=='-'? '~' : '-');
-            else if (p.getDistance(w*5/8,h/2)<w/8) sb.setCharAt(1, sb.charAt(1)=='-'? '~' : '-');
-            else if (p.getDistance(w*7/8,h/2)<w/8) sb.setCharAt(2, sb.charAt(2)=='-'? '~' : '-');
-            else if (p.getDistance(w/2,h/8)<w/8) sb.setCharAt(4, sb.charAt(4)=='-'? '~' : '-');
-            else if (p.getDistance(w/2,h*3/8)<w/8) sb.setCharAt(5, sb.charAt(5)=='-'? '~' : '-');
-            else if (p.getDistance(w/2,h*5/8)<w/8) sb.setCharAt(5, sb.charAt(5)=='-'? '~' : '-');
-            else if (p.getDistance(w/2,h*7/8)<w/8) sb.setCharAt(6, sb.charAt(6)=='-'? '~' : '-');
+            if (p.getDistance(w / 8, h / 2) < w / 8) sb.setCharAt(0, sb.charAt(0) == '-' ? '~' : '-');
+            else if (p.getDistance(w * 3 / 8, h / 2) < w / 8) sb.setCharAt(1, sb.charAt(1) == '-' ? '~' : '-');
+            else if (p.getDistance(w * 5 / 8, h / 2) < w / 8) sb.setCharAt(1, sb.charAt(1) == '-' ? '~' : '-');
+            else if (p.getDistance(w * 7 / 8, h / 2) < w / 8) sb.setCharAt(2, sb.charAt(2) == '-' ? '~' : '-');
+            else if (p.getDistance(w / 2, h / 8) < w / 8) sb.setCharAt(4, sb.charAt(4) == '-' ? '~' : '-');
+            else if (p.getDistance(w / 2, h * 3 / 8) < w / 8) sb.setCharAt(5, sb.charAt(5) == '-' ? '~' : '-');
+            else if (p.getDistance(w / 2, h * 5 / 8) < w / 8) sb.setCharAt(5, sb.charAt(5) == '-' ? '~' : '-');
+            else if (p.getDistance(w / 2, h * 7 / 8) < w / 8) sb.setCharAt(6, sb.charAt(6) == '-' ? '~' : '-');
 
             // Set new autosizing string, send node event and repaint
             _autosizing = sb.toString();
@@ -299,34 +316,56 @@ public class PlacerTool extends ViewOwner {
             repaint();
         }
 
-        /** Returns autosizing string. */
-        public String getAutosizing() { return _autosizing; }
+        /**
+         * Returns autosizing string.
+         */
+        public String getAutosizing()
+        {
+            return _autosizing;
+        }
 
-        /** Sets autosizing string. */
-        public void setAutosizing(String aString) { _autosizing = aString; repaint(); }
+        /**
+         * Sets autosizing string.
+         */
+        public void setAutosizing(String aString)
+        {
+            _autosizing = aString;
+            repaint();
+        }
 
-        /** Paints view. */
+        /**
+         * Paints view.
+         */
         public void paintFront(Painter aPntr)
         {
             double w = getWidth(), h = getHeight();
-            aPntr.setColor(Color.WHITE); aPntr.fillRect(0, 0, w, h);
-            aPntr.setColor(Color.BLACK); aPntr.drawRect(0, 0, w, h);
+            aPntr.setColor(Color.WHITE);
+            aPntr.fillRect(0, 0, w, h);
+            aPntr.setColor(Color.BLACK);
+            aPntr.drawRect(0, 0, w, h);
             aPntr.drawImage(_images[BACKGROUND], 24, 24);
 
             // Draw horizontal springs (left, middle, right)
-            Image i1 = _images[_autosizing.charAt(0)=='-' ? OUTER_HORIZONTAL_STRUT : OUTER_HORIZONTAL_SPRING];
-            Image i2 = _images[_autosizing.charAt(1)=='-' ? INNER_HORIZONTAL_STRUT : INNER_HORIZONTAL_SPRING];
-            Image i3 = _images[_autosizing.charAt(2)=='-' ? OUTER_HORIZONTAL_STRUT : OUTER_HORIZONTAL_SPRING];
-            aPntr.drawImage(i1, 0, 41); aPntr.drawImage(i2, 25, 41); aPntr.drawImage(i3, 73, 41);
+            Image i1 = _images[_autosizing.charAt(0) == '-' ? OUTER_HORIZONTAL_STRUT : OUTER_HORIZONTAL_SPRING];
+            Image i2 = _images[_autosizing.charAt(1) == '-' ? INNER_HORIZONTAL_STRUT : INNER_HORIZONTAL_SPRING];
+            Image i3 = _images[_autosizing.charAt(2) == '-' ? OUTER_HORIZONTAL_STRUT : OUTER_HORIZONTAL_SPRING];
+            aPntr.drawImage(i1, 0, 41);
+            aPntr.drawImage(i2, 25, 41);
+            aPntr.drawImage(i3, 73, 41);
 
             // Draw vertical springs (top, middle, bottom)
-            Image i4 = _images[_autosizing.charAt(4)=='-' ? OUTER_VERTICAL_STRUT : OUTER_VERTICAL_SPRING];
-            Image i5 = _images[_autosizing.charAt(5)=='-' ? INNER_VERTICAL_STRUT : INNER_VERTICAL_SPRING];
-            Image i6 = _images[_autosizing.charAt(6)=='-' ? OUTER_VERTICAL_STRUT : OUTER_VERTICAL_SPRING];
-            aPntr.drawImage(i4, 41, 0); aPntr.drawImage(i5, 41, 25); aPntr.drawImage(i6, 41, 73);
+            Image i4 = _images[_autosizing.charAt(4) == '-' ? OUTER_VERTICAL_STRUT : OUTER_VERTICAL_SPRING];
+            Image i5 = _images[_autosizing.charAt(5) == '-' ? INNER_VERTICAL_STRUT : INNER_VERTICAL_SPRING];
+            Image i6 = _images[_autosizing.charAt(6) == '-' ? OUTER_VERTICAL_STRUT : OUTER_VERTICAL_SPRING];
+            aPntr.drawImage(i4, 41, 0);
+            aPntr.drawImage(i5, 41, 25);
+            aPntr.drawImage(i6, 41, 73);
 
             // If disabled then dim everything out
-            if(!isEnabled()) { aPntr.setColor(new Color(1d,.5)); aPntr.fillRect(0, 0, w, h); }
+            if (!isEnabled()) {
+                aPntr.setColor(new Color(1d, .5));
+                aPntr.fillRect(0, 0, w, h);
+            }
         }
     }
 }

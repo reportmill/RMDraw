@@ -41,7 +41,10 @@ public class EditorCopyPaster implements CopyPaster {
     /**
      * Returns the editor.
      */
-    public Editor getEditor()  { return _editor; }
+    public Editor getEditor()
+    {
+        return _editor;
+    }
 
     /**
      * Handles editor cut operation.
@@ -59,21 +62,21 @@ public class EditorCopyPaster implements CopyPaster {
     public void copy()
     {
         // If not text editing, add selected shapes (serialized) to pasteboard for DrawPboardType
-        if(!(_editor.getSelOrSuperSelView() instanceof SGDoc) &&
+        if (!(_editor.getSelOrSuperSelView() instanceof SGDoc) &&
                 !(_editor.getSelOrSuperSelView() instanceof SGPage)) {
 
             // Get System clipboard
             Clipboard cb = Clipboard.getCleared();
 
             // Get xml for selected views and add DRAW_XML to clipboard
-            List <SGView> views = _editor.getSelOrSuperSelViews();
+            List<SGView> views = _editor.getSelOrSuperSelViews();
             XMLElement xml = new RMArchiver().writeToXML(views);
             String xmlStr = xml.getString();
             cb.addData(DRAW_XML_FORMAT, xmlStr);
 
             // If only one view, add as image
-            SGView view = views.size()==1 ? _editor.getSelView() : null;
-            if (view!=null) {
+            SGView view = views.size() == 1 ? _editor.getSelView() : null;
+            if (view != null) {
                 Image image = SGViewUtils.createImage(view, null);
                 cb.addData(image);
             }
@@ -109,21 +112,21 @@ public class EditorCopyPaster implements CopyPaster {
         SGView pastedShape = null;
 
         // If PasteBoard has ReportMill Data, paste it
-        if(aCB.hasData(DRAW_XML_FORMAT)) {
+        if (aCB.hasData(DRAW_XML_FORMAT)) {
 
             // Unarchive shapes from clipboard bytes
             Object object = getShapesFromClipboard(aCB);
 
             // If data is list of previously copied shapes, add them
-            if(object instanceof List) {
-                List shapes = (List)object;
-                _editor.undoerSetUndoTitle("Paste Shape" + (shapes.size()>1? "s" : ""));
+            if (object instanceof List) {
+                List shapes = (List) object;
+                _editor.undoerSetUndoTitle("Paste Shape" + (shapes.size() > 1 ? "s" : ""));
                 addShapesToShape(shapes, aParent, true);
             }
 
             // If data is text, create text object and add it
-            else if(object instanceof RichText) {
-                SGText text = new SGText((RichText)object);
+            else if (object instanceof RichText) {
+                SGText text = new SGText((RichText) object);
                 double width = Math.min(text.getPrefWidth(), aParent.getWidth());
                 double height = Math.min(text.getPrefHeight(), aParent.getHeight());
                 text.setSize(width, height);
@@ -132,21 +135,22 @@ public class EditorCopyPaster implements CopyPaster {
             }
 
             // Promote _smartPastedShape to anchor and set new _smartPastedShape
-            if(_lastPasteShape!=null)
+            if (_lastPasteShape != null)
                 _lastCopyShape = _lastPasteShape;
             _lastPasteShape = _editor.getSelView(0);
 
         }
 
         // Paste Image
-        else if(aCB.hasImage()) {
+        else if (aCB.hasImage()) {
             ClipboardData idata = aCB.getImageData();
             byte bytes[] = idata.getBytes();
             pastedShape = new SGImage(bytes);
         }
 
         // last one - plain text
-        else if((pastedShape=getTransferText(aCB)) != null) { }
+        else if ((pastedShape = getTransferText(aCB)) != null) {
+        }
 
         // Might as well log unsupported paste types
         else {
@@ -155,16 +159,16 @@ public class EditorCopyPaster implements CopyPaster {
         }
 
         // Add pastedShape
-        if(pastedShape!=null) {
+        if (pastedShape != null) {
 
             // Set undo title
             _editor.undoerSetUndoTitle("Paste");
 
             // Resize/relocate shape (if point was provided, move pasted shape to that point)
             pastedShape.setBestSize();
-            if(aPoint!=null) {
+            if (aPoint != null) {
                 aPoint = _editor.convertToSceneView(aPoint.x, aPoint.y, aParent);
-                pastedShape.setXY(aPoint.getX() - pastedShape.getWidth()/2, aPoint.getY() - pastedShape.getHeight()/2);
+                pastedShape.setXY(aPoint.getX() - pastedShape.getWidth() / 2, aPoint.getY() - pastedShape.getHeight() / 2);
             }
 
             // Add pasted shape to parent
@@ -184,18 +188,18 @@ public class EditorCopyPaster implements CopyPaster {
     {
         // If document selected, select page
         SGView superSelShape = _editor.getSuperSelView();
-        if(superSelShape instanceof SGDoc) {
-            _editor.setSuperSelView(((SGDoc)superSelShape).getSelPage());
+        if (superSelShape instanceof SGDoc) {
+            _editor.setSuperSelView(((SGDoc) superSelShape).getSelPage());
             superSelShape = _editor.getSuperSelView();
         }
 
         // Otherwise, select all children
-        if(superSelShape.getChildCount()>0) {
+        if (superSelShape.getChildCount() > 0) {
 
             // Get list of all hittable children of super-selected shape
             List shapes = new ArrayList();
-            for(SGView shape : superSelShape.getChildren())
-                if(shape.isHittable())
+            for (SGView shape : superSelShape.getChildren())
+                if (shape.isHittable())
                     shapes.add(shape);
 
             // Select shapes
@@ -210,21 +214,24 @@ public class EditorCopyPaster implements CopyPaster {
     {
         // Get copy of selected shapes (just beep and return if no selected shapes)
         SGView shapes[] = _editor.getSelViews().toArray(new SGView[0]);
-        if (shapes.length==0) {
-            ViewUtils.beep(); return; }
+        if (shapes.length == 0) {
+            ViewUtils.beep();
+            return;
+        }
 
         // Get/superSelect parent of selected shapes
-        SGParent parent = _editor.getSelView().getParent(); if (parent==null) return;
+        SGParent parent = _editor.getSelView().getParent();
+        if (parent == null) return;
         _editor.setSuperSelView(parent);
 
         // Set undo title
-        _editor.undoerSetUndoTitle(_editor.getSelViewCount()>1? "Delete Shapes" : "Delete Shape");
+        _editor.undoerSetUndoTitle(_editor.getSelViewCount() > 1 ? "Delete Shapes" : "Delete Shape");
 
         // Remove all shapes from their parent
         for (SGView shape : shapes) {
             parent.removeChild(shape);
-            if (_lastPasteShape==shape) _lastPasteShape = null;
-            if (_lastCopyShape==shape) _lastCopyShape = null;
+            if (_lastPasteShape == shape) _lastPasteShape = null;
+            if (_lastCopyShape == shape) _lastCopyShape = null;
         }
     }
 
@@ -235,8 +242,8 @@ public class EditorCopyPaster implements CopyPaster {
     {
         Object shapes = getShapesFromClipboard(null);
         if (shapes instanceof List)
-            shapes = ListUtils.get((List)shapes, 0);
-        return shapes instanceof SGView ? (SGView)shapes : null;
+            shapes = ListUtils.get((List) shapes, 0);
+        return shapes instanceof SGView ? (SGView) shapes : null;
     }
 
     /**
@@ -245,10 +252,10 @@ public class EditorCopyPaster implements CopyPaster {
     private Object getShapesFromClipboard(Clipboard aCB)
     {
         // If no contents, use system clipboard
-        Clipboard cboard = aCB!=null? aCB : Clipboard.get();
+        Clipboard cboard = aCB != null ? aCB : Clipboard.get();
 
         // If no RMData, just return
-        if(!cboard.hasData(DRAW_XML_FORMAT))
+        if (!cboard.hasData(DRAW_XML_FORMAT))
             return null;
 
         // Get unarchived object from clipboard bytes
@@ -256,9 +263,10 @@ public class EditorCopyPaster implements CopyPaster {
         Object obj = new RMArchiver().readFromXMLBytes(bytes);
 
         // A bit of a hack - remove any non-shapes (plugins for one)
-        if(obj instanceof List) { List list = (List)obj;
-            for(int i=list.size()-1; i>=0; --i)
-                if(!(list.get(i) instanceof SGView))
+        if (obj instanceof List) {
+            List list = (List) obj;
+            for (int i = list.size() - 1; i >= 0; --i)
+                if (!(list.get(i) instanceof SGView))
                     list.remove(i);
         }
 
@@ -269,10 +277,10 @@ public class EditorCopyPaster implements CopyPaster {
     /**
      * Adds shapes as children to given shape.
      */
-    private void addShapesToShape(List <SGView> theShapes, SGParent aShape, boolean withCorrection)
+    private void addShapesToShape(List<SGView> theShapes, SGParent aShape, boolean withCorrection)
     {
         // If no shapes, just return
-        if(theShapes.size()==0) return;
+        if (theShapes.size() == 0) return;
 
         // Declare variables for dx, dy, dr
         double dx = 0, dy = 0, dr = 0;
@@ -281,13 +289,13 @@ public class EditorCopyPaster implements CopyPaster {
         if (withCorrection) {
 
             // If there is an last-copy-shape and new shapes will be it's peer, set offset
-            if (_lastCopyShape!=null && _lastCopyShape.getParent()==aShape) {
+            if (_lastCopyShape != null && _lastCopyShape.getParent() == aShape) {
 
-                if (_lastPasteShape!=null) {
+                if (_lastPasteShape != null) {
                     SGView firstShape = theShapes.get(0);
-                    dx = 2*_lastPasteShape.x() - _lastCopyShape.x() - firstShape.x();
-                    dy = 2*_lastPasteShape.y() - _lastCopyShape.y() - firstShape.y();
-                    dr = 2*_lastPasteShape.getRoll() - _lastCopyShape.getRoll() - firstShape.getRoll();
+                    dx = 2 * _lastPasteShape.x() - _lastCopyShape.x() - firstShape.x();
+                    dy = 2 * _lastPasteShape.y() - _lastCopyShape.y() - firstShape.y();
+                    dr = 2 * _lastPasteShape.getRoll() - _lastCopyShape.getRoll() - firstShape.getRoll();
                 }
 
                 else dx = dy = _editor.getDoc().getGridSpacing();
@@ -322,8 +330,8 @@ public class EditorCopyPaster implements CopyPaster {
      */
     private static SGView getTransferText(Clipboard aCB)
     {
-        if(!aCB.hasString()) return null;
+        if (!aCB.hasString()) return null;
         String str = aCB.getString();
-        return str!=null? new SGText(str) : null;
+        return str != null ? new SGText(str) : null;
     }
 }

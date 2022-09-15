@@ -1,10 +1,9 @@
 package rmdraw.app;
-
 import snap.view.ViewEvent;
 
 /**
  * Interface for anything that can handle standard drag/drop operations.
- *
+ * <p>
  * The full set of operations is dragEnter, dragOver, dragExit, dragDrop.
  */
 public interface DragDropper {
@@ -34,13 +33,22 @@ public interface DragDropper {
      */
     public static void dispatchDragEvent(DragDropper aDragDropper, ViewEvent anEvent)
     {
-        switch(anEvent.getType()) {
-            case DragEnter: aDragDropper.dragEnter(anEvent); break;
-            case DragOver: aDragDropper.dragOver(anEvent); break;
-            case DragExit: aDragDropper.dragExit(anEvent); break;
-            case DragDrop: aDragDropper.dragDrop(anEvent); break;
-            default: throw new RuntimeException("DragDropper.dispatchDragEvent: Unknown event type: " + anEvent.getType());
-            //case DragActionChanged: anEvent.acceptDrag(DnDConstants.ACTION_COPY);
+        switch (anEvent.getType()) {
+            case DragEnter:
+                aDragDropper.dragEnter(anEvent);
+                break;
+            case DragOver:
+                aDragDropper.dragOver(anEvent);
+                break;
+            case DragExit:
+                aDragDropper.dragExit(anEvent);
+                break;
+            case DragDrop:
+                aDragDropper.dragDrop(anEvent);
+                break;
+            default:
+                throw new RuntimeException("DragDropper.dispatchDragEvent: Unknown event type: " + anEvent.getType());
+                //case DragActionChanged: anEvent.acceptDrag(DnDConstants.ACTION_COPY);
         }
     }
 }

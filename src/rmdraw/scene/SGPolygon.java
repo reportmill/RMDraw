@@ -12,29 +12,42 @@ import snap.util.*;
  * This class is an SGView subclass that encapsulates an arbitrary path.
  */
 public class SGPolygon extends SGParent {
-    
+
     // The explicit path associated with this view
     protected Path _path;
-    
+
     /**
      * Creates SGPolygon.
      */
-    public SGPolygon() { }
+    public SGPolygon()
+    {
+    }
 
     /**
      * Creates a new polygon for given path.
      */
-    public SGPolygon(Shape aShape)  { this(); _path = new Path(aShape); }
+    public SGPolygon(Shape aShape)
+    {
+        this();
+        _path = new Path(aShape);
+    }
 
     /**
      * Returns the path for this polygon.
      */
-    public Path getPath()  { return _path.copyFor(getBoundsLocal()); }
+    public Path getPath()
+    {
+        return _path.copyFor(getBoundsLocal());
+    }
 
     /**
      * Sets the path for this polygon.
      */
-    public void setPath(Path aPath)  { _path = aPath; repaint(); }
+    public void setPath(Path aPath)
+    {
+        _path = aPath;
+        repaint();
+    }
 
     /**
      * Replace the polygon's current path with a new path, adjusting the view's bounds to match the new path.
@@ -50,7 +63,8 @@ public class SGPolygon extends SGParent {
         setSize(bounds.getWidth(), bounds.getHeight());
 
         // Transform to parent for new x & y
-        Rect boundsInParent = bounds.clone(); toParentXF.transformRect(boundsInParent);
+        Rect boundsInParent = bounds.clone();
+        toParentXF.transformRect(boundsInParent);
         setFrameXY(boundsInParent.getXY());
     }
 
@@ -59,7 +73,8 @@ public class SGPolygon extends SGParent {
      */
     protected XMLElement toXMLView(XMLArchiver anArchiver)
     {
-        XMLElement e = super.toXMLView(anArchiver); e.setName("polygon");
+        XMLElement e = super.toXMLView(anArchiver);
+        e.setName("polygon");
         e.add(_path.toXML(anArchiver));
         return e;
     }
@@ -79,7 +94,8 @@ public class SGPolygon extends SGParent {
      */
     public SGPolygon clone()
     {
-        SGPolygon clone = (SGPolygon)super.clone();
-        if (_path!=null) clone._path = _path.clone(); return clone;
+        SGPolygon clone = (SGPolygon) super.clone();
+        if (_path != null) clone._path = _path.clone();
+        return clone;
     }
 }

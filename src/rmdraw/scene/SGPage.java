@@ -12,7 +12,7 @@ import snap.util.*;
  * The Page class represents an individual page in Document. For the most part, it's like every other Scene view,
  * except that it has the ability to break children into "layers" for more convenient editing. Layers are sub-ranges of
  * children that can be set to be invisible or locked.
- *
+ * <p>
  * It's not common for developers to use much of page's unique functionality programmatically, however, you might use
  * it briefly when disecting a template like this:
  * <p><blockquote><pre>
@@ -32,26 +32,32 @@ import snap.util.*;
 public class SGPage extends SGParent {
 
     // The key chain used to get a list of objects from document's datasource
-    String              _datasetKey;
-    
+    String _datasetKey;
+
     // Whether to paint white background even if not explicitly defined and drop shadow
-    boolean             _paintBackground = true;
-    
+    boolean _paintBackground = true;
+
     // The selected layer index
-    int                 _layerIndex = 0;
+    int _layerIndex = 0;
 
     // The list of layers for this page
-    List <SGPageLayer>  _layers = new Vector();
-    
+    List<SGPageLayer> _layers = new Vector();
+
     /**
      * Creates a plain empty page.
      */
-    public SGPage()  { resetLayers(); }
+    public SGPage()
+    {
+        resetLayers();
+    }
 
     /**
      * Returns the dataset key associated with the table.
      */
-    public String getDatasetKey()  { return _datasetKey; }
+    public String getDatasetKey()
+    {
+        return _datasetKey;
+    }
 
     /**
      * Sets the dataset key associated with the table.
@@ -65,14 +71,17 @@ public class SGPage extends SGParent {
     /**
      * Returns whether to paint white background even if not explicitly defined and drop shadow.
      */
-    public boolean getPaintBackground()  { return _paintBackground; }
+    public boolean getPaintBackground()
+    {
+        return _paintBackground;
+    }
 
     /**
      * Sets whether to paint white background even if not explicitly defined and drop shadow.
      */
     public void setPaintBackground(boolean aValue)
     {
-        if (aValue==_paintBackground) return;
+        if (aValue == _paintBackground) return;
         repaint();
         firePropChange("PaintBackground", _paintBackground, _paintBackground = aValue);
     }
@@ -80,22 +89,34 @@ public class SGPage extends SGParent {
     /**
      * Returns the number of layers associated with this page.
      */
-    public int getLayerCount()  { return _layers==null? 0 : _layers.size(); }
+    public int getLayerCount()
+    {
+        return _layers == null ? 0 : _layers.size();
+    }
 
     /**
      * Returns the layer at the given index.
      */
-    public SGPageLayer getLayer(int anIndex)  { return _layers.get(anIndex); }
+    public SGPageLayer getLayer(int anIndex)
+    {
+        return _layers.get(anIndex);
+    }
 
     /**
      * Returns the list of page layers.
      */
-    public List <SGPageLayer> getLayers()  { return _layers; }
+    public List<SGPageLayer> getLayers()
+    {
+        return _layers;
+    }
 
     /**
      * Adds a layer to page.
      */
-    public void addLayer(SGPageLayer aLayer)  { addLayer(aLayer, getLayerCount()); }
+    public void addLayer(SGPageLayer aLayer)
+    {
+        addLayer(aLayer, getLayerCount());
+    }
 
     /**
      * Adds a layer to page.
@@ -106,7 +127,7 @@ public class SGPage extends SGParent {
         if (ListUtils.containsId(_layers, aLayer)) return;
 
         // If list is missing, create it
-        if (_layers==null) _layers = new Vector();
+        if (_layers == null) _layers = new Vector();
 
         // Register for repaint
         repaint();
@@ -119,8 +140,8 @@ public class SGPage extends SGParent {
 
         // Add children
         int index = aLayer.getPageChildIndex();
-        for (int i=0, iMax=aLayer.getChildCount(); i<iMax; i++)
-            super.addChild(aLayer.getChild(i), index+i);
+        for (int i = 0, iMax = aLayer.getChildCount(); i < iMax; i++)
+            super.addChild(aLayer.getChild(i), index + i);
     }
 
     /**
@@ -129,7 +150,7 @@ public class SGPage extends SGParent {
     public SGPageLayer removeLayer(int anIndex)
     {
         // If last layer, bail (shouldn't need this)
-        if (getLayerCount()<2) return null;
+        if (getLayerCount() < 2) return null;
 
         // Request repaint
         repaint();
@@ -157,7 +178,7 @@ public class SGPage extends SGParent {
     public int removeLayer(SGPageLayer aLayer)
     {
         int index = ListUtils.indexOfId(_layers, aLayer);
-        if (index>=0)
+        if (index >= 0)
             removeLayer(index);
         return index;
     }
@@ -179,9 +200,9 @@ public class SGPage extends SGParent {
      */
     public SGPageLayer getChildLayer(SGView aChild)
     {
-        if (getLayers()!=null)
+        if (getLayers() != null)
             for (SGPageLayer layer : getLayers())
-                if (layer.getChildIndex(aChild)>=0)
+                if (layer.getChildIndex(aChild) >= 0)
                     return layer;
         return null;
     }
@@ -189,12 +210,18 @@ public class SGPage extends SGParent {
     /**
      * Returns the index of the selected layer.
      */
-    public int getSelLayerIndex()  { return _layerIndex; }
+    public int getSelLayerIndex()
+    {
+        return _layerIndex;
+    }
 
     /**
      * Returns the selected layer.
      */
-    public SGPageLayer getSelLayer()  { return _layerIndex<getLayerCount()? getLayer(_layerIndex) : null; }
+    public SGPageLayer getSelLayer()
+    {
+        return _layerIndex < getLayerCount() ? getLayer(_layerIndex) : null;
+    }
 
     /**
      * Selects the given layer.
@@ -235,7 +262,7 @@ public class SGPage extends SGParent {
         super.addChild(aChild, anIndex);
 
         // If there is a selected layer, add child to layer and reorder children
-        if (getChildLayer(aChild)==null && getSelLayer()!=null) {
+        if (getChildLayer(aChild) == null && getSelLayer() != null) {
             getSelLayer().addChild(aChild, Math.min(anIndex, getSelLayer().getChildCount()));
             orderChildrenFromLayers();
         }
@@ -251,7 +278,7 @@ public class SGPage extends SGParent {
 
         // Get child layer and remove child from it
         SGPageLayer layer = getChildLayer(child);
-        if (layer!=null)
+        if (layer != null)
             layer.removeChild(child);
 
         // Return child
@@ -267,7 +294,7 @@ public class SGPage extends SGParent {
         repaint();
 
         // Have layers bring shapes to front
-        for (int i=0; i<getLayerCount(); i++)
+        for (int i = 0; i < getLayerCount(); i++)
             getLayer(i).bringShapesToFront(theViews);
 
         // Re-order page children from layers
@@ -283,7 +310,7 @@ public class SGPage extends SGParent {
         repaint();
 
         // Have layers send shapes to back
-        for (int i=0; i<getLayerCount(); i++)
+        for (int i = 0; i < getLayerCount(); i++)
             getLayer(i).sendShapesToBack(theViews);
 
         // Re-order page children from layers
@@ -317,7 +344,7 @@ public class SGPage extends SGParent {
     private void orderChildrenFromLayers()
     {
         // If children or layers is null, just return
-        if (getChildCount()<2 || getLayerCount()==0)
+        if (getChildCount() < 2 || getLayerCount() == 0)
             return;
 
         // Request repaint
@@ -327,7 +354,7 @@ public class SGPage extends SGParent {
         _children.clear();
 
         // Load children from layers
-        for (int i=0, iMax=getLayerCount(); i<iMax; i++)
+        for (int i = 0, iMax = getLayerCount(); i < iMax; i++)
             _children.addAll(getLayer(i).getChildren());
     }
 
@@ -337,13 +364,13 @@ public class SGPage extends SGParent {
     protected boolean isShowing(SGView aChild)
     {
         // If no separate layers, just return whether child is visible
-        if (getLayerCount()<2 || !aChild.isVisible())
+        if (getLayerCount() < 2 || !aChild.isVisible())
             return aChild.isVisible();
 
         // Iterate over layers and if layer contains child, return whether layer is visible
         for (SGPageLayer layer : getLayers())
             if (ListUtils.contains(layer.getChildren(), aChild))
-                return layer.isVisible() || layer== getSelLayer();
+                return layer.isVisible() || layer == getSelLayer();
 
         // Return true since layer not found (shouldn't ever get here)
         return true;
@@ -355,13 +382,13 @@ public class SGPage extends SGParent {
     public boolean isHittable(SGView aChild)
     {
         // If no separate layers, just return whether child is visible
-        if (getLayerCount()<2 || !aChild.isVisible())
+        if (getLayerCount() < 2 || !aChild.isVisible())
             return aChild.isVisible();
 
         // Iterate over layers and if layer contains child, return whether layer is not locked and visible
         for (SGPageLayer layer : getLayers())
             if (ListUtils.contains(layer.getChildren(), aChild))
-                return !layer.isLocked() && (layer.isVisible() || layer== getSelLayer());
+                return !layer.isLocked() && (layer.isVisible() || layer == getSelLayer());
 
         // Return false since layer not found (shouldn't ever get here)
         return false;
@@ -370,7 +397,10 @@ public class SGPage extends SGParent {
     /**
      * Overrides shape implementation to return this page, since it is the page shape.
      */
-    public SGParent getPage()  { return this; }
+    public SGParent getPage()
+    {
+        return this;
+    }
 
 
     /**
@@ -378,14 +408,17 @@ public class SGPage extends SGParent {
      */
     public int page()
     {
-        if (getDoc()==null) return 0;
+        if (getDoc() == null) return 0;
         return ListUtils.indexOfId(getDoc().getPages(), this) + 1;
     }
 
     /**
      * Returns the "PageMax" of the document associated with this page (used to resolve @PageMax@ key references).
      */
-    public int pageMax()  { return getDoc()==null ? 0 : getDoc().getPageCount(); }
+    public int pageMax()
+    {
+        return getDoc() == null ? 0 : getDoc().getPageCount();
+    }
 
     /**
      * Top-level generic shape painting (sets transform, recurses to children, paints this).
@@ -393,7 +426,10 @@ public class SGPage extends SGParent {
     protected void paintView(Painter aPntr)
     {
         // If printing, do normal shape painting and return
-        if (aPntr.isPrinting()) { super.paintView(aPntr); return; }
+        if (aPntr.isPrinting()) {
+            super.paintView(aPntr);
+            return;
+        }
 
         // Get page bounds, clip bounds and intersection of those
         Rect bounds = getBoundsLocal();
@@ -401,13 +437,13 @@ public class SGPage extends SGParent {
         Rect drawBounds = bounds.getIntersectRect(clipBounds);
 
         // If clip extends outside page bounds, draw page drop-shadow
-        if (getPaintBackground() && (clipBounds.getMaxX()>getWidth() || clipBounds.getMaxY()>getHeight())) {
+        if (getPaintBackground() && (clipBounds.getMaxX() > getWidth() || clipBounds.getMaxY() > getHeight())) {
             aPntr.setColor(Color.DARKGRAY);
             aPntr.fillRect(3, 3, getWidth(), getHeight());
         }
 
         // If no explicit page fill, draw page background white
-        if (getPaintBackground() && getFill()==null) {
+        if (getPaintBackground() && getFill() == null) {
             aPntr.setColor(Color.WHITE);
             aPntr.fill(drawBounds);
         }
@@ -419,9 +455,10 @@ public class SGPage extends SGParent {
         aPntr.setAntialiasing(false);
 
         // If no explicit page stroke, draw page border fill (1 point black by default)
-        if (getPaintBackground() && getBorder()==null) {
-            aPntr.setStroke(Stroke.Stroke1); aPntr.setColor(Color.GRAY);
-            aPntr.drawRect(.5, .5, getWidth()-1, getHeight()-1);
+        if (getPaintBackground() && getBorder() == null) {
+            aPntr.setStroke(Stroke.Stroke1);
+            aPntr.setColor(Color.GRAY);
+            aPntr.drawRect(.5, .5, getWidth() - 1, getHeight() - 1);
         }
 
         // Draw grid if needed
@@ -431,20 +468,20 @@ public class SGPage extends SGParent {
             double gs = getDoc().getGridSpacing();
 
             // Set color to grid color
-            aPntr.setColor(new Color(13/15f)); // gridColor = new Color(13/15f, 13/15f, 13/15f)
+            aPntr.setColor(new Color(13 / 15f)); // gridColor = new Color(13/15f, 13/15f, 13/15f)
 
             // Draw vertical lines
-            for(double x=MathUtils.ceil(drawBounds.getX()-.001,gs); x<drawBounds.getMaxX(); x+=gs)
-                aPntr.drawLine((int)x, (int)drawBounds.getY(), (int)x, (int)drawBounds.getMaxY()-1);
+            for (double x = MathUtils.ceil(drawBounds.getX() - .001, gs); x < drawBounds.getMaxX(); x += gs)
+                aPntr.drawLine((int) x, (int) drawBounds.getY(), (int) x, (int) drawBounds.getMaxY() - 1);
 
             // Draw horizontal lines
-            for(double y=MathUtils.ceil(drawBounds.getY()-.001, gs); y<drawBounds.getMaxY(); y+=gs)
-                aPntr.drawLine((int)drawBounds.getX(), (int)y, (int)drawBounds.getMaxX()-1, (int)y);
+            for (double y = MathUtils.ceil(drawBounds.getY() - .001, gs); y < drawBounds.getMaxY(); y += gs)
+                aPntr.drawLine((int) drawBounds.getX(), (int) y, (int) drawBounds.getMaxX() - 1, (int) y);
         }
 
         // If Draw Margin is requested and editing, draw margin
         if (getDoc().isShowMargin() && SceneGraph.isEditing(this)) {
-            aPntr.setColor(new Color(9/15f)); // marginColor = new Color(9/15f, 9/15f, 9/15f)
+            aPntr.setColor(new Color(9 / 15f)); // marginColor = new Color(9/15f, 9/15f, 9/15f)
             aPntr.draw(getDoc().getMarginRect());
         }
 
@@ -457,9 +494,11 @@ public class SGPage extends SGParent {
      */
     protected void paintChildren(Painter aPntr)
     {
-        for (int i=0, iMax=getChildCount(); i<iMax; i++) { SGView child = getChild(i);
+        for (int i = 0, iMax = getChildCount(); i < iMax; i++) {
+            SGView child = getChild(i);
             if (child.isVisible() && isShowing(child))
-                child.paint(aPntr); }
+                child.paint(aPntr);
+        }
     }
 
     /**
@@ -467,8 +506,9 @@ public class SGPage extends SGParent {
      */
     public SGPage clone()
     {
-        SGPage clone = (SGPage)super.clone(); // Do normal shape clone
-        clone._layerIndex = 0; clone._layers = null; // Clear LayerIndex and Layers
+        SGPage clone = (SGPage) super.clone(); // Do normal shape clone
+        clone._layerIndex = 0;
+        clone._layers = null; // Clear LayerIndex and Layers
         return clone;
     }
 
@@ -478,10 +518,11 @@ public class SGPage extends SGParent {
     protected XMLElement toXMLView(XMLArchiver anArchiver)
     {
         // Archive basic shape attributes and reset name
-        XMLElement e = super.toXMLView(anArchiver); e.setName("page");
+        XMLElement e = super.toXMLView(anArchiver);
+        e.setName("page");
 
         // Archive DatasetKey, PaintBackground, ClipChildren
-        if (getDatasetKey()!=null && getDatasetKey().length()>0) e.add("dataset-key", getDatasetKey());
+        if (getDatasetKey() != null && getDatasetKey().length() > 0) e.add("dataset-key", getDatasetKey());
         if (!getPaintBackground()) e.add("paint-background", false);
 
         // Return xml element
@@ -494,22 +535,23 @@ public class SGPage extends SGParent {
     protected void toXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
     {
         // If no layers, archive page as normal shape
-        if (getLayerCount()<2)
+        if (getLayerCount() < 2)
             super.toXMLChildren(anArchiver, anElement);
 
-        // Otherwise, iterate over layers and archive
-        else for (int i=0, iMax=getLayerCount(); i<iMax; i++) { SGPageLayer layer = getLayer(i);
+            // Otherwise, iterate over layers and archive
+        else for (int i = 0, iMax = getLayerCount(); i < iMax; i++) {
+            SGPageLayer layer = getLayer(i);
 
             // Create layer xml element
             XMLElement layerXML = new XMLElement("layer");
 
             // Archive Layer Name, Visible, Locked
-            if (layer.getName()!=null && layer.getName().length()>0) layerXML.add("name", layer.getName());
+            if (layer.getName() != null && layer.getName().length() > 0) layerXML.add("name", layer.getName());
             if (!layer.isVisible()) layerXML.add("visible", false);
             //if(layer.isLocked()) layerXML.add("locked", true);
 
             // Archive children and add to layerElm
-            for (int j=0, jMax=layer.getChildCount(); j<jMax; j++)
+            for (int j = 0, jMax = layer.getChildCount(); j < jMax; j++)
                 layerXML.add(layer.getChild(j).toXML(anArchiver));
 
             // Add layer xml to page element
@@ -539,17 +581,17 @@ public class SGPage extends SGParent {
     protected void fromXMLChildren(XMLArchiver anArchiver, XMLElement anElement)
     {
         // If no layers, unarchive children normally
-        if (anElement.get("layer")==null)
+        if (anElement.get("layer") == null)
             super.fromXMLChildren(anArchiver, anElement);
 
-        // Unarchive layers if present
+            // Unarchive layers if present
         else {
 
             // Clear layer list
             _layers.clear();
 
             // Iterate over layer elements, unarchiving layers
-            for (int i=anElement.indexOf("layer"); i>=0; i=anElement.indexOf("layer", i+1)) {
+            for (int i = anElement.indexOf("layer"); i >= 0; i = anElement.indexOf("layer", i + 1)) {
 
                 // Get layer xml element and create layer
                 XMLElement layerXML = anElement.get(i);
@@ -567,9 +609,19 @@ public class SGPage extends SGParent {
         }
     }
 
-    /** Editor method - indicates that page supports added children. */
-    public boolean acceptsChildren()  { return true; }
+    /**
+     * Editor method - indicates that page supports added children.
+     */
+    public boolean acceptsChildren()
+    {
+        return true;
+    }
 
-    /** Editor method - indicates that pages can be super-selected. */
-    public boolean superSelectable()  { return true; }
+    /**
+     * Editor method - indicates that pages can be super-selected.
+     */
+    public boolean superSelectable()
+    {
+        return true;
+    }
 }

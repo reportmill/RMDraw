@@ -13,11 +13,17 @@ public class SGParentTool<T extends SGParent> extends Tool<T> {
     /**
      * Override to return view class.
      */
-    public Class<T> getViewClass()  { return (Class<T>) SGParent.class; }
+    public Class<T> getViewClass()
+    {
+        return (Class<T>) SGParent.class;
+    }
 
     /**
      * Returns the string to be used for the inspector window title.
      */
-    public String getWindowTitle()  { return "Group Inspector"; }
+    public String getWindowTitle()
+    {
+        return "Group Inspector";
+    }
 
 }

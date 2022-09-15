@@ -15,9 +15,9 @@ import java.util.List;
  * Handles editor methods specific to drag and drop operations.
  */
 public class EditorDragDropper implements DragDropper {
-    
+
     // The editor that this class is working for
-    private Editor  _editor;
+    private Editor _editor;
 
     // A view to be drawn if set to drag-over view during drag and drop
     private Shape _dragShape;
@@ -28,17 +28,26 @@ public class EditorDragDropper implements DragDropper {
     /**
      * Creates a new editor drop target listener.
      */
-    public EditorDragDropper(Editor anEditor)  { _editor = anEditor; }
+    public EditorDragDropper(Editor anEditor)
+    {
+        _editor = anEditor;
+    }
 
     /**
      * Returns the editor.
      */
-    public Editor getEditor()  { return _editor; }
+    public Editor getEditor()
+    {
+        return _editor;
+    }
 
     /**
      * The shape of view that drag/drop is currently over.
      */
-    public Shape getDragShape()  { return _dragShape; }
+    public Shape getDragShape()
+    {
+        return _dragShape;
+    }
 
     /**
      * Implemented by views that can handle drag & drop.
@@ -88,7 +97,7 @@ public class EditorDragDropper implements DragDropper {
 
         // Get view at drag point (or the page, if none there)
         SGView overView = _editor.getViewAtPoint(anEvent.getPoint(), true);
-        if (overView==null)
+        if (overView == null)
             overView = _editor.getSelPage();
 
         // Go up chain until we find a view that accepts drag
@@ -96,10 +105,10 @@ public class EditorDragDropper implements DragDropper {
             overView = overView.getParent();
 
         // If new overView, do drag exit/enter and reset border
-        if (overView!= _lastOverView) {
+        if (overView != _lastOverView) {
 
             // Send drag exit
-            if(_lastOverView !=null)
+            if (_lastOverView != null)
                 getTool(_lastOverView).dragExit(_lastOverView, anEvent);
 
             // Send drag enter
@@ -115,7 +124,7 @@ public class EditorDragDropper implements DragDropper {
         }
 
         // If same OverView, send dragOver
-        else if (overView!=null)
+        else if (overView != null)
             getTool(overView).dragOver(overView, anEvent);
     }
 
@@ -163,11 +172,11 @@ public class EditorDragDropper implements DragDropper {
         if (cb.hasString())
             dropStringForView(aView, anEvent);
 
-        // Handle color panel drop
+            // Handle color panel drop
         else if (cb.hasColor())
             dropColorForView(aView, anEvent);
 
-        // Handle File drop - get list of dropped files and add individually
+            // Handle File drop - get list of dropped files and add individually
         else if (cb.hasFiles())
             dropFilesForView(aView, anEvent);
     }
@@ -177,10 +186,9 @@ public class EditorDragDropper implements DragDropper {
      */
     public void dropStringForView(SGView aView, ViewEvent anEvent)
     {
-        if (aView instanceof SGParent)
-        {
+        if (aView instanceof SGParent) {
             Editor editor = getEditor();
-            SGParent par = (SGParent)aView;
+            SGParent par = (SGParent) aView;
             Clipboard cb = anEvent.getClipboard(); //Transferable transferable = anEvent.getTransferable();
             editor.undoerSetUndoTitle("Drag and Drop Key");
             editor.getCopyPasterDefault().paste(cb, par, anEvent.getPoint());
@@ -203,7 +211,7 @@ public class EditorDragDropper implements DragDropper {
     public void dropFilesForView(SGView aView, ViewEvent anEvent)
     {
         List<ClipboardData> filesList = anEvent.getClipboard().getFiles();
-        for(ClipboardData file : filesList)
+        for (ClipboardData file : filesList)
             dropFileForView(aView, file, anEvent.getPoint());
     }
 
@@ -219,23 +227,25 @@ public class EditorDragDropper implements DragDropper {
         }
 
         // Get path and extension (set to empty string if null)
-        String ext = aFile.getExtension(); if(ext==null) return aPoint;
+        String ext = aFile.getExtension();
+        if (ext == null) return aPoint;
         ext = ext.toLowerCase();
 
         // If xml file, pass it to setDataSource()
         if (ext.equals("xml"))
             dropXMLFile(aFile, aPoint);
 
-        // If image file, add image view
+            // If image file, add image view
         else if (Image.canRead(ext))
             dropImageFile(aView, aFile, aPoint);
 
-        // If PDF file, add image view
+            // If PDF file, add image view
         else if (ext.equals("pdf"))
             dropPDFFile(aView, aFile, aPoint);
 
         // Return point offset by 10
-        aPoint.offset(10, 10); return aPoint;
+        aPoint.offset(10, 10);
+        return aPoint;
     }
 
     /**
@@ -252,55 +262,59 @@ public class EditorDragDropper implements DragDropper {
     private void dropImageFile(SGView aView, ClipboardData aFile, Point aPoint)
     {
         // Get image source
-        Object imgSrc = aFile.getSourceURL()!=null? aFile.getSourceURL() : aFile.getBytes();
+        Object imgSrc = aFile.getSourceURL() != null ? aFile.getSourceURL() : aFile.getBytes();
 
         // If image hit a real view, see if user wants it to be a texture
         Editor editor = getEditor();
-        if (aView!=editor.getSelPage()) {
+        if (aView != editor.getSelPage()) {
 
             // Create drop image file options array
-            String options[] = { "Image View", "Texture", "Cancel" };
+            String options[] = {"Image View", "Texture", "Cancel"};
 
             // Run drop image file options panel
             String msg = "Image can be either image view or texture", title = "Image import";
-            DialogBox dbox = new DialogBox(title); dbox.setQuestionMessage(msg); dbox.setOptions(options);
+            DialogBox dbox = new DialogBox(title);
+            dbox.setQuestionMessage(msg);
+            dbox.setOptions(options);
             switch (dbox.showOptionDialog(null, options[0])) {
 
                 // Handle Create Image view
                 case 0:
-                    while(!getTool(aView).getAcceptsChildren(aView))
+                    while (!getTool(aView).getAcceptsChildren(aView))
                         aView = aView.getParent();
                     break;
 
                 // Handle Create Texture
                 case 1: {
                     Image img = Image.get(imgSrc);
-                    ImagePaint imgFill = img!=null ? new ImagePaint(img) : null;
+                    ImagePaint imgFill = img != null ? new ImagePaint(img) : null;
                     aView.setFill(imgFill);
                 }
 
-                    // Handle Cancel
-                case 2: return;
+                // Handle Cancel
+                case 2:
+                    return;
             }
         }
 
         // Get parent to add image view to and drop point in parent coords
-        SGParent parent = aView instanceof SGParent ? (SGParent)aView : aView.getParent();
+        SGParent parent = aView instanceof SGParent ? (SGParent) aView : aView.getParent();
         Point point = editor.convertToSceneView(aPoint.x, aPoint.y, parent);
 
         // Create new image view
         SGImage imgView = new SGImage(imgSrc);
 
         // If image is bigger than hit view, shrink down
-        if (imgView.getWidth()>parent.getWidth() || imgView.getHeight()>parent.getHeight()) {
+        if (imgView.getWidth() > parent.getWidth() || imgView.getHeight() > parent.getHeight()) {
             double w = imgView.getWidth(), h = imgView.getHeight();
-            double w2 = w>h? 320 : 320/h*w, h2 = h>w? 320 : 320/w*h;
+            double w2 = w > h ? 320 : 320 / h * w, h2 = h > w ? 320 : 320 / w * h;
             imgView.setSize(w2, h2);
         }
 
         // Set bounds centered around point (or centered on page if image covers 75% of page or more)
-        imgView.setXY(point.x - imgView.getWidth()/2, point.y - imgView.getHeight()/2);
-        if(imgView.getWidth()/editor.getWidth()>.75f || imgView.getHeight()/editor.getHeight()>.75) imgView.setXY(0, 0);
+        imgView.setXY(point.x - imgView.getWidth() / 2, point.y - imgView.getHeight() / 2);
+        if (imgView.getWidth() / editor.getWidth() > .75f || imgView.getHeight() / editor.getHeight() > .75)
+            imgView.setXY(0, 0);
 
         // Add imageView with undo
         editor.undoerSetUndoTitle("Add Image");
@@ -324,7 +338,8 @@ public class EditorDragDropper implements DragDropper {
         double dw = img.getWidth() - imgView.getWidth();
         double dh = img.getHeight() - imgView.getHeight();
         Rect bnds = imgView.getBounds();
-        bnds.inset(-dw/2, -dh/2); bnds.snap();
+        bnds.inset(-dw / 2, -dh / 2);
+        bnds.snap();
         imgView.setBounds(bnds);
     }
 
@@ -339,6 +354,9 @@ public class EditorDragDropper implements DragDropper {
     /**
      * Helper.
      */
-    private Tool getTool(SGView aView)  { return _editor.getToolForView(aView); }
+    private Tool getTool(SGView aView)
+    {
+        return _editor.getToolForView(aView);
+    }
 
 }

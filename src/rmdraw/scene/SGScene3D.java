@@ -3,6 +3,7 @@
  */
 package rmdraw.scene;
 import java.util.*;
+
 import snap.geom.Path;
 import snap.geom.Rect;
 import snap.gfx.*;
@@ -29,7 +30,7 @@ public class SGScene3D extends SGParent {
     private List<SGView> _rmshapes = new ArrayList<>();
 
     // MouseHandler
-    private MouseHandler  _mouseHandler;
+    private MouseHandler _mouseHandler;
 
     // Constants for properties
     public static final String Depth_Prop = "Depth";

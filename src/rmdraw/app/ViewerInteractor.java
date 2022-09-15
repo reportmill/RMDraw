@@ -3,6 +3,7 @@
  */
 package rmdraw.app;
 import rmdraw.scene.*;
+
 import java.util.*;
 
 import snap.geom.Ellipse;
@@ -22,38 +23,38 @@ import snap.view.*;
 public class ViewerInteractor {
 
     // The viewer
-    private Viewer  _viewer;
-    
+    private Viewer _viewer;
+
     // The mode
-    private int  _mode = 1;
-    
+    private int _mode = 1;
+
     // The last shape that was hit by a mouse press (PLAYER)
-    private SGView  _shapePressed;
-    
+    private SGView _shapePressed;
+
     // The stack of shapes under the mouse for mouse moves (PLAYER)
-    private Stack  _shapeUnderStack = new Stack();
-    
+    private Stack _shapeUnderStack = new Stack();
+
     // The stack of cursors (one for each shape in shape stack) for mouse moves (PLAYER)
-    private Stack <Cursor>  _shapeUnderCursorStack = new Stack();
+    private Stack<Cursor> _shapeUnderCursorStack = new Stack();
 
     // The list of text shapes selected (SELECT_TEXT)
-    private List <SGText>  _selTexts = new ArrayList();
-    
+    private List<SGText> _selTexts = new ArrayList();
+
     // The down point for the last mouse loop (SELECT_TEXT/SELECT_IMAGE)
-    private Point  _downPoint;
+    private Point _downPoint;
 
     // The drag point for the last mouse loop (SELECT_TEXT/SELECT_IMAGE)
-    private Point  _dragPoint;
+    private Point _dragPoint;
 
     // The paint area (SELECT_TEXT)
-    private Shape  _paintArea = new Rect();
-    
+    private Shape _paintArea = new Rect();
+
     // The selection rect (SELECT_IMAGE)
-    private Rect  _rect = new Rect();
-    
+    private Rect _rect = new Rect();
+
     // The selected sides (a mask of sides) (SELECT_IMAGE)
-    private int  _selSides;
-    
+    private int _selSides;
+
     // Constants for mode
     public static final int NONE = 0;
     public static final int DEFAULT = 1;
@@ -62,24 +63,34 @@ public class ViewerInteractor {
 
     // DivdeRect constants
     public static final byte MinXEdge = 1;
-    public static final byte MinYEdge = 1<<1;
-    public static final byte MaxXEdge = 1<<2;
-    public static final byte MaxYEdge = 1<<3;
+    public static final byte MinYEdge = 1 << 1;
+    public static final byte MaxXEdge = 1 << 2;
+    public static final byte MaxYEdge = 1 << 3;
 
     /**
      * Creates ViewerInteractor.
      */
-    public ViewerInteractor(Viewer aViewer)  { _viewer = aViewer; }
+    public ViewerInteractor(Viewer aViewer)
+    {
+        _viewer = aViewer;
+    }
 
     /**
      * Returns the viewer we work for.
      */
-    public Viewer getViewer()  { return _viewer; }
+    public Viewer getViewer()
+    {
+        return _viewer;
+    }
 
     /**
      * Sets the mode.
      */
-    public void setMode(int aMode)  { _mode = aMode; getViewer().repaint(); }
+    public void setMode(int aMode)
+    {
+        _mode = aMode;
+        getViewer().repaint();
+    }
 
     /**
      * Handle mouse events.
@@ -87,10 +98,17 @@ public class ViewerInteractor {
     protected void processEvent(ViewEvent anEvent)
     {
         switch (_mode) {
-            case NONE: break;
-            case DEFAULT: processEventDefault(anEvent); break;
-            case SELECT_TEXT: processEventSelText(anEvent); break;
-            case SELECT_IMAGE: processEventSelImage(anEvent); break;
+            case NONE:
+                break;
+            case DEFAULT:
+                processEventDefault(anEvent);
+                break;
+            case SELECT_TEXT:
+                processEventSelText(anEvent);
+                break;
+            case SELECT_IMAGE:
+                processEventSelImage(anEvent);
+                break;
         }
     }
 
@@ -101,13 +119,24 @@ public class ViewerInteractor {
     {
         // Forward mouse pressed and released to official methods
         switch (anEvent.getType()) {
-            case MouseMove: mouseMoved(anEvent); break;
-            case MousePress: mousePressed(anEvent); break;
-            case MouseDrag: mouseDragged(anEvent); break;
-            case MouseRelease: mouseReleased(anEvent); break;
-            case KeyPress: keyPressed(anEvent);
-            case KeyRelease: keyReleased(anEvent);
-            case KeyType: keyTyped(anEvent);
+            case MouseMove:
+                mouseMoved(anEvent);
+                break;
+            case MousePress:
+                mousePressed(anEvent);
+                break;
+            case MouseDrag:
+                mouseDragged(anEvent);
+                break;
+            case MouseRelease:
+                mouseReleased(anEvent);
+                break;
+            case KeyPress:
+                keyPressed(anEvent);
+            case KeyRelease:
+                keyReleased(anEvent);
+            case KeyType:
+                keyTyped(anEvent);
         }
     }
 
@@ -118,9 +147,15 @@ public class ViewerInteractor {
     {
         // Forward mouse pressed and released to official methods
         switch (anEvent.getType()) {
-            case MousePress: mousePressedSelText(anEvent); break;
-            case MouseRelease: mouseReleasedSelText(anEvent); break;
-            case MouseDrag: mouseDraggedSelText(anEvent); break;
+            case MousePress:
+                mousePressedSelText(anEvent);
+                break;
+            case MouseRelease:
+                mouseReleasedSelText(anEvent);
+                break;
+            case MouseDrag:
+                mouseDraggedSelText(anEvent);
+                break;
         }
     }
 
@@ -131,9 +166,15 @@ public class ViewerInteractor {
     {
         // Forward mouse pressed and released to official methods
         switch (anEvent.getType()) {
-            case MousePress: mousePressedSelImage(anEvent); break;
-            case MouseMove: mouseMovedSelImage(anEvent); break;
-            case MouseDrag: mouseDraggedSelImage(anEvent); break;
+            case MousePress:
+                mousePressedSelImage(anEvent);
+                break;
+            case MouseMove:
+                mouseMovedSelImage(anEvent);
+                break;
+            case MouseDrag:
+                mouseDraggedSelImage(anEvent);
+                break;
         }
     }
 
@@ -143,8 +184,12 @@ public class ViewerInteractor {
     public void paint(Painter aPntr)
     {
         switch (_mode) {
-            case SELECT_TEXT: paintSelText(aPntr); break;
-            case SELECT_IMAGE: paintSelImage(aPntr); break;
+            case SELECT_TEXT:
+                paintSelText(aPntr);
+                break;
+            case SELECT_IMAGE:
+                paintSelImage(aPntr);
+                break;
         }
     }
 
@@ -154,8 +199,12 @@ public class ViewerInteractor {
     public void copy()
     {
         switch (_mode) {
-            case SELECT_TEXT: copySelText(); break;
-            case SELECT_IMAGE: copySelImage(); break;
+            case SELECT_TEXT:
+                copySelText();
+                break;
+            case SELECT_IMAGE:
+                copySelImage();
+                break;
         }
     }
 
@@ -166,11 +215,11 @@ public class ViewerInteractor {
     {
         // Get deepest shape hit by that point that has a URL
         _shapePressed = getViewer().getViewAtPoint(anEvent.getX(), anEvent.getY(), true);
-        while (_shapePressed!=null && !_shapePressed.acceptsMouse())
+        while (_shapePressed != null && !_shapePressed.acceptsMouse())
             _shapePressed = _shapePressed.getParent();
 
         // If shape has URL, open it
-        if (_shapePressed!=null)
+        if (_shapePressed != null)
             _shapePressed.processEvent(createShapeEvent(_shapePressed, anEvent, null));
     }
 
@@ -181,16 +230,16 @@ public class ViewerInteractor {
     {
         // Get shape under drag point
         SGView shape = getViewer().getViewAtPoint(anEvent.getX(), anEvent.getY(), true);
-        while (shape!=null && !shape.acceptsMouse())
+        while (shape != null && !shape.acceptsMouse())
             shape = shape.getParent();
 
         // If shape under move point is different than that of last last move point, update shape under stack
-        SGView lastShapeUnder = _shapeUnderStack.isEmpty()? null : (SGView)_shapeUnderStack.peek();
-        if (shape!=lastShapeUnder)
+        SGView lastShapeUnder = _shapeUnderStack.isEmpty() ? null : (SGView) _shapeUnderStack.peek();
+        if (shape != lastShapeUnder)
             updateShapeUnderStack(shape, anEvent);
 
         // Send mouse dragged to pressed shape
-        if (_shapePressed!=null)
+        if (_shapePressed != null)
             _shapePressed.processEvent(createShapeEvent(_shapePressed, anEvent, null));
     }
 
@@ -199,24 +248,30 @@ public class ViewerInteractor {
      */
     public void mouseReleased(ViewEvent anEvent)
     {
-        if(_shapePressed!=null)
+        if (_shapePressed != null)
             _shapePressed.processEvent(createShapeEvent(_shapePressed, anEvent, null));
     }
 
     /**
      * Handle key pressed.
      */
-    public void keyPressed(ViewEvent anEvent)  { }
+    public void keyPressed(ViewEvent anEvent)
+    {
+    }
 
     /**
      * Handle key released.
      */
-    public void keyReleased(ViewEvent anEvent)  { }
+    public void keyReleased(ViewEvent anEvent)
+    {
+    }
 
     /**
      * Handle key typed.
      */
-    public void keyTyped(ViewEvent anEvent)  { }
+    public void keyTyped(ViewEvent anEvent)
+    {
+    }
 
     /**
      * Handle mouse moved event.
@@ -225,14 +280,14 @@ public class ViewerInteractor {
     {
         // Get shape under move point
         SGView shape = getViewer().getViewAtPoint(anEvent.getX(), anEvent.getY(), true);
-        while (shape!=null && !shape.acceptsMouse())
+        while (shape != null && !shape.acceptsMouse())
             shape = shape.getParent();
 
         // If shape under move point is identical to shape under last move point, call its mouseMoved
-        if (!_shapeUnderStack.isEmpty() && _shapeUnderStack.peek()==shape)
+        if (!_shapeUnderStack.isEmpty() && _shapeUnderStack.peek() == shape)
             shape.processEvent(createShapeEvent(shape, anEvent, null));
 
-        // If shape under move point is different from last shape under, update it
+            // If shape under move point is different from last shape under, update it
         else updateShapeUnderStack(shape, anEvent);
     }
 
@@ -242,19 +297,19 @@ public class ViewerInteractor {
     protected void updateShapeUnderStack(SGView aShape, ViewEvent anEvent)
     {
         // Get first ancestor that acceptsEvents
-        SGView parent = aShape==null? null : aShape.getParent();
-        while (parent!=null && !parent.acceptsMouse())
+        SGView parent = aShape == null ? null : aShape.getParent();
+        while (parent != null && !parent.acceptsMouse())
             parent = parent.getParent();
 
         // If a parent acceptEvents, then empty _shapeUnderStack so it only contains parent
-        if (parent!=null && !ListUtils.containsId(_shapeUnderStack, parent))
+        if (parent != null && !ListUtils.containsId(_shapeUnderStack, parent))
             updateShapeUnderStack(parent, anEvent);
 
         // Empty _shapeUnderStack so it only contains aShape
-        while (!_shapeUnderStack.isEmpty() && _shapeUnderStack.peek()!=parent && _shapeUnderStack.peek()!=aShape) {
+        while (!_shapeUnderStack.isEmpty() && _shapeUnderStack.peek() != parent && _shapeUnderStack.peek() != aShape) {
 
             // Pop top shape and send mouse exited
-            SGView shape = (SGView)_shapeUnderStack.pop();
+            SGView shape = (SGView) _shapeUnderStack.pop();
 
             // Pop top cursor
             _shapeUnderCursorStack.pop();
@@ -263,23 +318,28 @@ public class ViewerInteractor {
             shape.processEvent(createShapeEvent(shape, anEvent, ViewEvent.Type.MouseEnter));
 
             // Reset cursor
-            getViewer().setCursor(_shapeUnderCursorStack.isEmpty()? Cursor.DEFAULT : _shapeUnderCursorStack.peek());
+            getViewer().setCursor(_shapeUnderCursorStack.isEmpty() ? Cursor.DEFAULT : _shapeUnderCursorStack.peek());
         }
 
         // If aShape is no longer child of parent, just return (could happen if mouse over parent changes children)
-        if (parent!=null && !parent.isDescendant(aShape))
+        if (parent != null && !parent.isDescendant(aShape))
             return;
 
         // Add aShape if non-null
-        if (aShape!=null && (_shapeUnderStack.isEmpty() || _shapeUnderStack.peek()!=aShape)) {
+        if (aShape != null && (_shapeUnderStack.isEmpty() || _shapeUnderStack.peek() != aShape)) {
             aShape.processEvent(createShapeEvent(aShape, anEvent, ViewEvent.Type.MouseEnter));
             _shapeUnderStack.push(aShape);
             _shapeUnderCursorStack.push(getViewer().getCursor());
         }
     }
 
-    /** Creates a shape mouse event. */
-    ViewEvent createShapeEvent(SGView s, ViewEvent e, ViewEvent.Type t)  { return getViewer().createSceneViewEvent(s, e, t); }
+    /**
+     * Creates a shape mouse event.
+     */
+    ViewEvent createShapeEvent(SGView s, ViewEvent e, ViewEvent.Type t)
+    {
+        return getViewer().createSceneViewEvent(s, e, t);
+    }
 
     /*
      * SELECT_TEXT code.
@@ -304,14 +364,15 @@ public class ViewerInteractor {
         _dragPoint = new Point(anEvent.getX(), anEvent.getY());
 
         // Repaint paint area
-        Viewer viewer = getViewer(); viewer.repaint(_paintArea.getBounds());
+        Viewer viewer = getViewer();
+        viewer.repaint(_paintArea.getBounds());
 
         // Get rectangle for down point and current event point - in SelPage coords
         double x = Math.min(_downPoint.getX(), anEvent.getX());
         double y = Math.min(_downPoint.getY(), anEvent.getY());
         double w = Math.max(_downPoint.getX(), anEvent.getX()) - x;
         double h = Math.max(_downPoint.getY(), anEvent.getY()) - y;
-        Rect rect = viewer.convertToSceneView(new Rect(x,y,w,h), viewer.getSelPage()).getBounds();
+        Rect rect = viewer.convertToSceneView(new Rect(x, y, w, h), viewer.getSelPage()).getBounds();
 
         // Get path for rect and find/set text shapes
         findTextShapes(viewer.getSelPage(), rect, _selTexts = new ArrayList());
@@ -324,7 +385,9 @@ public class ViewerInteractor {
     /**
      * Handle mouse released event.
      */
-    public void mouseReleasedSelText(ViewEvent anEvent) { }
+    public void mouseReleasedSelText(ViewEvent anEvent)
+    {
+    }
 
     /**
      * Handle SELECT_TEXT paint.
@@ -332,7 +395,9 @@ public class ViewerInteractor {
     private void paintSelText(Painter aPntr)
     {
         aPntr.setOpacity(.33);
-        aPntr.setColor(Color.BLUE); aPntr.fill(_paintArea); aPntr.setOpacity(1);
+        aPntr.setColor(Color.BLUE);
+        aPntr.fill(_paintArea);
+        aPntr.setOpacity(1);
     }
 
     /**
@@ -341,7 +406,8 @@ public class ViewerInteractor {
     private void copySelText()
     {
         // Get first selected text (just return if none)
-        SGText stext = _selTexts.size()>0? _selTexts.get(0) : null; if(stext==null) return;
+        SGText stext = _selTexts.size() > 0 ? _selTexts.get(0) : null;
+        if (stext == null) return;
         SGDoc sdoc = stext.getDoc();
 
         // Create new document and add clone of SelectedTexts to new document
@@ -363,17 +429,19 @@ public class ViewerInteractor {
     private void findTextShapes(SGParent aParent, Shape aPath, List aList)
     {
         // Get list of hit shapes
-        List <SGView> shapes = aParent.getChildrenIntersecting(aPath);
+        List<SGView> shapes = aParent.getChildrenIntersecting(aPath);
 
         // Iterate over shapes
-        for(int i=0, iMax=shapes.size(); i<iMax; i++) { SGView shape = shapes.get(i);
+        for (int i = 0, iMax = shapes.size(); i < iMax; i++) {
+            SGView shape = shapes.get(i);
 
             // If shape is text, just add it
-            if(shape instanceof SGText)
+            if (shape instanceof SGText)
                 aList.add(shape);
 
-            // Otherwise if shape has children, recurse (with path converted to shape coords)
-            else if(shape instanceof SGParent) { SGParent parent = (SGParent)shape;
+                // Otherwise if shape has children, recurse (with path converted to shape coords)
+            else if (shape instanceof SGParent) {
+                SGParent parent = (SGParent) shape;
                 Shape path = parent.parentToLocal(aPath);
                 findTextShapes(parent, path, aList);
             }
@@ -386,8 +454,10 @@ public class ViewerInteractor {
     private Shape getTextSelectionArea()
     {
         // Iterate over texts and create composite shape
-        TextBox tbox = new TextBox(); Shape area = new Rect();
-        for(int i = 0, iMax = _selTexts.size(); i<iMax; i++) { SGText text = _selTexts.get(i);
+        TextBox tbox = new TextBox();
+        Shape area = new Rect();
+        for (int i = 0, iMax = _selTexts.size(); i < iMax; i++) {
+            SGText text = _selTexts.get(i);
 
             // Convert points to text
             Point p1 = getViewer().convertToSceneView(_downPoint.x, _downPoint.y, text);
@@ -428,14 +498,14 @@ public class ViewerInteractor {
 
         // Reset selected sides to edges hit by point
         Point point = new Point(anEvent.getX(), anEvent.getY());
-        _selSides = rect.isEmpty()? 0 : getHitEdges(rect, point, 5);
+        _selSides = rect.isEmpty() ? 0 : getHitEdges(rect, point, 5);
 
         // Set drag rect
-        _dragPoint = _selSides >0 || !rect.contains(anEvent.getX(),anEvent.getY())? null :
-            new Point(anEvent.getX(), anEvent.getY());
+        _dragPoint = _selSides > 0 || !rect.contains(anEvent.getX(), anEvent.getY()) ? null :
+                new Point(anEvent.getX(), anEvent.getY());
 
         // If no selected sides, reset rect
-        if (_selSides ==0 && _dragPoint==null)
+        if (_selSides == 0 && _dragPoint == null)
             _rect = new Rect();
     }
 
@@ -448,14 +518,14 @@ public class ViewerInteractor {
         Rect rect = getViewer().convertFromSceneView(_rect, getViewer().getSelPage()).getBounds();
 
         // Repaint rect
-        getViewer().repaint(rect.isEmpty()? getViewer().getBounds() : rect.getInsetRect(-5));
+        getViewer().repaint(rect.isEmpty() ? getViewer().getBounds() : rect.getInsetRect(-5));
 
         // If there are selected sides, move them
-        if (_selSides >0)
+        if (_selSides > 0)
             setHitEdges(rect, new Point(anEvent.getX(), anEvent.getY()), _selSides);
 
-        // Otherwise, if point is in rect, move rect
-        else if (_dragPoint!=null) {
+            // Otherwise, if point is in rect, move rect
+        else if (_dragPoint != null) {
             rect.offset(anEvent.getX() - _dragPoint.getX(), anEvent.getY() - _dragPoint.getY());
             _dragPoint = new Point(anEvent.getX(), anEvent.getY());
         }
@@ -473,7 +543,7 @@ public class ViewerInteractor {
         _rect = getViewer().convertToSceneView(rect, getViewer().getSelPage()).getBounds();
 
         // Repaint rect
-        getViewer().repaint(rect.isEmpty()? getViewer().getBounds() : rect.getInsetRect(-5));
+        getViewer().repaint(rect.isEmpty() ? getViewer().getBounds() : rect.getInsetRect(-5));
     }
 
     /**
@@ -485,17 +555,17 @@ public class ViewerInteractor {
         Point point = getViewer().convertToSceneView(anEvent.getX(), anEvent.getY(), getViewer().getSelPage());
 
         // Get hit edges
-        int hitEdges = _rect.isEmpty()? 0 : getHitEdges(_rect, point, 5);
+        int hitEdges = _rect.isEmpty() ? 0 : getHitEdges(_rect, point, 5);
 
         // If selected edge, set cursor
-        if (hitEdges!=0)
+        if (hitEdges != 0)
             getViewer().setCursor(getResizeCursor(hitEdges));
 
-        // If point in rect, set move cursor
+            // If point in rect, set move cursor
         else if (_rect.contains(point.getX(), point.getY()))
             getViewer().setCursor(Cursor.MOVE);
 
-        // Otherwise, reset cursor
+            // Otherwise, reset cursor
         else getViewer().setCursor(Cursor.DEFAULT);
     }
 
@@ -505,27 +575,36 @@ public class ViewerInteractor {
     public void paintSelImage(Painter aPntr)
     {
         // If selection rect is empty, just return
-        if(_rect.isEmpty()) return;
+        if (_rect.isEmpty()) return;
 
         // Get selection rect in viewer coords
         Rect rect = getViewer().convertFromSceneView(_rect, getViewer().getSelPage()).getBounds();
 
         // Create area for bounds, subtract rect and fill
         Shape shape = Shape.subtract(getViewer().getBounds(), rect);
-        aPntr.setColor(new Color(0, 0, 0, .667f)); aPntr.fill(shape);
+        aPntr.setColor(new Color(0, 0, 0, .667f));
+        aPntr.fill(shape);
 
         // Paint corners
-        drawCircle(aPntr, rect.getX(), rect.getY()); drawCircle(aPntr, rect.getMidX(), rect.getY());
-        drawCircle(aPntr, rect.getMaxX(), rect.getY()); drawCircle(aPntr, rect.getX(), rect.getMidY());
-        drawCircle(aPntr, rect.getMaxX(), rect.getMidY()); drawCircle(aPntr, rect.getX(), rect.getMaxY());
-        drawCircle(aPntr, rect.getMidX(), rect.getMaxY()); drawCircle(aPntr, rect.getMaxX(), rect.getMaxY());
+        drawCircle(aPntr, rect.getX(), rect.getY());
+        drawCircle(aPntr, rect.getMidX(), rect.getY());
+        drawCircle(aPntr, rect.getMaxX(), rect.getY());
+        drawCircle(aPntr, rect.getX(), rect.getMidY());
+        drawCircle(aPntr, rect.getMaxX(), rect.getMidY());
+        drawCircle(aPntr, rect.getX(), rect.getMaxY());
+        drawCircle(aPntr, rect.getMidX(), rect.getMaxY());
+        drawCircle(aPntr, rect.getMaxX(), rect.getMaxY());
     }
 
-    /** Draws a circle. */
+    /**
+     * Draws a circle.
+     */
     private void drawCircle(Painter aPntr, double aX, double aY)
     {
-        aPntr.setColor(Color.WHITE); aPntr.fill(new Ellipse(aX-4, aY-4, 8, 8));
-        aPntr.setColor(Color.GRAY); aPntr.fill(new Ellipse(aX-3, aY-3, 6, 6));
+        aPntr.setColor(Color.WHITE);
+        aPntr.fill(new Ellipse(aX - 4, aY - 4, 8, 8));
+        aPntr.setColor(Color.GRAY);
+        aPntr.fill(new Ellipse(aX - 3, aY - 3, 6, 6));
     }
 
     /**
@@ -548,16 +627,16 @@ public class ViewerInteractor {
     private static Cursor getResizeCursor(int anEdgeMask)
     {
         // Handle W_RESIZE_CURSOR, E_RESIZE_CURSOR, N_RESIZE_CURSOR, S_RESIZE_CURSOR
-        if (anEdgeMask==MinXEdge) return Cursor.W_RESIZE;
-        if (anEdgeMask==MaxXEdge) return Cursor.E_RESIZE;
-        if (anEdgeMask==MinYEdge) return Cursor.N_RESIZE;
-        if (anEdgeMask==MaxYEdge) return Cursor.S_RESIZE;
+        if (anEdgeMask == MinXEdge) return Cursor.W_RESIZE;
+        if (anEdgeMask == MaxXEdge) return Cursor.E_RESIZE;
+        if (anEdgeMask == MinYEdge) return Cursor.N_RESIZE;
+        if (anEdgeMask == MaxYEdge) return Cursor.S_RESIZE;
 
         // Handle NW_RESIZE_CURSOR, NE_RESIZE_CURSOR, SW_RESIZE_CURSOR, SE_RESIZE_CURSOR
-        if (anEdgeMask==(MinXEdge | MinYEdge)) return Cursor.NW_RESIZE;
-        if (anEdgeMask==(MaxXEdge | MinYEdge)) return Cursor.NE_RESIZE;
-        if (anEdgeMask==(MinXEdge | MaxYEdge)) return Cursor.SW_RESIZE;
-        if (anEdgeMask==(MaxXEdge | MaxYEdge)) return Cursor.SE_RESIZE;
+        if (anEdgeMask == (MinXEdge | MinYEdge)) return Cursor.NW_RESIZE;
+        if (anEdgeMask == (MaxXEdge | MinYEdge)) return Cursor.NE_RESIZE;
+        if (anEdgeMask == (MinXEdge | MaxYEdge)) return Cursor.SW_RESIZE;
+        if (anEdgeMask == (MaxXEdge | MaxYEdge)) return Cursor.SE_RESIZE;
         return null; // Return null since not found
     }
 
@@ -568,13 +647,13 @@ public class ViewerInteractor {
     {
         // Check MinXEdge, MaxXEdge, MinYEdge, MaxYEdge
         int hitEdges = 0;
-        if (Math.abs(aPoint.getX()-aRect.getX()) < aRadius)
+        if (Math.abs(aPoint.getX() - aRect.getX()) < aRadius)
             hitEdges |= MinXEdge;
-        else if (Math.abs(aPoint.getX()-aRect.getMaxX()) < aRadius)
+        else if (Math.abs(aPoint.getX() - aRect.getMaxX()) < aRadius)
             hitEdges |= MaxXEdge;
-        if (Math.abs(aPoint.getY()-aRect.getY()) < aRadius)
+        if (Math.abs(aPoint.getY() - aRect.getY()) < aRadius)
             hitEdges |= MinYEdge;
-        else if (Math.abs(aPoint.getY()-aRect.getMaxY()) < aRadius)
+        else if (Math.abs(aPoint.getY() - aRect.getMaxY()) < aRadius)
             hitEdges |= MaxYEdge;
         return hitEdges;
     }
@@ -586,8 +665,10 @@ public class ViewerInteractor {
     {
         // Handle MinXEdge drag
         if ((anEdgeMask & MinXEdge) > 0) {
-            double newX = Math.min(aPoint.getX(), aRect.getMaxX()-1);
-            aRect.setWidth(aRect.getMaxX() - newX); aRect.setX(newX); }
+            double newX = Math.min(aPoint.getX(), aRect.getMaxX() - 1);
+            aRect.setWidth(aRect.getMaxX() - newX);
+            aRect.setX(newX);
+        }
 
         // Handle MaxXEdge drag
         else if ((anEdgeMask & MaxXEdge) > 0)
@@ -595,8 +676,10 @@ public class ViewerInteractor {
 
         // Handle MinYEdge drag
         if ((anEdgeMask & MinYEdge) > 0) {
-            double newY = Math.min(aPoint.getY(), aRect.getMaxY()-1);
-            aRect.setHeight(aRect.getMaxY() - newY); aRect.setY(newY); }
+            double newY = Math.min(aPoint.getY(), aRect.getMaxY() - 1);
+            aRect.setHeight(aRect.getMaxY() - newY);
+            aRect.setY(newY);
+        }
 
         // Handle MaxYEdge drag
         else if ((anEdgeMask & MaxYEdge) > 0)

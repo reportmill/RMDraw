@@ -178,15 +178,24 @@ public interface Placer {
     /**
      * Returns whether values are editable.
      */
-    default boolean isEditable()  { return true; }
+    default boolean isEditable()
+    {
+        return true;
+    }
 
     /**
      * Converts from shape units to tool units.
      */
-    default double getUnitsFromPoints(double aValue)  { return aValue; }
+    default double getUnitsFromPoints(double aValue)
+    {
+        return aValue;
+    }
 
     /**
      * Converts from tool units to shape units.
      */
-    default double getPointsFromUnits(double aValue)  { return aValue; }
+    default double getPointsFromUnits(double aValue)
+    {
+        return aValue;
+    }
 }

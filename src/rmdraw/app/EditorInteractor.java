@@ -13,16 +13,16 @@ import snap.view.*;
  * Handles editor methods specific to event operations.
  */
 public class EditorInteractor extends ViewerInteractor {
-    
+
     // The cached current event for any mouse loop handled by this editor events
-    private ViewEvent  _currentEvent;
-    
+    private ViewEvent _currentEvent;
+
     // The down point for any mouse loop handled by this editor events
-    private Point  _downPoint;
-    
+    private Point _downPoint;
+
     // Whether to override editor preview mode
-    private boolean  _overridePreview;
-    
+    private boolean _overridePreview;
+
     // Constants for guide orientation
     private static final byte GUIDE_HORIZONTAL = 0;
     private static final byte GUIDE_VERTICAL = 1;
@@ -30,12 +30,18 @@ public class EditorInteractor extends ViewerInteractor {
     /**
      * Creates EditorInteractor.
      */
-    public EditorInteractor(Viewer aViewer)  { super(aViewer); }
+    public EditorInteractor(Viewer aViewer)
+    {
+        super(aViewer);
+    }
 
     /**
      * Returns the viewer as an editor.
      */
-    public Editor getEditor()  { return (Editor)getViewer(); }
+    public Editor getEditor()
+    {
+        return (Editor) getViewer();
+    }
 
     /**
      * Handles key press events.
@@ -66,7 +72,9 @@ public class EditorInteractor extends ViewerInteractor {
 
         // If in preview mode, call normal version
         if (editor.isPreview() && !getOverridePreview()) {
-            super.mousePressed(anEvent); return; }
+            super.mousePressed(anEvent);
+            return;
+        }
 
         // Cache current event
         _currentEvent = anEvent;
@@ -77,7 +85,7 @@ public class EditorInteractor extends ViewerInteractor {
         // If current tool isn't select tool, see if super selected shape needs to be updated
         if (!editor.isCurrentToolSelectTool()) {
             SGView shape = editor.firstSuperSelViewThatAcceptsChildrenAtPoint(_downPoint);
-            if(shape!=editor.getSuperSelView())
+            if (shape != editor.getSuperSelView())
                 editor.setSuperSelView(shape);
         }
 
@@ -95,7 +103,9 @@ public class EditorInteractor extends ViewerInteractor {
 
         // If in preview mode, call normal version
         if (editor.isPreview() && !getOverridePreview()) {
-            super.mouseDragged(anEvent); return; }
+            super.mouseDragged(anEvent);
+            return;
+        }
 
         // Cache current event
         _currentEvent = anEvent;
@@ -122,11 +132,14 @@ public class EditorInteractor extends ViewerInteractor {
 
         // If in preview mode, call normal version
         if (editor.isPreview() && !getOverridePreview()) {
-            super.mouseReleased(anEvent); return; }
+            super.mouseReleased(anEvent);
+            return;
+        }
 
         // Cache current event, forward mouse released to current tool, clear current event
         _currentEvent = anEvent;
-        editor.getCurrentTool().mouseReleased(anEvent); _currentEvent = null;
+        editor.getCurrentTool().mouseReleased(anEvent);
+        _currentEvent = null;
     }
 
     /**
@@ -137,7 +150,9 @@ public class EditorInteractor extends ViewerInteractor {
         // If in preview mode, call normal version
         Editor editor = getEditor();
         if (editor.isPreview() && !getOverridePreview()) {
-            super.mouseMoved(anEvent); return; }
+            super.mouseMoved(anEvent);
+            return;
+        }
 
         // Otherwise, call tool mouseMoved to do stuff like set cursors
         else editor.getCurrentTool().mouseMoved(anEvent);
@@ -171,7 +186,7 @@ public class EditorInteractor extends ViewerInteractor {
             super.keyPressed(anEvent);
 
             // If event not consumed and user hit x, turn on preview override
-            if (!anEvent.isConsumed() && anEvent.getKeyCode()==KeyCode.X)
+            if (!anEvent.isConsumed() && anEvent.getKeyCode() == KeyCode.X)
                 setOverridePreview(true);
             return; // Return
         }
@@ -184,35 +199,35 @@ public class EditorInteractor extends ViewerInteractor {
         char keyChar = anEvent.getKeyChar();
 
         // Handle escape (assuming mouse isn't down)
-        if (keyCode==KeyCode.ESCAPE && !ViewUtils.isMouseDown()) {
+        if (keyCode == KeyCode.ESCAPE && !ViewUtils.isMouseDown()) {
             if (editor.getEditorPane().getAttributesPanel().getDrawer().isShowing())
                 editor.getEditorPane().hideAttributesDrawer();
             else editor.popSelection();
         }
 
         // Handle backspace or delete key
-        else if (keyCode==KeyCode.BACK_SPACE || keyCode==KeyCode.DELETE)
+        else if (keyCode == KeyCode.BACK_SPACE || keyCode == KeyCode.DELETE)
             editor.delete();
 
-        // Handle left, right, up, down arrows
-        else if (keyCode==KeyCode.LEFT) EditorUtils.moveLeftOnePoint(editor);
-        else if (keyCode==KeyCode.RIGHT) EditorUtils.moveRightOnePoint(editor);
-        else if (keyCode==KeyCode.UP) EditorUtils.moveUpOnePoint(editor);
-        else if (keyCode==KeyCode.DOWN) EditorUtils.moveDownOnePoint(editor);
+            // Handle left, right, up, down arrows
+        else if (keyCode == KeyCode.LEFT) EditorUtils.moveLeftOnePoint(editor);
+        else if (keyCode == KeyCode.RIGHT) EditorUtils.moveRightOnePoint(editor);
+        else if (keyCode == KeyCode.UP) EditorUtils.moveUpOnePoint(editor);
+        else if (keyCode == KeyCode.DOWN) EditorUtils.moveDownOnePoint(editor);
 
-        // If 6 key, show Undo inspector (for undo debugging)
-        else if (keyChar=='6')
+            // If 6 key, show Undo inspector (for undo debugging)
+        else if (keyChar == '6')
             editor.getEditorPane().getInspectorPanel().setVisible(6);
 
-        // If 8 key, show Undo inspector (for undo debugging)
-        else if (keyChar=='8')
+            // If 8 key, show Undo inspector (for undo debugging)
+        else if (keyChar == '8')
             editor.getEditorPane().getInspectorPanel().setVisible(8);
 
-        // If T key, swap in linked text
-        else if (keyChar=='t')
+            // If T key, swap in linked text
+        else if (keyChar == 't')
             TextToolUtils.convertToText(editor, editor.getSelView(), "test");
 
-        // Otherwise, set consume to false
+            // Otherwise, set consume to false
         else return;
 
         // Consume event
@@ -232,7 +247,10 @@ public class EditorInteractor extends ViewerInteractor {
     /**
      * Returns the current event point in document coords.
      */
-    public Point getEventPointInDoc()  { return getEventPointInDoc(false); }
+    public Point getEventPointInDoc()
+    {
+        return getEventPointInDoc(false);
+    }
 
     /**
      * Returns the current event point in document coords with an option to adjust to conform to grid.
@@ -254,19 +272,19 @@ public class EditorInteractor extends ViewerInteractor {
             double absY = Math.abs(point.getY() - _downPoint.getY());
 
             // If X is greater than Y set Y to either X or zero
-            if(absX > absY) {
+            if (absX > absY) {
                 // If X is twice as big as Y or more, set Y to 0, If X is less than twice as big as Y, set Y to X
-                if (absX > 2*absY)
+                if (absX > 2 * absY)
                     point.setY(_downPoint.getY());
-                else point.setY(_downPoint.getY() + MathUtils.sign(point.getY() - _downPoint.getY())*absX);
+                else point.setY(_downPoint.getY() + MathUtils.sign(point.getY() - _downPoint.getY()) * absX);
             }
 
             // If Y is greater than X, set X to either Y or zero
             else {
                 // If X is twice as big as Y or more, set Y to 0, If X is less than twice as big as Y, set Y to X
-                if (absY > 2*absX)
+                if (absY > 2 * absX)
                     point.setX(_downPoint.getX());
-                else point.setX(_downPoint.getX() + MathUtils.sign(point.getX() - _downPoint.getX())*absY);
+                else point.setX(_downPoint.getX() + MathUtils.sign(point.getX() - _downPoint.getX()) * absY);
             }
         }
 
@@ -281,7 +299,10 @@ public class EditorInteractor extends ViewerInteractor {
     /**
      * Returns the current event point in super-selected shape coords, optionally snapped to grid.
      */
-    public Point getEventPointInView(boolean snapToGrid)  { return getEventPointInView(snapToGrid, false); }
+    public Point getEventPointInView(boolean snapToGrid)
+    {
+        return getEventPointInView(snapToGrid, false);
+    }
 
     /**
      * Returns the current event point in super-selected shape coords with an option to adjust to conform to grid.
@@ -292,7 +313,7 @@ public class EditorInteractor extends ViewerInteractor {
         Point point = getEventPointInDoc();
 
         // If requested point snapped to grid, adjust point for grid
-        if(snapToGrid)
+        if (snapToGrid)
             point = pointSnapped(point, snapEdges);
 
         // Return point converted to super selected point
@@ -306,7 +327,8 @@ public class EditorInteractor extends ViewerInteractor {
     {
         // Get the editor and editor shape
         Editor editor = getEditor();
-        SGDoc doc = editor.getDoc(); if (doc==null) return aPoint;
+        SGDoc doc = editor.getDoc();
+        if (doc == null) return aPoint;
 
         // Get local copy of point
         Point point = aPoint;
@@ -316,12 +338,12 @@ public class EditorInteractor extends ViewerInteractor {
         if (doc.isSnapGrid())
             point = pointSnappedToGrid(point, snapEdges);
 
-        // If doc has guides, adjust for guides
-        else if (getGuideCount(doc)>0)
+            // If doc has guides, adjust for guides
+        else if (getGuideCount(doc) > 0)
             point = pointSnappedToGuides(point, snapEdges);
 
         // If points haven't changed, adjust for proximity guides
-        if (x==point.getX() && y==point.getY())
+        if (x == point.getX() && y == point.getY())
             point = EditorProxGuide.pointSnappedToProximityGuides(editor, point);
 
         // Return point
@@ -335,7 +357,8 @@ public class EditorInteractor extends ViewerInteractor {
     {
         // Get the editor and editor shape
         Editor editor = getEditor();
-        SGDoc doc = editor.getDoc(); if (doc==null) return aPoint;
+        SGDoc doc = editor.getDoc();
+        if (doc == null) return aPoint;
 
         // Get document frame
         SGView spage = editor.getSelPage();
@@ -343,17 +366,17 @@ public class EditorInteractor extends ViewerInteractor {
         double docFrameX = docFrame.getX(), docFrameY = docFrame.getY();
 
         // Get grid spacing
-        double gridSpacing = doc.getGridSpacing()*editor.getZoomFactor();
+        double gridSpacing = doc.getGridSpacing() * editor.getZoomFactor();
 
         // Get dx/dy for maximum offsets
-        double dx = gridSpacing/2 + .001f;
+        double dx = gridSpacing / 2 + .001f;
         double dy = dx;
 
         // If not snapping to all edges, round aPoint to nearest grid or guide
         if (!snapEdges) {
 
             // Get point in editor coords
-            aPoint = editor.convertFromSceneView(aPoint.getX(),aPoint.getY(), null);
+            aPoint = editor.convertFromSceneView(aPoint.getX(), aPoint.getY(), null);
 
             // Get dx/dy to nearest grid
             double px = MathUtils.round(aPoint.getX() - docFrameX, gridSpacing) + docFrameX;
@@ -366,7 +389,8 @@ public class EditorInteractor extends ViewerInteractor {
         else {
 
             // Iterate over selected shapes
-            for (int i = 0, iMax = editor.getSelViewCount(); i<iMax; i++) { SGView shape = editor.getSelView(i);
+            for (int i = 0, iMax = editor.getSelViewCount(); i < iMax; i++) {
+                SGView shape = editor.getSelView(i);
 
                 // Get shape bounds in editor coords
                 Rect rect = editor.convertFromSceneView(shape.getBoundsLocal(), shape).getBounds();
@@ -377,13 +401,13 @@ public class EditorInteractor extends ViewerInteractor {
                 double py = MathUtils.round(recty - docFrameY, gridSpacing) + docFrameY;
                 double pmx = MathUtils.round(rect.getMaxX() - docFrameX, gridSpacing) + docFrameX;
                 double pmy = MathUtils.round(rect.getMaxY() - docFrameY, gridSpacing) + docFrameY;
-                if(Math.abs(px - rectx)<Math.abs(dx))
+                if (Math.abs(px - rectx) < Math.abs(dx))
                     dx = px - rectx;
-                if(Math.abs(py - recty)<Math.abs(dy))
+                if (Math.abs(py - recty) < Math.abs(dy))
                     dy = py - recty;
-                if(Math.abs(pmx - rect.getMaxX())<Math.abs(dx))
+                if (Math.abs(pmx - rect.getMaxX()) < Math.abs(dx))
                     dx = pmx - rect.getMaxX();
-                if(Math.abs(pmy - rect.getMaxY())<Math.abs(dy))
+                if (Math.abs(pmy - rect.getMaxY()) < Math.abs(dy))
                     dy = pmy - rect.getMaxY();
             }
 
@@ -394,8 +418,8 @@ public class EditorInteractor extends ViewerInteractor {
         }
 
         // Go ahead and offset aPoint if necessary
-        if (Math.abs(dx)<=gridSpacing/2) aPoint.offset(dx,0);
-        if (Math.abs(dy)<=gridSpacing/2) aPoint.offset(0,dy);
+        if (Math.abs(dx) <= gridSpacing / 2) aPoint.offset(dx, 0);
+        if (Math.abs(dy) <= gridSpacing / 2) aPoint.offset(0, dy);
 
         // Covert back to shape if we need to
         if (!snapEdges)
@@ -412,13 +436,14 @@ public class EditorInteractor extends ViewerInteractor {
     {
         // Get the editor, document and document frame
         Editor editor = getEditor();
-        SGDoc doc = editor.getDoc(); if(doc==null) return aPoint;
+        SGDoc doc = editor.getDoc();
+        if (doc == null) return aPoint;
         SGView spage = editor.getSelPage();
         Rect docFrame = editor.convertFromSceneView(spage.getBoundsLocal(), spage).getBounds();
 
         // Get grid spacing and dx/dy for maximum offsets
-        double gridSpacing = doc.getGridSpacing()*editor.getZoomFactor();
-        double dx = gridSpacing/2 + .001f;
+        double gridSpacing = doc.getGridSpacing() * editor.getZoomFactor();
+        double dx = gridSpacing / 2 + .001f;
         double dy = dx;
 
         // If not snapping to all edges, round aPoint to nearest grid or guide
@@ -428,17 +453,17 @@ public class EditorInteractor extends ViewerInteractor {
             aPoint = editor.convertFromSceneView(aPoint.getX(), aPoint.getY(), null);
 
             // Find min dx/dy to nearest guide
-            for (int j=0, jMax=getGuideCount(doc); j<jMax; j++) {
+            for (int j = 0, jMax = getGuideCount(doc); j < jMax; j++) {
                 byte orientation = getGuideOrientation(j);
-                double location = getGuideLocation(doc, j)*editor.getZoomFactor() +
-                    (orientation==GUIDE_VERTICAL ? docFrame.getX() : docFrame.getY());
+                double location = getGuideLocation(doc, j) * editor.getZoomFactor() +
+                        (orientation == GUIDE_VERTICAL ? docFrame.getX() : docFrame.getY());
 
-                if (orientation==GUIDE_VERTICAL) {
-                    if (Math.abs(location - aPoint.getX())<Math.abs(dx))
+                if (orientation == GUIDE_VERTICAL) {
+                    if (Math.abs(location - aPoint.getX()) < Math.abs(dx))
                         dx = location - aPoint.getX();
                 }
-                else if (Math.abs(location - aPoint.getY())<Math.abs(dy))
-                        dy = location - aPoint.getY();
+                else if (Math.abs(location - aPoint.getY()) < Math.abs(dy))
+                    dy = location - aPoint.getY();
             }
         }
 
@@ -446,35 +471,36 @@ public class EditorInteractor extends ViewerInteractor {
         else {
 
             // Iterate over selected shapes
-            for (int i = 0, iMax = editor.getSelViewCount(); i<iMax; i++) { SGView shape = editor.getSelView(i);
+            for (int i = 0, iMax = editor.getSelViewCount(); i < iMax; i++) {
+                SGView shape = editor.getSelView(i);
 
                 // Get shape bounds in editor coords
                 Rect rect = editor.convertFromSceneView(shape.getBoundsLocal(), shape).getBounds();
 
                 // Iterate over guides to find dx/dy to nearest guide
-                for (int j=0, jMax=getGuideCount(doc); j<jMax; j++) {
+                for (int j = 0, jMax = getGuideCount(doc); j < jMax; j++) {
 
                     // Get current loop guide orientation
                     int orientation = getGuideOrientation(j);
 
                     // Get current loop guide location
-                    double location = getGuideLocation(doc, j)*editor.getZoomFactor() +
-                        (orientation==GUIDE_VERTICAL ? docFrame.getX() : docFrame.getY());
+                    double location = getGuideLocation(doc, j) * editor.getZoomFactor() +
+                            (orientation == GUIDE_VERTICAL ? docFrame.getX() : docFrame.getY());
 
                     // If vertical...
-                    if (orientation==GUIDE_VERTICAL) {
+                    if (orientation == GUIDE_VERTICAL) {
                         double minxDx = location - rect.getX(), maxxDx = location - rect.getMaxX();
-                        if (Math.abs(minxDx)<Math.abs(dx))
+                        if (Math.abs(minxDx) < Math.abs(dx))
                             dx = minxDx;
-                        if (Math.abs(maxxDx)<Math.abs(dx))
+                        if (Math.abs(maxxDx) < Math.abs(dx))
                             dx = maxxDx;
                     }
 
                     // If horizontal...
-                    if (orientation==GUIDE_HORIZONTAL) {
+                    if (orientation == GUIDE_HORIZONTAL) {
                         double minyDy = location - rect.getY(), maxyDy = location - rect.getMaxY();
-                        if (Math.abs(minyDy)<Math.abs(dy)) dy = minyDy;
-                        if (Math.abs(maxyDy)<Math.abs(dy)) dy = maxyDy;
+                        if (Math.abs(minyDy) < Math.abs(dy)) dy = minyDy;
+                        if (Math.abs(maxyDy) < Math.abs(dy)) dy = maxyDy;
                     }
                 }
             }
@@ -486,8 +512,8 @@ public class EditorInteractor extends ViewerInteractor {
         }
 
         // Go ahead and offset aPoint if necessary
-        if (Math.abs(dx)<=gridSpacing/2) aPoint.offset(dx,0);
-        if (Math.abs(dy)<=gridSpacing/2) aPoint.offset(0,dy);
+        if (Math.abs(dx) <= gridSpacing / 2) aPoint.offset(dx, 0);
+        if (Math.abs(dy) <= gridSpacing / 2) aPoint.offset(0, dy);
 
         // Covert back to shape if we need to
         if (!snapEdges)
@@ -500,7 +526,10 @@ public class EditorInteractor extends ViewerInteractor {
     /**
      * Returns the number of guides (4 if snapping to margin, otherwise zero).
      */
-    public static int getGuideCount(SGDoc aDoc)  { return aDoc.isSnapMargin()? 4 : 0; }
+    public static int getGuideCount(SGDoc aDoc)
+    {
+        return aDoc.isSnapMargin() ? 4 : 0;
+    }
 
     /**
      * Returns the guide location for the given index.
@@ -508,10 +537,14 @@ public class EditorInteractor extends ViewerInteractor {
     public static double getGuideLocation(SGDoc aDoc, int anIndex)
     {
         switch (anIndex) {
-            case 0: return aDoc.getMarginLeft();
-            case 1: return aDoc.getSelPage().getWidth() - aDoc.getMarginRight();
-            case 2: return aDoc.getMarginTop();
-            case 3: return aDoc.getSelPage().getHeight() - aDoc.getMarginBottom();
+            case 0:
+                return aDoc.getMarginLeft();
+            case 1:
+                return aDoc.getSelPage().getWidth() - aDoc.getMarginRight();
+            case 2:
+                return aDoc.getMarginTop();
+            case 3:
+                return aDoc.getSelPage().getHeight() - aDoc.getMarginBottom();
         }
         return 0;
     }
@@ -521,16 +554,22 @@ public class EditorInteractor extends ViewerInteractor {
      */
     private byte getGuideOrientation(int anIndex)
     {
-        return anIndex==0 || anIndex==1? GUIDE_VERTICAL : GUIDE_HORIZONTAL;
+        return anIndex == 0 || anIndex == 1 ? GUIDE_VERTICAL : GUIDE_HORIZONTAL;
     }
 
     /**
      * Returns whether to override preview mode.
      */
-    public boolean getOverridePreview()  { return _overridePreview; }
+    public boolean getOverridePreview()
+    {
+        return _overridePreview;
+    }
 
     /**
      * Sets whether to override preview mode.
      */
-    public void setOverridePreview(boolean aValue)  { _overridePreview = aValue; }
+    public void setOverridePreview(boolean aValue)
+    {
+        _overridePreview = aValue;
+    }
 }

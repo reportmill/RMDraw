@@ -21,7 +21,7 @@ public class SceneGraph {
 
     // The size of ScenGraph
     private double _width, _height;
-    
+
     // An optional undoer object to track document changes
     private Undoer _undoer;
 
@@ -29,10 +29,10 @@ public class SceneGraph {
     private PropChangeListener _propLsnr = pc -> viewPropChanged(pc);
 
     // A deep PropChange listener to catch any view changes
-    private DeepChangeListener _deepLsnr = (obj,pc) -> viewPropChangedDeep(pc);
+    private DeepChangeListener _deepLsnr = (obj, pc) -> viewPropChangedDeep(pc);
 
     // Whether SceneGraph is currently painting
-    private boolean  _ptg;
+    private boolean _ptg;
 
     /**
      * Creates a SceneGraph for given SceneGraph.Client.
@@ -45,12 +45,18 @@ public class SceneGraph {
     /**
      * Returns the document.
      */
-    public SGDoc getDoc()  { return (SGDoc)getRootView(); }
+    public SGDoc getDoc()
+    {
+        return (SGDoc) getRootView();
+    }
 
     /**
      * Returns the RootView of this SceneGraph.
      */
-    public SGParent getRootView()  { return _view; }
+    public SGParent getRootView()
+    {
+        return _view;
+    }
 
     /**
      * Sets the RootView of this SceneGraph.
@@ -62,7 +68,7 @@ public class SceneGraph {
         aDoc.layoutDeep();
 
         // If old view, stop listening to shape changes and notify shapes hidden
-        if (_view!=null) {
+        if (_view != null) {
             _view.removePropChangeListener(_propLsnr);
             _view.setSceneGraph(null);
         }
@@ -80,37 +86,59 @@ public class SceneGraph {
     /**
      * Returns the width of this SceneGraph.
      */
-    public double getWidth()  { return _width; }
+    public double getWidth()
+    {
+        return _width;
+    }
 
     /**
      * Sets the width of this SceneGraph.
      */
-    public void setWidth(double aValue)  { _width = aValue; }
+    public void setWidth(double aValue)
+    {
+        _width = aValue;
+    }
 
     /**
      * Returns the height of this SceneGraph.
      */
-    public double getHeight()  { return _height; }
+    public double getHeight()
+    {
+        return _height;
+    }
 
     /**
      * Sets the height of this SceneGraph.
      */
-    public void setHeight(double aValue)  { _height = aValue; }
+    public void setHeight(double aValue)
+    {
+        _height = aValue;
+    }
 
     /**
      * Sets the size of SceneGraph.
      */
-    public void setSize(double aWidth, double aHeight)  { setWidth(aWidth); setHeight(aHeight); }
+    public void setSize(double aWidth, double aHeight)
+    {
+        setWidth(aWidth);
+        setHeight(aHeight);
+    }
 
     /**
      * Returns the undoer.
      */
-    public Undoer getUndoer()  { return _undoer; }
+    public Undoer getUndoer()
+    {
+        return _undoer;
+    }
 
     /**
      * Sets the undoer.
      */
-    public void setUndoer(Undoer anUndoer)  { _undoer = anUndoer; }
+    public void setUndoer(Undoer anUndoer)
+    {
+        _undoer = anUndoer;
+    }
 
     /**
      * Override to return content preferred width.
@@ -118,7 +146,7 @@ public class SceneGraph {
     public double getPrefWidth()
     {
         SGParent view = getRootView();
-        return view!=null ? view.getPrefWidth() : 0;
+        return view != null ? view.getPrefWidth() : 0;
     }
 
     /**
@@ -127,7 +155,7 @@ public class SceneGraph {
     public double getPrefHeight()
     {
         SGParent view = getRootView();
-        return view!=null ? view.getPrefHeight() : 0;
+        return view != null ? view.getPrefHeight() : 0;
     }
 
     /**
@@ -146,15 +174,15 @@ public class SceneGraph {
         SGParent view = getRootView();
         double vw = view.getPrefWidth();
         double vh = view.getPrefHeight();
-        double vx = pw>vw ? Math.floor((pw-vw)/2) : 0;
-        double vy = ph>vh ? Math.floor((ph-vh)/2) : 0;
+        double vx = pw > vw ? Math.floor((pw - vw) / 2) : 0;
+        double vy = ph > vh ? Math.floor((ph - vh) / 2) : 0;
 
         // Set view bounds
         view.setBounds(vx, vy, vw, vh);
 
         // Set scale for ZoomFactor
         double zoom = _client.getSceneZoomFactor();
-        if (view.getScaleX()!=zoom)
+        if (view.getScaleX() != zoom)
             view.setScaleXY(zoom, zoom);
 
         // Call layout on view
@@ -191,13 +219,15 @@ public class SceneGraph {
     public void paintScene(Painter aPntr)
     {
         // Cache gstate and set Painting flag
-        aPntr.save(); _ptg = true;
+        aPntr.save();
+        _ptg = true;
 
         // Paint view
         _view.paint(aPntr);
 
         // Restore gstate and reset Painting flag
-        aPntr.restore(); _ptg = false;
+        aPntr.restore();
+        _ptg = false;
     }
 
     /**
@@ -219,32 +249,52 @@ public class SceneGraph {
     /**
      * Undoer convenience - disable the undoer.
      */
-    public void undoerDisable()  { Undoer u = getUndoer(); if (u!=null) u.disable(); }
+    public void undoerDisable()
+    {
+        Undoer u = getUndoer();
+        if (u != null) u.disable();
+    }
 
     /**
      * Undoer convenience - enables the undoer.
      */
-    public void undoerEnable()  { Undoer u = getUndoer(); if (u!=null) u.enable(); }
+    public void undoerEnable()
+    {
+        Undoer u = getUndoer();
+        if (u != null) u.enable();
+    }
 
     /**
      * Returns whether painting is for editor.
      */
-    public boolean isEditing()  { return _client.isSceneEditing(); }
+    public boolean isEditing()
+    {
+        return _client.isSceneEditing();
+    }
 
     /**
      * Returns whether given view is selected.
      */
-    public boolean isSelectedView(SGView aView)  { return _client.isSceneSelected(aView); }
+    public boolean isSelectedView(SGView aView)
+    {
+        return _client.isSceneSelected(aView);
+    }
 
     /**
      * Returns whether given view is super selected.
      */
-    public boolean isSuperSelectedView(SGView aView)  { return _client.isSceneSuperSelected(aView); }
+    public boolean isSuperSelectedView(SGView aView)
+    {
+        return _client.isSceneSuperSelected(aView);
+    }
 
     /**
      * Returns whether given view is THE super selected view.
      */
-    public boolean isSuperSelectedLeafView(SGView aView)  { return _client.isSceneSuperSelectedLeaf(aView); }
+    public boolean isSuperSelectedLeafView(SGView aView)
+    {
+        return _client.isSceneSuperSelectedLeaf(aView);
+    }
 
     /**
      * Returns whether painting is for editor.
@@ -252,7 +302,7 @@ public class SceneGraph {
     public static boolean isEditing(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
-        return scene!=null && scene.isEditing();
+        return scene != null && scene.isEditing();
     }
 
     /**
@@ -261,7 +311,7 @@ public class SceneGraph {
     public static boolean isSelected(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
-        return scene!=null && scene.isSelectedView(aView);
+        return scene != null && scene.isSelectedView(aView);
     }
 
     /**
@@ -270,7 +320,7 @@ public class SceneGraph {
     public static boolean isSuperSelected(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
-        return scene!=null && scene.isSuperSelectedView(aView);
+        return scene != null && scene.isSuperSelectedView(aView);
     }
 
     /**
@@ -279,7 +329,7 @@ public class SceneGraph {
     public static boolean isSuperSelectedLeaf(SGView aView)
     {
         SceneGraph scene = aView.getSceneGraph();
-        return scene!=null && scene.isSuperSelectedLeafView(aView);
+        return scene != null && scene.isSuperSelectedLeafView(aView);
     }
 
     /**
@@ -287,34 +337,71 @@ public class SceneGraph {
      */
     public interface Client {
 
-        /** Called to get ZoomFactor. */
+        /**
+         * Called to get ZoomFactor.
+         */
         double getSceneZoomFactor();
 
-        /** Called when SceneGraph needs relayout. */
+        /**
+         * Called when SceneGraph needs relayout.
+         */
         void sceneNeedsRelayout();
 
-        /** Called when SceneGraph view needs repaint. */
+        /**
+         * Called when SceneGraph view needs repaint.
+         */
         void sceneNeedsRepaint(SGView aShape);
 
-        /** Called when SceneGraph View has prop change. */
+        /**
+         * Called when SceneGraph View has prop change.
+         */
         void sceneViewPropChanged(PropChange aPC);
 
-        /** Called to see if client wants deep changes. */
-        default boolean isSceneDeepChangeListener()  { return false; }
+        /**
+         * Called to see if client wants deep changes.
+         */
+        default boolean isSceneDeepChangeListener()
+        {
+            return false;
+        }
 
-        /** Called when SceneGraph View has prop change. */
-        default void sceneViewPropChangedDeep(PropChange aPC)  { }
+        /**
+         * Called when SceneGraph View has prop change.
+         */
+        default void sceneViewPropChangedDeep(PropChange aPC)
+        {
+        }
 
-        /** Returns whether SceneGraph is being edited. */
-        default boolean isSceneEditing()  { return false; }
+        /**
+         * Returns whether SceneGraph is being edited.
+         */
+        default boolean isSceneEditing()
+        {
+            return false;
+        }
 
-        /** Returns whether given view is selected. */
-        default boolean isSceneSelected(SGView aView)  { return false; }
+        /**
+         * Returns whether given view is selected.
+         */
+        default boolean isSceneSelected(SGView aView)
+        {
+            return false;
+        }
 
-        /** Returns whether given view is super selected. */
-        default boolean isSceneSuperSelected(SGView aView)  { return false; }
+        /**
+         * Returns whether given view is super selected.
+         */
+        default boolean isSceneSuperSelected(SGView aView)
+        {
+            return false;
+        }
 
-        /** Returns whether given view is THE super selected view. */
-        default boolean isSceneSuperSelectedLeaf(SGView aView)  { return false; }
+        /**
+         * Returns whether given view is THE super selected view.
+         */
+        default boolean isSceneSuperSelectedLeaf(SGView aView)
+        {
+            return false;
+        }
     }
 }

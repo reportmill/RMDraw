@@ -7,21 +7,24 @@ import snap.view.*;
  * An inspector to show ViewTree.
  */
 public class ViewTreePane extends EditorPane.SupportPane {
-    
+
     // The TreeView
-    private TreeView  _treeView;
+    private TreeView _treeView;
 
     /**
      * Creates ViewTreePane.
      */
-    public ViewTreePane(EditorPane anEP)  { super(anEP); }
+    public ViewTreePane(EditorPane anEP)
+    {
+        super(anEP);
+    }
 
     /**
      * Returns the ViewTree.
      */
     protected View createUI()
     {
-        if(_treeView !=null) return _treeView;
+        if (_treeView != null) return _treeView;
         TreeView tview = new TreeView();
         tview.setName("TreeView");
         tview.setGrowHeight(true);
@@ -55,46 +58,67 @@ public class ViewTreePane extends EditorPane.SupportPane {
     protected void respondUI(ViewEvent anEvent)
     {
         // Handle TreeView
-        if(anEvent.equals("TreeView") && anEvent.isActionEvent())
-            getEditor().setSelView((SGView)anEvent.getSelItem());
+        if (anEvent.equals("TreeView") && anEvent.isActionEvent())
+            getEditor().setSelView((SGView) anEvent.getSelItem());
 
         // Handle MouseClick
-        if(anEvent.isMouseClick() && anEvent.getClickCount()==2)
-            getEditor().setSuperSelView((SGView)anEvent.getSelItem());
+        if (anEvent.isMouseClick() && anEvent.getClickCount() == 2)
+            getEditor().setSuperSelView((SGView) anEvent.getSelItem());
     }
 
     /**
      * A TreeResolver for Scene Views.
      */
-    public class ViewTreeResolver extends TreeResolver <SGView> {
+    public class ViewTreeResolver extends TreeResolver<SGView> {
 
-        /** Returns the parent of given item. */
-        public SGView getParent(SGView anItem)  { return anItem!=getEditor().getDoc()? anItem.getParent() : null; }
-
-        /** Whether given object is a parent (has children). */
-        public boolean isParent(SGView anItem)
+        /**
+         * Returns the parent of given item.
+         */
+        public SGView getParent(SGView anItem)
         {
-            return anItem instanceof SGParent && anItem.getChildCount()>0;
+            return anItem != getEditor().getDoc() ? anItem.getParent() : null;
         }
 
-        /** Returns the children. */
+        /**
+         * Whether given object is a parent (has children).
+         */
+        public boolean isParent(SGView anItem)
+        {
+            return anItem instanceof SGParent && anItem.getChildCount() > 0;
+        }
+
+        /**
+         * Returns the children.
+         */
         public SGView[] getChildren(SGView aParent)
         {
-            SGParent par = (SGParent)aParent;
+            SGParent par = (SGParent) aParent;
             return par.getChildArray();
         }
 
-        /** Returns the text to be used for given item. */
+        /**
+         * Returns the text to be used for given item.
+         */
         public String getText(SGView anItem)
         {
-            String str = anItem.getClass().getSimpleName(); if(str.startsWith("RM")) str = str.substring(2);
-            String name = anItem.getName(); if(name!=null) str += " - " + name;
-            if(anItem instanceof SGText) { SGText ts = (SGText)anItem;
-                String text = ts.getText(); if(text!=null) str += " \"" + text + "\" "; }
+            String str = anItem.getClass().getSimpleName();
+            if (str.startsWith("RM")) str = str.substring(2);
+            String name = anItem.getName();
+            if (name != null) str += " - " + name;
+            if (anItem instanceof SGText) {
+                SGText ts = (SGText) anItem;
+                String text = ts.getText();
+                if (text != null) str += " \"" + text + "\" ";
+            }
             return str;
         }
 
-        /** Return the image to be used for given item. */
-        public View getGraphic(SGView anItem)  { return null; }
+        /**
+         * Return the image to be used for given item.
+         */
+        public View getGraphic(SGView anItem)
+        {
+            return null;
+        }
     }
 }

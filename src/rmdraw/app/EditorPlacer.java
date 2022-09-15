@@ -3,6 +3,7 @@ import rmdraw.editors.Placer;
 import rmdraw.scene.SGDoc;
 import rmdraw.scene.SGPage;
 import rmdraw.scene.SGView;
+
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
 public class EditorPlacer implements Placer {
 
     // The editor
-    private Editor  _editor;
+    private Editor _editor;
 
     /**
      * Creates EditorPlacer.
@@ -264,7 +265,7 @@ public class EditorPlacer implements Placer {
     public double getUnitsFromPoints(double aValue)
     {
         SGDoc doc = _editor.getDoc();
-        return doc!=null ? doc.getUnitsFromPoints(aValue) : aValue;
+        return doc != null ? doc.getUnitsFromPoints(aValue) : aValue;
     }
 
     /**
@@ -273,7 +274,7 @@ public class EditorPlacer implements Placer {
     public double getPointsFromUnits(double aValue)
     {
         SGDoc doc = _editor.getDoc();
-        return doc!=null ? doc.getPointsFromUnits(aValue) : aValue;
+        return doc != null ? doc.getPointsFromUnits(aValue) : aValue;
     }
 
     /**
@@ -292,7 +293,7 @@ public class EditorPlacer implements Placer {
     {
         List<SGView> views = _editor.getSelOrSuperSelViews();
         Placer placers[] = new Placer[views.size()];
-        for (int i=0, iMax=views.size(); i<iMax; i++) placers[i] = getPlacer(views.get(i));
+        for (int i = 0, iMax = views.size(); i < iMax; i++) placers[i] = getPlacer(views.get(i));
         return placers;
     }
 

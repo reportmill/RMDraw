@@ -12,7 +12,7 @@ import snap.view.ViewUtils;
 /**
  * Sets shape style attributes for shape.
  */
-public class ToolStyler <T extends SGView> {
+public class ToolStyler<T extends SGView> {
 
     // The Tool
     protected Tool _tool;
@@ -37,7 +37,7 @@ public class ToolStyler <T extends SGView> {
     public ToolStyler(Tool aTool, SGView aShape)
     {
         _tool = aTool;
-        _shape = (T)aShape;
+        _shape = (T) aShape;
         _editor = aTool.getEditor();
     }
 
@@ -62,7 +62,8 @@ public class ToolStyler <T extends SGView> {
      */
     public void setBorderStrokeColor(Color aColor)
     {
-        Border b1 = getBorder(); if (b1==null) b1 = Border.blackBorder();
+        Border b1 = getBorder();
+        if (b1 == null) b1 = Border.blackBorder();
         Border b2 = b1.copyForColor(aColor);
         setBorder(b2);
     }
@@ -72,7 +73,8 @@ public class ToolStyler <T extends SGView> {
      */
     public void setBorderStrokeWidth(double aWidth)
     {
-        Border b1 = getBorder(); if (b1==null) b1 = Border.blackBorder();
+        Border b1 = getBorder();
+        if (b1 == null) b1 = Border.blackBorder();
         Border b2 = b1.copyForStrokeWidth(aWidth);
         setBorder(b2);
     }
@@ -82,7 +84,8 @@ public class ToolStyler <T extends SGView> {
      */
     public void setBorderStrokeDashArray(double theDashes[])
     {
-        Border bdr1 = getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
+        Border bdr1 = getBorder();
+        if (bdr1 == null) bdr1 = Border.blackBorder();
         Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashes(theDashes);
         Border bdr2 = bdr1.copyForStroke(str2);
         setBorder(bdr2);
@@ -93,7 +96,8 @@ public class ToolStyler <T extends SGView> {
      */
     public void setBorderStrokeDashPhase(double aValue)
     {
-        Border bdr1 = getBorder(); if (bdr1==null) bdr1 = Border.blackBorder();
+        Border bdr1 = getBorder();
+        if (bdr1 == null) bdr1 = Border.blackBorder();
         Stroke str1 = bdr1.getStroke(), str2 = str1.copyForDashOffset(aValue);
         Border bdr2 = bdr1.copyForStroke(str2);
         setBorder(bdr2);
@@ -105,8 +109,8 @@ public class ToolStyler <T extends SGView> {
     public void setBorderShowEdge(Pos aPos, boolean aValue)
     {
         Border bdr1 = getBorder();
-        Borders.EdgeBorder ebdr = bdr1 instanceof Borders.EdgeBorder ? (Borders.EdgeBorder)bdr1 : null;
-        if (ebdr==null) ebdr = new Borders.EdgeBorder();
+        Borders.EdgeBorder ebdr = bdr1 instanceof Borders.EdgeBorder ? (Borders.EdgeBorder) bdr1 : null;
+        if (ebdr == null) ebdr = new Borders.EdgeBorder();
         Border bdr2 = ebdr.copyForShowEdge(aPos, aValue);
         setBorder(bdr2);
     }
@@ -117,7 +121,7 @@ public class ToolStyler <T extends SGView> {
     public Paint getFill()
     {
         // If selected or super selected shape is page that doesn't draw color, return "last color" (otherwise, reset it)
-        if((_shape instanceof SGPage || _shape instanceof SGDoc) && _shape.getFill()==null)
+        if ((_shape instanceof SGPage || _shape instanceof SGDoc) && _shape.getFill() == null)
             return Color.WHITE;
 
         // Return shape color
@@ -130,7 +134,7 @@ public class ToolStyler <T extends SGView> {
     public void setFill(Paint aPaint)
     {
         // If Doc or Page, just return
-        if(_shape instanceof SGPage || _shape instanceof SGDoc) return;
+        if (_shape instanceof SGPage || _shape instanceof SGDoc) return;
 
         // Set color fill
         _shape.setFill(aPaint);
@@ -142,7 +146,7 @@ public class ToolStyler <T extends SGView> {
     public Color getFillColor()
     {
         // If selected or super selected shape is page that doesn't draw color, return "last color" (otherwise, reset it)
-        if((_shape instanceof SGPage || _shape instanceof SGDoc) && _shape.getFill()==null)
+        if ((_shape instanceof SGPage || _shape instanceof SGDoc) && _shape.getFill() == null)
             return Color.WHITE;
 
         // Return shape color
@@ -155,11 +159,11 @@ public class ToolStyler <T extends SGView> {
     public void setFillColor(Color aColor)
     {
         // If Doc or Page, just return
-        if(_shape instanceof SGPage || _shape instanceof SGDoc) return;
+        if (_shape instanceof SGPage || _shape instanceof SGDoc) return;
 
         // If command-click, set gradient fill
-        if(ViewUtils.isShortcutDown()) {
-            Color c1 = _shape.getFill()!=null? _shape.getFillColor() : Color.CLEARWHITE;
+        if (ViewUtils.isShortcutDown()) {
+            Color c1 = _shape.getFill() != null ? _shape.getFillColor() : Color.CLEARWHITE;
             _shape.setFill(new GradientPaint(c1, aColor, 0));
         }
 
@@ -178,12 +182,17 @@ public class ToolStyler <T extends SGView> {
     /**
      * Returns the text color current text.
      */
-    public Color getTextColor()  { return Color.BLACK; }
+    public Color getTextColor()
+    {
+        return Color.BLACK;
+    }
 
     /**
      * Sets the text color of the editor's selected shapes.
      */
-    public void setTextColor(Color aColor)  { }
+    public void setTextColor(Color aColor)
+    {
+    }
 
     /**
      * Returns the font of editor's selected shape.
@@ -191,7 +200,7 @@ public class ToolStyler <T extends SGView> {
     public Font getFont()
     {
         Font font = _shape.getFont();
-        return font!=null? font : Font.getDefaultFont();
+        return font != null ? font : Font.getDefaultFont();
     }
 
     /**
@@ -227,11 +236,11 @@ public class ToolStyler <T extends SGView> {
         Font font = aShape.getFont();
 
         // If not found, look for font in children
-        for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++)
+        for (int i = 0, iMax = aShape.getChildCount(); i < iMax && font == null; i++)
             font = aShape.getChild(i).getFont();
 
         // If not found, look for font with child tools (recurse)
-        for(int i=0, iMax=aShape.getChildCount(); i<iMax && font==null; i++) {
+        for (int i = 0, iMax = aShape.getChildCount(); i < iMax && font == null; i++) {
             SGView child = aShape.getChild(i);
             font = getFontDeep(child);
         }
@@ -261,7 +270,7 @@ public class ToolStyler <T extends SGView> {
      */
     public void setFontSize(double aSize, boolean isRelative)
     {
-        String key = isRelative? FontSizeDelta_Key : FontSize_Key;
+        String key = isRelative ? FontSizeDelta_Key : FontSize_Key;
         setFontKeyDeep(key, aSize);
     }
 
@@ -292,14 +301,14 @@ public class ToolStyler <T extends SGView> {
         Font font = getFont();
 
         // Handle given key
-        switch(aKey) {
+        switch (aKey) {
 
             // Handle FontName
             case FontName_Key: {
 
                 // Get new font for name and current shape size and set
-                String name = (String)aVal;
-                Font font1 = font!=null ? font : getFontDefault();
+                String name = (String) aVal;
+                Font font1 = font != null ? font : getFontDefault();
                 Font font2 = Font.getFont(name, font1.getSize());
                 setFont(font2);
                 break;
@@ -309,15 +318,16 @@ public class ToolStyler <T extends SGView> {
             case FontFamily_Key: {
 
                 // Get new font for given font family font and current shape font size/style and set
-                String name = (String)aVal;
-                String fnames[] = Font.getFontNames(name); if (fnames.length==0) return;
+                String name = (String) aVal;
+                String fnames[] = Font.getFontNames(name);
+                if (fnames.length == 0) return;
                 String fname = fnames[0];
-                Font font1 = font!=null ? font : getFontDefault();
+                Font font1 = font != null ? font : getFontDefault();
                 Font font2 = Font.getFont(fname, font1.getSize());
-                if (font!=null) {
-                    if (font.isBold()!=font2.isBold() && font2.getBold()!=null)
+                if (font != null) {
+                    if (font.isBold() != font2.isBold() && font2.getBold() != null)
                         font2 = font2.getBold();
-                    if (font.isItalic()!=font2.isItalic() && font2.getItalic()!=null)
+                    if (font.isItalic() != font2.isItalic() && font2.getItalic() != null)
                         font2 = font2.getItalic();
                     font2 = font2.deriveFont(font.getSize());
                 }
@@ -329,7 +339,8 @@ public class ToolStyler <T extends SGView> {
             case FontSize_Key: {
 
                 // Get new font for current shape font at new size and set
-                double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
+                double aSize = SnapUtils.doubleValue(aVal);
+                if (font == null) return;
                 Font font2 = font.deriveFont(aSize);
                 setFont(font2);
                 break;
@@ -339,7 +350,8 @@ public class ToolStyler <T extends SGView> {
             case FontSizeDelta_Key: {
 
                 // Get new font for current shape font at new size and set
-                double aSize = SnapUtils.doubleValue(aVal); if(font==null) return;
+                double aSize = SnapUtils.doubleValue(aVal);
+                if (font == null) return;
                 Font font2 = font.deriveFont(font.getSize() + aSize);
                 setFont(font2);
                 break;
@@ -350,8 +362,9 @@ public class ToolStyler <T extends SGView> {
 
                 // Get new font
                 boolean aFlag = SnapUtils.boolValue(aVal);
-                if(font==null || font.isBold()==aFlag) return;
-                Font font2 = font.getBold(); if(font2==null) return;
+                if (font == null || font.isBold() == aFlag) return;
+                Font font2 = font.getBold();
+                if (font2 == null) return;
                 setFont(font2);
                 break;
             }
@@ -361,14 +374,16 @@ public class ToolStyler <T extends SGView> {
 
                 // Get new font
                 boolean aFlag = SnapUtils.boolValue(aVal);
-                if(font==null || font.isItalic()==aFlag) return;
-                Font font2 = font.getItalic(); if(font2==null) return;
+                if (font == null || font.isItalic() == aFlag) return;
+                Font font2 = font.getItalic();
+                if (font2 == null) return;
                 setFont(font2);
                 break;
             }
 
             // Handle anything else
-            default: System.err.println("ToolStyler.setFontKey: Unknown key: " + aKey)   ;
+            default:
+                System.err.println("ToolStyler.setFontKey: Unknown key: " + aKey);
         }
     }
 
@@ -381,7 +396,8 @@ public class ToolStyler <T extends SGView> {
         setFontKey(aKey, aVal);
 
         // Set for children
-        for(int i=0, iMax=_shape.getChildCount(); i<iMax; i++) { SGView child = _shape.getChild(i);
+        for (int i = 0, iMax = _shape.getChildCount(); i < iMax; i++) {
+            SGView child = _shape.getChild(i);
             Tool tool = _editor.getToolForView(child);
             tool.getStyler(child).setFontKeyDeep(aKey, aVal);
         }
@@ -390,22 +406,32 @@ public class ToolStyler <T extends SGView> {
     /**
      * Returns whether the currently selected shape is underlined.
      */
-    public boolean isUnderlined()  { return false; }
+    public boolean isUnderlined()
+    {
+        return false;
+    }
 
     /**
      * Sets the currently selected shapes to be underlined.
      */
-    public void setUnderlined(boolean aValue)  { }
+    public void setUnderlined(boolean aValue)
+    {
+    }
 
     /**
      * Returns the outline state of the currently selected shape (null if none).
      */
-    public Border getTextBorder()  { return null; }
+    public Border getTextBorder()
+    {
+        return null;
+    }
 
     /**
      * Sets the outline state of the currently selected shapes.
      */
-    public void setTextBorder(Border aBorder)  { }
+    public void setTextBorder(Border aBorder)
+    {
+    }
 
     /**
      * Returns the horizontal alignment of the text of the currently selected shapes.
@@ -435,17 +461,23 @@ public class ToolStyler <T extends SGView> {
     /**
      * Sets the horizontal alignment of the text of the currently selected shapes.
      */
-    public void setJustify(boolean aValue)  { }
+    public void setJustify(boolean aValue)
+    {
+    }
 
     /**
      * Sets the currently selected shapes to show text as superscript.
      */
-    public void setSuperscript()  { }
+    public void setSuperscript()
+    {
+    }
 
     /**
      * Sets the currently selected shapes to show text as subscript.
      */
-    public void setSubscript()  { }
+    public void setSubscript()
+    {
+    }
 
     /**
      * Returns the format of the editor's selected shape.
