@@ -100,7 +100,7 @@ public class MarkupEditorPane extends EditorPane {
 
         // Get selected tool button name and button - if found and not selected, select it
         String toolButtonName = getEditor().getCurrentTool().getClass().getSimpleName() + "Button";
-        ToggleButton toolButton = (ToggleButton) _toolsView.getChild(toolButtonName);
+        ToggleButton toolButton = (ToggleButton) _toolsView.getChildForName(toolButtonName);
         if (toolButton != null && !toolButton.isSelected())
             toolButton.setSelected(true);
     }
