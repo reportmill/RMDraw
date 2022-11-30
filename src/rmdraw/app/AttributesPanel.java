@@ -13,16 +13,19 @@ import snap.viewx.ColorPanel;
 public class AttributesPanel extends EditorPane.SupportPane {
 
     // The TabView
-    private TabView _tabView;
+    private TabView  _tabView;
 
     // Inspector names
-    private String _inspNames[];
+    private String[]  _inspNames;
 
     // Inspectors
-    private ViewOwner _insprs[];
+    private ViewOwner[]  _insprs;
 
     // The DrawerView
-    private DrawerView _drawer;
+    private DrawerView  _drawer;
+
+    // The DrawerView Effect
+    private Effect  _drawerEffect;
 
     // Constants for tab selection
     public static final String KEYS = "Keys";
@@ -226,6 +229,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
 
         // Make drawer invisible to mouse, and clear effect to speed up fade out anim
         _drawer.setPickable(false);
+        _drawerEffect = _drawer.getEffect();
         _drawer.setEffect(null);
 
         // Configure drawer anim to fade out
@@ -253,7 +257,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
      */
     private void childDragStopDone()
     {
-        _drawer.setEffect(DrawerView.SHADOW_EFFECT);
+        _drawer.setEffect(_drawerEffect);
     }
 
     /**
