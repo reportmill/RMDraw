@@ -19,7 +19,7 @@ import snap.util.*;
 public class EditorProxGuide {
 
     // Whether proximity guides are enabled.
-    private static boolean _enabled = Prefs.get().getBoolean("ProximityGuide", false);
+    private static boolean _enabled = Prefs.getDefaultPrefs().getBoolean("ProximityGuide", false);
 
     // Whether bounds of parent view are also check for proximity
     private static boolean _includeSuperSelView = false;
@@ -41,7 +41,7 @@ public class EditorProxGuide {
     public static void setEnabled(boolean aFlag)
     {
         _enabled = aFlag;
-        Prefs.get().setValue("ProximityGuide", aFlag);
+        Prefs.getDefaultPrefs().setValue("ProximityGuide", aFlag);
     }
 
     /**

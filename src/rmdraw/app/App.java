@@ -88,7 +88,7 @@ public class App {
 
         // Flush Properties to registry and exit
         try {
-            Prefs.get().flush();
+            Prefs.getDefaultPrefs().flush();
         }
         catch (Exception e) {
             e.printStackTrace();
