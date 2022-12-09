@@ -194,7 +194,7 @@ public class EditorPane extends ViewerPane {
     protected void respondUI(ViewEvent anEvent)
     {
         // Forward on to menu bar
-        getMenuBar().fireEvent(anEvent);
+        getMenuBar().dispatchEventToOwner(anEvent);
 
         // Do normal version
         super.respondUI(anEvent);

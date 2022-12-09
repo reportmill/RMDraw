@@ -686,13 +686,20 @@ public class TextTool<T extends SGText> extends Tool<T> {
 
             // If pressed was in overflow indicator box, add linked text (or select existing one)
             if (point.x >= text.getWidth() - 20 && point.x <= text.getWidth() - 10 && point.y >= text.getHeight() - 5) {
-                if (text.getLinkedText() == null) sendEvent("LinkedTextMenuItem");   // If not linked text, add it
-                else getEditor().setSelView(text.getLinkedText());          // Otherwise, select it
-                return true;    // Return true so SelectTool goes to DragModeNone
+
+                // If not linked text, add it
+                if (text.getLinkedText() == null)
+                    fireActionEventForObject("LinkedTextMenuItem", anEvent);
+
+                // Otherwise, select it
+                else getEditor().setSelView(text.getLinkedText());
+
+                // Return true so SelectTool goes to DragModeNone
+                return true;
             }
         }
 
-        // Return false is mouse point wasn't in overflow indicator box
+        // Return not in overflow indicator box
         return false;
     }
 

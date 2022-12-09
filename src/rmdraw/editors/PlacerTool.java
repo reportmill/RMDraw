@@ -288,7 +288,8 @@ public class PlacerTool extends ViewOwner {
                 _images[i] = Image.get(getClass(), imageNames[i]);
 
             // Add mouse listener to send action
-            enableEvents(MouseRelease, Action);
+            setActionable(true);
+            enableEvents(MouseRelease);
         }
 
         /**
