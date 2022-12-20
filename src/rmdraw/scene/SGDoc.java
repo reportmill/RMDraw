@@ -344,7 +344,8 @@ public class SGDoc extends SGParent {
     public void setUnit(String aString)
     {
         try {
-            setUnit(SnapUtils.valueOfIC(Unit.class, aString));
+            SGDoc.Unit unit = EnumUtils.valueOfIC(Unit.class, aString);
+            setUnit(unit);
         }
         catch (Exception e) {
             System.err.println("Unsupported Document.Unit: " + aString);
