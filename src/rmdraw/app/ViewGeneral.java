@@ -94,7 +94,7 @@ public class ViewGeneral extends EditorPane.SupportPane {
                 anEvent.acceptDrag();
                 if (cb.hasString()) {
                     String bkey = cb.getString();
-                    int row = _bindingsTable.getRowAt(anEvent.getX(), anEvent.getY());
+                    int row = _bindingsTable.getRowIndexForY(anEvent.getY());
                     if (row < 0) return;
                     String pname = view.getPropNames()[row];
                     view.addBinding(pname, bkey);
