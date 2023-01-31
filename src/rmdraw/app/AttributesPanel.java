@@ -4,6 +4,7 @@
 package rmdraw.app;
 import rmdraw.editors.FontPanel;
 import snap.gfx.*;
+import snap.util.ArrayUtils;
 import snap.view.*;
 import snap.viewx.ColorPanel;
 
@@ -46,33 +47,32 @@ public class AttributesPanel extends EditorPane.SupportPane {
      */
     public String[] getInspectorNames()
     {
-        return _inspNames != null ? _inspNames : (_inspNames = createInspectorNames());
+        if (_inspNames != null) return _inspNames;
+        return _inspNames = createInspectorNames();
     }
 
     /**
      * Creates the inspector names array.
      */
-    public String[] createInspectorNames()
-    {
-        return new String[]{COLOR, FONT, FORMAT};
-    }
+    protected String[] createInspectorNames()  { return new String[] { COLOR, FONT }; }
 
     /**
      * Returns the inspectors.
      */
     public ViewOwner[] getInspectors()
     {
-        return _insprs != null ? _insprs : (_insprs = createInspectors());
+        if (_insprs != null) return _insprs;
+        return _insprs = createInspectors();
     }
 
     /**
      * Creates the inspectors array.
      */
-    public ViewOwner[] createInspectors()
+    protected ViewOwner[] createInspectors()
     {
         APColorPanel color = new APColorPanel();
         FontPanel font = new FontPanel(getEditor().getStyler());
-        return new ViewOwner[]{color, font};
+        return new ViewOwner[] { color, font };
     }
 
     /**
@@ -90,13 +90,13 @@ public class AttributesPanel extends EditorPane.SupportPane {
     {
         // If requested visible and inspector is not visible, make visible
         if (aValue && !isVisible())
-            setVisible(0);
+            setVisibleIndex(0);
     }
 
     /**
      * Returns the index of the currently visible tab (or -1 if attributes panel not visible).
      */
-    public int getVisible()
+    public int getVisibleIndex()
     {
         return isVisible() ? _tabView.getSelIndex() : -1;
     }
@@ -104,7 +104,7 @@ public class AttributesPanel extends EditorPane.SupportPane {
     /**
      * Sets the attributes panel visible, specifying a specific tab by the given index.
      */
-    public void setVisible(int anIndex)
+    public void setVisibleIndex(int anIndex)
     {
         // Get the UI
         getUI();
@@ -121,14 +121,6 @@ public class AttributesPanel extends EditorPane.SupportPane {
     }
 
     /**
-     * Returns the visible name.
-     */
-    public String getVisibleName(String aName)
-    {
-        return getInspectorNames()[getVisible()];
-    }
-
-    /**
      * Sets the visible name.
      */
     public void setVisibleName(String aName)
@@ -141,12 +133,11 @@ public class AttributesPanel extends EditorPane.SupportPane {
      */
     public void setVisibleName(String aName, boolean doToggle)
     {
-        String names[] = getInspectorNames();
-        int vis = getVisible();
-        int vis2 = -1;
-        for (int i = 0; i < names.length; i++) if (aName.equals(names[i])) vis2 = i;
-        if (vis != vis2)
-            setVisible(vis2);
+        String[] names = getInspectorNames();
+        int oldVisIndex = getVisibleIndex();
+        int newVisIndex = ArrayUtils.indexOf(names, aName);
+        if (oldVisIndex != newVisIndex)
+            setVisibleIndex(newVisIndex);
         else if (doToggle)
             setVisible(false);
     }
@@ -194,12 +185,16 @@ public class AttributesPanel extends EditorPane.SupportPane {
         _tabView.setGrowHeight(true);
         _tabView.setFont(Font.Arial12.deriveFont(11d));
 
-        // Install child inspectors (placeholders)
-        String names[] = getInspectorNames();
-        ViewOwner inspectors[] = getInspectors();
-        for (int i = 0; i < names.length; i++) _tabView.addTab(names[i], new Label());
+        // Get inspectors and tab builder
+        String[] names = getInspectorNames();
+        ViewOwner[] inspectors = getInspectors();
+        Tab.Builder tabBuilder = new Tab.Builder(_tabView.getTabBar());
 
-        // Return TabView
+        // Iterate over inspectors and create/add tabs
+        for (int i = 0; i < names.length; i++)
+            tabBuilder.title(names[i]).contentOwner(inspectors[i]).add();
+
+        // Return
         return _tabView;
     }
 
@@ -208,15 +203,11 @@ public class AttributesPanel extends EditorPane.SupportPane {
      */
     public void resetUI()
     {
-        // Get inspector component from TabView
-        ViewOwner inspector = getInspectors()[_tabView.getSelIndex()];
-
-        // If inspector panel is Label, swap in real inspector UI
-        if (_tabView.getContent() instanceof Label)
-            _tabView.setTabContent(inspector.getUI(), _tabView.getSelIndex());
-
-        // Set window title and reset inspector
-        inspector.resetLater();
+        // Get selected inspector and reset
+        Tab selTab = _tabView.getSelItem();
+        ViewOwner inspector = selTab != null ? selTab.getContentOwner() : null;
+        if (inspector != null)
+            inspector.resetLater();
     }
 
     /**
