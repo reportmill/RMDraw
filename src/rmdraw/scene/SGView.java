@@ -1756,7 +1756,7 @@ public class SGView extends PropObject implements Cloneable, Archivable, Key.Get
      */
     public void addBinding(Binding aBinding)
     {
-        removeBinding(aBinding.getPropertyName()); // Remove current binding for property name (if it exists)
+        removeBinding(aBinding.getPropName()); // Remove current binding for property name (if it exists)
         List<Binding> bindings = getBindings(true); // Add binding
         bindings.add(aBinding);
         aBinding.setView(this); // Set binding width to this view
@@ -1777,7 +1777,7 @@ public class SGView extends PropObject implements Cloneable, Archivable, Key.Get
     {
         // Iterate over bindings and return the first that matches given property name
         for (int i = 0, iMax = getBindingCount(); i < iMax; i++)
-            if (getBinding(i).getPropertyName().equals(aPropertyName))
+            if (getBinding(i).getPropName().equals(aPropertyName))
                 return getBinding(i);
         return null; // Return null since binding not found
     }
@@ -1789,7 +1789,7 @@ public class SGView extends PropObject implements Cloneable, Archivable, Key.Get
     {
         // Iterate over binding and remove given binding
         for (int i = 0, iMax = getBindingCount(); i < iMax; i++)
-            if (getBinding(i).getPropertyName().equals(aPropertyName)) {
+            if (getBinding(i).getPropName().equals(aPropertyName)) {
                 removeBinding(i);
                 return true;
             }
