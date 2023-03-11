@@ -5,6 +5,7 @@ package rmdraw.app;
 import snap.util.SnapUtils;
 import snap.view.*;
 import snap.viewx.*;
+import snap.web.RecentFiles;
 
 /**
  * This class provides the welcome panel for RM.

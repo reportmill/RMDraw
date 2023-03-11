@@ -7,7 +7,7 @@ import snap.props.Undoer;
 import snap.text.TextEditor;
 import snap.util.*;
 import snap.view.*;
-import snap.viewx.RecentFiles;
+import snap.web.RecentFiles;
 
 /**
  * Menu bar for Editor pane.
