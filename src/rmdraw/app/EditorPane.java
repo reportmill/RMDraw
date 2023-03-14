@@ -353,9 +353,9 @@ public class EditorPane extends ViewerPane {
         // Set document
         getViewer().setDoc(doc);
 
-        // If source is string, add to recent files menu
+        // If source is URL, add to recent files
         if (url != null)
-            RecentFiles.addPath(url.getPath());
+            RecentFiles.addURL(url);
 
         // Return the editor
         return this;
@@ -413,8 +413,8 @@ public class EditorPane extends ViewerPane {
             return;
         }
 
-        // Add URL.String to RecentFilesMenu, clear undoer and reset UI
-        RecentFiles.addPath(url.getPath());
+        // Add URL to RecentFiles, clear undoer and reset UI
+        RecentFiles.addURL(url);
         getDoc().getUndoer().reset();
         resetLater();
     }
