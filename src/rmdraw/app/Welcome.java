@@ -86,9 +86,6 @@ public class Welcome extends ViewOwner {
         setViewText("JavaLabel", "Java: " + System.getProperty("java.runtime.version"));
         setViewText("LicenseLabel", "Free License for everyone!");
 
-        //
-        getView("RecentFilesButton", Button.class).setImage(ComboBox.getArrowImage());
-
         // Configure Window: Image, Add WindowListener to indicate app should exit when close button clicked
         getWindow().setType(WindowView.TYPE_UTILITY);
         enableEvents(getWindow(), WinClose);
@@ -127,10 +124,6 @@ public class Welcome extends ViewOwner {
             }
             open(path);
         }
-
-        // Handle RecentFilesButton
-        if (anEvent.equals("RecentFilesButton"))
-            RecentFiles.showPathsMenu(anEvent.getView(), str -> open(str));
 
         // Handle FinishButton
         if (anEvent.equals("QuitButton") || anEvent.isWinClose())

@@ -84,13 +84,6 @@ public class EditorPaneMenuBar extends EditorPane.SupportPane {
                 editorPane.setWindowVisible(true);
         }
 
-        // Handle OpenRecentMenuItem
-        if (anEvent.equals("OpenRecentMenuItem")) {
-            String path = RecentFiles.showPathsPanel(epane.getUI());
-            if (path == null) return;
-            rmdraw.app.Welcome.getShared().open(path); //file.getAbsolutePath());
-        }
-
         // Handle CloseMenuItem
         if (anEvent.equals("CloseMenuItem")) epane.close();
 
