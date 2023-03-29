@@ -441,7 +441,7 @@ public class EditorPane extends ViewerPane {
         if (surl == null) return;
 
         // Run option panel for revert confirmation (just return if denied)
-        String msg = "Revert to saved version of " + surl.getPathName() + "?";
+        String msg = "Revert to saved version of " + surl.getFilename() + "?";
         DialogBox dbox = new DialogBox("Revert to Saved");
         dbox.setQuestionMessage(msg);
         if (!dbox.showConfirmDialog(getUI())) return;
@@ -461,7 +461,7 @@ public class EditorPane extends ViewerPane {
 
         // If unsaved changes, run panel to request save
         if (getEditor().undoerHasUndos()) {
-            String fname = getSourceURL() == null ? "untitled document" : getSourceURL().getPathName();
+            String fname = getSourceURL() == null ? "untitled document" : getSourceURL().getFilename();
             String msg = "Save changes to " + fname + "?", options[] = {"Save", "Don't Save", "Cancel"};
             DialogBox dbox = new DialogBox("Unsaved Changes");
             dbox.setWarningMessage(msg);
