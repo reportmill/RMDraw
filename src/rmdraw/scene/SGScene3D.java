@@ -285,7 +285,7 @@ public class SGScene3D extends SGParent {
 
         // Get shape path, flattened and in parent coords
         Shape shapePath = aShape.getPath();
-        shapePath = shapePath.getFlat();
+        shapePath = shapePath.getFlattenedShape();
         shapePath = shapePath.copyFor(aShape.getTransform());
 
         // Get path3d for shape path
