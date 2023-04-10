@@ -3,9 +3,8 @@
  */
 package rmdraw.scene;
 import java.util.*;
-
-import snap.geom.Path;
 import snap.geom.Rect;
+import snap.geom.Shape;
 import snap.gfx.*;
 import snap.gfx3d.*;
 import snap.props.PropChange;
@@ -285,9 +284,9 @@ public class SGScene3D extends SGParent {
         }
 
         // Get shape path, flattened and in parent coords
-        Path shapePath = new Path(aShape.getPath());
-        shapePath = shapePath.getPathFlattened();
-        shapePath.transformBy(aShape.getTransform());
+        Shape shapePath = aShape.getPath();
+        shapePath = shapePath.getFlat();
+        shapePath = shapePath.copyFor(aShape.getTransform());
 
         // Get path3d for shape path
         PathBox3D pathBox = new PathBox3D(shapePath, z1, z2);
