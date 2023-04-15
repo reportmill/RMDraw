@@ -828,7 +828,7 @@ public class SGDoc extends SGParent {
         if (_showMargin) e.add("show-margin", true);
         if (_snapMargin) e.add("snap-margin", true);
         if ((_showMargin || _snapMargin) && !getMarginRect().equals(getMarginRectDefault()))
-            e.add("margin", _margins.getString());
+            e.add("margin", _margins.getSvgString());
 
         // Archive ShowGrid, SnapGrid, GridSpacing
         if (_showGrid) e.add("show-grid", true);
