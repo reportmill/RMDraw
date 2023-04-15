@@ -166,11 +166,11 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
 
         // Check to see if point landed in first point
         if (_path.getPointCount() > 2) {
-            Seg lastElmnt = _path.getSegLast();
+            Seg lastElmnt = _path.getLastSeg();
             int lastPointIndex = _path.getPointCount() - (lastElmnt == Seg.LineTo ? 2 : 4);
             Point beginPoint = _path.getPoint(0);
             Point lastPoint = _path.getPoint(lastPointIndex);
-            Point thisPoint = _path.getPointLast();
+            Point thisPoint = _path.getLastPoint();
             Rect firstHandleRect = new Rect(beginPoint.x - 3, beginPoint.y - 3, 6f, 6f);
             Rect lastHandleRect = new Rect(lastPoint.x - 3, lastPoint.y - 3, 6f, 6f);
             Rect currentHandleRect = new Rect(thisPoint.x - 3, thisPoint.y - 3, 6f, 6f);
@@ -185,7 +185,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
 
             // If mouseUp is in startPoint, create poly and surrender to selectTool
             if (!createPath && currentHandleRect.intersectsRect(lastHandleRect)) {
-                if (_path.getSegLast() == Seg.LineTo) _path.removeLastSeg();
+                if (_path.getLastSeg() == Seg.LineTo) _path.removeLastSeg();
                 createPath = true;
             }
 
@@ -598,8 +598,8 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
                 double ix = seg.getHitPoint(hor), iy = seg.getHitPoint(vert);
                 if (.1 < ix && ix < .9) seg2 = seg.split(ix);
                 else if (.1 < iy && iy < .9) seg2 = seg.split(iy);
-                path2.append(seg);
-                if (seg2 != null) path2.append(seg2);
+                path2.appendSegment(seg);
+                if (seg2 != null) path2.appendSegment(seg2);
             }
             break;
 
@@ -609,8 +609,8 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
                 double ix = seg.getHitPoint(hor), iy = seg.getHitPoint(vert);
                 if (.1 < ix && ix < .9) seg2 = seg.split(ix);
                 else if (.1 < iy && iy < .9) seg2 = seg.split(iy);
-                path2.append(seg);
-                if (seg2 != null) path2.append(seg2);
+                path2.appendSegment(seg);
+                if (seg2 != null) path2.appendSegment(seg2);
             }
             break;
 
@@ -620,8 +620,8 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
                 double ix = seg.getHitPoint(hor), iy = seg.getHitPoint(vert);
                 if (.1 < ix && ix < .9) seg2 = seg.split(ix);
                 else if (.1 < iy && iy < .9) seg2 = seg.split(iy);
-                path2.append(seg);
-                if (seg2 != null) path2.append(seg2);
+                path2.appendSegment(seg);
+                if (seg2 != null) path2.appendSegment(seg2);
             }
             break;
 
@@ -631,7 +631,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
                 double ix = seg.getHitPoint(hor), iy = seg.getHitPoint(vert);
                 if (.1 < ix && ix < .9) seg2 = seg.split(ix);
                 else if (.1 < iy && iy < .9) seg2 = seg.split(iy);
-                if (seg2 != null) path2.append(seg);
+                if (seg2 != null) path2.appendSegment(seg);
                 path2.close();
             }
             break;

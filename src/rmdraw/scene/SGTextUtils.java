@@ -32,7 +32,7 @@ public class SGTextUtils {
             for (TextBoxRun run : line.getRuns()) { //if(run.length()==0 || run.isTab()) continue;
                 String str = run.getString();
                 double cspace = run.getStyle().getCharSpacing();
-                path.append(run.getFont().getOutline(str, run.getX(), line.getBaseline(), cspace));
+                path.appendShape(run.getFont().getOutline(str, run.getX(), line.getBaseline(), cspace));
             }
 
         // Return path
