@@ -61,8 +61,8 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
         // Handle PathText
         if (anEvent.equals("PathText")) {
             String str = anEvent.getStringValue();
-            Path path = Path.getPathFromSVG(str);
-            if (path == null) return;
+            Path path = new Path();
+            path.appendSvgString(str);
             pview.resetPath(new Path(path));
         }
 
