@@ -2,7 +2,7 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package rmdraw.scene;
-import snap.geom.Path;
+import snap.geom.Path2D;
 import snap.geom.Rect;
 import snap.geom.Shape;
 import snap.gfx.*;
@@ -22,7 +22,7 @@ public class SGTextUtils {
     public static Shape getTextPath(SGText aText)
     {
         // Create path and establish bounds of text
-        Path path = new Path();
+        Path2D path = new Path2D();
         path.moveTo(0, 0);
         path.moveTo(aText.getWidth(), aText.getHeight());
 

@@ -412,7 +412,7 @@ public class Viewer extends ParentView implements SceneGraph.Client {
      */
     public Shape convertFromSceneView(Shape aShape, SGView aView)
     {
-        return aView != null ? aView.localToParent(aShape, null) : new Path(aShape);
+        return aView != null ? aView.localToParent(aShape, null) : new Path2D(aShape);
     }
 
     /**
@@ -420,7 +420,7 @@ public class Viewer extends ParentView implements SceneGraph.Client {
      */
     public Shape convertToSceneView(Shape aShape, SGView aView)
     {
-        return aView != null ? aView.parentToLocal(aShape, null) : new Path(aShape);
+        return aView != null ? aView.parentToLocal(aShape, null) : new Path2D(aShape);
     }
 
     /**

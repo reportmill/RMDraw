@@ -43,16 +43,16 @@ public class SGPolygon extends SGParent {
     /**
      * Sets the path for this polygon.
      */
-    public void setPath(Path aPath)
+    public void setPath(Shape aPath)
     {
-        _path = aPath;
+        _path = aPath instanceof Path ? (Path) aPath : new Path(aPath);
         repaint();
     }
 
     /**
      * Replace the polygon's current path with a new path, adjusting the view's bounds to match the new path.
      */
-    public void resetPath(Path newPath)
+    public void resetPath(Shape newPath)
     {
         // Get the transform to parent view coords
         Transform toParentXF = getTransform();
