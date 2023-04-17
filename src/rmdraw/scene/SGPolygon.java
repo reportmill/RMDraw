@@ -11,7 +11,7 @@ import snap.util.*;
 public class SGPolygon extends SGParent {
 
     // The explicit path associated with this view
-    protected Path _path;
+    protected Path2D _path;
 
     /**
      * Creates SGPolygon.
@@ -26,13 +26,13 @@ public class SGPolygon extends SGParent {
     public SGPolygon(Shape aShape)
     {
         this();
-        _path = new Path(aShape);
+        _path = new Path2D(aShape);
     }
 
     /**
      * Returns the path for this polygon.
      */
-    public Path getPath()
+    public Path2D getPath()
     {
         return _path.copyFor(getBoundsLocal());
     }
@@ -42,7 +42,7 @@ public class SGPolygon extends SGParent {
      */
     public void setPath(Shape aPath)
     {
-        _path = aPath instanceof Path ? (Path) aPath : new Path(aPath);
+        _path = aPath instanceof Path2D ? (Path2D) aPath : new Path2D(aPath);
         repaint();
     }
 
@@ -165,9 +165,9 @@ public class SGPolygon extends SGParent {
     /**
      * XML unarchival for path.
      */
-    public Path getPathFromXML(XMLElement anElement)
+    public Path2D getPathFromXML(XMLElement anElement)
     {
-        Path path = new Path();
+        Path2D path = new Path2D();
 
         // Unarchive individual elements/points
         for (int i = 0, iMax = anElement.size(); i < iMax; i++) {

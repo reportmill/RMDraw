@@ -15,7 +15,7 @@ import snap.view.*;
 public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
 
     // The current path being added
-    private Path _path;
+    private Path2D _path;
 
     // Whether path should be smoothed on mouse up
     private boolean _smoothPathOnMouseUp;
@@ -44,7 +44,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     {
         // Get current PathView and path
         SGPolygon pview = getSelView();
-        Path path = pview.getPath();
+        Path2D path = pview.getPath();
 
         // Update PathText
         setViewText("PathText", path.getSvgString());
@@ -61,9 +61,9 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
         // Handle PathText
         if (anEvent.equals("PathText")) {
             String str = anEvent.getStringValue();
-            Path path = new Path();
+            Path2D path = new Path2D();
             path.appendSvgString(str);
-            pview.resetPath(new Path(path));
+            pview.resetPath(new Path2D(path));
         }
 
         // Handle DeletePointMenuItem
@@ -123,7 +123,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
 
         // If this is the first mouseDown of a new path, create path and add moveTo. Otherwise add lineTo to current path
         if (_path == null) {
-            _path = new Path();
+            _path = new Path2D();
             _path.moveTo(point.x, point.y);
         }
         else _path.lineTo(point.x, point.y);
@@ -261,7 +261,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
         // Repaint, create path with moved point and set new path
         aView.repaint();
         Point point = getEditorEvents().getEventPointInView(true);
-        Path path = aView.getPath(), newPath = path.clone();
+        Path2D path = aView.getPath(), newPath = path.clone();
         setPointStructured(newPath, _selPointIndex, point);
         aView.resetPath(newPath);
     }
@@ -336,14 +336,14 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
         if (!isSuperSelected) return;
 
         // Get plygon path
-        Path pathInLocal = aView.getPath();
+        Path2D pathInLocal = aView.getPath();
         Shape shapeInEditor = aView.localToParent(pathInLocal, null);
-        Path path = shapeInEditor instanceof Path ? (Path) shapeInEditor : new Path(shapeInEditor);
+        Path2D path = shapeInEditor instanceof Path2D ? (Path2D) shapeInEditor : new Path2D(shapeInEditor);
 
         // Declare some path iteration variables
         Seg lastElement = null;
         int currentPointIndex = 0;
-        Point pnts[] = new Point[3];
+        Point[] pnts = new Point[3];
         float HW = 6, HHW = HW / 2;
 
         // Iterate over path segements
@@ -429,7 +429,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     /**
      * Returns the bounds for all the control points.
      */
-    private Rect getControlPointBounds(Path aPath)
+    private Rect getControlPointBounds(Path2D aPath)
     {
         // Get segment index for selected control point handle
         int mouseDownIndex = aPath.getSegIndexForPointIndex(_selPointIndex);
@@ -496,7 +496,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     public void runContextMenu(SGPolygon aPoly, ViewEvent anEvent)
     {
         // Get the handle that was clicked on
-        Path path = aPoly.getPath();
+        Path2D path = aPoly.getPath();
         int pindex = _selPointIndex;
         String mtitle = null, mname = null;
 
@@ -540,7 +540,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     {
         // Make changes to a clone of the path so deletions can be undone
         SGPolygon p = getSelView();
-        Path path = new Path(p.getPath());
+        Path2D path = new Path2D(p.getPath());
 
         // get the index of the path segment corresponding to the selected control point
         int sindex = path.getSegIndexForPointIndex(_selPointIndex);
@@ -549,7 +549,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
         p.repaint();
 
         // Delete the point from path in parent coords
-        path.removeSeg(sindex);
+        Path2DUtils.removeSegAtIndexSmoothly(path, sindex);
 
         // if all points have been removed, delete the view itself
         if (path.getSegCount() == 0) {
@@ -574,8 +574,8 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     {
         // Get old path and new path
         SGPolygon poly = getSelView();
-        Path path = poly.getPath();
-        Path path2 = new Path();
+        Path2D path = poly.getPath();
+        Path2D path2 = new Path2D();
 
         // Create small horizontal and vertical lines around mouse point
         Line hor = new Line(aPoint.x - 3, aPoint.y, aPoint.x + 3, aPoint.y);
@@ -583,7 +583,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
 
         // Iterate over path and if segment is hit by mouse point, split segment
         PathIter piter = path.getPathIter(null);
-        double pts[] = new double[6];
+        double[] pts = new double[6];
         double mx = 0, my = 0, lx = 0, ly = 0;
         while (piter.hasNext()) switch (piter.getNext(pts)) {
 
@@ -645,7 +645,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     /**
      * Resets the point at the given index to the given point, while preserving something.
      */
-    private static void setPointStructured(Path aPath, int index, Point point)
+    private static void setPointStructured(Path2D aPath, int index, Point point)
     {
         int elmtIndex = aPath.getSegIndexForPointIndex(index);
         Seg elmt = aPath.getSeg(elmtIndex);
@@ -720,7 +720,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
      * Returns the handle index for a given point for given path. Only returns points that are on the path,
      * except for the control points of selectedPoint (if not -1)
      */
-    private static int handleAtPoint(Path aPath, Point aPoint, int selectedPoint)
+    private static int handleAtPoint(Path2D aPath, Point aPoint, int selectedPoint)
     {
         // Check against off-path control points of selected path first, otherwise you might never be able to select one
         if (selectedPoint != -1) {
@@ -775,7 +775,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     /**
      * Hit test the point (in path coords) against a given path point.
      */
-    private static boolean hitHandle(Path aPath, Point aPoint, int ptIndex)
+    private static boolean hitHandle(Path2D aPath, Point aPoint, int ptIndex)
     {
         Point p = aPath.getPoint(ptIndex);
         double handleSize = 9;
@@ -786,7 +786,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     /**
      * Returns the element index for the given point index.
      */
-    private static int getSegIndexForPointIndex(Path aPath, int index)
+    private static int getSegIndexForPointIndex(Path2D aPath, int index)
     {
         // Iterate over segments and increment element index
         int elementIndex = 0;
@@ -813,7 +813,7 @@ public class SGPolygonTool<T extends SGPolygon> extends Tool<T> {
     /**
      * Returns true of the point at pointIndex is on the path, and false if it is on the convex hull.
      */
-    private static boolean pointOnPath(Path aPath, int pointIndex)
+    private static boolean pointOnPath(Path2D aPath, int pointIndex)
     {
         int sindex = getSegIndexForPointIndex(aPath, pointIndex);
         int indexInElement = pointIndex - aPath.getSegPointIndex(sindex);
