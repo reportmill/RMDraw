@@ -49,7 +49,7 @@ public class SGPolygon extends SGParent {
     /**
      * Replace the polygon's current path with a new path, adjusting the view's bounds to match the new path.
      */
-    public void resetPath(Shape newPath)
+    public void setPathAndBounds(Shape newPath)
     {
         // Get the transform to parent view coords
         Transform toParentXF = getTransform();
